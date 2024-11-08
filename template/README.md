@@ -2,20 +2,20 @@
 
 ## Creating a view
 
-To create a new view you can follow the structure of `src/views/hud` or `src/views/menu`. You need to create a new folder `src/views/${viewName}` that includes `index.html`, `index.tsx`, `index.css` and the `${viewName}.tsx` files.
+To create a new view, follow the structure of `src/views/hud` or `src/views/menu`. Start by making a new folder `src/views/${viewName}`, and within it, include `index.html`, `index.tsx`, `index.css`, and `${viewName}.tsx` files.
 
 ## Build & run the project in production
 
-To build the project in production execute the `npm run build` command in this folder and it will generate production build inside the `dist` folder.
+To create a production build, run `npm run build` from this folder. This will generate a production build within the `dist` directory.
 
-Each view from the `src/views` folder will be build upon `dist/${viewName}`. For example `src/views/hud` will be build inside `dist/hud`.
+Each view located in `src/views` will be built into `dist/${viewName}`. For instance, `src/views/hud` will be built in `dist/hud`.
 
-To run the project you can simply load a view you can load the `index.html` for that view built in the `dist/${viewName}` folder. So if I want to load the hud view I can simply load the `dist/hud/index.html` page.
+To run the project, open the specific view by loading the `index.html` in the corresponding `dist/${viewName}` directory. For example, to load the hud view, open `dist/hud/index.html`.
 
 ## Run in development
 
-To run the project in development mode you can execute the `npm run dev` command inside this folder. The command will start a server on `localhost:${port}` where the port usually is `3000`.
+To start the project in development mode, run `npm run dev` from this folder. This will start a server on `localhost:${port}`, typically on port `3000`.
 
-After that to load a view in development you can simply use the following url - `http://localhost:3000/hud/` as an example to load the hud view.
+To view a specific page during development, navigate to the following URL, for example: `http://localhost:3000/hud/` to load the hud view.
 
-What is more while your development server is running you will have HOT module replacement enabled and each change you do on the view will be instantly loaded.
+With the development server running, HOT module replacement will be enabled, so any changes you make will immediately be reflected.
