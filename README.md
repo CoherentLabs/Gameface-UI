@@ -12,7 +12,7 @@ We suggest using `degit` for cloning repositories, specific folders, branches, o
 
 The next steps are showing how to get started building the project using Gameface UI:
 
-1. Install `degit` globally with: `npm i -g degit`.
+1. Install `degit` globally with: `npm i -g degit`. Or you can simply use `npx` without installing globally the `degit` module - `npx degit`.
 2. With `degit` installed, clone the template into your folder by running `degit CoherentLabs/Gameface-UI/template#master`. This will download the latest template version. To clone a specific version, replace `#master` with the desired tag, e.g., `#1.2.3`.
 3. If you'd like to use `gf-ui-components` for quick prototyping and UI development:
    1. Create a folder within your project, such as `gf-ui-components`.
