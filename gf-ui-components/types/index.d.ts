@@ -1,4 +1,5 @@
-export interface Events {
+declare module '*.module.css' 
+interface Events {
     abort?: (event: ProgressEvent) => void;
     animationend?: (event: AnimationEvent) => void;
     blur?: (event: FocusEvent) => void;

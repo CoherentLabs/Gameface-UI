@@ -1,5 +1,3 @@
-import { Events } from '../types'
-
 interface BaseComponentProps extends Events {
 }
 
