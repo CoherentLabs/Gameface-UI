@@ -1,28 +1,9 @@
-import BaseComponent from "../BaseComponent/BaseComponent";
 import { ParentProps, Component, ParentComponent, JSX, For, children, createContext, createSignal  } from "solid-js";
-import GridTile from "../GridTile/GridTile";
-import Events from "../types/BaseComponent";
 import styles from './Grid.module.css';
-import assignEventHandlers from "../utils/assignEventHandlers";
+import LayoutBaseProps from "../../types/LayoutBase";
+import LayoutBase from "../LayoutBase";
 
-type ExcludedEvents = 
-    | "abort"
-    | "animationend"
-    | "durationchange"
-    | "ended"
-    | "finish"
-    | "gamepadconnected"
-    | "gamepaddisconnected"
-    | "readystatechange"
-    | "timeout"
-    | "transitionend"
-    | "volumechange"
-    | "wheel";
-
-
-interface GridProps extends ParentProps, Omit<Events, ExcludedEvents> {
-    style?: {}
-    class?: {}
+interface GridProps extends LayoutBaseProps {
     rows: Required<number>
     cols: Required<number>
 }
@@ -34,13 +15,6 @@ type GridContextType = {
 export const GridContext = createContext<GridContextType>();
 
 const Grid: ParentComponent<GridProps> = (props) => {
-    const { GFUI, log, events } = BaseComponent(props);
-    const eventHandlers = assignEventHandlers(events);
-    const classes = `${styles.Grid} ${props.class || ""}`.trim();
-    const inlineStyles = {
-        ...props.style
-    }
-
     const initialGrid  = Array.from({ length: props.rows }, () => Array.from({length: props.cols}, () => null))
     const [gridTiles, setGridTiles] = createSignal<(JSX.Element | null)[][]>(initialGrid);
 
@@ -55,10 +29,10 @@ const Grid: ParentComponent<GridProps> = (props) => {
     }
 
     return (
-        <GridContext.Provider value={{placeTile}}>
-            {/* Neccessary to call props.children because gridTile won't mount */}
-            {props.children}
-            <div {...eventHandlers} class={classes} style={inlineStyles}>
+        <LayoutBase {...props} componentClasses={styles.Grid}>
+            <GridContext.Provider value={{placeTile}}>
+                {/* Neccessary to call props.children because gridTile won't mount */}
+                {props.children}
                 <For each={gridTiles()}>
                     {(row) => (
                         <div class={styles['Grid-Row']}>
@@ -70,8 +44,8 @@ const Grid: ParentComponent<GridProps> = (props) => {
                         </div>
                     )}
                 </For>
-            </div>
-        </GridContext.Provider>
+            </GridContext.Provider>
+        </LayoutBase>
     );
 }
 
