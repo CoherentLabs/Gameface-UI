@@ -1,7 +1,7 @@
 import BaseComponent from "../BaseComponent/BaseComponent";
 import { ParentProps, Component, ParentComponent, JSX  } from "solid-js";
 import Events from "../types/BaseComponent";
-import styles from './Layout.module.css';
+import styles from './Absolute.module.css';
 import assignEventHandlers from "../utils/assignEventHandlers";
 
 type ExcludedEvents = 
@@ -19,16 +19,24 @@ type ExcludedEvents =
     | "wheel";
 
 interface LayoutProps extends ParentProps, Omit<Events, ExcludedEvents> {
-    style?: {}
-    class?: {}
+    style?: JSX.CSSProperties
+    class?: string
+    top?: string,
+    left?: string,
+    right?: string,
+    bottom?: string,
 }
 
-const Layout: ParentComponent<LayoutProps> = (props) => {
+const Absolute: ParentComponent<LayoutProps> = (props) => {
     const { GFUI, log, events } = BaseComponent(props);
     const eventHandlers = assignEventHandlers(events);
-    const classes = `${styles.Layout} ${props.class || ""}`.trim();
+    const classes = `${styles.Absolute} ${props.class || ""}`.trim();
     const inlineStyles = {
-        ...props.style
+        ...(props.style || {}),
+        ...(props.top !== undefined ? { top: props.top } : {}),
+        ...(props.left !== undefined ? { left: props.left } : {}),
+        ...(props.right !== undefined ? { right: props.right } : {}),
+        ...(props.bottom !== undefined ? { bottom: props.bottom } : {}),
     }
 
     return (
@@ -42,4 +50,4 @@ const Layout: ParentComponent<LayoutProps> = (props) => {
     )
 }
 
-export default Layout;
+export default Absolute;

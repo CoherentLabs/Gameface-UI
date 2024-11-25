@@ -1,44 +1,43 @@
 import BaseComponent from "../BaseComponent/BaseComponent";
 import { ParentProps, Component, ParentComponent, JSX  } from "solid-js";
 import Events from "../types/BaseComponent";
-import extractEvents from "../utils/extractEvents";
+import assignEventHandlers from "../utils/assignEventHandlers";
 import styles from './Column.module.css';
 
-const excludedEventsSet = new Set([
-    "abort",
-    "durationchange",
-    "ended",
-    "finish",
-    "gamepadconnected",
-    "gamepaddisconnected",
-    "readystatechange",
-    "timeout",
-    "transitionend",
-    "volumechange",
-    "wheel",
-]);
-
-interface ColumnProps extends JSX.HTMLAttributes<HTMLDivElement>, Events {
-  style?: {}
+type ExcludedEvents = 
+    | "abort"
+    | "animationend"
+    | "durationchange"
+    | "ended"
+    | "finish"
+    | "gamepadconnected"
+    | "gamepaddisconnected"
+    | "readystatechange"
+    | "timeout"
+    | "transitionend"
+    | "volumechange"
+    | "wheel";
+    
+interface ColumnProps extends ParentProps, Omit<Events, ExcludedEvents> {
+    style?: {}
+    class?: {}
 }
 
 const Column: Record<string, (props: ColumnProps) => JSX.Element> = {};
 
 for (let i = 1; i <= 12; i++) {
-  const width = (i * 100) / 12;
   const componentName = `Column${i}`;
 
   Column[componentName] = (props: ColumnProps) => {
     const { GFUI, log, events } = BaseComponent(props);
-    const eventHandlers = extractEvents(events, excludedEventsSet);
-
-    const styles = {
+    const eventHandlers = assignEventHandlers(events);
+    const classes = `${styles[`Column-${i}`]} ${props.class || ""}`.trim();
+    const inlineStyles = {
       ...props.style,
-      width: `${width}vw`,
     };
 
     return (
-      <div {...eventHandlers} style={styles}>
+      <div {...eventHandlers} style={inlineStyles} class={classes}>
         {props.children}
       </div>
     );

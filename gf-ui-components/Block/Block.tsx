@@ -1,7 +1,7 @@
 import BaseComponent from "../BaseComponent/BaseComponent";
 import { ParentProps, Component, ParentComponent, JSX  } from "solid-js";
 import Events from "../types/BaseComponent";
-import styles from './Layout.module.css';
+import styles from './Block.module.css';
 import assignEventHandlers from "../utils/assignEventHandlers";
 
 type ExcludedEvents = 
@@ -18,15 +18,15 @@ type ExcludedEvents =
     | "volumechange"
     | "wheel";
 
-interface LayoutProps extends ParentProps, Omit<Events, ExcludedEvents> {
+interface BlockProps extends ParentProps, Omit<Events, ExcludedEvents> {
     style?: {}
     class?: {}
 }
 
-const Layout: ParentComponent<LayoutProps> = (props) => {
+const Block: ParentComponent<BlockProps> = (props) => {
     const { GFUI, log, events } = BaseComponent(props);
     const eventHandlers = assignEventHandlers(events);
-    const classes = `${styles.Layout} ${props.class || ""}`.trim();
+    const classes = `${props.class || ""}`.trim();
     const inlineStyles = {
         ...props.style
     }
@@ -42,4 +42,4 @@ const Layout: ParentComponent<LayoutProps> = (props) => {
     )
 }
 
-export default Layout;
+export default Block;

@@ -1,0 +1,74 @@
+.Column-1,
+.Column-2,
+.Column-3,
+.Column-4,
+.Column-5,
+.Column-6,
+.Column-7,
+.Column-8,
+.Column-9,
+.Column-10,
+.Column-11,
+.Column-12{
+    box-sizing: border-box;
+}
+
+.Column-1 {
+    flex: 1 1 8.33333333%;
+    max-width: 8.33333333%;
+}
+
+.Column-2 {
+    flex: 1 1 16.66666667%;
+    max-width: 16.66666667%;
+}
+
+.Column-3 {
+    flex: 1 1 25%;
+    max-width: 25%;
+}
+
+.Column-4 {
+    flex: 1 1 33.33333333%;
+    max-width: 33.33333333%;
+}
+
+.Column-5 {
+    flex: 1 1 41.66666667%;
+    max-width: 41.66666667%;
+}
+
+.Column-6 {
+    flex: 1 1 50%;
+    max-width: 50%;
+}
+
+.Column-7 {
+    flex: 1 1 58.33333333%;
+    max-width: 58.33333333%;
+}
+
+.Column-8 {
+    flex: 1 1 66.66666667%;
+    max-width: 66.66666667%;
+}
+
+.Column-9 {
+    flex: 1 1 75%;
+    max-width: 75%;
+}
+
+.Column-10 {
+    flex: 1 1 83.33333333%;
+    max-width: 83.33333333%;
+}
+
+.Column-11 {
+    flex: 1 1 91.66666667%;
+    max-width: 91.66666667%;
+}
+
+.Column-12 {
+    flex: 1 1 100%;
+    max-width: 100%;
+}

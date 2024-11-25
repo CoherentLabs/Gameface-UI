@@ -1,0 +1,18 @@
+.Grid{}
+
+.Grid-Row{
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+    flex-wrap: wrap;
+}
+
+.Grid-Col{
+    flex: 1;
+    box-sizing: border-box;
+}
+
+.Grid-Empty-Cell{
+    height: 50px;
+    user-select: none;
+}
