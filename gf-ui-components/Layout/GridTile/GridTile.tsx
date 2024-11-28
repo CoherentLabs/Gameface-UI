@@ -1,10 +1,19 @@
-import { ParentProps, Component, ParentComponent, JSX, For, children, createContext, useContext, onMount  } from "solid-js";
+import { ParentComponent, JSX, useContext, createSignal } from "solid-js";
 import styles from './GridTile.module.css'
 import { GridContext } from "../Grid/Grid";
 import LayoutBaseProps from "../../types/LayoutBase";
 import LayoutBase from "../LayoutBase";
 
-interface GridTileProps extends LayoutBaseProps {
+export interface GridTileRef {
+    row: number,
+    col: number,
+    tile: JSX.Element,
+    moveTile: (newRow: number, newCol: number) => void,
+    removeTile: () => void,
+    replaceTile: (newTile: Element | JSX.Element) => void
+}
+
+export interface GridTileProps extends LayoutBaseProps {
     row: number
     col: number
 }
@@ -12,26 +21,38 @@ interface GridTileProps extends LayoutBaseProps {
 const GridTile: ParentComponent<GridTileProps> = (props) => {
     const gridContext = useContext(GridContext)
 
-    if (!gridContext) {
-        throw new Error("GridTile component must be used within a Grid component");
-    }
+    if (!gridContext) throw new Error("GridTile component must be used within a Grid component");
 
     const { placeTile } = gridContext;
+    const [tile, setTile] = createSignal<JSX.Element | null>(null);
 
-    const tileContent = (
-        <LayoutBase {...props} componentClasses={styles.gridTile} />
-    )
-    
-    placeTile(props.row - 1, props.col - 1, tileContent);
-
-    // Add methods to add tiles to add, remove, replace tiles in the grid
-    const moveTile = (newRow: number, newCol: number, tileElement: JSX.Element) => {
-        placeTile(newRow - 1, newCol - 1, tileElement);
+    const moveTile = (newRow: number, newCol: number) => {
+        placeTile(newRow - 1, newCol - 1, tile());
     }
 
     const removeTile = () => {
-        
+        placeTile(props.row - 1, props.col - 1, null);
     }
+
+    const replaceTile = (newTile: Element | JSX.Element) => {
+        setTile(newTile)
+        placeTile(props.row - 1, props.col - 1, tile());
+    }
+
+    const gridTileRef = {
+        row: props.row,
+        col: props.col,
+        moveTile,
+        removeTile,
+        replaceTile,
+    }
+
+    const initialTile = (
+        <LayoutBase {...props} componentClasses={styles.GridTile} refObject={gridTileRef}/>
+    )
+
+    setTile(initialTile)
+    placeTile(props.row - 1, props.col - 1, tile());
 
     return null
 }

@@ -1,0 +1,71 @@
+# Bottom Component
+
+## Overview
+
+The `Bottom` component is a structural element designed to act as a wrapper of the bottom section of your page. Typically, the `Bottom` component is used alongside the `Top` and `Content` components to achieve better page structure.
+
+## Usage 
+
+The default use case for the `Bottom` component is as a bottom level section container.
+
+```tsx
+import Layout from 'gf-ui-components/Layout/Layout/Layout';
+import Top from 'gf-ui-components/Layout/Top/Top';
+import Content from 'gf-ui-components/Layout/Content/Content';
+import Bottom from 'gf-ui-components/Layout/Bottom/Bottom';
+
+const App = () => {
+    return (
+        <Layout>
+            <Top>Top Menu</Top>
+            <Content>Main Content</Content>
+            <Bottom style={{ display: 'flex', flexDirection: 'column', height: '20vh' }}>Bottom Section</Bottom>
+        </Layout>
+    );
+};
+
+export default App;
+```
+
+## API
+
+### Props
+|Prop Name |Type |Default | Description |
+|---|---|---|---|
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
+| `class` | `string` | `""` | Additional CSS classes to apply to the component |
+| `ref` | `LayoutBaseRef` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
+
+## Guide
+
+### Accessing the HTML element
+
+To access the HTML DOM element of the `Bottom` component.
+
+1. Declare a variable to hold the ref but don't initialize it with a value
+2. The declared value should have a type of `LayoutBaseRef`, which you need to import
+3. Set the declared variable as the value of the `ref` prop of the `Bottom` component
+
+#### Example
+
+```tsx
+import Layout from 'gf-ui-components/Layout/Layout/Layout';
+import Top from 'gf-ui-components/Layout/Top/Top';
+import Content from 'gf-ui-components/Layout/Content/Content';
+import Bottom from 'gf-ui-components/Layout/Bottom/Bottom';
+import { LayoutBaseRef } from 'gf-ui-components/Layout/LayoutBase';
+
+const App = () => {
+    let bottomRef!: LayoutBaseRef
+
+    return (
+        <Layout ref={bottomRef}>
+            <Top>Top Section</Top>
+            <Content>Main Content</Content>
+            <Bottom ref={bottomRef}>Bottom Section</Bottom>
+        </Layout>
+    );
+};
+```
+
+Now you can access the HTML element of `bottomRef` with `bottomRef.element` and make modifications to it if needed. 

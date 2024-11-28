@@ -1,14 +1,17 @@
 import BaseComponent from "../BaseComponent/BaseComponent";
-import { ParentProps, Component, ParentComponent, JSX, useContext  } from "solid-js";
-import Events from "../types/BaseComponent";
-import styles from './Layout.module.css';
+import { ParentProps, Component, ParentComponent, JSX, useContext, onMount, createSignal  } from "solid-js";
 import assignEventHandlers from "../utils/assignEventHandlers";
 import LayoutBaseProps from "../types/LayoutBase";
-import { GridContext } from "./Grid/Grid";
 
-interface LayoutBaseComponentProps extends LayoutBaseProps {
+export interface LayoutBaseRef {
+    element: HTMLDivElement; 
+}
+
+interface LayoutBaseComponentProps<T extends Record<string, any> = {}> extends LayoutBaseProps {
     componentStyles?: JSX.CSSProperties,
     componentClasses?: string
+    ref?: (ref: LayoutBaseRef & T) => void;
+    refObject?: T;
 }
 
 const LayoutBase: ParentComponent<LayoutBaseComponentProps> = (props) => {
@@ -19,9 +22,19 @@ const LayoutBase: ParentComponent<LayoutBaseComponentProps> = (props) => {
         ...(props.style || {}),
         ...(props.componentStyles || {})
     }
+    let element: HTMLDivElement | undefined;
     
+    onMount(() => {
+        if (props.ref && element) {
+          props.ref({
+            ...props.refObject,
+            element,
+          })
+        }
+    });
+
     return (
-        <div {...eventHandlers} class={classes} style={inlineStyles}>
+        <div ref={element} {...eventHandlers} class={classes} style={inlineStyles}>
             {props.children}
         </div>
     )
