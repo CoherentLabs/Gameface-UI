@@ -14,8 +14,7 @@ interface LayoutBaseComponentProps<T extends Record<string, any> = {}> extends L
     refObject?: T;
 }
 
-const LayoutBase: ParentComponent<LayoutBaseComponentProps> = (passedProps) => {
-    const props = mergeProps(passedProps)
+const LayoutBase: ParentComponent<LayoutBaseComponentProps> = (props) => {
     const { GFUI, log, events } = BaseComponent(props);
     const eventHandlers = assignEventHandlers(events);
     const classes = `${props.componentClasses} ${props.class || ""}`.trim();

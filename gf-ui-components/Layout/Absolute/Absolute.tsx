@@ -10,9 +10,7 @@ interface AbsoluteProps extends LayoutBaseProps {
     bottom?: string,
 }
 
-const Absolute: ParentComponent<AbsoluteProps> = (passedProps) => {
-    const props = mergeProps(passedProps)
-
+const Absolute: ParentComponent<AbsoluteProps> = (props) => {
     const positionStyle = {
         top: props.top,
         left: props.left,
