@@ -26,4 +26,3 @@ export const Column10 = Columns.Column10;
 export const Column11 = Columns.Column11;
 export const Column12 = Columns.Column12;
 export const Column = Columns.Column12;
-export default Columns;

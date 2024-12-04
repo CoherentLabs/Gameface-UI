@@ -61,8 +61,8 @@ const App = () => {
     return (
         <Layout ref={contentRef}>
             <Top>Top Section</Top>
-            <Content>Main Content</Content>
-            <Bottom ref={contentRef}>Bottom Section</Bottom>
+            <Content ref={contentRef}>Main Content</Content>
+            <Bottom>Bottom Section</Bottom>
         </Layout>
     );
 };

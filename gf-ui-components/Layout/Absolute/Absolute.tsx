@@ -1,4 +1,4 @@
-import { ParentComponent } from "solid-js";
+import { createEffect, createSignal, mergeProps, ParentComponent } from "solid-js";
 import styles from './Absolute.module.css';
 import LayoutBaseProps from "../../types/LayoutBase";
 import LayoutBase from "../LayoutBase";
@@ -10,13 +10,15 @@ interface AbsoluteProps extends LayoutBaseProps {
     bottom?: string,
 }
 
-const Absolute: ParentComponent<AbsoluteProps> = (props) => {
+const Absolute: ParentComponent<AbsoluteProps> = (passedProps) => {
+    const props = mergeProps(passedProps)
+
     const positionStyle = {
-        ...(props.top !== undefined ? { top: props.top } : {}),
-        ...(props.left !== undefined ? { left: props.left } : {}),
-        ...(props.right !== undefined ? { right: props.right } : {}),
-        ...(props.bottom !== undefined ? { bottom: props.bottom } : {}),
-    }
+        top: props.top,
+        left: props.left,
+        right: props.right,
+        bottom: props.bottom,
+    };
 
     return <LayoutBase {...props} componentClasses={styles.Absolute} componentStyles={positionStyle} />
 }

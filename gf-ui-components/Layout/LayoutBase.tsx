@@ -1,5 +1,5 @@
 import BaseComponent from "../BaseComponent/BaseComponent";
-import { ParentProps, Component, ParentComponent, JSX, useContext, onMount, createSignal  } from "solid-js";
+import { ParentProps, Component, ParentComponent, JSX, useContext, onMount, createSignal, mergeProps  } from "solid-js";
 import assignEventHandlers from "../utils/assignEventHandlers";
 import LayoutBaseProps from "../types/LayoutBase";
 
@@ -14,13 +14,14 @@ interface LayoutBaseComponentProps<T extends Record<string, any> = {}> extends L
     refObject?: T;
 }
 
-const LayoutBase: ParentComponent<LayoutBaseComponentProps> = (props) => {
+const LayoutBase: ParentComponent<LayoutBaseComponentProps> = (passedProps) => {
+    const props = mergeProps(passedProps)
     const { GFUI, log, events } = BaseComponent(props);
     const eventHandlers = assignEventHandlers(events);
     const classes = `${props.componentClasses} ${props.class || ""}`.trim();
     const inlineStyles = {
-        ...(props.style || {}),
-        ...(props.componentStyles || {})
+        ...props.style,
+        ...props.componentStyles
     }
     let element: HTMLDivElement | undefined;
     

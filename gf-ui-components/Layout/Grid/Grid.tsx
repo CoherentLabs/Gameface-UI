@@ -22,13 +22,13 @@ type GridContextType = {
 export const GridContext = createContext<GridContextType>();
 
 const Grid: ParentComponent<GridProps> = (props) => {
-    const initialGrid  = Array.from({ length: props.rows }, () => Array.from({length: props.cols}, () => null))
+    const initialGrid = Array.from({ length: props.rows }, () => Array.from({length: props.cols}, () => null));
     const [gridTiles, setGridTiles] = createSignal<(JSX.Element | null)[][]>(initialGrid);
 
     const placeTile = (row: number, col: number, item: Element | JSX.Element) => {
         setGridTiles((prev) => {
             const updatedGrid = prev.map((r) => [...r]);
-            if(row >= props.rows && col >= props.cols){
+            if (row >= props.rows && col >= props.cols){
                 throw new Error('You are trying to manipulate a non existing grid cell!')
             }
             updatedGrid[row][col] = item
@@ -37,11 +37,11 @@ const Grid: ParentComponent<GridProps> = (props) => {
     }
 
     const addItem = (row: number, col: number, item: Element | JSX.Element) => {
-        placeTile(row - 1, col - 1, item)
+        placeTile(row - 1, col - 1, item);
     }
 
     const removeItem = (row: number, col: number) => {
-        placeTile(row - 1, col - 1, null)
+        placeTile(row - 1, col - 1, null);
     }
 
     const gridObjectRef: GridRef = {

@@ -63,9 +63,8 @@ import Grid from 'gf-ui-components/Layout/Grid/Grid';
 import GridTile { GridTileRef } from 'gf-ui-components/Layout/GridTile/GridTile';
 import Block from 'gf-ui-components/Layout/Block/Block';
 
-let gridTileRef!: GridTileRef;
-
 const App = () => {
+    let gridTileRef!: GridTileRef;
 
     const replaceTile = () => {
         const newBlock = (<Block>New</Block>)

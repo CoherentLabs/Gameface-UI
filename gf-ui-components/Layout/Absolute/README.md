@@ -84,9 +84,9 @@ import Absolute from 'gf-ui-components/Layout/Absolute/Absolute';
 import Block from 'gf-ui-components/Layout/Block/Block';
 import { LayoutBaseRef } from 'gf-ui-components/Layout/LayoutBase';
 
-let absoluteRef!: LayoutBaseRef
-
 const App = () => {
+    let absoluteRef!: LayoutBaseRef
+
     return (
         <Relative>
             <Absolute ref={absoluteRef} top="50px" right="50px">

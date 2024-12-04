@@ -42,7 +42,7 @@ export default App;
 ### Methods
 |Method |Parameters |Return Value |Description |
 |---|---|---|---|
-| `addItem` | `row`: number, `col`: number, `item`: JSX.Element | `void` | Adds the provided element to the specified row and column. Will throw an error if the row and column don't exist. |
+| `addItem` | `row`: number, `col`: number, `item`: JSX.Element | `void` | Adds the provided element to the specified row and column. Will throw an error if the row and column don't exist. Will overwrite any existing items to the specified row and column. |
 | `removeItem` | `row`: number, `col`: number | `void` | Removes the content of the specified cell. Will throw an error if the row and column don't exist. |
 
 ## Guide
@@ -64,9 +64,8 @@ import Grid { GridRef } from 'gf-ui-components/Layout/Grid/Grid';
 import GridTile from 'gf-ui-components/Layout/GridTile/GridTile';
 import Block from 'gf-ui-components/Layout/Block/Block';
 
-let gridRef!: GridRef;
-
 const App = () => {
+    let gridRef!: GridRef;
 
     const addNewGridItem = () => {
         const newBlock = (<Block>New</Block>)

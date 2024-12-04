@@ -12,10 +12,10 @@ interface RelativeProps extends LayoutBaseProps {
 
 const Relative: ParentComponent<RelativeProps> = (props) => {
     const positionStyle = {
-        ...(props.top !== undefined ? { top: props.top } : {}),
-        ...(props.left !== undefined ? { left: props.left } : {}),
-        ...(props.right !== undefined ? { right: props.right } : {}),
-        ...(props.bottom !== undefined ? { bottom: props.bottom } : {}),
+        top: props.top,
+        left: props.left,
+        right: props.right,
+        bottom: props.bottom,
     }
 
     return <LayoutBase {...props} componentClasses={styles.Relative} componentStyles={positionStyle} />

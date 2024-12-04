@@ -112,9 +112,9 @@ import { LayoutBaseRef } from 'gf-ui-components/Layout/LayoutBase';
 import Row from 'gf-ui-components/Layout/Row/Row';
 import { Column } from 'gf-ui-components/Layout/Column/Column'
 
-let columnRef!: LayoutBaseRef
-
 const App = () => {
+    let columnRef!: LayoutBaseRef
+
     return (
         <Row>
             <Column ref={columnRef}>I take 2/12 of the row</Column>
