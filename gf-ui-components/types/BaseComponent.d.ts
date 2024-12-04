@@ -1,4 +1,4 @@
-export interface Events {
+export default interface Events {
     abort?: (event: ProgressEvent) => void;
     animationend?: (event: AnimationEvent) => void;
     blur?: (event: FocusEvent) => void;

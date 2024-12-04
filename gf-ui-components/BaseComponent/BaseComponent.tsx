@@ -1,13 +1,44 @@
-import { Events } from '../types'
+import Events from "../types/BaseComponent";
 
-interface BaseComponentProps extends Events {
-}
+interface BaseComponentProps extends Events {}
 
-type BaseComponentType<P = BaseComponentProps> = (props: P) => {
-    GFUI: {}
-    log: typeof console.log,
-    events: Events,
-}
+const baseEventsSet = new Set ([
+    "abort",
+    "animationend",
+    "blur",
+    "click",
+    "dblclick",
+    "durationchange",
+    "ended",
+    "finish",
+    "focus",
+    "focusin",
+    "focusout",
+    "gamepadconnected",
+    "gamepaddisconnected",
+    "keydown",
+    "keypress",
+    "keyup",
+    "load",
+    "mousedown",
+    "mouseenter",
+    "mouseleave",
+    "mousemove",
+    "mouseout",
+    "mouseover",
+    "mouseup",
+    "popstate",
+    "readystatechange",
+    "resize",
+    "scroll",
+    "timeout",
+    "touchend",
+    "touchmove",
+    "touchstart",
+    "transitionend",
+    "volumechange",
+    "wheel",
+]);
 
 function assignEvents(props: BaseComponentProps) {
     const events: Events = {};
@@ -16,12 +47,18 @@ function assignEvents(props: BaseComponentProps) {
     for (const key in props) {
         const typedKey = key as keyof Events;
 
-        if (props[typedKey]) {
+        if (typedKey in props && baseEventsSet.has(typedKey)) {
             events[typedKey] = props[typedKey] as any;
         }
     }
 
     return events
+}
+
+type BaseComponentType<P = BaseComponentProps> = (props: P) => {
+    GFUI: {}
+    log: typeof console.log,
+    events: Events,
 }
 
 const BaseComponent: BaseComponentType = (props) => {
