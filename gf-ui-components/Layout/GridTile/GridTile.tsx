@@ -2,9 +2,9 @@ import { ParentComponent, JSX, useContext, createSignal } from "solid-js";
 import styles from './GridTile.module.css'
 import { GridContext } from "../Grid/Grid";
 import LayoutBaseProps from "../../types/LayoutBase";
-import LayoutBase from "../LayoutBase";
+import LayoutBase, { LayoutBaseRef } from "../LayoutBase";
 
-export interface GridTileRef {
+export interface GridTileRef extends LayoutBaseRef {
     row: number,
     col: number,
     tile: JSX.Element,

@@ -1,0 +1,53 @@
+.Position {
+    position: absolute;
+    --translateX: 0;
+    --translateY: 0;
+    transform: translate(var(--translateX), var(--translateY));
+}
+
+.top {
+    top: 0;
+}
+
+.left {
+    left: 0;
+} 
+
+.right {
+    right: 0;
+}
+
+.bottom {
+    bottom: 0;
+}
+
+.center {
+    top: 50%;
+    left: 50%;
+    --translateX: -50%;
+    --translateY: -50%;
+}
+
+.top-center {
+    top: 0;
+    left: 50%;
+    --translateX: -50%;
+}
+
+.bottom-center {
+    bottom: 0;
+    left: 50%;
+    --translateX: -50%;
+}
+
+.left-center {
+    left: 0;
+    top: 50%;
+    --translateY: -50%;
+}
+
+.right-center {
+    right: 0;
+    top: 50%;
+    --translateY: -50%;
+}

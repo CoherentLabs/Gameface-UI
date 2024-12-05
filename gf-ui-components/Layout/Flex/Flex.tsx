@@ -25,13 +25,6 @@ const getFlexProperties = (props: FlexProps) => {
 
 const Flex: ParentComponent<FlexProps> = (props) => {
     return <LayoutBase {...props} componentClasses={getFlexProperties(props).join(' ')} />
-    // Approach 2
-    // const direction = props.direction ? styles[`Flex-${props.direction}`] : "";
-    // const wrap = props.wrap ? styles[`Flex-${props.wrap}`] : "";
-    // const justify = props['justify-content'] ? styles[`Flex-justify-${props['justify-content']}`] : "";
-    // const items = props['align-items'] ? styles[`Flex-align-${props['align-items']}`] : "";
-    // const content = props['align-content'] ? styles[`Flex-align-content-${props['align-content']}`] : "";
-    // return <LayoutBase {...props} componentClasses={`${styles.Flex} ${direction} ${wrap} ${justify} ${items} ${content}`} />
 }
 
 export default Flex

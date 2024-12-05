@@ -1,4 +1,4 @@
-import { createEffect, createSignal, mergeProps, ParentComponent } from "solid-js";
+import { ParentComponent } from "solid-js";
 import styles from './Absolute.module.css';
 import LayoutBaseProps from "../../types/LayoutBase";
 import LayoutBase from "../LayoutBase";

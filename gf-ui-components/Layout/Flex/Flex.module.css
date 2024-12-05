@@ -30,23 +30,23 @@
     flex-wrap: wrap-reverse;
 }
 
-.Flex-justify-start{
+.Flex-justify-start {
     justify-content: flex-start;
 }
 
-.Flex-justify-center{
+.Flex-justify-center {
     justify-content: center;
 }
 
-.Flex-justify-end{
+.Flex-justify-end {
     justify-content: flex-end;
 }
 
-.Flex-justify-space-between{
+.Flex-justify-space-between {
     justify-content: space-between;
 }
 
-.Flex-justify-space-around{
+.Flex-justify-space-around {
     justify-content: space-around;
 }
 

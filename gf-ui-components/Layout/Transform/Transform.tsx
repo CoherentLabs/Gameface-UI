@@ -2,7 +2,6 @@ import { ParentComponent } from "solid-js";
 import LayoutBase from "../LayoutBase";
 import styles from './Transform.module.css'
 import LayoutBaseProps from "../../types/LayoutBase";
-import { Matrix } from "rematrix";
 
 interface TransformMethods {
     skew?: { x?: number; y?: number; };
@@ -16,7 +15,7 @@ type horizontal = 'left' | 'center' | 'right';
 
 interface Transform extends LayoutBaseProps, TransformMethods {
     matrix?: TransformMethods
-    origin?: vertical | horizontal | `${vertical} ${horizontal}` | {x: string, y: string};
+    origin?: vertical | horizontal | `${vertical} ${horizontal}` | {x?: string, y?: string, z?: string};
 }
 
 function getUnit(transform: string) {
@@ -64,7 +63,7 @@ function getTransformOrigin(origin: Transform['origin']) {
     return typeof origin === 'string'
         ? origin
         : origin && typeof origin === 'object'
-        ? `${origin.x} ${origin.y}`
+        ? `${origin.x} ${origin.y} ${origin.z}`
         : ''; 
 }
 
