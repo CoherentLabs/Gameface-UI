@@ -1,5 +1,5 @@
 import BaseComponent from "../BaseComponent/BaseComponent";
-import { ParentProps, Component, ParentComponent, JSX, useContext, onMount, createSignal, mergeProps  } from "solid-js";
+import { ParentComponent, JSX, onMount } from "solid-js";
 import assignEventHandlers from "../utils/assignEventHandlers";
 import LayoutBaseProps from "../types/LayoutBase";
 

@@ -1,9 +1,9 @@
 import { ParentComponent, JSX, For, createContext, createSignal  } from "solid-js";
 import styles from './Grid.module.css';
 import LayoutBaseProps from "../../types/LayoutBase";
-import LayoutBase from "../LayoutBase";
+import LayoutBase, { LayoutBaseRef } from "../LayoutBase";
 
-export interface GridRef {
+export interface GridRef extends LayoutBaseRef {
     rows: number,
     cols: number,
     addItem: (row: number, col: number, item: Element | JSX.Element) => void,
@@ -11,8 +11,8 @@ export interface GridRef {
 }
 
 interface GridProps extends LayoutBaseProps {
-    rows: Required<number>
-    cols: Required<number>
+    rows: number
+    cols: number
 }
 
 type GridContextType = {
@@ -44,7 +44,7 @@ const Grid: ParentComponent<GridProps> = (props) => {
         placeTile(row - 1, col - 1, null);
     }
 
-    const gridObjectRef: GridRef = {
+    const gridObjectRef = {
         rows: props.rows,
         cols: props.cols,
         addItem,

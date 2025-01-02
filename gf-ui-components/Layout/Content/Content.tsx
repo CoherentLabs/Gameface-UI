@@ -1,4 +1,4 @@
-import { ParentProps, Component, ParentComponent, JSX  } from "solid-js";
+import { ParentComponent } from "solid-js";
 import styles from './Content.module.css';
 import LayoutBaseProps from "../../types/LayoutBase";
 import LayoutBase from "../LayoutBase";
