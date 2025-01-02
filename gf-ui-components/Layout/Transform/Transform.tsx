@@ -50,13 +50,17 @@ function generateTransformMatrix(matrix: TransformMethods) {
 }
 
 function handleTransformProps(props: TransformMethods & { matrix?: TransformMethods }) {
-    if(props.matrix) return generateTransformMatrix(props.matrix);
-    else {
-        if(props.translate) return getTransformString(props.translate, 'translate');
-        else if(props.rotate) return getTransformString(props.rotate, 'rotate');
-        else if(props.skew) return getTransformString(props.skew, 'skew');
-        else if(props.scale) return getTransformString(props.scale, 'scale');
+    if(props.matrix) {
+        (props.translate || props.rotate || props.scale || props.skew) && console.warn(
+                "Invalid usage: The property 'matrix' shouldn't be combined with individual transform properties ('translate', 'rotate', 'scale', or 'skew'). Use either 'matrix' or the other properties individually."
+            )
+        return generateTransformMatrix(props.matrix)
     }
+    
+    if(props.translate) return getTransformString(props.translate, 'translate');
+    if(props.rotate) return getTransformString(props.rotate, 'rotate');
+    if(props.skew) return getTransformString(props.skew, 'skew');
+    if(props.scale) return getTransformString(props.scale, 'scale');
 }
 
 function getTransformOrigin(origin: Transform['origin']) {

@@ -47,7 +47,7 @@ export default App;
 
 ### Applying Transformations
 
-The Transform component lets you apply transformations such as `translation`, `rotation`, `scaling`, and `skewing`. These can be specified individually or combined using the matrix prop. Keep in mind that you must use the `matrix` property to apply 2 or more transformations at once
+The Transform component lets you apply transformations such as `translation`, `rotation`, `scaling`, and `skewing`. These can be specified individually or combined using the matrix prop. Keep in mind that you must use the `matrix` property to apply 2 or more transformations at once. Otherwise only the transformations provided in the `matrix` property will evaluate.
 
 ```tsx
 import Layout3D from 'gf-ui-components/Layout/Layout3D/Layout3D';
