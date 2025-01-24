@@ -1,0 +1,43 @@
+{
+    "players": [
+        {
+            "id": 0,
+            "name": "Player 1",
+            "visible": true,
+            "health": 55,
+            "weapons": [
+                {
+                    "id": "123",
+                    "name": "weapon 1",
+                    "ammo": [
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                {
+                    "id": "1234",
+                    "name": "weapon 2",
+                    "ammo": [
+                        1
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 1,
+            "name": "Player 2",
+            "visible": false,
+            "health": 30,
+            "weapons": [
+                {
+                    "id": "123",
+                    "name": "weapon 1",
+                    "ammo": [
+                        1
+                    ]
+                }
+            ]
+        }
+    ]
+}

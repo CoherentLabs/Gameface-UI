@@ -1,0 +1,52 @@
+{
+    "players": [
+        {
+            "id": 0,
+            "name": "Player 1",
+            "visible": true,
+            "health": 55,
+            "weapons": [
+                {
+                    "id": "123",
+                    "name": "weapon 1",
+                    "test": 1,
+                    "ammo": [
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                {
+                    "id": "1234",
+                    "test": 1,
+                    "name": "weapon 2",
+                    "ammo": [
+                        1
+                    ]
+                }
+            ],
+            "dataTest": {
+                "test123": 1
+            }
+        },
+        {
+            "id": 1,
+            "name": "Player 2",
+            "visible": false,
+            "health": 30,
+            "dataTest": {
+                "test123": 1
+            },
+            "weapons": [
+                {
+                    "id": "123",
+                    "name": "weapon 1",
+                    "test": 1,
+                    "ammo": [
+                        1
+                    ]
+                }
+            ]
+        }
+    ]
+}

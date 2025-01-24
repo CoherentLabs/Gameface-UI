@@ -1,0 +1,14 @@
+{
+    "gamePlayers": [
+        {
+            "id": 0,
+            "name": "Player 1",
+            "position": "1,2"
+        },
+        {
+            "id": 1,
+            "name": "Player 2",
+            "position": "3,4"
+        }
+    ]
+}
