@@ -1,9 +1,9 @@
 import { ParentComponent } from "solid-js";
 import LayoutBase from "../LayoutBase";
 import styles from './Flex.module.css'
-import LayoutBaseProps from "../../types/LayoutBase";
+import ComponentBaseProps from "../../types/LayoutBase";
 
-interface FlexProps extends LayoutBaseProps {
+interface FlexProps extends ComponentBaseProps {
     direction?: 'row' | 'row-reverse' | 'column' | 'column-reverse';
     wrap?: 'nowrap' | 'wrap' | 'wrap-reverse';
     'justify-content'?: 'start' | 'center' | 'end' | 'space-between' | 'space-around';

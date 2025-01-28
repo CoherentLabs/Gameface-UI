@@ -15,7 +15,7 @@ type ExcludedEvents =
     | "volumechange"
     | "wheel";
 
-export default interface LayoutBaseProps extends ParentProps, Omit<Events, ExcludedEvents> {
+export default interface ComponentBaseProps extends ParentProps, Omit<Events, ExcludedEvents> {
     style?: JSX.CSSProperties
     class?: string,
 }

@@ -1,7 +1,7 @@
 import { ParentComponent } from "solid-js";
 import LayoutBase from "../LayoutBase";
 import styles from './Transform.module.css'
-import LayoutBaseProps from "../../types/LayoutBase";
+import ComponentBaseProps from "../../types/LayoutBase";
 
 interface TransformMethods {
     skew?: { x?: number; y?: number; };
@@ -13,7 +13,7 @@ interface TransformMethods {
 type vertical = 'top' | 'center' | 'bottom';
 type horizontal = 'left' | 'center' | 'right';
 
-interface Transform extends LayoutBaseProps, TransformMethods {
+interface Transform extends ComponentBaseProps, TransformMethods {
     matrix?: TransformMethods
     origin?: vertical | horizontal | `${vertical} ${horizontal}` | {x?: string, y?: string, z?: string};
 }

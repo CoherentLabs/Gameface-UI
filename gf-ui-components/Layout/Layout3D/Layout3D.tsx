@@ -1,9 +1,9 @@
 import { ParentComponent } from "solid-js";
 import LayoutBase from "../LayoutBase";
 import styles from './Layout3D.module.css'
-import LayoutBaseProps from "../../types/LayoutBase";
+import ComponentBaseProps from "../../types/LayoutBase";
 
-interface Layout3DProps extends LayoutBaseProps {
+interface Layout3DProps extends ComponentBaseProps {
     distance: string
 }
 

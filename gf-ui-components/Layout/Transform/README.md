@@ -35,7 +35,7 @@ export default App;
 |---|---|---|---|
 | `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
 | `class` | `string` | `""` | Additional CSS classes to apply to the component |
-| `ref` | `LayoutBaseRef` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
+| `ref` | `BasicBaseRef` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
 | `translate` | `{ x?: number; y?: number; z?: number; }` | `undefined` | Moves the element along the x, y, or z axis in `pixels`. For example, `{ x: 50 }` translates the element 50px to the right. |
 | `rotate` | `{ x?: number; y?: number; z?: number; }` | `undefined` | Rotates the element around the x, y, or z axis in `degrees`. For example, `{ z: 45 }` rotates the element 45° around the z-axis. |
 | `scale` | `{ x?: number; y?: number; z?: number; }` | `undefined` | Scales the element along the x, y, or z axis. For example, `{ x: 1.5 }` increases the width of the element by 50%. |
@@ -119,7 +119,7 @@ The second origin is almost the same as the first one, with the difference being
 To access the HTML DOM element of the `Transform` component.
 
 1. Declare a variable to hold the ref but don't initialize it with a value
-2. The declared value should have a type of `LayoutBaseRef`, which you need to import
+2. The declared value should have a type of `BasicBaseRef`, which you need to import
 3. Set the declared variable as the value of the `ref` prop of the `Transform` component
 
 #### Example
@@ -127,10 +127,10 @@ To access the HTML DOM element of the `Transform` component.
 ```tsx
 import Transform from 'gf-ui-components/Layout/Transform/Transform';
 import Block from 'gf-ui-components/Layout/Block/Block';
-import { LayoutBaseRef } from 'gf-ui-components/Layout/LayoutBase';
+import { BasicBaseRef } from 'gf-ui-components/types/ComponentProps';
 
 const App = () => {
-    let transformRef!: LayoutBaseRef;
+    let transformRef!: BasicBaseRef;
 
     return (
         <Transform ref={transformRef} translate={{ x: 100 }}>
@@ -142,5 +142,4 @@ const App = () => {
 export default App;
 ```
 
-Now you can access the HTML element of `transformRef` with `transformRef.element` and make modifications to it if needed. 
-
+Now you can access the HTML element of `transformRef` with `transformRef.element` and make modifications to it if needed.

@@ -34,7 +34,7 @@ export default App;
 |---|---|---|---|
 | `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
 | `class` | `string` | `""` | Additional CSS classes to apply to the component |
-| `ref` | `LayoutBaseRef` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
+| `ref` | `BasicBaseRef` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
 | `distance` | `string` | `0` | Defines the perspective distance (z-plane to user). Use valid CSS unit values (e.g., `px`, `em`, `%`). |
 
 ## Guide
@@ -68,7 +68,7 @@ export default App;
 To access the HTML DOM element of the `Layout3D` component.
 
 1. Declare a variable to hold the ref but don't initialize it with a value
-2. The declared value should have a type of `LayoutBaseRef`, which you need to import
+2. The declared value should have a type of `BasicBaseRef`, which you need to import
 3. Set the declared variable as the value of the `ref` prop of the `Layout3D` component
 
 #### Example
@@ -76,10 +76,10 @@ To access the HTML DOM element of the `Layout3D` component.
 ```tsx
 import Layout3D from 'gf-ui-components/Layout/Layout3D/Layout3D';
 import Transform from 'gf-ui-components/Layout/Transform/Transform';
-import { LayoutBaseRef } from 'gf-ui-components/Layout/LayoutBase';
+import { BasicBaseRef } from 'gf-ui-components/types/ComponentProps';
 
 const App = () => {
-    let layout3DRef!: LayoutBaseRef
+    let layout3DRef!: BasicBaseRef
 
     return (
         <Layout3D ref={layout3DRef} distance='2500px'>

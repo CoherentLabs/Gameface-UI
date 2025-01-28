@@ -1,10 +1,11 @@
 import { ParentComponent, JSX, useContext, createSignal } from "solid-js";
 import styles from './GridTile.module.css'
 import { GridContext } from "../Grid/Grid";
-import LayoutBaseProps from "../../types/LayoutBase";
-import LayoutBase, { LayoutBaseRef } from "../LayoutBase";
+import ComponentBaseProps from "../../types/LayoutBase";
+import LayoutBase from "../LayoutBase";
+import { BasicBaseRef } from "../../types/ComponentProps";
 
-export interface GridTileRef extends LayoutBaseRef {
+export interface GridTileRef extends BasicBaseRef {
     row: number,
     col: number,
     tile: JSX.Element,
@@ -13,7 +14,7 @@ export interface GridTileRef extends LayoutBaseRef {
     replaceTile: (newTile: Element | JSX.Element) => void
 }
 
-export interface GridTileProps extends LayoutBaseProps {
+export interface GridTileProps extends ComponentBaseProps {
     row: number
     col: number
 }
