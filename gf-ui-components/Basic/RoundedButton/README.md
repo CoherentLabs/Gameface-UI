@@ -1,23 +1,23 @@
-# Button Component
+# RoundedButton Component
 
 ## Overview
 
-The `Button` component is used to create button elements in the UI.
+The `RoundedButton` component is used to create rounded button elements in the UI with the help of the `Button` component.
 
 ## Usage
 
-The `Button` component provides various configuration options to create different types of buttons. For example, you can create disabled buttons, larger or smaller buttons, rounded buttons, and more.
+The `RoundedButton` component accepts the same properties as the `Button` component so it can be configured in the same way. The main difference is that the `RoundedButton` component will render a button with rounded corners.
 
 ```tsx
-import Button from 'gf-ui-components/Basic/Button/Button';
+import RoundedButton from 'gf-ui-components/Basic/RoundedButton/RoundedButton';
 
 const App = () => {
     return (
         <>
-            <Button disabled size='large'>Large button</Button>
-            <Button size='middle'>Rounded button with middle size</Button>
-            <Button size='small'>Small size button</Button>
-            <Button textFit={false} size='small'>Small size button with no fitting the text</Button>
+            <RoundedButton disabled size='large'>Large button</RoundedButton>
+            <RoundedButton size='middle'>Button with middle size</RoundedButton>
+            <RoundedButton size='small'>Small size button</RoundedButton>
+            <RoundedButton textFit={false} size='small'>Small size button with no fitting the text</RoundedButton>
         </>
     );
 };
@@ -40,66 +40,16 @@ export default App;
 
 ## Guide
 
-### Custom size
+### Custom corners radius
 
-To customize the size of the button, you can omit the `size` property and set the desired size using the `style` property or by applying a CSS class to the button.
+If you need to apply a custom radius to the corners of the rounded button, you can do so by using the `style` property or applying a CSS `class` to the button.
 
 ```tsx
-import Button from 'gf-ui-components/Basic/Button/Button';
+import Button from 'gf-ui-components/Basic/RoundedButton/RoundedButton';
 
 const App = () => {
     return (
-        <Button style={{ width: '100px', height: '100px' }}>Button</Button>
-    );
-};
-
-export default App;
-```
-
-### Disabling the button
-
-It is enough to set `disabled` attribute to the button.
-
-```tsx
-import Button from 'gf-ui-components/Basic/Button/Button';
-
-const App = () => {
-    return (
-        <Button disabled>Button</Button>
-    );
-};
-
-export default App;
-```
-
-### Custom font-size
-
-To customize the `font-size` of the text inside the button, set the `textFit` property to `false` (it is enabled by default). Then, you can specify the `font-size` using the `style` property or by applying a `class` to the button.
-
-```tsx
-import Button from 'gf-ui-components/Basic/Button/Button';
-
-const App = () => {
-    return (
-        <Button textFit={false} style={{ fontSize: '10px' }}>Button</Button>
-    );
-};
-
-export default App;
-```
-
-### Accessing the HTML element
-
-To access the `HTML` element of the component and make other modifications, you can add a `ref` property to the button.
-
-```tsx
-import Button from 'gf-ui-components/Basic/Button/Button';
-
-const App = () => {
-    let ref: HTMLButtonElement;
-
-    return (
-        <Button ref={ref!} size="middle">Button</Button>
+        <RoundedButton style={{ borderRadius: '10px' }}>Button</RoundedButton>
     );
 };
 

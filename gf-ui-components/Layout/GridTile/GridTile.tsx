@@ -3,9 +3,9 @@ import styles from './GridTile.module.css'
 import { GridContext } from "../Grid/Grid";
 import ComponentBaseProps from "../../types/LayoutBase";
 import LayoutBase from "../LayoutBase";
-import { BasicBaseRef } from "../../types/ComponentProps";
+import { BaseComponentRef } from "../../types/ComponentProps";
 
-export interface GridTileRef extends BasicBaseRef {
+export interface GridTileRef extends BaseComponentRef {
     row: number,
     col: number,
     tile: JSX.Element,

@@ -38,7 +38,7 @@ export default App;
 |---|---|---|---|
 | `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
 | `class` | `string` | `""` | Additional CSS classes to apply to the component |
-| `ref` | `BasicBaseRef` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
+| `ref` | `BaseComponentRef` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
 | `direction` | `"row"`, `"row-reverse"`, `"column"`, `"column-reverse"` | `"row"` | Specifies the CSS `flex-direction` property, which determines the main axis direction (horizontal or vertical) and the order of items. For example, `"row"` arranges items left-to-right, while `"column-reverse"` arranges them bottom-to-top. |
 | `wrap` | `"nowrap"`, `"wrap-reverse"`, `"wrap"` | `"nowrap"` | Specifies the CSS `wrap` property, which controls whether flex items wrap onto multiple lines. For example, `"wrap"` allows items to flow onto new rows or columns, while `"nowrap"` keeps them on a single line. |
 | `justify-content` | `"start"`, `"center"`, `"end"`, `"space-between"`, `"space-around"` | `"start"` | Specifies the CSS `justify-content` property, which aligns items along the main axis (horizontal in row and vertical in column). Options like `"space-between"` distribute items with equal gaps, while `"center"` centers them. |
@@ -133,7 +133,7 @@ export default App;
 To access the HTML DOM element of the `Flex` component.
 
 1. Declare a variable to hold the ref but don't initialize it with a value
-2. The declared value should have a type of `BasicBaseRef`, which you need to import
+2. The declared value should have a type of `BaseComponentRef`, which you need to import
 3. Set the declared variable as the value of the `ref` prop of the `Flex` component
 
 #### Example
@@ -141,10 +141,10 @@ To access the HTML DOM element of the `Flex` component.
 ```tsx
 import Flex from 'gf-ui-components/Layout/Flex/Flex';
 import Block from 'gf-ui-components/Layout/Block/Block';
-import { BasicBaseRef } from 'gf-ui-components/types/ComponentProps';
+import { BaseComponentRef } from 'gf-ui-components/types/ComponentProps';
 
 const App = () => {
-    let flexRef!: BasicBaseRef
+    let flexRef!: BaseComponentRef
 
     return (
         <Flex ref={flexRef} wrap="wrap" justify-content="space-between" align-items="center">

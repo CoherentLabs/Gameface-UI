@@ -3,9 +3,8 @@ import { ComponentProps } from "../../types/ComponentProps";
 import { BaseComponent } from "../../BaseComponent/BaseComponent";
 import styles from './Button.module.css';
 
-interface ButtonProps extends ComponentProps {
+export interface ButtonProps extends ComponentProps {
     disabled?: boolean
-    round?: boolean
     textFit?: boolean
     size?: 'large' | 'middle' | 'small'
 }
@@ -16,7 +15,6 @@ const getButtonClasses = (props: ButtonProps) => {
     const buttonClasses = [styles.Button];
 
     if (props.textFit) buttonClasses.push(styles[`Button-text-fit`]);
-    if (props.round) buttonClasses.push(styles[`Button-round`]);
     if (props.disabled) buttonClasses.push(styles[`Button-disabled`]);
     if (buttonSizes.has(props.size as string)) buttonClasses.push(styles[`Button-${props.size}`]);
 

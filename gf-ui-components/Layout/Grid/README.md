@@ -35,7 +35,7 @@ export default App;
 |---|---|---|---|
 | `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
 | `class` | `string` | `""` | Additional CSS classes to apply to the component |
-| `ref` | `BasicBaseRef` | `undefined` | Retrieves the grid's properties, methods and HTML element and assigns them to a local variable |
+| `ref` | `BaseComponentRef` | `undefined` | Retrieves the grid's properties, methods and HTML element and assigns them to a local variable |
 | `rows` | `number` | `Required` | The number of rows in the grid. |
 | `cols` | `number` | `Required` | The number of columns  in the grid. |
 

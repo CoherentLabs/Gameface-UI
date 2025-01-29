@@ -26,10 +26,6 @@
     padding: 1.1rem;
 }
 
-.Button-round {
-    border-radius: 1rem;
-}
-
 .Button-disabled {
     background-color: #e7e7e7;
 }
