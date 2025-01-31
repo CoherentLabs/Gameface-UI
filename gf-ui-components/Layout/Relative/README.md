@@ -30,7 +30,7 @@ export default App;
 |---|---|---|---|
 | `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
 | `class` | `string` | `""` | Additional CSS classes to apply to the component |
-| `ref` | `LayoutBaseRef` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
+| `ref` | `BaseComponentRef` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
 | `top`, `left`, `right`, `bottom` | `string` | `""` | Specify the offset of the `Relative` component. It accepts any valid css unit value |
 
 ## Guide
@@ -92,17 +92,17 @@ export default App;
 To access the HTML DOM element of the `Relative` component.
 
 1. Declare a variable to hold the ref but don't initialize it with a value
-2. The declared value should have a type of `LayoutBaseRef`, which you need to import
+2. The declared value should have a type of `BaseComponentRef`, which you need to import
 3. Set the declared variable as the value of the `ref` prop of the `Relative` component
 
 #### Example
 
 ```tsx
-import { LayoutBaseRef } from 'gf-ui-components/Layout/LayoutBase';
+import { BaseComponentRef } from 'gf-ui-components/types/ComponentProps';
 import Relative from 'gf-ui-components/Layout/Relative/Relative';
 import Block from 'gf-ui-components/Layout/Block/Block';
 
-let relativeRef!: LayoutBaseRef
+let relativeRef!: BaseComponentRef
 
 const App = () => {
     return (

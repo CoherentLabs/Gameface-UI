@@ -1,9 +1,9 @@
 import { ParentComponent } from "solid-js";
 import styles from './Relative.module.css';
-import LayoutBaseProps from "../../types/LayoutBase";
+import ComponentBaseProps from "../../types/LayoutBase";
 import LayoutBase from "../LayoutBase";
 
-interface RelativeProps extends LayoutBaseProps {
+interface RelativeProps extends ComponentBaseProps {
     top?: string,
     left?: string,
     right?: string,

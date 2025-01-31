@@ -33,7 +33,7 @@ export default App;
 |---|---|---|---|
 | `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
 | `class` | `string` | `""` | Additional CSS classes to apply to the component |
-| `ref` | `LayoutBaseRef` | `undefined` | Retrieves the `GridTile`'s properties, methods and HTML element and assigns them to a local variable |
+| `ref` | `BaseComponentRef` | `undefined` | Retrieves the `GridTile`'s properties, methods and HTML element and assigns them to a local variable |
 | `row` | `number` | `Required` | The row index where the tile will be placed. |
 | `col` | `number` | `Required` | The column  index where the tile will be placed. |
 

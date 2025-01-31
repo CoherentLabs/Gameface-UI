@@ -34,7 +34,7 @@ export default App;
 |---|---|---|---|
 | `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
 | `class` | `string` | `""` | Additional CSS classes to apply to the component |
-| `ref` | `LayoutBaseRef` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
+| `ref` | `BaseComponentRef` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
 
 ## Guide
 
@@ -43,7 +43,7 @@ export default App;
 To access the HTML DOM element of the `Top` component.
 
 1. Declare a variable to hold the ref but don't initialize it with a value
-2. The declared value should have a type of `LayoutBaseRef`, which you need to import
+2. The declared value should have a type of `BaseComponentRef`, which you need to import
 3. Set the declared variable as the value of the `ref` prop of the `Top` component
 
 #### Example
@@ -53,10 +53,10 @@ import Layout from 'gf-ui-components/Layout/Layout/Layout';
 import Top from 'gf-ui-components/Layout/Top/Top';
 import Content from 'gf-ui-components/Layout/Content/Content';
 import Bottom from 'gf-ui-components/Layout/Bottom/Bottom';
-import { LayoutBaseRef } from 'gf-ui-components/Layout/LayoutBase';
+import { BaseComponentRef } from 'gf-ui-components/types/ComponentProps';
 
 const App = () => {
-    let topRef!: LayoutBaseRef
+    let topRef!: BaseComponentRef
 
     return (
         <Layout ref={topRef}>
@@ -68,4 +68,4 @@ const App = () => {
 };
 ```
 
-Now you can access the HTML element of `topRef` with `topRef.element` and make modifications to it if needed. 
+Now you can access the HTML element of `topRef` with `topRef.element` and make modifications to it if needed.

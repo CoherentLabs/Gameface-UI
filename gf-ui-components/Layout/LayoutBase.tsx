@@ -1,40 +1,22 @@
-import BaseComponent from "../BaseComponent/BaseComponent";
-import { ParentComponent, JSX, onMount } from "solid-js";
-import assignEventHandlers from "../utils/assignEventHandlers";
-import LayoutBaseProps from "../types/LayoutBase";
+import { ParentComponent, onMount } from "solid-js";
+import { ComponentProps } from "../types/ComponentProps";
+import { BaseComponent } from "../BaseComponent/BaseComponent";
 
-export interface LayoutBaseRef {
-    element: HTMLDivElement; 
-}
-
-interface LayoutBaseComponentProps<T extends Record<string, any> = {}> extends LayoutBaseProps {
-    componentStyles?: JSX.CSSProperties,
-    componentClasses?: string
-    ref?: (ref: LayoutBaseRef & T) => void;
-    refObject?: T;
-}
-
-const LayoutBase: ParentComponent<LayoutBaseComponentProps> = (props) => {
-    const { GFUI, log, events } = BaseComponent(props);
-    const eventHandlers = assignEventHandlers(events);
-    const classes = `${props.componentClasses} ${props.class || ""}`.trim();
-    const inlineStyles = {
-        ...props.style,
-        ...props.componentStyles
-    }
+const LayoutBase: ParentComponent<ComponentProps> = (props) => {
     let element: HTMLDivElement | undefined;
-    
+    const { eventHandlers, ...rest } = BaseComponent(props);
+
     onMount(() => {
         if (props.ref && element) {
-          props.ref({
-            ...props.refObject,
-            element,
-          })
+            (props.ref as (ref: any) => void)({
+                ...props.refObject,
+                element,
+            })
         }
     });
 
     return (
-        <div ref={element} {...eventHandlers} class={classes} style={inlineStyles}>
+        <div ref={element} {...eventHandlers} {...rest}>
             {props.children}
         </div>
     )

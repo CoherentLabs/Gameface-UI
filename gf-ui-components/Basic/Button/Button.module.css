@@ -1,0 +1,31 @@
+.Button {
+    background-color: #ffffff;
+    border: 0.1rem solid #e7e7e7;
+    padding: 1rem;
+}
+
+.Button-text-fit {
+    coh-font-fit: fit;
+}
+
+.Button-small {
+    width: 6rem;
+    height: 2.5rem;
+    padding: 0.3rem;
+}
+
+.Button-middle {
+    width: 8.5rem;
+    height: 4.5rem;
+    padding: 0.6rem;
+}
+
+.Button-large {
+    width: 10rem;
+    height: 6.5rem;
+    padding: 1.1rem;
+}
+
+.Button-disabled {
+    background-color: #e7e7e7;
+}

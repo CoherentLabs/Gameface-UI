@@ -1,16 +1,17 @@
-import { ParentComponent, JSX, For, createContext, createSignal  } from "solid-js";
+import { ParentComponent, JSX, For, createContext, createSignal } from "solid-js";
 import styles from './Grid.module.css';
-import LayoutBaseProps from "../../types/LayoutBase";
-import LayoutBase, { LayoutBaseRef } from "../LayoutBase";
+import ComponentBaseProps from "../../types/LayoutBase";
+import LayoutBase from "../LayoutBase";
+import { BaseComponentRef } from "../../types/ComponentProps";
 
-export interface GridRef extends LayoutBaseRef {
+export interface GridRef extends BaseComponentRef {
     rows: number,
     cols: number,
     addItem: (row: number, col: number, item: Element | JSX.Element) => void,
     removeItem: (row: number, col: number) => void,
 }
 
-interface GridProps extends LayoutBaseProps {
+interface GridProps extends ComponentBaseProps {
     rows: number
     cols: number
 }
@@ -22,13 +23,13 @@ type GridContextType = {
 export const GridContext = createContext<GridContextType>();
 
 const Grid: ParentComponent<GridProps> = (props) => {
-    const initialGrid = Array.from({ length: props.rows }, () => Array.from({length: props.cols}, () => null));
+    const initialGrid = Array.from({ length: props.rows }, () => Array.from({ length: props.cols }, () => null));
     const [gridTiles, setGridTiles] = createSignal<(JSX.Element | null)[][]>(initialGrid);
 
     const placeTile = (row: number, col: number, item: Element | JSX.Element) => {
         setGridTiles((prev) => {
             const updatedGrid = prev.map((r) => [...r]);
-            if (row >= props.rows && col >= props.cols){
+            if (row >= props.rows && col >= props.cols) {
                 throw new Error('You are trying to manipulate a non existing grid cell!')
             }
             updatedGrid[row][col] = item
@@ -53,12 +54,12 @@ const Grid: ParentComponent<GridProps> = (props) => {
 
     return (
         <LayoutBase {...props} componentClasses={styles.Grid} refObject={gridObjectRef}>
-            <GridContext.Provider value={{placeTile}}>
+            <GridContext.Provider value={{ placeTile }}>
                 {props.children}
                 <For each={gridTiles()}>
                     {(row) => (
                         <div class={styles['Grid-Row']}>
-                            <For each={row}>{(cell) => 
+                            <For each={row}>{(cell) =>
                                 <div class={styles['Grid-Col']}>
                                     {cell || <div class={styles['Grid-Empty-Cell']}></div>}
                                 </div>
