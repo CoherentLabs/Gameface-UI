@@ -1,5 +1,7 @@
 import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
+import solidSvg from 'vite-plugin-solid-svg';
+import solidGameface from './vite-custom-plugins/vite-gameface';
 import { globSync } from 'glob';
 import { relative, extname, resolve } from 'node:path';
 
@@ -9,6 +11,11 @@ export default defineConfig({
   root: root,
   plugins: [
     solidPlugin(),
+    solidSvg({
+      defaultAsComponent: true,
+      svgo: { enabled: false }
+    }),
+    solidGameface()
   ],
   server: {
     port: 3000,

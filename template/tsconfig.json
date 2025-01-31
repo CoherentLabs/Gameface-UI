@@ -8,15 +8,18 @@
     "esModuleInterop": true,
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
-    "types": ["vite/client"],
+    "types": [
+      "vite-plugin-solid-svg/types",
+      "vite/client"
+    ],
     "noEmit": true,
     "isolatedModules": true,
-    "noImplicitAny": true,        // Raise error on expressions and declarations with an implied 'any' type
-    "strictNullChecks": true,     // When enabled, `null` and `undefined` have their types and are not assignable to other types (like `number` or `string`)
-    "strictFunctionTypes": true,  // Ensures functions are of a correct type
-    "strictBindCallApply": true,  // When enabled, bind, call, and apply methods on function objects are strongly typed
+    "noImplicitAny": true, // Raise error on expressions and declarations with an implied 'any' type
+    "strictNullChecks": true, // When enabled, `null` and `undefined` have their types and are not assignable to other types (like `number` or `string`)
+    "strictFunctionTypes": true, // Ensures functions are of a correct type
+    "strictBindCallApply": true, // When enabled, bind, call, and apply methods on function objects are strongly typed
     "strictPropertyInitialization": true, // Ensures class properties are initialized in the constructor
-    "noImplicitThis": true,       // Raise error on 'this' expressions with an implied 'any' type
-    "alwaysStrict": true,         // Parse in strict mode and emit "use strict" for each source file
+    "noImplicitThis": true, // Raise error on 'this' expressions with an implied 'any' type
+    "alwaysStrict": true, // Parse in strict mode and emit "use strict" for each source file
   },
 }
