@@ -8,7 +8,7 @@ export default function (options: GamefacePluginOptions = {}): Plugin {
     return {
         name: 'gameface',
         transform(code, id) {
-            const isSVG = id.endsWith('.svg');
+            const isSVG = id.endsWith('.svg?component-solid');
 
             if (isSVG || id.endsWith('.tsx')) {
                 const template = code.match(/_\$template\(`(.*?)`\);/);

@@ -12,7 +12,7 @@ export default defineConfig({
   plugins: [
     solidPlugin(),
     solidSvg({
-      defaultAsComponent: true,
+      defaultAsComponent: false,
       svgo: { enabled: false }
     }),
     solidGameface()
