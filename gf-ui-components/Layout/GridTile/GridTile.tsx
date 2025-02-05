@@ -1,7 +1,7 @@
 import { ParentComponent, JSX, useContext, createSignal } from "solid-js";
 import styles from './GridTile.module.css'
 import { GridContext } from "../Grid/Grid";
-import ComponentBaseProps from "../../types/LayoutBase";
+import { ComponentBaseProps } from "../../types/ComponentProps";
 import LayoutBase from "../LayoutBase";
 import { BaseComponentRef } from "../../types/ComponentProps";
 
@@ -49,7 +49,7 @@ const GridTile: ParentComponent<GridTileProps> = (props) => {
     }
 
     const initialTile = (
-        <LayoutBase {...props} componentClasses={styles.GridTile} refObject={gridTileRef}/>
+        <LayoutBase {...props} componentClasses={styles.GridTile} refObject={gridTileRef} />
     )
 
     setTile(initialTile)

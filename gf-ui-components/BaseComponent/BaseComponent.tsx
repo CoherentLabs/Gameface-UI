@@ -70,8 +70,6 @@ export const createBaseComponent: BaseComponentType = (props) => {
     return { GFUI, log, events: assignEvents(props) };
 }
 
-export type refElementType = HTMLParagraphElement | HTMLDivElement | HTMLButtonElement | undefined;
-
 export const BaseComponent = (props: ComponentProps) => {
     const { GFUI, log, events } = createBaseComponent(props);
     const eventHandlers = assignEventHandlers(events);
