@@ -1,0 +1,75 @@
+.MaskImage {
+    mask-repeat: no-repeat;
+}
+
+.MaskImage-contain {
+    mask-size: contain;
+}
+
+.MaskImage-cover {
+    mask-size: cover;
+}
+
+.MaskImage-repeat {
+    mask-repeat: repeat;
+}
+
+.MaskImage-repeat-x {
+    mask-repeat: repeat-x;
+}
+
+.MaskImage-repeat-y {
+    mask-repeat: repeat-y;
+}
+
+.MaskImage-position-top {
+    mask-position: top;
+}
+
+.MaskImage-position-top-left {
+    mask-position: top left;
+}
+
+.MaskImage-position-top-center {
+    mask-position: top center;
+}
+
+.MaskImage-position-top-right {
+    mask-position: top right;
+}
+
+.MaskImage-position-center {
+    mask-position: center;
+}
+
+.MaskImage-position-center-left {
+    mask-position: center left;
+}
+
+.MaskImage-position-center-right {
+    mask-position: center right;
+}
+
+.MaskImage-position-bottom {
+    mask-position: bottom;
+}
+
+.MaskImage-position-bottom-left {
+    mask-position: bottom left;
+}
+
+.MaskImage-position-bottom-center {
+    mask-position: bottom center;
+}
+
+.MaskImage-position-bottom-right {
+    mask-position: bottom right;
+}
+
+.MaskImage-position-left {
+    mask-position: left;
+}
+
+.MaskImage-position-right {
+    mask-position: right;
+}

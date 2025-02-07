@@ -1,0 +1,75 @@
+.BackgroundImage {
+    background-repeat: no-repeat;
+}
+
+.BackgroundImage-contain {
+    background-size: contain;
+}
+
+.BackgroundImage-cover {
+    background-size: cover;
+}
+
+.BackgroundImage-repeat-both {
+    background-repeat: repeat;
+}
+
+.BackgroundImage-repeat-x {
+    background-repeat: repeat-x;
+}
+
+.BackgroundImage-repeat-y {
+    background-repeat: repeat-y;
+}
+
+.BackgroundImage-position-top {
+    background-position: top;
+}
+
+.BackgroundImage-position-top-left {
+    background-position: top left;
+}
+
+.BackgroundImage-position-top-center {
+    background-position: top center;
+}
+
+.BackgroundImage-position-top-right {
+    background-position: top right;
+}
+
+.BackgroundImage-position-center {
+    background-position: center;
+}
+
+.BackgroundImage-position-center-left {
+    background-position: center left;
+}
+
+.BackgroundImage-position-center-right {
+    background-position: center right;
+}
+
+.BackgroundImage-position-bottom {
+    background-position: bottom;
+}
+
+.BackgroundImage-position-bottom-left {
+    background-position: bottom left;
+}
+
+.BackgroundImage-position-bottom-center {
+    background-position: bottom center;
+}
+
+.BackgroundImage-position-bottom-right {
+    background-position: bottom right;
+}
+
+.BackgroundImage-position-left {
+    background-position: left;
+}
+
+.BackgroundImage-position-right {
+    background-position: right;
+}
