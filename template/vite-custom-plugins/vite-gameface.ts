@@ -11,15 +11,22 @@ export default function (options: GamefacePluginOptions = {}): Plugin {
             const isSVG = id.endsWith('.svg?component-solid');
 
             if (isSVG || id.endsWith('.tsx')) {
-                const template = code.match(/_\$template\(`(.*?)`\);/);
-                if (!template || !template[0] || !template[1]) return code;
+                const matches = code.matchAll(/_\$template\(`(.*?)`\)/g);
+                let offset = 0;
 
-                const templateString = isSVG ? template[1].replace(/=\s*([^"'\s>]+)/g, '="$1"') : template[1];
-                const doc = parseDocument(templateString, { lowerCaseTags: false });
-                const begin = code.substring(0, template.index!);
-                const end = code.substring(template.index! + template[0].length, code.length);
+                for (const template of matches) {
+                    if (!template || !template[0] || !template[1]) return code;
 
-                code = begin + `_$template(\`${serialize(doc)}\`);` + end;
+                    const templateString = isSVG ? template[1].replace(/=\s*([^"'\s>]+)/g, '="$1"') : template[1];
+                    const doc = parseDocument(templateString, { lowerCaseTags: false });
+                    
+                    const begin = code.substring(0, template.index! + offset);
+                    const end = code.substring(template.index! + template[0].length + offset, code.length);
+                    
+                    const serializedTemplate = `_$template(\`${serialize(doc)}\`)`;
+                    code = begin + serializedTemplate + end;
+                    offset += serializedTemplate.length - template[0].length;
+                }
 
                 return code;
             }
