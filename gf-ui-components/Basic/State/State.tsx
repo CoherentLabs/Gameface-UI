@@ -23,15 +23,26 @@ export interface StateComponentRef extends BaseComponentRef {
 
 interface StateProps extends ComponentProps {
     default?: string
+    name?: string
     onBeforeStateChange?: (currentState?: string, nextState?: string, currentStateElement?: JSX.Element) => void
     onStateChanged?: (currentState?: string, prevState?: string, currentStateElement?: JSX.Element) => void
     ref?: StateComponentRef
 }
 
+interface States {
+    [key: string]: {
+        changeState: ChangeStateMethodType,
+        currentState: Accessor<string>
+    }
+}
+
+type ChangeStateMethodType = (value: string | ((prevState: string) => string)) => void;
+export const states: States = {};
+
 const State: ParentComponent<StateProps> = (props) => {
     let fallbackElement: JSX.Element;
     let element: HTMLDivElement;
-    const states: StatesMap = {};
+    const statesMap: StatesMap = {};
     const { eventHandlers, ...rest } = BaseComponent(props);
     const [currentState, setCurrentState] = createSignal('');
     let resolved = children(() => props.children).toArray();
@@ -42,12 +53,12 @@ const State: ParentComponent<StateProps> = (props) => {
             fallbackElement = <div>{child.children}</div>;
             continue;
         }
-        states[child.name] = <div>{child.children}</div>;
+        statesMap[child.name] = <div>{child.children}</div>;
     }
 
-    const changeState = (value: string | ((prevState: string) => string)) => {
+    const changeState: ChangeStateMethodType = (value) => {
         const currentStateValue = currentState();
-        const currentStateElement = states[currentStateValue] as Node || fallbackElement;
+        const currentStateElement = statesMap[currentStateValue] as Node || fallbackElement;
         const nextStateValue = typeof value === 'function' ? value(currentStateValue) : value;
         if (currentStateValue === nextStateValue) return;
 
@@ -55,7 +66,7 @@ const State: ParentComponent<StateProps> = (props) => {
             props.onBeforeStateChange(currentStateValue, nextStateValue, currentStateElement);
         }
 
-        const nextStateElement = states[nextStateValue] as Node || fallbackElement;
+        const nextStateElement = statesMap[nextStateValue] as Node || fallbackElement;
         if (!nextStateElement) return;
         if (currentStateElement && element.children.length) element.removeChild(currentStateElement);
         element.appendChild(nextStateElement);
@@ -67,7 +78,10 @@ const State: ParentComponent<StateProps> = (props) => {
         }
     }
 
+    if (props.name) states[props.name] = { changeState, currentState };
+
     onMount(() => {
+        if (props.default) changeState(props.default);
         if (!props.ref || !element) return;
 
         (props.ref as unknown as (ref: any) => void)({
@@ -76,8 +90,6 @@ const State: ParentComponent<StateProps> = (props) => {
             states,
             element,
         });
-
-        changeState(props.default!);
     });
 
     return <div ref={element!} {...eventHandlers} {...rest}></div>

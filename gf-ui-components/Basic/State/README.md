@@ -44,6 +44,7 @@ In this case, the `State 1` text will be rendered as the `State` component will 
 | `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
 | `class` | `string` | `""` | Additional CSS classes to apply to the component. |
 | `ref` | `StateComponentRef` | `undefined` | Retrieves the state's properties and methods, assigning them to a local variable. |
+| `name` | `string` | `undefined` | The identifier for the state component. This name can be used to access the state component's methods later through the `states` object. |
 | `default` | `string` | `undefined` | The default state to be rendered initially. |
 | `onBeforeStateChange` | `(currentState?: string, nextState?: string, currentStateElement?: JSX.Element) => {}` | `undefined` | Callback invoked right before the state changes. It receives the current and next state names and the `HTML` element of the current state before the change. |
 | `onStateChanged` | `(currentState?: string, prevState?:string, currentStateElement?: JSX.Element) => {}` | `undefined` | Callback invoked after the state changes. It receives the current and previous state names and the `HTML` element of the current state after the change. |
@@ -54,6 +55,9 @@ In this case, the `State 1` text will be rendered as the `State` component will 
 | `name` | `string` | `Required` | Specifies the name of the state to be matched. |
 
 ### `State` Methods
+
+You can access the state methods via the `ref` of the `State` component or through the `states` object. You can see more in the guide about how to use them.
+
 | Method | Parameters | Return Value | Description |
 |---|---|---|---|
 | `changeState` | `value`: string \| ((prevState: string) => string) | `void` | Changes the state of the `State` component. You can pass a string value directly or a function that has the previous state as argument and returns the new state as a string. |
@@ -61,7 +65,7 @@ In this case, the `State 1` text will be rendered as the `State` component will 
 
 ## Guide
 
-### Dynamically update the state
+### Dynamically update the state through ref
 
 To dynamically update the state of the `State` component, you need to use a ref of type `StateComponentRef`. Once you have the ref, you can use the `changeState` method to switch the active state.
 
@@ -81,7 +85,7 @@ const App = () => {
     };
 
     return (
-        <State default='state-1'>
+        <State default='state-1' ref={ref!}>
             <Match name='state-1'>
                 <div onClick={changeStateToTwo}>State 1</div>
             </Match>
@@ -96,6 +100,45 @@ export default App;
 ```
 
 In this example, the `default` attribute is set on the `State` component, so `State 1` is rendered initially. The `changeState` method from the `ref` object is used to change the state. The first method demonstrates changing the state by passing the next state as a string, while the second method shows how to access the previous state before changing to the next state.
+
+### Dynamically update state using the `states` object
+
+The `State` component exports a `states` object that holds information for all `State` components in the UI. Only `State` components with a specified `name` attribute are included in this collection. If the `name` attribute is omitted, the component won't be added to the collection.
+
+Accessing methods for a `State` component is easier using the `states` object compared to using `ref`. Import the `states` collection from the `State` component and access specific state methods like this: `states['state-name'].changeState`.
+
+Here's an example of dynamically changing states via the `states` object:
+
+```tsx
+import State, { Match, states } from 'gf-ui-components/Basic/State/State';
+
+const App = () => {
+    const changeStateToTwo = () => {
+        states['two-states'].changeState('state-2');
+    };
+
+    const changeStateToOne = () => {
+        states['two-states'].changeState((prevState) => prevState !== 'state-2' ? prevState : 'state-1');
+    };
+
+    return (
+        <State name='two-states' default='state-1'>
+            <Match name='state-1'>
+                <div onClick={changeStateToTwo}>State 1</div>
+            </Match>
+            <Match name='state-2'>
+                <div onClick={changeStateToOne}>State 2</div>
+            </Match>
+        </State>
+    );
+};
+
+export default App;
+```
+
+Using the `states` object, you can avoid setting the `ref` on the `State` component. Instead, set the `name` attribute to access its methods through the `states` object. Depending on your use case and preferences, you can use both `ref` and the `states` object to access `State` component methods.
+
+The advantage of the `states` object over `ref` is that it can be imported and used throughout your project, whereas the usability of the `ref` object is limited to the file where it is set.
 
 ### Handling State Changes
 
@@ -180,15 +223,13 @@ In this example, a new state is added every 1000 milliseconds, and the `State` c
 Here's a minimal example demonstrating the usage of the `State` component to create a simple router with tabs and a 'router view'. The 'router view' is managed by the `State` component.
 
 ```tsx
-import State, { Match, StateComponentRef } from 'gf-ui-components/Basic/State/State';
+import State, { Match, states } from 'gf-ui-components/Basic/State/State';
 
 const App = () => {
-    let stateRef: StateComponentRef;
-
     const tabs = ['page 1', 'page 2', 'page 3'];
     const changePage = (event: any) => {
         const tabName = event.currentTarget.dataset.tab;
-        stateRef.changeState(tabName);
+        states['menu'].changeState(tabName);
     };
 
     return (
@@ -204,7 +245,7 @@ const App = () => {
                     </div>
                 ))}
             </div>
-            <State default='page 1' ref={stateRef!}>
+            <State name='menu' default='page 1'>
                 <Match name=''>
                     Fallback
                 </Match>
