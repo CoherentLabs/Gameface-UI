@@ -1,8 +1,7 @@
 import { ParentComponent, JSX, For, createContext, createSignal } from "solid-js";
 import styles from './Grid.module.css';
-import ComponentBaseProps from "../../types/LayoutBase";
 import LayoutBase from "../LayoutBase";
-import { BaseComponentRef } from "../../types/ComponentProps";
+import { BaseComponentRef, ComponentBaseProps } from "../../types/ComponentProps";
 
 export interface GridRef extends BaseComponentRef {
     rows: number,

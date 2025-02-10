@@ -1,6 +1,6 @@
 import { ParentComponent } from "solid-js";
 import styles from './Absolute.module.css';
-import ComponentBaseProps from "../../types/LayoutBase";
+import { ComponentBaseProps } from "../../types/ComponentProps";
 import LayoutBase from "../LayoutBase";
 
 interface AbsoluteProps extends ComponentBaseProps {

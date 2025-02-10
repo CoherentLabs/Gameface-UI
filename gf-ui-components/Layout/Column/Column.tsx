@@ -1,6 +1,6 @@
-import { JSX  } from "solid-js";
+import { JSX } from "solid-js";
 import styles from './Column.module.css';
-import ComponentBaseProps from "../../types/LayoutBase";
+import { ComponentBaseProps } from "../../types/ComponentProps";
 import LayoutBase from "../LayoutBase";
 
 const Columns: Record<string, (props: ComponentBaseProps) => JSX.Element> = {};
@@ -9,7 +9,7 @@ for (let i = 1; i <= 12; i++) {
   const componentName = `Column${i}`;
 
   Columns[componentName] = (props: ComponentBaseProps) => {
-    return <LayoutBase {...props} componentClasses={styles[`Column-${i}`]}/>
+    return <LayoutBase {...props} componentClasses={styles[`Column-${i}`]} />
   };
 }
 
