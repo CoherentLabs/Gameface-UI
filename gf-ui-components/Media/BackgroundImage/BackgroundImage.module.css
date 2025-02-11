@@ -2,11 +2,11 @@
     background-repeat: no-repeat;
 }
 
-.BackgroundImage-contain {
+.BackgroundImage-size-contain {
     background-size: contain;
 }
 
-.BackgroundImage-cover {
+.BackgroundImage-size-cover {
     background-size: cover;
 }
 

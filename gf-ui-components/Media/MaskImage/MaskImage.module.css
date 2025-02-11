@@ -2,11 +2,11 @@
     mask-repeat: no-repeat;
 }
 
-.MaskImage-contain {
+.MaskImage-size-contain {
     mask-size: contain;
 }
 
-.MaskImage-cover {
+.MaskImage-size-cover {
     mask-size: cover;
 }
 

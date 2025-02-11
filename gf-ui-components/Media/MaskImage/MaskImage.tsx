@@ -6,7 +6,7 @@ export interface MaskImageProps extends ImageBaseProps { }
 
 const Mask: ParentComponent<MaskImageProps> = (props) => {
     props.componentStyles = { "mask-image": `url(${props.src})` };
-    props.componentClasses = getImageBaseClasses({ props, styles, classPrefix: 'MaskImage', stylePrefix: 'mask' }).join(' ');
+    props.componentClasses = getImageBaseClasses({ props, styles, classPrefix: 'MaskImage', stylePrefix: 'mask' });
 
     return <ImageBase {...props} />
 }

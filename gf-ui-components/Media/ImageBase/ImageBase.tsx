@@ -26,18 +26,19 @@ type StylePrefixType = 'background' | 'mask';
 type ClassPrefixType = 'BackgroundImage' | 'MaskImage';
 
 interface GetImageBaseClassesArgs {
+    imageClasses?: string;
     props: ImageBaseProps
     styles: any
     classPrefix: ClassPrefixType
     stylePrefix: StylePrefixType
 }
 
-interface SetImageOptionStyleArgs extends GetImageBaseClassesArgs {
-    availableValues: Set<string>
-    value: ImageSizes | ImagePositions
-    style: 'size' | 'position'
-    imageClasses: string[]
-}
+type SetImageOptionStyle = (
+    availableValues: Set<string>,
+    value: ImageSizes | ImagePositions,
+    style: 'size' | 'position',
+    args: GetImageBaseClassesArgs
+) => void
 
 /**
  * This function sets a predefined CSS class based on the prefix and option value, or assigns the value directly to the CSS styles property.
@@ -45,11 +46,11 @@ interface SetImageOptionStyleArgs extends GetImageBaseClassesArgs {
  * Currently, this function is used to set the position and size of an image (for the BackgroundImage or MaskImage components).
  * @param args
  */
-const setImageOptionStyle = (args: SetImageOptionStyleArgs) => {
-    const { props, styles, classPrefix, stylePrefix, availableValues, value, imageClasses, style } = args;
+const setImageOptionStyle: SetImageOptionStyle = (availableValues, value, style, args) => {
+    const { props, styles, classPrefix, stylePrefix } = args;
 
     if (availableValues.has(value)) {
-        imageClasses.push(styles[`${classPrefix}-${value}`]);
+        args.imageClasses += ` ${styles[`${classPrefix}-${style}-${value}`]}`;
     } else if (props.componentStyles) {
         props.componentStyles[`${stylePrefix}-${style}`] = value;
     }
@@ -57,29 +58,15 @@ const setImageOptionStyle = (args: SetImageOptionStyleArgs) => {
 
 export const getImageBaseClasses = (args: GetImageBaseClassesArgs) => {
     const { styles, classPrefix, props } = args;
-    const imageClasses = [styles[classPrefix]];
-    if (!props.options) return imageClasses;
+    args.imageClasses = `${styles[classPrefix]}`;
+    if (!props.options) return args.imageClasses;
 
     const { size, position, repeat } = props.options;
-    if (size) setImageOptionStyle({
-        availableValues: imageSizesSet,
-        value: size,
-        style: 'size',
-        imageClasses,
-        ...args
-    });
+    if (size) setImageOptionStyle(imageSizesSet, size, 'size', args);
+    if (position) setImageOptionStyle(imagePositionSet, position, 'position', args);
+    if (repeat && imageRepeatSet.has(repeat)) args.imageClasses += ` ${styles[`${classPrefix}-repeat-${repeat}`]}`;
 
-    if (position) setImageOptionStyle({
-        availableValues: imagePositionSet,
-        value: position,
-        style: 'position',
-        imageClasses,
-        ...args
-    });
-
-    if (repeat && imageRepeatSet.has(repeat)) imageClasses.push(styles[`${classPrefix}-repeat-${repeat}`]);
-
-    return imageClasses;
+    return args.imageClasses;
 }
 
 export interface ImageBaseOptions {
