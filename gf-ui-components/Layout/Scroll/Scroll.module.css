@@ -4,9 +4,9 @@
 }
 
 .Content {
-    height: 100%;
     padding-right: 10px;
     overflow: scroll;
+    max-height: 100%;
 }
 
 .ScrollBar {

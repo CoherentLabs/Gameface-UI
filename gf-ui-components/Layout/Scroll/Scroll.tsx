@@ -13,8 +13,15 @@ export interface ScrollComponentRef extends BaseComponentRef {
     begin: () => void,
 }
 
+export type OnScrollHandler = (arg: OnScrollEventData) => void;
+
+interface OnScrollEventData {
+    scrollDirection: 'up' | 'down';
+}
+
 interface ScrollProps extends ComponentBaseProps {
     ref?: ScrollComponentRef,
+    onScroll?: OnScrollHandler,
 }
 
 const Scroll: ParentComponent<ScrollProps> = (props) => {
@@ -24,7 +31,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     let containerRef: HTMLDivElement, contentRef: HTMLDivElement;
     let resizeObserver: ResizeObserver;
     let maxScroll: number, maxHandleMovement: number
-    let startY = 0, startScrollTop = 0;
+    let startY = 0, startScrollTop = 0, prevScrollTop = 0;
 
     function updateMeasurements() {
         const containerHeight = containerRef!.clientHeight;
@@ -48,6 +55,23 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
         }
     }
 
+    function getScrollDirection(): 'up' | 'down' {
+        if (maxScroll === contentRef!.scrollTop) return 'down';
+
+        return prevScrollTop < contentRef!.scrollTop ? 'down' : 'up'
+    }
+
+    function handleOnScroll() {
+        if (!props.onScroll) return;
+
+        const eventData: OnScrollEventData = {
+            scrollDirection: getScrollDirection()
+        };
+        
+        prevScrollTop = contentRef!.scrollTop;
+        props.onScroll(eventData);
+    }
+
     function onHandleMouseDown(e: MouseEvent) {
         startY = e.clientY;
         startScrollTop = contentRef!.scrollTop;
@@ -57,10 +81,14 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
 
     function onHandleMouseMove(e: MouseEvent) {
         const deltaY = e.clientY - startY;
+
+        if(deltaY === 0) return;
+
         const scrollDelta = (deltaY / maxHandleMovement) * maxScroll;
 
         contentRef!.scrollTop = startScrollTop + scrollDelta;
         updateHandlePosition();
+        handleOnScroll()
     }
 
     function onHandleMouseUp() {
@@ -74,36 +102,49 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     }
 
     function scrollToElement(element: HTMLElement | string) {
+        if (!overflow()) return;
+
         if (typeof element === 'string') {
-            element = document.querySelector(`.${element}`) as HTMLElement
+            element = contentRef!.querySelector(`.${element}`) as HTMLElement
         }
 
         if (element instanceof HTMLElement) {
             contentRef!.scrollTop = element.offsetTop
             updateHandlePosition();
-        } else {
-            console.error("Invalid element provided to scrollToElement");
+            handleOnScroll()
         }
     }
 
     function scrollUp() {
+        if (contentRef!.scrollTop === 0 || !overflow()) return;
+
         contentRef!.scrollTop -= 100;
         updateHandlePosition();
+        handleOnScroll()
     }
 
     function scrollDown() {
+        if (contentRef!.scrollTop === maxScroll || !overflow()) return;
+
         contentRef!.scrollTop += 100;
         updateHandlePosition();
+        handleOnScroll()
     }
 
     function begin() {
+        if (contentRef!.scrollTop === 0 || !overflow()) return;
+
         contentRef!.scrollTop = 0;
         updateHandlePosition();
+        handleOnScroll()
     }
 
     function end() {
-        contentRef!.scrollTop = contentRef!.scrollHeight;
+        if (contentRef!.scrollTop === maxScroll || !overflow()) return;
+
+        contentRef!.scrollTop = maxScroll;
         updateHandlePosition();
+        handleOnScroll()
     }
 
     const scrollObjectRef = {
@@ -116,11 +157,13 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
 
     onMount(() => {
         resizeObserver = new ResizeObserver(updateMeasurements);
-
-        if (containerRef!) resizeObserver.observe(containerRef);
+        
         if (contentRef!) resizeObserver.observe(contentRef);
-
-        contentRef!.addEventListener("scroll", updateHandlePosition);
+        
+        contentRef!.addEventListener("scroll", () => {
+            updateHandlePosition()
+            handleOnScroll()
+        });
     });
 
     onCleanup(() => {
@@ -130,7 +173,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
 
     return (
         <LayoutBase {...props} refObject={scrollObjectRef} >
-            <div ref={containerRef!} class={styles.Scroll} style={props.style}>
+            <div ref={containerRef!} class={styles.Scroll}>
                 <div ref={contentRef!} class={styles.Content}>{props.children}</div>
                 {overflow() && (
                     <div class={styles.ScrollBar}>
