@@ -1,9 +1,8 @@
 import { createSignal, onCleanup, onMount, ParentComponent } from "solid-js";
 import styles from './Scroll.module.css';
-import ComponentBaseProps from "../../types/LayoutBase";
 import LayoutBase from "../LayoutBase";
 import { clamp } from "../../utils/clamp";
-import { BaseComponentRef } from "../../types/ComponentProps";
+import { BaseComponentRef, ComponentBaseProps } from "../../types/ComponentProps";
 
 export interface ScrollComponentRef extends BaseComponentRef {
     scrollToElement: (element: HTMLElement | string) => void,
