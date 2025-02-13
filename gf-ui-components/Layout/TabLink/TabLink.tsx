@@ -1,4 +1,4 @@
-import { ParentComponent, Show, useContext } from "solid-js";
+import { ParentComponent, useContext } from "solid-js";
 import { ComponentBaseProps } from "../../types/ComponentProps";
 import { TabsContext } from "../Tabs/Tabs";
 import LayoutBase from "../LayoutBase";
@@ -15,11 +15,11 @@ const TabLink: ParentComponent<TabLinkProps> = (props) => {
         throw new Error("TabLink must be used within a <Tabs> component");
     }
 
-    const handleTabChange = (event: MouseEvent) => {
-        tabs.onBeforeTabChangeHandler(tabs.current())
+    const handleTabChange = async (event: MouseEvent) => {
+        await tabs.onBeforeTabChangeHandler(tabs.current())
         props.click && props.click(event);
         tabs.setCurrent(props.location);
-        tabs.onTabChangedHandler(tabs.current())
+        await tabs.onTabChangedHandler(tabs.current())
     };
   
     return (

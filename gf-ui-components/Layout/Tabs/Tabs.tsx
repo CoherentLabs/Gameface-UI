@@ -30,12 +30,12 @@ const Tabs: ParentComponent<TabsProps> = (props) => {
         onTabChangedHandler()
     }
 
-    const onBeforeTabChangeHandler = () => {
-        if (props.onBeforeTabChange) props.onBeforeTabChange(current());
+    const onBeforeTabChangeHandler = async () => {
+        if (props.onBeforeTabChange) await props.onBeforeTabChange(current());
     }
 
-    const onTabChangedHandler = () => {
-        if (props.onTabChanged) props.onTabChanged(current());
+    const onTabChangedHandler = async () => {
+        if (props.onTabChanged) await props.onTabChanged(current());
     }
 
     const tabsRefObject: TabsComponentRef = {
