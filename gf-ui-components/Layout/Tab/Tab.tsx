@@ -5,6 +5,7 @@ import LayoutBase from "../LayoutBase";
 
 interface TabProps extends ComponentBaseProps {
     location: string,
+    KeepInMemory?: boolean,
 }
 
 const Tab: ParentComponent<TabProps> = (props) =>{
@@ -14,10 +15,18 @@ const Tab: ParentComponent<TabProps> = (props) =>{
         throw new Error("Tab must be used within a <Tabs> component");
     }
 
-    let resolved = children(() => props.children).toArray();
+    if (props.KeepInMemory) {
+        let resolved = children(() => props.children) 
+        return (
+            <Show when={props.location === tabs.current()}>
+                <LayoutBase {...props}>{resolved()}</LayoutBase>
+            </Show>
+        )
+    }
+
     return (
         <Show when={props.location === tabs.current()}>
-            <LayoutBase {...props}>{resolved}</LayoutBase>
+            <LayoutBase {...props}>{props.children}</LayoutBase>
         </Show>
     )
 }
