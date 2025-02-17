@@ -14,8 +14,10 @@ export interface ScrollComponentRef extends BaseComponentRef {
 
 export type OnScrollHandler = (arg: OnScrollEventData) => void;
 
+type ScrollDirections = 'up' | 'down';
+
 interface OnScrollEventData {
-    scrollDirection: 'up' | 'down';
+    scrollDirection: ScrollDirections;
 }
 
 interface ScrollProps extends ComponentBaseProps {
@@ -54,7 +56,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
         }
     }
 
-    function getScrollDirection(): 'up' | 'down' {
+    function getScrollDirection(): ScrollDirections {
         if (maxScroll === contentRef!.scrollTop) return 'down';
 
         return prevScrollTop < contentRef!.scrollTop ? 'down' : 'up'
@@ -87,7 +89,6 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
 
         contentRef!.scrollTop = startScrollTop + scrollDelta;
         updateHandlePosition();
-        handleOnScroll()
     }
 
     function onHandleMouseUp() {
@@ -98,52 +99,54 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     function updateHandlePosition() {
         const newHandleTop = maxScroll > 0 ? (contentRef!.scrollTop / maxScroll) * maxHandleMovement : 0;
         setHandleTop(clamp(newHandleTop, 0, maxHandleMovement));
+        handleOnScroll()
     }
 
     function scrollToElement(element: HTMLElement | string) {
         if (!overflow()) return;
 
         if (typeof element === 'string') {
-            element = contentRef!.querySelector(`.${element}`) as HTMLElement
+            element = contentRef!.querySelector(element) as HTMLElement
         }
 
         if (element instanceof HTMLElement) {
             contentRef!.scrollTop = element.offsetTop
             updateHandlePosition();
-            handleOnScroll()
         }
     }
 
-    function scrollUp() {
-        if (contentRef!.scrollTop === 0 || !overflow()) return;
+    function canScroll(direction: number) {
+        const maxScrollTop = direction === 0 ? 0 : maxScroll;
+        if (contentRef!.scrollTop === maxScrollTop || !overflow()) return false;
+        return true;
+    }
 
-        contentRef!.scrollTop -= 100;
+    function scrollWith(value: number, direction: number = 0) {
+        if (!canScroll(direction)) return;
+        contentRef!.scrollTop += value;
         updateHandlePosition();
-        handleOnScroll()
+    }
+
+    function scrollTo(value: number, direction: number = 0) {
+        if (!canScroll(direction)) return;
+        contentRef!.scrollTop = value;
+        updateHandlePosition();
+    }
+
+    function scrollUp() {
+        scrollWith(-100)
     }
 
     function scrollDown() {
-        if (contentRef!.scrollTop === maxScroll || !overflow()) return;
-
-        contentRef!.scrollTop += 100;
-        updateHandlePosition();
-        handleOnScroll()
+        scrollWith(100, 1)
     }
 
     function begin() {
-        if (contentRef!.scrollTop === 0 || !overflow()) return;
-
-        contentRef!.scrollTop = 0;
-        updateHandlePosition();
-        handleOnScroll()
+        scrollTo(0);
     }
 
     function end() {
-        if (contentRef!.scrollTop === maxScroll || !overflow()) return;
-
-        contentRef!.scrollTop = maxScroll;
-        updateHandlePosition();
-        handleOnScroll()
+        scrollTo(maxScroll, 1)
     }
 
     const scrollObjectRef = {
@@ -159,10 +162,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
         
         if (contentRef!) resizeObserver.observe(contentRef);
         
-        contentRef!.addEventListener("scroll", () => {
-            updateHandlePosition()
-            handleOnScroll()
-        });
+        contentRef!.addEventListener("scroll", updateHandlePosition);
     });
 
     onCleanup(() => {

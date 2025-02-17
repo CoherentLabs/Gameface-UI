@@ -117,7 +117,7 @@ const App = () => {
 
     const scrollToBlock = () => {
         // Here, we pass a string that matches the target element's class name.
-        scrollRef.scrollToElement('scroll-example');
+        scrollRef.scrollToElement('.scroll-example');
     }
 
     return (
