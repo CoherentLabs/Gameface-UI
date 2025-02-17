@@ -157,6 +157,15 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
         end
     }
 
+    const scrollByClickHandler = (event: MouseEvent) => {
+        if (event.target !== event.currentTarget) return;
+
+        const scrollPosition = (event.clientY / maxHandleMovement) * maxScroll;
+
+        contentRef!.scrollTop = scrollPosition;
+        updateHandlePosition();
+    }
+
     onMount(() => {
         resizeObserver = new ResizeObserver(updateMeasurements);
         
@@ -175,7 +184,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
             <div ref={containerRef!} class={styles.Scroll}>
                 <div ref={contentRef!} class={styles.Content}>{props.children}</div>
                 {overflow() && (
-                    <div class={styles.ScrollBar}>
+                    <div class={styles.ScrollBar} onClick={scrollByClickHandler}>
                         <div 
                             onMouseDown={onHandleMouseDown} 
                             class={styles.Handle} 
