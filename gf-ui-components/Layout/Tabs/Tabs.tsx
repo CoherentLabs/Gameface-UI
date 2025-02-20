@@ -3,31 +3,31 @@ import { createContext, createSignal } from "solid-js";
 
 export const TabsContext = createContext<TabsContextValue>();
 
+type changeTabMethod = (newTab: string) => void;
+
 export interface TabsComponentRef {
-    changeTab: (newTab: string) => void;
+    changeTab: changeTabMethod;
 }
 
 interface TabsContextValue {
     current: () => string,
-    setCurrent: (args: string) => void,
-    onBeforeTabChangeHandler: (currentLocation?: string) => void,
-    onTabChangedHandler: (newLocation?: string) => void;
+    changeTab: changeTabMethod;
 }
 
 interface TabsProps {
     default?: string;
     ref?: unknown | ((ref: TabsComponentRef) => void);
-    onBeforeTabChange?: (currentLocation?: string) => void;
-    onTabChanged?: (newLocation?: string) => void;
+    onBeforeTabChange?: (currentLocation?: string) => Promise<void> | void;
+    onTabChanged?: (newLocation?: string) => Promise<void> | void;
 }
 
 const Tabs: ParentComponent<TabsProps> = (props) => {
     const [current, setCurrent] = createSignal(props.default ?? '');
 
-    const changeTab = (newLocation: string) => {
-        onBeforeTabChangeHandler()
+    const changeTab = async (newLocation: string) => {
+        await onBeforeTabChangeHandler()
         setCurrent(newLocation)
-        onTabChangedHandler()
+        await onTabChangedHandler()
     }
 
     const onBeforeTabChangeHandler = async () => {
@@ -49,7 +49,7 @@ const Tabs: ParentComponent<TabsProps> = (props) => {
       });
 
     return (
-        <TabsContext.Provider value={{ current, setCurrent, onBeforeTabChangeHandler, onTabChangedHandler }}>
+        <TabsContext.Provider value={{ current, changeTab }}>
             {props.children}
         </TabsContext.Provider>
     );

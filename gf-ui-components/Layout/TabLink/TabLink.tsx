@@ -16,10 +16,8 @@ const TabLink: ParentComponent<TabLinkProps> = (props) => {
     }
 
     const handleTabChange = async (event: MouseEvent) => {
-        await tabs.onBeforeTabChangeHandler(tabs.current())
         props.click && props.click(event);
-        tabs.setCurrent(props.location);
-        await tabs.onTabChangedHandler(tabs.current())
+        tabs.changeTab(props.location);
     };
   
     return (

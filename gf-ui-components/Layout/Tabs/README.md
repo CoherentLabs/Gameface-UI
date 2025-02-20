@@ -50,8 +50,8 @@ export default App;
 |---|---|---|---|
 | `default` | `string` | `undefined` | Specifies the default active tab. The value must match the location of one of the `Tab` components. |
 | `ref` | `TabsComponentRef` | `undefined` | A reference to the component that gives you access to its methods (e.g., to switch tabs from your code). |
-| `onBeforeTabChange` | `(currentLocation?: string) => void` | `undefined` | Callback invoked right before the Tab changes. It receives the current location before the change. |
-| `onTabChanged` | `(newLocation?: string) => void` | `undefined` | Callback invoked right after the Tab changes. It receives the new location after the change. |
+| `onBeforeTabChange` | `async (currentLocation?: string) => void` | `undefined` | Callback invoked right before the Tab changes. It receives the current location before the change. |
+| `onTabChanged` | `async (newLocation?: string) => void` | `undefined` | Callback invoked right after the Tab changes. It receives the new location after the change. |
 
 ### Methods
 |Method |Parameters |Return Value |Description |
@@ -80,7 +80,7 @@ import Block from 'gf-ui-components/Layout/Block/Block';
 import Flex from 'gf-ui-components/Layout/Flex/Flex';
 
 const App = () => {
-    let tabsRef!: ScrollComponentRef;
+    let tabsRef!: TabsComponentRef;
 
     const goToTab = () => {
         // Programmatically change the active tab.
@@ -275,7 +275,7 @@ const App = () => {
     }
 
     return (
-        <Tabs onBeforeTabChange={beforeTabChanged} oonTabChanged={afterTabChanged} default='Local'>
+        <Tabs onBeforeTabChange={beforeTabChanged} onTabChanged={afterTabChanged} default='Local'>
             <Flex >
                 <TabLink class={styles.link} location='Local'>Local</TabLink>
                 <TabLink class={styles.link} location='Online'>Online</TabLink>

@@ -18,16 +18,20 @@ const Tab: ParentComponent<TabProps> = (props) =>{
     if (props.KeepInMemory) {
         let resolved = children(() => props.children) 
         return (
-            <Show when={props.location === tabs.current()}>
-                <LayoutBase {...props}>{resolved()}</LayoutBase>
-            </Show>
+            <div>
+                <Show when={props.location === tabs.current()}>
+                    <LayoutBase {...props}>{resolved()}</LayoutBase>
+                </Show>
+            </div>
         )
     }
 
     return (
-        <Show when={props.location === tabs.current()}>
-            <LayoutBase {...props}>{props.children}</LayoutBase>
-        </Show>
+        <div>
+            <Show when={props.location === tabs.current()}>
+                <LayoutBase {...props}>{props.children}</LayoutBase>
+            </Show>
+        </div>
     )
 }
 

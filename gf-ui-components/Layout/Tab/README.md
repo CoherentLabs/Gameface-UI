@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `Tab` component conditionally renders its content based on the active tab state managed by the parent `Tabs` component. Each `Tab` is assigned a unique `location` prop, and only the `Tab` whose location matches the current active tab will display its content. The `Tab` component shouldn't be used outside of the `Tabs` component.
+The `Tab` component conditionally renders its content based on the active tab state managed by the parent `Tabs` component. Each `Tab` is assigned a unique `location` prop, and only the `Tab` whose location matches the currently active tab will display its content. The `Tab` component shouldn't be used outside of the `Tabs` component.
 
 ## Usage 
 
