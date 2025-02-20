@@ -1,0 +1,57 @@
+# RoundedButton Component
+
+## Overview
+
+The `RoundedButton` component is used to create rounded button elements in the UI with the help of the `Button` component.
+
+## Usage
+
+The `RoundedButton` component accepts the same properties as the `Button` component so it can be configured in the same way. The main difference is that the `RoundedButton` component will render a button with rounded corners.
+
+```tsx
+import RoundedButton from '@components/Basic/RoundedButton/RoundedButton';
+
+const App = () => {
+    return (
+        <>
+            <RoundedButton disabled size='large'>Large button</RoundedButton>
+            <RoundedButton size='middle'>Button with middle size</RoundedButton>
+            <RoundedButton size='small'>Small size button</RoundedButton>
+            <RoundedButton textFit={false} size='small'>Small size button with no fitting the text</RoundedButton>
+        </>
+    );
+};
+
+export default App;
+```
+
+## API
+
+### Props
+
+| Prop Name  | Type                                   | Default     | Description                                                                                                                                                                                  |
+| ---------- | -------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `style`    | `JSX.CSSProperties`                    | `{}`        | Inline styles to apply directly to the component's root element.                                                                                                                             |
+| `class`    | `string`                               | `""`        | Additional CSS classes to apply to the component                                                                                                                                             |
+| `ref`      | `HTMLButtonElement  \| undefined`      | `undefined` | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed directly by the ref object.                                                             |
+| `disabled` | `boolean`                              | `false`     | Specify if the button is disabled                                                                                                                                                            |
+| `size`     | `'large' \| 'middle' \| 'small'` | `''`        | Specify the size of the button. If an empty string is passed, the button won't have any size. In that case, please specify the size through the `class` or `style` properties. |
+| `textFit`     | `boolean` | `true`        | Specify if the text inside the button should be fitted. By default, this option is **enabled**. |
+
+## Guide
+
+### Custom corners radius
+
+If you need to apply a custom radius to the corners of the rounded button, you can do so by using the `style` property or applying a CSS `class` to the button.
+
+```tsx
+import Button from '@components/Basic/RoundedButton/RoundedButton';
+
+const App = () => {
+    return (
+        <RoundedButton style={{ borderRadius: '10px' }}>Button</RoundedButton>
+    );
+};
+
+export default App;
+```
