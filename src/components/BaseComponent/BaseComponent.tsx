@@ -76,7 +76,6 @@ export const BaseComponent = (props: ComponentProps) => {
     const eventHandlers = assignEventHandlers(events);
     const classes = `${props.componentClasses || ''} ${props.class || ""}`.trim();
     const inlineStyles = mergeProps(props.style, props.componentStyles);
-    console.log(inlineStyles, props.style)
 
     return {
         eventHandlers,

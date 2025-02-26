@@ -1,4 +1,4 @@
-import { ParentComponent, createEffect, onMount, splitProps } from 'solid-js';
+import { ParentComponent, onMount } from 'solid-js';
 import { ComponentProps } from '../types/ComponentProps';
 import { BaseComponent } from '../BaseComponent/BaseComponent';
 
