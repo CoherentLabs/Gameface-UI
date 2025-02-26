@@ -1,32 +1,115 @@
-# Gameface UI
+# Gameface UI project template
 
-## Getting started
+## Creating a view
 
-To begin using the Gameface UI, we recommend utilizing the components in the `gf-ui-components` folder and are built with [SolidJS](https://www.solidjs.com/), and setting up your project with the template located in the `template` folder.
+To create a new view, follow the structure of `src/views/hud` or `src/views/menu`. Start by making a new folder `src/views/${viewName}`, and within it, include `index.html`, `index.tsx`, `index.css`, and `${viewName}.tsx` files.
 
-The template provides a boilerplate project structure with [SolidJS](https://www.solidjs.com/), [Vite](https://vite.dev/) and [TypeScript](https://www.typescriptlang.org/). It includes two sample views - `hud` and `menu` - which you can preview as examples before starting your project.
+## Build & run the project in production
 
-### Installing the template or components
+To create a production build, run `npm run build` from this folder. This will generate a production build within the `dist` directory.
 
-We suggest using `degit` for cloning repositories, specific folders, branches, or tags.
+Each view located in `src/views` will be built into `dist/${viewName}`. For instance, `src/views/hud` will be built in `dist/hud`.
 
-The next steps are showing how to get started building the project using Gameface UI:
+To run the project, open the specific view by loading the `index.html` in the corresponding `dist/${viewName}` directory. For example, to load the hud view, open `dist/hud/index.html`.
 
-1. Install `degit` globally with: `npm i -g degit`. Or you can simply use `npx` without installing globally the `degit` module - `npx degit`.
-2. With `degit` installed, clone the template into your folder by running `degit CoherentLabs/Gameface-UI/template#master`. This will download the latest template version. To clone a specific version, replace `#master` with the desired tag, e.g., `#1.2.3`.
-3. If you'd like to use `gf-ui-components` for quick prototyping and UI development:
-   1. Create a folder within your project, such as `gf-ui-components`.
-   2. Run `degit CoherentLabs/Gameface-UI/gf-ui-components#master` inside this folder to get the latest components. For a specific version, replace `#master` with the desired tag.
+## Run in development
 
-### Running the project
+To start the project in development mode, run `npm run dev` from this folder. This will start a server on `localhost:${port}`, typically on port `3000`.
 
-Once the template project is set up, install the required npm modules by running `npm i`.
+To view a specific page during development, navigate to the following URL, for example: `http://localhost:3000/hud/` to load the hud view.
 
-Refer to the README.md in the `template` folder for more information on commands for building in production or dev environments, and start developing your UI.
+With the development server running, HOT module replacement will be enabled, so any changes you make will immediately be reflected.
 
-### Updating the components
+## SVG components
 
-To update the `gf-ui-components` folder with the latest or a specific version:
+Working with inline SVGs is beneficial when you need to modify them at runtime, such as changing the `fill` of a `path` element. Gameface UI facilitates this process, making it straightforward.
 
-1. Delete the contents of the `gf-ui-components` folder.
-2. Run `degit CoherentLabs/Gameface-UI/gf-ui-components#master` to get the latest components or `degit CoherentLabs/Gameface-UI/gf-ui-components#1.2.3` for a specific version.
+You can import any SVG as either a component or an image. Importing an SVG as a component allows you to access its DOM elements and make changes programmatically.
+
+### Using SVG as component
+
+Let's use the following SVG located at `assets/icon.svg`:
+
+```jsx
+<svg width="1041" height="1093" viewBox="0 0 1041 1093" fill="none">
+    <path id="1" d="M1035.89 625.051L412.595 4.74938L7.43612 64.5186L450.156 706.635L1034.54 628.858L1035.89 625.051Z" fill="white" stroke="#666666" stroke-width="8"/>
+    <path id="2" d="M877.305 1088.51L1034.62 628.829L451.771 707.409L384.432 1088.51L877.305 1088.51Z" fill="white" stroke="#666666" stroke-width="8"/>
+</svg>
+```
+
+This SVG contains `path` elements with ids `1` and `2`, which we will use to access and modify these elements.
+
+To import the SVG as a component, use the standard import syntax with the `?component-solid` postfix:
+
+```jsx
+import Icon from '../../assets/icon.svg?component-solid';
+```
+
+By using the `?component-solid` postfix, Gameface UI will inline the SVG into the DOM tree during the build process.
+
+**Note:** If you import the SVG without the `?component-solid` postfix, it will resolve to the asset's URL. You can then render it using an `img` tag with the URL as the `src` attribute. However, this method does not allow runtime modifications to the SVG.
+
+```jsx
+import icon from '../../assets/icon.svg';
+
+const Hud = () => {
+    return (
+        <img src={icon} />
+    );
+}
+```
+
+Once imported, you can render the SVG component within your view:
+
+```jsx
+import Icon from '../../assets/icon.svg?component-solid';
+
+const Hud = () => {
+    return (
+        <Icon />
+    );
+}
+```
+
+This approach will inline the `Icon` directly into the HTML when building the UI.
+
+### Modify SVG elements at runtime
+
+Since the SVG is rendered as a solid component, you can access its DOM properties and children, allowing for runtime modifications.
+
+To achieve this, add a reference to the SVG component and apply the desired changes:
+
+```jsx
+import Icon from '../../assets/icon.svg?component-solid';
+
+const Hud = () => {
+    let ref: SVGSVGElement;
+
+    return (
+        <Icon ref={ref!} />
+    );
+}
+```
+
+For example, to change the fill color of the `path` element with id `1`:
+
+```jsx
+import Icon from '../../assets/icon.svg?component-solid';
+
+const Hud = () => {
+    let ref: SVGSVGElement;
+
+    onMounted(() => {
+        setTimeout(() => {
+            const path1 = ref.querySelector('#1') as SVGPathElement;
+            path1.setAttribute('fill', 'red');
+        }, 500);
+    });
+
+    return (
+        <Icon ref={ref!} />
+    );
+}
+```
+
+This code will change the fill color of the `path` element with id `1` to red, 500ms after the `Hud` component has been mounted.
