@@ -1,3 +1,4 @@
+import { mergeProps } from "solid-js";
 import Events from "../types/BaseComponent";
 import { ComponentProps } from "../types/ComponentProps";
 import assignEventHandlers from "../utils/assignEventHandlers";
@@ -74,14 +75,12 @@ export const BaseComponent = (props: ComponentProps) => {
     const { GFUI, log, events } = createBaseComponent(props);
     const eventHandlers = assignEventHandlers(events);
     const classes = `${props.componentClasses || ''} ${props.class || ""}`.trim();
-    const inlineStyles = {
-        ...props.style,
-        ...props.componentStyles
-    }
+    const inlineStyles = mergeProps(props.style, props.componentStyles);
+    console.log(inlineStyles, props.style)
 
     return {
         eventHandlers,
-        class: classes,
+        className: classes,
         style: inlineStyles
     }
 }
