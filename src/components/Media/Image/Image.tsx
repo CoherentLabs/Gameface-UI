@@ -7,9 +7,12 @@ export interface ImageProps extends ComponentProps {
 }
 
 const Image: ParentComponent<ImageProps> = (props) => {
-    const { eventHandlers, ...rest } = BaseComponent(props);
 
-    return <img src={props.src} ref={props.ref as HTMLImageElement} {...rest} />
+    return <img src={props.src} 
+                ref={props.ref as HTMLImageElement} 
+                {...BaseComponent(props).eventHandlers} 
+                class={BaseComponent(props).className}
+                style={BaseComponent(props).style} />
 }
 
 export default Image;

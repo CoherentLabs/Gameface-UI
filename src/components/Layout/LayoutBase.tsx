@@ -1,25 +1,29 @@
-import { ParentComponent, onMount } from "solid-js";
-import { ComponentProps } from "../types/ComponentProps";
-import { BaseComponent } from "../BaseComponent/BaseComponent";
+import { ParentComponent, onMount } from 'solid-js';
+import { ComponentProps } from '../types/ComponentProps';
+import { BaseComponent } from '../BaseComponent/BaseComponent';
 
 const LayoutBase: ParentComponent<ComponentProps> = (props) => {
     let element: HTMLDivElement | undefined;
-    const { eventHandlers, ...rest } = BaseComponent(props);
 
     onMount(() => {
         if (props.ref && element) {
             (props.ref as (ref: any) => void)({
                 ...props.refObject,
                 element,
-            })
+            });
         }
     });
 
     return (
-        <div ref={element} {...eventHandlers} {...rest}>
+        <div
+            ref={element}
+            {...BaseComponent(props).eventHandlers}
+            class={BaseComponent(props).className}
+            style={BaseComponent(props).style}
+        >
             {props.children}
         </div>
-    )
-}
+    );
+};
 
 export default LayoutBase;

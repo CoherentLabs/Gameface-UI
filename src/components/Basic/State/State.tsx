@@ -43,7 +43,6 @@ const State: ParentComponent<StateProps> = (props) => {
     let fallbackElement: JSX.Element;
     let element: HTMLDivElement;
     const statesMap: StatesMap = {};
-    const { eventHandlers, ...rest } = BaseComponent(props);
     const [currentState, setCurrentState] = createSignal('');
     let resolved = children(() => props.children).toArray();
 
@@ -92,7 +91,7 @@ const State: ParentComponent<StateProps> = (props) => {
         });
     });
 
-    return <div ref={element!} {...eventHandlers} {...rest}></div>
+    return <div ref={element!} {...BaseComponent(props).eventHandlers} class={BaseComponent(props).className} style={BaseComponent(props).style}></div>
 }
 
 export default State;
