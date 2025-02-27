@@ -25,8 +25,13 @@ const Button: ParentComponent<ButtonProps> = (props) => {
     const mergedProps = mergeProps({ textFit: true }, props);
     props.componentClasses = getButtonClasses(mergedProps).join(' ');
 
-    const { eventHandlers, ...rest } = BaseComponent(props);
-    return <button disabled={props.disabled} ref={props.ref as HTMLButtonElement} {...eventHandlers} {...rest}>{props.children}</button>
+    return <button disabled={props.disabled} 
+                    ref={props.ref as HTMLButtonElement} 
+                    {...BaseComponent(props).eventHandlers} 
+                    class={BaseComponent(props).className}
+                    style={BaseComponent(props).style}>
+                {props.children}
+            </button>
 }
 
 export default Button;

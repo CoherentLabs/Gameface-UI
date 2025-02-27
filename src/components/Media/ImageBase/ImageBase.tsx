@@ -1,6 +1,6 @@
-import { onMount, ParentComponent } from "solid-js";
-import { ComponentProps } from "../../types/ComponentProps";
-import { BaseComponent } from "../../BaseComponent/BaseComponent";
+import { onMount, ParentComponent } from 'solid-js';
+import { ComponentProps } from '../../types/ComponentProps';
+import { BaseComponent } from '../../BaseComponent/BaseComponent';
 
 const imageSizes = ['contain', 'cover'] as const;
 // This type and the similar ones below are used when setting predefined strings as options for the image or any other string.
@@ -13,11 +13,19 @@ type ImageRepeat = (typeof imageRepeat)[number];
 const imageRepeatSet = new Set(imageRepeat);
 
 const imagePosition = [
-    'top', 'center', 'bottom',
-    'top left', 'top center', 'top right',
-    'center left', 'center right',
-    'bottom left', 'bottom center', 'bottom right',
-    'left', 'right'
+    'top',
+    'center',
+    'bottom',
+    'top left',
+    'top center',
+    'top right',
+    'center left',
+    'center right',
+    'bottom left',
+    'bottom center',
+    'bottom right',
+    'left',
+    'right',
 ] as const;
 type ImagePositions = (typeof imagePosition)[number] | (string & {});
 const imagePositionSet = new Set(imagePosition);
@@ -27,10 +35,10 @@ type ClassPrefixType = 'BackgroundImage' | 'MaskImage';
 
 interface GetImageBaseClassesArgs {
     imageClasses?: string;
-    props: ImageBaseProps
-    styles: any
-    classPrefix: ClassPrefixType
-    stylePrefix: StylePrefixType
+    props: ImageBaseProps;
+    styles: any;
+    classPrefix: ClassPrefixType;
+    stylePrefix: StylePrefixType;
 }
 
 type SetImageOptionStyle = (
@@ -38,7 +46,7 @@ type SetImageOptionStyle = (
     value: ImageSizes | ImagePositions,
     style: 'size' | 'position',
     args: GetImageBaseClassesArgs
-) => void
+) => void;
 
 /**
  * This function sets a predefined CSS class based on the prefix and option value, or assigns the value directly to the CSS styles property.
@@ -54,7 +62,7 @@ const setImageOptionStyle: SetImageOptionStyle = (availableValues, value, style,
     } else if (props.componentStyles) {
         props.componentStyles[`${stylePrefix}-${style}`] = value;
     }
-}
+};
 
 export const getImageBaseClasses = (args: GetImageBaseClassesArgs) => {
     const { styles, classPrefix, props } = args;
@@ -67,33 +75,39 @@ export const getImageBaseClasses = (args: GetImageBaseClassesArgs) => {
     if (repeat && imageRepeatSet.has(repeat)) args.imageClasses += ` ${styles[`${classPrefix}-repeat-${repeat}`]}`;
 
     return args.imageClasses;
-}
+};
 
 export interface ImageBaseOptions {
-    size?: ImageSizes
-    repeat?: ImageRepeat
-    position?: ImagePositions
+    size?: ImageSizes;
+    repeat?: ImageRepeat;
+    position?: ImagePositions;
 }
 
 export interface ImageBaseProps extends ComponentProps {
-    src: string,
-    options?: ImageBaseOptions
+    src: string;
+    options?: ImageBaseOptions;
 }
 
 const ImageBase: ParentComponent<ComponentProps> = (props) => {
     let element: HTMLDivElement | undefined;
-    const { eventHandlers, ...rest } = BaseComponent(props);
 
     onMount(() => {
         if (props.ref && element) {
             (props.ref as (ref: any) => void)({
                 ...props.refObject,
                 element,
-            })
+            });
         }
     });
 
-    return <div ref={element} {...eventHandlers} {...rest}>{props.children}</div>
-}
+    return (
+        <div ref={element} 
+            {...BaseComponent(props).eventHandlers} 
+            class={BaseComponent(props).className}
+            style={BaseComponent(props).style}>
+            {props.children}
+        </div>
+    );
+};
 
 export default ImageBase;
