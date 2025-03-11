@@ -22,7 +22,7 @@ interface OnScrollEventData {
 
 interface ScrollProps extends ComponentBaseProps {
     ref?: ScrollComponentRef,
-    onScroll?: OnScrollHandler,
+    onScroll?: OnScrollHandler
 }
 
 const Scroll: ParentComponent<ScrollProps> = (props) => {

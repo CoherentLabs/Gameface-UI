@@ -31,6 +31,7 @@ export interface ComponentProps<T extends Record<string, any> = {}> extends Comp
     componentClasses?: string
     ref?: unknown | ((ref: BaseComponentRef & T) => void);
     refObject?: T;
+    active?: string;
 }
 
 declare module "solid-js" {
