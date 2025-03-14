@@ -1,5 +1,11 @@
 # Gameface UI project template
 
+![Gameface UI](./coherent-gameface-ui.png)
+
+## What is GamefaceUI?
+
+GamefaceUI is a comprehensive collection of components designed to simplify the prototyping of game user interfaces. Built on the [SolidJS](https://www.solidjs.com/) framework, it provides users with a fast and efficient way to kickstart their projects.
+
 ## How to use GamefaceUI?
 
 To use the components, you have two options: you can either download the complete boilerplate template that uses SolidJS with TypeScript and Vite, or integrate them into an existing SolidJS project.
@@ -100,7 +106,7 @@ This SVG contains `path` elements with ids `1` and `2`, which we will use to acc
 To import the SVG as a component, use the standard import syntax with the `?component-solid` postfix:
 
 ```jsx
-import Icon from '../../assets/icon.svg?component-solid';
+import Icon from '@assets/icon.svg?component-solid';
 ```
 
 By using the `?component-solid` postfix, Gameface UI will inline the SVG into the DOM tree during the build process.
@@ -108,7 +114,7 @@ By using the `?component-solid` postfix, Gameface UI will inline the SVG into th
 **Note:** If you import the SVG without the `?component-solid` postfix, it will resolve to the asset's URL. You can then render it using an `img` tag with the URL as the `src` attribute. However, this method does not allow runtime modifications to the SVG.
 
 ```jsx
-import icon from '../../assets/icon.svg';
+import icon from '@assets/icon.svg';
 
 const Hud = () => {
     return (
@@ -120,7 +126,7 @@ const Hud = () => {
 Once imported, you can render the SVG component within your view:
 
 ```jsx
-import Icon from '../../assets/icon.svg?component-solid';
+import Icon from '@assets/icon.svg?component-solid';
 
 const Hud = () => {
     return (
@@ -138,7 +144,7 @@ Since the SVG is rendered as a solid component, you can access its DOM propertie
 To achieve this, add a reference to the SVG component and apply the desired changes:
 
 ```jsx
-import Icon from '../../assets/icon.svg?component-solid';
+import Icon from '@assets/icon.svg?component-solid';
 
 const Hud = () => {
     let ref: SVGSVGElement;
@@ -152,7 +158,7 @@ const Hud = () => {
 For example, to change the fill color of the `path` element with id `1`:
 
 ```jsx
-import Icon from '../../assets/icon.svg?component-solid';
+import Icon from '@assets/icon.svg?component-solid';
 
 const Hud = () => {
     let ref: SVGSVGElement;
