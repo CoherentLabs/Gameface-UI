@@ -8,24 +8,11 @@
     font-size: 2vh;
 }
 
-.heroBadge {
-    width: 6vh;
-    height: 6vh;
+.miniMap {
+    border-radius: 50%;
     background-color: black;
-    border: 0.2vh solid lightblue;
-    margin: 0 0.5vh;
-}
-
-.enemyBadge {
-    width: 6vh;
-    height: 6vh;
-    background-color: black;
-    border: 0.2vh solid lightcoral;
-    margin: 0 0.5vh;
-}
-
-.counter {
-    padding: 0.5vh 0.9vh;
-    margin: 0 0.5vh;
-    background-color: rgba(0, 0, 0, 0.4);
+    border: 0.4vh solid white;
+    width: 20vh;
+    height: 20vh;
+    margin: 5vh;
 }

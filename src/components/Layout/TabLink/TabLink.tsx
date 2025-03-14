@@ -11,7 +11,6 @@ interface TabLinkProps extends ComponentBaseProps {
 
 const TabLink: ParentComponent<TabLinkProps> = (props) => {
     const tabs = useContext(TabsContext);
-    const resolved = children(() => props.children);
 
     if (!tabs) {
         throw new Error("TabLink must be used within a <Tabs> component");
