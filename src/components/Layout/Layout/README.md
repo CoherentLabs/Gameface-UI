@@ -16,7 +16,7 @@ import Bottom from '@components/Layout/Bottom/Bottom';
 
 const App = () => {
     return (
-        <Layout style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+        <Layout style={{ height: '100vh' }}>
             <Top>Top Section</Top>
             <Content>Main Content</Content>
             <Bottom>Bottom Section</Bottom>

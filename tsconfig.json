@@ -23,6 +23,7 @@
     "alwaysStrict": true, // Parse in strict mode and emit "use strict" for each source file
     "paths": {
       "@components/*": ["src/components/*"],
+      "@custom-components/*": ["src/custom-components/*"],
       "@assets/*": ["src/assets/*"]
     },
     "baseUrl": "./"
