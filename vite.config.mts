@@ -22,6 +22,7 @@ export default defineConfig({
   },
   base: './',
   build: {
+    assetsInlineLimit: 0, 
     target: 'esnext',
     modulePreload: false,
     rollupOptions: {
