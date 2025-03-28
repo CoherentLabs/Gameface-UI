@@ -15,6 +15,10 @@
     "vite-plugin-solid-svg": "^0.8.1"
   },
   "dependencies": {
+    "@babel/generator": "^7.27.0",
+    "@babel/parser": "^7.27.0",
+    "@babel/traverse": "^7.27.0",
+    "@babel/types": "^7.27.0",
     "@types/node": "^22.9.0",
     "dom-serializer": "^2.0.0",
     "glob": "^11.0.0",
