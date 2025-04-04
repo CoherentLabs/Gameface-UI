@@ -1,0 +1,280 @@
+---
+title: Communication between different UI parts - EventBus
+sidebar:
+    order: 7
+---
+
+Sometimes it is crucial to synchronize updates between different parts of the UI. One way to achieve this is by using JavaScript custom events, which facilitate communication regardless of the source context.
+
+GamefaceUI provides a tool called `EventBus` to enable such communication.
+
+## `EventBus`
+
+The `EventBus` is a utility class that allows components to communicate with each other. It can be used to send and receive events across components without the need to pass props through the component tree.
+
+## Usage
+
+The `EventBus` class can be imported and used in any component.
+
+```tsx
+import eventBus from '@components/tools/EventBus/EventBus';
+
+const Button = () => {
+    const handleClick = () => {
+        eventBus.emit('button-clicked', 'Button was clicked');
+    };
+
+    return (
+        <button onClick={handleClick}>Click Me</button>
+    );
+};
+
+export default Button;
+```
+
+```tsx
+import { onMount } from "solid-js";
+import Button from './Button';
+import eventBus from '@components/tools/EventBus/EventBus';
+
+const App = () => {
+    const handleClickButton = (data: string) => {
+        console.log(data);
+    };
+
+    onMount(() => {
+        eventBus.on('button-clicked', handleClickButton);
+    });
+
+    onCleanup(() => {
+        eventBus.off('button-clicked', handleClickButton);
+    });
+
+    return (
+        <Button />
+    );
+};
+
+export default App;
+```
+
+## API
+
+### Types
+
+#### `EventCallback`
+
+The `EventCallback` type defines a function that is called when an event is emitted.
+
+```tsx
+type EventCallback = (...args: any[]) => any;
+```
+
+#### `LogLevel`
+
+The `LogLevel` type represents the logging level of the event bus.
+
+```tsx
+type LogLevel = 'warn' | 'none';
+```
+
+### Methods
+
+#### `emit`
+
+The `emit` method sends an event to all registered listeners.
+
+```tsx
+eventBus.emit(eventName: string, ...args: any[]): void
+```
+
+| Parameter   | Type     | Description                                 |
+| ----------- | -------- | ------------------------------------------- |
+| `eventName` | `string` | The name of the event to emit               |
+| `...args`   | `any[]`  | The arguments to send to the listeners      |
+
+#### `on`
+
+The `on` method registers a listener for a specific event.
+
+```tsx
+eventBus.on(eventName: string, callback: EventCallback): void
+```
+
+| Parameter   | Type                  | Description                                    |
+| ----------- | --------------------- | ---------------------------------------------- |
+| `eventName` | `string`              | The name of the event to listen for            |
+| `callback`  | `EventCallback`       | The function to call when the event is emitted |
+
+#### `off`
+
+The `off` method removes a listener for a specific event.
+
+```tsx
+eventBus.off(eventName: string): void
+```
+
+| Parameter   | Type     | Description                                 |
+| ----------- | -------- | ------------------------------------------- |
+| `eventName` | `string` | The name of the event to stop listening for |
+
+#### `hasRegistered`
+
+The `hasRegistered` method checks if an event has been registered or if a specific callback is associated with it.
+
+```tsx
+eventBus.hasRegistered(eventName: string, callback?: EventCallback): boolean
+```
+
+| Parameter   | Type                  | Description                                    |
+| ----------- | --------------------- | ---------------------------------------------- |
+| `eventName` | `string`              | The name of the event to check                 |
+| `callback`  | `EventCallback`       | The callback function to check (optional)      |
+
+### Properties
+
+#### `logLevel`
+
+The `logLevel` property sets the logging level of the event bus.
+
+```tsx
+eventBus.logLevel: LogLevel
+```
+
+The default log level is `'warn'`. To disable warning logs, set the `logLevel` property to `'none'`.
+
+```tsx
+eventBus.logLevel = 'none';
+```
+
+## Guide
+
+### Listening for an event
+
+To listen for an event, use the `on` method of the `EventBus` class.
+
+```tsx
+const callback = (data: string) => {
+    console.log(data);
+};
+
+onMount(() => {
+    eventBus.on('button-clicked', callback);
+});
+```
+
+### Emitting an event
+
+To emit an event, use the `emit` method of the `EventBus` class.
+
+```tsx
+const handleClick = () => {
+    eventBus.emit('button-clicked');
+};
+```
+
+### Cleaning up
+
+To stop listening for an event, use the `off` method of the `EventBus` class.
+
+```tsx
+const callback = (data: string) => {
+    console.log(data);
+};
+
+onMount(() => {
+    eventBus.on('button-clicked', callback);
+});
+
+onCleanup(() => {
+    eventBus.off('button-clicked', callback);
+});
+```
+
+### Multiple listeners
+
+You can register multiple listeners for the same event.
+
+```tsx
+const callback = (data: string) => {
+    console.log(data);
+};
+
+const callback2 = (data: string) => {
+    console.log(data);
+};
+
+onMount(() => {
+    eventBus.on('button-clicked', callback);
+    eventBus.on('button-clicked', callback2);
+});
+
+onCleanup(() => {
+    eventBus.off('button-clicked', callback);
+    eventBus.off('button-clicked', callback2);
+});
+```
+
+### Listen once
+
+You can register a listener that is triggered only once.
+
+```tsx
+onMount(() => {
+    eventBus.once('button-clicked', (data: string) => {
+        console.log(data);
+    });
+});
+```
+
+This is particularly useful when using arrow functions, as they will be **automatically removed** after being triggered.
+
+### Checking if an event has been registered
+
+You can check if an event or a specific callback has been registered using the `hasRegistered` method.
+
+For example you can:
+
+* Avoid registering the same event multiple times:
+
+```tsx
+const callback = (data: string) => {
+    console.log(data);
+};
+
+onMount(() => {
+    if (!eventBus.hasRegistered('button-clicked', callback)) {
+        eventBus.on('button-clicked', callback);
+    }
+});
+```
+
+* Avoid emitting an event if it has no listeners:
+
+```tsx
+const handleClick = () => {
+    if (eventBus.hasRegistered('button-clicked')) {
+        eventBus.emit('button-clicked', 'Button was clicked');
+    }
+};
+```
+
+* Clean up an event listener if it has been registered:
+
+```tsx
+const callback = (data: string) => {
+    console.log(data);
+};
+
+onMount(() => {
+    if (eventBus.hasRegistered('button-clicked', callback)) {
+        eventBus.off('button-clicked', callback);
+    }
+});
+```
+
+If an event is not registered and something goes wrong, `EventBus` will log a warning message to the console.
+
+:::caution
+Always remember to clean up your event listeners to prevent memory leaks and potential bugs.
+:::
