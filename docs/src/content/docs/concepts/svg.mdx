@@ -1,0 +1,150 @@
+---
+title: Using SVGs
+sidebar:
+  order: 4
+---
+
+Working with inline SVGs is advantageous when runtime modifications are required, such as altering the `fill` attribute of a `path` element. Gameface UI simplifies this process, making it easy to implement.
+
+SVGs can be imported as either components or images. Importing an SVG as a component provides access to its DOM elements, enabling programmatic modifications.
+
+## Using SVG as an image
+
+Rendering an `.svg` asset as an image can be achieved through several approaches. However, this method renders the SVG statically, preventing runtime interactions or modifications.
+
+### `<Image>` component
+
+The simplest way to render an SVG as an image is by using the `<Image>` component. Import the SVG and set it as the source for the `Image` component:
+
+```jsx
+import Image from '@components/Media/Image/Image';
+import logo from '@assets/logo.svg';
+
+const MyComponent = () => {
+    return <Image src={logo} />;
+};
+```
+
+This approach renders the SVG using an `<img>` tag when build, making it static and non-interactive.
+
+### `<BackgroundImage>` component
+
+To use an SVG as a background for an element, the `BackgroundImage` component can be utilized in a similar manner:
+
+```jsx
+import BackgroundImage from '@components/Media/BackgroundImage/BackgroundImage';
+import logo from '@assets/logo.svg';
+
+const MyComponent = () => {
+    return <BackgroundImage src={logo}>Other content here...</BackgroundImage>;
+};
+```
+
+This method renders the SVG within a `<div>` element with the `background-image` property set, but it does not allow runtime interaction with the SVG.
+
+### `<MaskImage>` component
+
+To apply an SVG as a mask to other elements, the `MaskImage` component can be used:
+
+```jsx
+import MaskImage from '@components/Media/MaskImage/MaskImage';
+import logo from '@assets/logo.svg';
+
+const MyComponent = () => {
+    return <MaskImage src={logo}>Masked content here...</MaskImage>;
+};
+```
+
+This approach renders the SVG within a `<div>` element with the `mask-image` property set. Like the other methods, it does not support runtime modifications of the SVG.
+
+## Using SVG as component
+
+If you need to modify the SVG runtime and apply interactions to it you need to use the SVG as component.
+
+Let's use the following SVG located at `assets/icon.svg`:
+
+```jsx
+<svg width="1041" height="1093" viewBox="0 0 1041 1093" fill="none">
+    <path id="1" d="M1035.89 625.051L412.595 4.74938L7.43612 64.5186L450.156 706.635L1034.54 628.858L1035.89 625.051Z" fill="white" stroke="#666666" stroke-width="8"/>
+    <path id="2" d="M877.305 1088.51L1034.62 628.829L451.771 707.409L384.432 1088.51L877.305 1088.51Z" fill="white" stroke="#666666" stroke-width="8"/>
+</svg>
+```
+
+This SVG contains `path` elements with ids `1` and `2`, which we will use to access and modify these elements.
+
+To import the SVG as a component, use the standard import syntax with the `?component-solid` postfix:
+
+```jsx
+import Icon from '@assets/icon.svg?component-solid';
+```
+
+By using the `?component-solid` postfix, Gameface UI will inline the SVG into the DOM tree during the build process.
+
+:::note
+If you import the SVG without the `?component-solid` postfix, it will resolve to the asset's URL. You can then render it using an `img` tag with the URL as the `src` attribute. However, this method does not allow runtime modifications to the SVG.
+:::
+
+```jsx
+import icon from '@assets/icon.svg';
+
+const Hud = () => {
+    return (
+        <img src={icon} />
+    );
+}
+```
+
+Once imported, you can render the SVG component within your view:
+
+```jsx
+import Icon from '@assets/icon.svg?component-solid';
+
+const Hud = () => {
+    return (
+        <Icon />
+    );
+}
+```
+
+This approach will inline the `Icon` directly into the HTML when building the UI.
+
+## Modify SVG components at runtime
+
+Since the SVG is rendered as a solid component, you can access its DOM properties and children, allowing for runtime modifications.
+
+To achieve this, add a reference to the SVG component and apply the desired changes:
+
+```jsx
+import Icon from '@assets/icon.svg?component-solid';
+
+const Hud = () => {
+    let ref: SVGSVGElement;
+
+    return (
+        <Icon ref={ref!} />
+    );
+}
+```
+
+For example, to change the fill color of the `path` element with id `1`:
+
+```jsx
+import Icon from '@assets/icon.svg?component-solid';
+
+const Hud = () => {
+    let ref: SVGSVGElement;
+
+    onMounted(() => {
+        setTimeout(() => {
+            const path1 = ref.querySelector('#1') as SVGPathElement;
+            path1.setAttribute('fill', 'red');
+        }, 500);
+    });
+
+    return (
+        <Icon ref={ref!} />
+    );
+}
+```
+
+This code will change the fill color of the `path` element with id `1` to red, 500ms after the `Hud` component has been mounted.
