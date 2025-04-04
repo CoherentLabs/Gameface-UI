@@ -1,0 +1,10 @@
+---
+import Default from "@astrojs/starlight/components/SocialIcons.astro";
+import pkg from '../../../package.json' assert { type: 'json' };
+const version = `${pkg.version}`;
+---
+
+<span class="text-sm text-gray-500 dark:text-gray-400 font-mono">
+    {version}
+</span>
+<Default><slot /></Default>
