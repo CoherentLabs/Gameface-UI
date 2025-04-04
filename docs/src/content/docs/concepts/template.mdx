@@ -1,0 +1,109 @@
+---
+title: Template structure & usage
+sidebar:
+  order: 1
+---
+import { FileTree } from '@astrojs/starlight/components';
+
+This page provides an in-depth explanation of the functionality and usage of GamefaceUI.
+
+The boilerplate project is organized with the following structure:
+
+<FileTree>
+
+- src
+  - assets
+  - components
+    - Basic/
+    - Layout/
+    - Media/
+    - ...
+  - custom-components/
+  - views
+    - hud
+      - index.html
+      - index.css
+      - index.tsx
+      - Hud.tsx
+      - Hud.module.css
+    - menu
+      - index.html
+      - index.css
+      - index.tsx
+      - Menu.tsx
+      - Menu.module.css
+- package.json
+- tsconfig.json
+- vite.config.mts
+
+</FileTree>
+
+To provide a clearer understanding of the rationale behind this structure, we will explain it in greater detail.
+
+## Project Configuration
+
+The project's configuration is managed through three key files: `package.json`, `tsconfig.json`, and `vite.config.mts`.
+
+- **`package.json`**: Handles project dependencies and defines scripts for running various commands.
+- **`tsconfig.json`**: Specifies TypeScript rules and settings for the project.
+- **`vite.config.mts`**: Configures the Vite build tool, setting options and plugins to optimize and transform the source code for Gameface during the build process.
+
+## Assets
+
+The `/src/assets` directory is designated for all UI assets used in the development process. This folder can include files such as `.png`, `.svg`, fonts, and other resources.
+
+## GamefaceUI Components
+
+Predefined components for streamlined UI development are located in the `/src/components` directory. For detailed information about each component and its usage, refer to the [components](/components) section of the documentation.
+
+## Custom Components
+
+The `/src/custom-components` directory is reserved for components created during UI development.
+
+:::tip
+We recommend placing all custom components in this folder. This allows you to easily import them using the `@custom-components` alias throughout the project. For more details on using such imports, see the [importing assets and components](/concepts/assets) page.
+:::
+
+## Views
+
+Gameface Views are standalone HTML5 pages paired with their respective JavaScript contexts. Each View represents a complete UI or a significant UI component. Since multiple Views can be instantiated, the `/src/views` directory is included in the boilerplate to help organize and manage them effectively. Each View resides in its own folder within `/src/views` and typically includes an `index.html`, `index.css`, and `index.tsx` file, which collectively define its structure, styling, and behavior. This setup allows developers to work on multiple Views efficiently.
+
+:::note
+For additional details about Views and how Gameface operates, refer to the following sections of the Gameface documentation:
+
+- [Workflow](https://docs.coherent-labs.com/cpp-gameface/what_is_gfp/workflowguide)
+- [Technical Overview](https://docs.coherent-labs.com/cpp-gameface/integration/technicaloverview/)
+- [Rendering Architecture](https://docs.coherent-labs.com/cpp-gameface/integration/rendering/)
+- [Cohtml View Class](https://docs.coherent-labs.com/cpp-gameface/api_reference/classes/classcohtml_1_1_view/)
+
+:::
+
+### Creating a View
+
+To create a new View, follow the structure of `src/views/hud` or `src/views/menu`. Begin by creating a new folder `src/views/${viewName}` and include the following files: `index.html`, `index.tsx`, `index.css`, and `${viewName}.tsx`.
+
+:::tip
+Although not **mandatory**, it is **recommended** to create a `${viewName}.tsx` file within the `/src/views/${viewName}` folder. This file defines the structure of the entry component rendered by the `index.tsx` file. For instance:
+
+```jsx title="/src/views/hud/index.tsx"
+import { render } from 'solid-js/web';
+import './index.css';
+import Hud from './Hud';
+
+const root = document.getElementById('root');
+
+render(() => <Hud />, root!);
+```
+
+The `Hud.tsx` file would then return a JSX element:
+
+```jsx title="/src/views/hud/Hud.tsx"
+const Hud = () => {
+  return <div>Hello</div>;
+};
+
+export default Hud;
+```
+
+Using a separate file like `${viewName}.tsx` promotes modularity and simplifies maintenance. It allows you to focus on the component's structure and logic independently, while the `index.tsx` file handles rendering and initialization. This approach is especially beneficial for complex Views with multiple components.
+:::

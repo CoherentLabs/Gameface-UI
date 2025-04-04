@@ -1,0 +1,82 @@
+---
+title: Gameface UI
+description: GamefaceUI is a comprehensive collection of components designed to simplify the prototyping of game user interfaces.
+head:
+  - tag: title
+    content: GamefaceUI
+template: splash
+editUrl: false
+lastUpdated: false
+hero:
+  tagline: GamefaceUI is a comprehensive collection of components designed to simplify the prototyping of game user interfaces.
+  image:
+    html: |
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+
+      <pre><code class="language-jsx" id="code-block"></code></pre>
+
+      <script>
+      const codeElement = document.getElementById("code-block");
+      const codeSnippet = `import Row from '@components/Layout/Row/Row';
+      import { Column4 } from '@components/Layout/Column/Column';
+      import Block from '@components/Layout/Block/Block';
+      import TopBar from '@custom-components/Hud/TopBar/TopBar';
+      import KillsList from '@custom-components/Hud/KillsList/KillsList';
+      import styles from './Hud.module.css';
+
+      const Hud = () => {
+        return (<div class={styles.Hud}>
+          <Row>
+            <Column4>
+              <Block class={styles.miniMap}></Block>
+            </Column4>
+            <Column4>
+              <TopBar />
+            </Column4>
+            <Column4>
+              <KillsList />
+            </Column4>
+          </Row>
+        );
+      }`;
+
+      let index = 0;
+      function typeCode() {
+          if (index < codeSnippet.length) {
+              codeElement.innerHTML += codeSnippet[index];
+              Prism.highlightElement(codeElement);
+              index++;
+              setTimeout(typeCode,0);
+          }
+      }
+
+      typeCode();
+      </script>
+  actions:
+    - text: Getting Started
+      link: /getting-started/
+      icon: rocket
+    - text: Components
+      link: /components/
+      icon: right-arrow
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components'
+
+<CardGrid>
+  <Card title="How to use" icon="information">
+    Refer to the [getting started guide](/getting-started/how-to-use) for installation instructions.
+  </Card>
+  <Card title="Components" icon="laptop">
+    Discover the wide range of [GamefaceUI components](/components/) to build and customize your game user interfaces effortlessly.
+  </Card>
+  <Card title="Build and run" icon="codePen">
+    Learn how to [build and run your project](/getting-started/build-and-run) with GamefaceUI to bring your interface to life.
+  </Card>
+  <Card title="Changelog" icon="bars">
+    Check out the latest updates and changes [here](/changelog).
+  </Card>
+</CardGrid>
