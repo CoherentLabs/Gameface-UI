@@ -1,15 +1,17 @@
 import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import solidSvg from 'vite-plugin-solid-svg';
-import solidGameface from './vite-custom-plugins/vite-gameface';
 import { globSync } from 'glob';
 import path, { relative, extname, resolve } from 'node:path';
+import solidStyleToCssPlugin from 'vite-solid-style-to-css';
+import solidGameface from 'vite-gameface';
 
 const root = 'src/views';
 
 export default defineConfig({
   root: root,
   plugins: [
+    solidStyleToCssPlugin(),
     solidPlugin(),
     solidSvg({
       defaultAsComponent: false,
@@ -22,7 +24,7 @@ export default defineConfig({
   },
   base: './',
   build: {
-    assetsInlineLimit: 0, 
+    assetsInlineLimit: 0,
     target: 'esnext',
     modulePreload: false,
     rollupOptions: {
