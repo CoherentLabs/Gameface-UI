@@ -17,6 +17,10 @@ jobs:
         with:
           node-version: "18.16.0"
 
+      - name: Install modules
+        working-directory: ./docs
+        run: npm i
+
       - name: Deploy to gh-pages branch
         working-directory: ./docs
         env:
