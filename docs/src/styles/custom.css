@@ -38,3 +38,7 @@
     height: 36rem;
   }
 }
+
+.sl-markdown-content code:not(:where(.not-content *)) {
+  overflow-wrap: break-word;
+}
