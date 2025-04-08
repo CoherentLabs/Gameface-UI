@@ -8,9 +8,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./docs
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
@@ -21,6 +18,7 @@ jobs:
           node-version: "18.16.0"
 
       - name: Deploy to gh-pages branch
+        working-directory: ./docs
         env:
           TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           TAG: "${{ github.ref_name }}-${{ github.sha }}"
