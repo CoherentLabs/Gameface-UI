@@ -29,11 +29,11 @@ function prepareDocs() {
     core.info('[INFO] Installing documentation modules');
     exec('rm -rf node_modules');
     exec('rm -rf package-lock.json');
-    exec('npm install', docsDir);
+    exec('npm install');
     core.info('[INFO] Building documentation');
-    exec('npm run build', docsDir);
-    core.info(`[INFO] Creating a temp folder of the documentation source to ${docsBuildDir}`);
-    exec(`cp -R dist ${docsBuildDir}`, docsDir);
+    exec('npm run build');
+    core.info(`[INFO] Creating a temp folder of the documentation source from ${docsDir} to ${docsBuildDir}`);
+    exec(`cp -R dist ${docsBuildDir}`);
     core.endGroup();
 }
 
