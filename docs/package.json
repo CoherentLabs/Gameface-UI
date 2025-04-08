@@ -4,7 +4,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "lint": "eslint . --cache --max-warnings=0"
+    "lint": "eslint . --cache --max-warnings=0",
+    "deploy-gh-pages": "node ./tools/deploy-gh-pages.js"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.32.0",
