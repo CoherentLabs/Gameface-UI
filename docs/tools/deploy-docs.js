@@ -8,7 +8,7 @@ const email = core.getInput('user_email') || `${process.env.GITHUB_ACTOR}@users.
 const deployCommitMessage = `deploy: ${process.env.GITHUB_SHA}`;
 const worspaceDir = process.env.WORKSPACE_DIR;
 const docsDir = worspaceDir;
-const docsBuildDir = path.join(worspaceDir, '../docs-dist');
+const docsBuildDir = path.join(worspaceDir, '../../docs-dist');
 const GH_PAGES_BRANCH = 'gh-pages';
 
 function exec(command, cwd = worspaceDir) {
