@@ -7,7 +7,7 @@ const userName = core.getInput('user_name') || process.env.GITHUB_ACTOR;
 const email = core.getInput('user_email') || `${process.env.GITHUB_ACTOR}@users.noreply.github.com`;
 const deployCommitMessage = `deploy: ${process.env.GITHUB_SHA}`;
 const worspaceDir = process.env.WORKSPACE_DIR;
-const docsDir = worspaceDir;
+const docsDir = path.join(worspaceDir, 'docs');
 const docsBuildDir = path.join(worspaceDir, '../../docs-dist');
 const GH_PAGES_BRANCH = 'gh-pages';
 
@@ -29,11 +29,11 @@ function prepareDocs() {
     core.info('[INFO] Installing documentation modules');
     exec('rm -rf node_modules');
     exec('rm -rf package-lock.json');
-    exec('npm install');
+    exec('npm install', docsDir);
     core.info('[INFO] Building documentation');
-    exec('npm run build');
-    core.info(`[INFO] Creating a temp folder of the documentation source from ${docsDir} to ${docsBuildDir}`);
-    exec(`cp -R dist ${docsBuildDir}`);
+    exec('npm run build', docsDir);
+    core.info(`[INFO] Creating a temp folder of the documentation source to ${docsBuildDir}`);
+    exec(`cp -R dist ${docsBuildDir}`, docsDir);
     core.endGroup();
 }
 
