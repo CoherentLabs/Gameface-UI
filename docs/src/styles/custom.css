@@ -1,0 +1,44 @@
+.language-jsx,
+#code-block {
+  width: 100% !important;
+  font-size: 0.9rem !important;
+}
+
+@media (max-width: 50rem) {
+  .hero-html {
+    width: 100% !important;
+    order: 2;
+  }
+
+  .hero {
+    flex-direction: column;
+  }
+
+  .stack {
+    width: 100%;
+  }
+}
+
+.hero {
+  display: flex;
+  align-items: flex-start;
+}
+
+@media (min-width: 50rem) {
+  .hero-html {
+    flex: 1 0 0;
+  }
+
+  .hero {
+    padding-block: 5rem !important;
+  }
+
+  .stack {
+    width: 44%;
+    height: 36rem;
+  }
+}
+
+.sl-markdown-content code:not(:where(.not-content *)) {
+  overflow-wrap: break-word;
+}

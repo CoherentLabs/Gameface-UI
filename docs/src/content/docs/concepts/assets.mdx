@@ -1,0 +1,64 @@
+---
+title: Importing assets and components
+sidebar:
+  order: 2
+---
+import { FileTree } from '@astrojs/starlight/components'
+
+The GamefaceUI template provides dedicated folders for storing all asset files and components used in UI creation. It is essential to place your components and assets in these folders because the template project is configured to support alias imports in `.tsx` files using the `@...` syntax.
+
+## Aliases
+
+| Folder                     | Alias              |
+|----------------------------|--------------------|
+| `/src/assets/`             | `@assets`         |
+| `/src/components/`         | `@components`     |
+| `/src/custom-components/`  | `@custom-components` |
+
+## Using Alias Imports
+
+Consider the following folder structure:
+
+<FileTree>
+
+- src
+  - assets
+    - logo.png
+  - components
+    - Basic
+      - Block
+        - Block.tsx
+    - ...
+  - custom-components
+    - MyComponent
+      - MyComponent.tsx
+  - views
+    - hud
+      - Hud.tsx
+    - ...
+  - ...
+
+</FileTree>
+
+To import `logo.png`, `Block.tsx`, and `MyComponent.tsx` in `Hud.tsx`, you can write:
+
+```jsx title="/src/views/hud/Hud.tsx" ins="@assets" ins="@components" ins="@custom-components"
+import Block from '@components/Block/Block';
+import MyComponent from '@custom-components/MyComponent/MyComponent';
+import Logo from '@assets/logo.png';
+
+const Hud = () => {
+  return (
+    <Block>
+      <img src={Logo} />
+      <MyComponent />
+    </Block>
+  );
+};
+```
+
+## Benefits of alias imports
+
+Alias imports enhance code readability and maintainability by replacing lengthy relative paths like `../../../assets/logo.png` with shorter, more intuitive paths such as `@assets/logo.png`. This approach simplifies navigation and minimizes errors during refactoring or file relocation.
+
+Additionally, aliases promote consistency across the project, particularly in large codebases with deeply nested directories. They make it easier to locate and import files without worrying about the complexity of relative path calculations.

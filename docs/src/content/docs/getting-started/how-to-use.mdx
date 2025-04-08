@@ -1,0 +1,54 @@
+---
+title: How to use
+sidebar:
+    order: 2
+---
+
+GamefaceUI offers two primary ways to get started, depending on whether you want to create a new project from scratch or integrate its components into an existing SolidJS project. You can:
+
+* Download a complete boilerplate template that uses SolidJS with TypeScript and Vite.
+* Integrate the components into an existing SolidJS project.
+
+## Using the Boilerplate
+
+The boilerplate is ideal for starting a new project. It comes pre-configured with tools and features to streamline game UI development:
+
+* Vite build tool for efficient development and production builds.
+* Vite plugins for an enhanced development experience.
+* A structured template to guide your UI implementation. Details about the structure can be found [here](/concepts/template).
+* TypeScript for type checking and error prevention.
+* Pre-built components for faster UI development.
+
+:::caution
+If you choose not to use the boilerplate and only the components, we highly recommend reviewing the boilerplate [here](https://github.com/CoherentLabs/Gameface-UI) to familiarize yourself with its structure, tools, and usage.
+:::
+
+To get started with the boilerplate, navigate to your desired directory and run:
+
+```bash
+npx degit CoherentLabs/Gameface-UI
+```
+
+This command downloads the boilerplate into your current directory.
+
+To create a new directory for the boilerplate, use:
+
+```bash
+npx degit CoherentLabs/Gameface-UI NEW_FOLDER
+```
+
+Replace `NEW_FOLDER` with your desired folder name.
+
+After downloading the boilerplate, run `npm i` in the directory to install the required dependencies. You can then proceed with building and developing your UI.
+
+## Using Components Only
+
+:::note
+To use the components independently, you must have a SolidJS project set up with TypeScript, as GamefaceUI components are written in `.tsx` syntax.
+:::
+
+To integrate the components, create a new folder for them and run the following command inside it:
+
+```bash
+npx degit CoherentLabs/Gameface-UI/src/components
+```

@@ -1,0 +1,33 @@
+---
+title: UI navigation - Routing
+sidebar:
+    order: 5
+---
+
+To implement navigation in your UI, you can use routing solutions provided by various JavaScript frameworks. For instance, SolidJS includes its own router, enabling the creation of single-page applications with dynamic UI updates through menu-based router links.
+
+**However, Gameface currently does not support SolidJS's router.** To address this, GamefaceUI offers alternative solutions that allow you to simulate single-page application navigation without relying on a router component.
+
+## Solutions
+
+Gameface UI provides versatile routing options for managing and navigating between different UI elements. It supports routing through two main components: the [State](/components/basic/state) Component, which facilitates dynamic state-based routing, and the [Tabs](/components/layout/tabs/) Component, which enables tab-based navigation for a smooth user experience. These components simplify the process of creating interactive and intuitive interfaces for your application.
+
+## When to use the `State` component
+
+The `State` component allows you to create custom navigation with greater control. To help you get started, we've provided a simple example of building navigation with the `State` component [here](/components/basic/state/#example). This example can be extended to suit your specific needs.
+
+Using the `State` component requires you to manually create all tab links that change the active state and render different UI sections, simulating a router. This approach is ideal if you need highly customized navigation, as it gives you complete control.
+
+## When to use the `Tabs` component
+
+The `Tabs` component offers a more straightforward solution for building navigation compared to the `State` component. Designed to provide a familiar routing mechanism, it works seamlessly with the `Tab` and `TabLink` components to simulate router-like behavior for single-page applications.
+
+If you're looking for an easy-to-implement and maintain navigation solution, the `Tabs` component is a great choice. While it doesn't offer the same level of customization as the `State` component, it is designed to deliver an excellent development experience for routing.
+
+:::tip
+We highly recommend using the [`Tabs`](/components/layout/tabs) component for UI navigation instead of the `State` component.
+:::
+
+:::note
+You can find a complete example of how the `Tabs` component is used to build a UI menu [here](https://github.com/CoherentLabs/Gameface-UI/tree/master/src/views/menu).
+:::

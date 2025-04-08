@@ -1,0 +1,88 @@
+---
+title: Creating components
+sidebar:
+    order: 3
+---
+
+import { FileTree } from '@astrojs/starlight/components'
+import { Steps } from '@astrojs/starlight/components'
+
+When building your UI with GamefaceUI, you may want to split your code into reusable custom components. To facilitate this, the GamefaceUI boilerplate includes a dedicated folder for custom components. It is **recommended** to place your custom components in this folder.
+
+## Guidelines for creating custom components
+
+The steps outlined below are not **mandatory** for creating custom components but are **recommended** as they follow a structured approach and enable features like alias imports.
+
+To create a new component, use the `/src/custom-components` folder.
+
+:::tip
+For better organization, it is **recommended** to create a subfolder named with the view name where the component will be used inside the `/src/custom-components` folder, for instance - `/src/custom-components/Hud/MyCustomComponent`. While you can place components directly in the `custom-components` folder, this is not advised. Refer to our [boilerplate template](https://github.com/CoherentLabs/Gameface-UI/tree/master/src/custom-components) for more details on the folder structure.
+:::
+
+## Example
+
+Let's create a `TopBar` component for the `Hud` view.
+
+<Steps>
+
+1. Create a folder for the view where the component will be used. For this example, create `/src/custom-components/Hud`.
+
+2. Inside this folder, create another folder for the component: `/src/custom-components/Hud/TopBar`.
+
+3. Set up the component's source files in this folder:
+
+        <Steps>
+
+        1. Create a `TopBar.tsx` file for the component's logic and functionality.
+
+        2. Create a `TopBar.module.css` file for the component's styles.
+
+        </Steps>
+
+4. Add styles to the `TopBar.module.css` file:
+
+        ```css
+        .testClass {
+                color: red;
+        }
+        ```
+
+        At this point, your file structure should look like this:
+
+        <FileTree>
+
+        - src
+                - custom-components
+                        - Hud
+                                - TopBar
+                                        - TopBar.tsx
+                                        - TopBar.module.css
+                - views
+                        - hud
+                                - Hud.tsx
+                                - ...
+        - ...
+
+        </FileTree>
+
+5. Import the styles as a module in the `TopBar.tsx` file and apply them using the CSS module syntax: `class={styles.testClass}`.
+
+        ```jsx title=/src/custom-components/Hud/TopBar/TopBar.tsx ins="styles.testClass" ins="import styles from './TopBar.module.css'"
+        import styles from './TopBar.module.css'
+
+        const TopBar = () => {
+                return <div class={styles.testClass}></div>
+        }
+        ```
+
+6. Once your component is ready, you can use it in your view. For example, to use `TopBar` in the `Hud` view, import it as shown below:
+
+        ```jsx title=/src/views/hud/Hud.tsx ins="import TopBar from '@custom-components/TopBar/TopBar';" ins="<TopBar/>"
+        import TopBar from '@custom-components/TopBar/TopBar';
+
+        const Hud = () => {
+                return <TopBar />;
+        }
+        ```
+
+</Steps>
