@@ -46,5 +46,5 @@ export default defineConfig({
       title: 'GamefaceUI',
     }),
   ],
-  site: 'https://coherent-labs.com',
+  site: 'https://gameface-ui.coherent-labs.com',
 })
