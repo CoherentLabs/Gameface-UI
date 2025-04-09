@@ -49,7 +49,7 @@ function transferDocs() {
     exec(`cp -R ${docsBuildDir}/* ./`);
     core.info(`Copied the documentation source from ${docsBuildDir} to the branch`);
     core.info(`Creating .nojekyll file`);
-    exec(`touch dist/.nojekyll`);
+    exec(`touch ./.nojekyll`);
     core.info(`Created .nojekyll file`);
     core.endGroup();
 }
