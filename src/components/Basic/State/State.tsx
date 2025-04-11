@@ -41,7 +41,7 @@ export const states: States = {};
 
 const State: ParentComponent<StateProps> = (props) => {
     let fallbackElement: JSX.Element;
-    let element: HTMLDivElement;
+    let element!: HTMLDivElement;
     const statesMap: StatesMap = {};
     const [currentState, setCurrentState] = createSignal('');
     let resolved = children(() => props.children).toArray();
