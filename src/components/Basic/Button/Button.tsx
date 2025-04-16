@@ -26,7 +26,8 @@ const Button: ParentComponent<ButtonProps> = (props) => {
     props.componentClasses = getButtonClasses(mergedProps).join(' ');
 
     return <button disabled={props.disabled} 
-                    ref={props.ref as HTMLButtonElement} 
+                    ref={props.ref as HTMLButtonElement}
+                    {...BaseComponent(props).attributes}
                     {...BaseComponent(props).eventHandlers} 
                     class={BaseComponent(props).className}
                     style={BaseComponent(props).style}>

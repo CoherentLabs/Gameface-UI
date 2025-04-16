@@ -58,26 +58,42 @@ function assignEvents(props: BaseComponentProps) {
     return events
 }
 
+function assignAttributes(props: BaseComponentProps) {
+    const attributes: Record<string, any> = {};
+    if (!props) return attributes;
+
+    for (const key in props) {
+        if (key.startsWith("attr:")) {
+            const typedKey = key as `attr:${string}`;
+            attributes[typedKey] = (props as Record<string, any>)[typedKey];
+        }
+    }
+
+    return attributes
+}
+
 type BaseComponentType<P = BaseComponentProps> = (props: P) => {
     GFUI: {}
     log: typeof console.log,
     events: Events,
+    attributes: Record<string, any>;
 }
 
 export const createBaseComponent: BaseComponentType = (props) => {
     const GFUI = {}
     const log = console.log;
 
-    return { GFUI, log, events: assignEvents(props) };
+    return { GFUI, log, events: assignEvents(props), attributes: assignAttributes(props) };
 }
 
 export const BaseComponent = (props: ComponentProps) => {
-    const { GFUI, log, events } = createBaseComponent(props);
+    const { GFUI, log, events, attributes } = createBaseComponent(props);
     const eventHandlers = assignEventHandlers(events);
     const classes = `${props.componentClasses || ''} ${props.class || ""} ${props.active || ""}`.trim();
     const inlineStyles = mergeProps(props.style, props.componentStyles);
 
     return {
+        attributes,
         eventHandlers,
         className: classes,
         style: inlineStyles

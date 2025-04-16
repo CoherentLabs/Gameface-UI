@@ -91,7 +91,7 @@ const State: ParentComponent<StateProps> = (props) => {
         });
     });
 
-    return <div ref={element!} {...BaseComponent(props).eventHandlers} class={BaseComponent(props).className} style={BaseComponent(props).style}></div>
+    return <div ref={element!} {...BaseComponent(props).attributes} {...BaseComponent(props).eventHandlers} class={BaseComponent(props).className} style={BaseComponent(props).style}></div>
 }
 
 export default State;
