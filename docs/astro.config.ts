@@ -2,6 +2,7 @@ import starlight from '@astrojs/starlight'
 import { defineConfig } from 'astro/config'
 import starlightThemeRapide from 'starlight-theme-rapide'
 import starlightLinksValidator from 'starlight-links-validator';
+import starlightHeadingBadges from 'starlight-heading-badges'
 
 export default defineConfig({
   integrations: [
@@ -17,7 +18,7 @@ export default defineConfig({
       },
       credits: false,
       customCss: ['./src/styles/custom.css'],
-      plugins: [starlightThemeRapide(), starlightLinksValidator()],
+      plugins: [starlightThemeRapide(), starlightLinksValidator(), starlightHeadingBadges()],
       sidebar: [
         {
           label: 'Gettings Started',
