@@ -72,13 +72,13 @@ function getTransformOrigin(origin: Transform['origin']) {
 }
 
 const Transform: ParentComponent<Transform> = (props) => {
-    const transformString = handleTransformProps(props);
-    const transformOrigin = getTransformOrigin(props.origin)
+    const transformString = createMemo(() => handleTransformProps(props));
+    const transformOrigin = createMemo(() => getTransformOrigin(props.origin));
 
     const transformStyles = createMemo(() => {
         return {
-            transform: transformString,
-            "transform-origin": transformOrigin
+            transform: transformString(),
+            "transform-origin": transformOrigin()
         }
     });
 
