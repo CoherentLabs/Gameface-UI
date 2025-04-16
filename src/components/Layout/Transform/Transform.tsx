@@ -1,4 +1,4 @@
-import { ParentComponent } from "solid-js";
+import { createMemo, ParentComponent } from "solid-js";
 import LayoutBase from "../LayoutBase";
 import styles from './Transform.module.css'
 import { ComponentBaseProps } from "../../types/ComponentProps";
@@ -72,15 +72,17 @@ function getTransformOrigin(origin: Transform['origin']) {
 }
 
 const Transform: ParentComponent<Transform> = (props) => {
-    const transformString = handleTransformProps(props);
-    const transformOrigin = getTransformOrigin(props.origin)
+    const transformString = createMemo(() => handleTransformProps(props));
+    const transformOrigin = createMemo(() => getTransformOrigin(props.origin));
 
-    const transformStyles = {
-        transform: transformString,
-        "transform-origin": transformOrigin
-    }
+    const transformStyles = createMemo(() => {
+        return {
+            transform: transformString(),
+            "transform-origin": transformOrigin()
+        }
+    });
 
-    return <LayoutBase {...props} componentStyles={transformStyles} componentClasses={styles.Transform} />
+    return <LayoutBase {...props} componentStyles={transformStyles()} componentClasses={styles.Transform} />
 }
 
 export default Transform
