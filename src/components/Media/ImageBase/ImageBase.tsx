@@ -101,7 +101,8 @@ const ImageBase: ParentComponent<ComponentProps> = (props) => {
     });
 
     return (
-        <div ref={element} 
+        <div ref={element}
+            {...BaseComponent(props).attributes}
             {...BaseComponent(props).eventHandlers} 
             class={BaseComponent(props).className}
             style={BaseComponent(props).style}>
