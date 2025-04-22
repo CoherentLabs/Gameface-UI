@@ -1,0 +1,37 @@
+---
+title: Setting attributes to GamefaceUI components
+sidebar:
+    order: 8
+---
+
+Sometimes you may need to set an attribute to a GamefaceUI component that is not directly supported by the component itself. In such cases, you can add the attribute to the component using the `attr:*` syntax.
+This allows you to set any attribute to the component, even if it is not explicitly defined in the component's props.
+For example, if you want to set a custom attribute `data-custom` to a `Button` component, you can do it like this:
+
+```tsx
+import Button from '@components/Basic/Button/Button';
+
+const App = () => {
+    return (
+        <>
+            <Button attr:data-custom="some data">Large button</Button>
+        </>
+    );
+};
+
+export default App;
+```
+
+This is especially useful when you want to use the data-binding attributes that come with Gameface.
+
+```tsx
+import Block from '@components/Layout/Block/Block';
+
+const App = () => {
+    return (
+        <Block attr:data-bind-value="{{Model.value}}">Some Content</Block>
+    );
+};
+
+export default App;
+```

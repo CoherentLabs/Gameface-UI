@@ -6,6 +6,7 @@ const InlineTextBlock: ParentComponent<ComponentProps> = (props) => {
 
     return <p cohinline 
                 ref={props.ref as HTMLParagraphElement}
+                {...BaseComponent(props).attributes} 
                 {...BaseComponent(props).eventHandlers} 
                 class={BaseComponent(props).className}
                 style={BaseComponent(props).style}>

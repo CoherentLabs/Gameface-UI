@@ -24,6 +24,7 @@ export interface BaseComponentRef {
 export interface ComponentBaseProps extends ParentProps, Omit<Events, ExcludedEvents> {
     style?: JSX.CSSProperties
     class?: string,
+    [key: `attr:${string}`]: any;
 }
 
 export interface ComponentProps<T extends Record<string, any> = {}> extends ComponentBaseProps {
