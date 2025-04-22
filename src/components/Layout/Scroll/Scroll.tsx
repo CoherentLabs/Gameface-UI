@@ -1,9 +1,11 @@
-import { createSignal, onCleanup, onMount, ParentComponent } from "solid-js";
+import { createMemo, createSignal, JSX, onCleanup, onMount, ParentProps } from "solid-js";
 import styles from './Scroll.module.css';
 import LayoutBase from "../LayoutBase";
 import { clamp } from "../../utils/clamp";
 import { BaseComponentRef, ComponentBaseProps } from "../../types/ComponentProps";
-
+import { createSlot, createSlots } from "@components/BaseComponent/Slots";
+import ScrollHandle, { HandleSlotProps } from "./ScrollHandle";
+import { ParentComponent } from "solid-js";
 export interface ScrollComponentRef extends BaseComponentRef {
     scrollToElement: (element: HTMLElement | string) => void,
     scrollUp: () => void,
@@ -25,13 +27,26 @@ interface ScrollProps extends ComponentBaseProps {
     onScroll?: OnScrollHandler
 }
 
+interface BarSlotProps extends ParentProps {
+    style?: JSX.CSSProperties
+    class?: string,
+}
+
+const { useSlots, withSlots } = createSlots({
+    Handle: createSlot<HandleSlotProps>(),
+    Bar: createSlot<BarSlotProps>()
+});
+
 const Scroll: ParentComponent<ScrollProps> = (props) => {
+    const { slots } = useSlots();
+
     const [overflow, setOverflow] = createSignal(false);
     const [handleHeight, setHandleHeight] = createSignal(0);
     const [handleTop, setHandleTop] = createSignal(0);
+
     let containerRef: HTMLDivElement, contentRef: HTMLDivElement;
     let resizeObserver: ResizeObserver;
-    let maxScroll: number, maxHandleMovement: number
+    let maxScroll: number, maxHandleMovement: number;
     let startY = 0, startScrollTop = 0, prevScrollTop = 0;
 
     function updateMeasurements() {
@@ -40,7 +55,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
 
         if (contentHeight > containerHeight) {
             setOverflow(true);
-            
+
             const ratio = containerHeight / contentHeight;
             const newHandleHeight = containerHeight * ratio;
             setHandleHeight(newHandleHeight);
@@ -68,7 +83,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
         const eventData: OnScrollEventData = {
             scrollDirection: getScrollDirection()
         };
-        
+
         prevScrollTop = contentRef!.scrollTop;
         props.onScroll(eventData);
     }
@@ -83,7 +98,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     function onHandleMouseMove(e: MouseEvent) {
         const deltaY = e.clientY - startY;
 
-        if(deltaY === 0) return;
+        if (deltaY === 0) return;
 
         const scrollDelta = (deltaY / maxHandleMovement) * maxScroll;
 
@@ -168,9 +183,9 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
 
     onMount(() => {
         resizeObserver = new ResizeObserver(updateMeasurements);
-        
+
         if (contentRef!) resizeObserver.observe(contentRef);
-        
+
         contentRef!.addEventListener("scroll", updateHandlePosition);
     });
 
@@ -179,22 +194,33 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
         if (contentRef!) contentRef.removeEventListener("scroll", updateHandlePosition);
     });
 
+    const scrollBarStyles = createMemo(() => {
+        if (slots.Bar?.style) return { ...slots.Bar?.style };
+
+        return {};
+    });
+
     return (
         <LayoutBase {...props} refObject={scrollObjectRef} >
             <div ref={containerRef!} class={styles.Scroll}>
                 <div ref={contentRef!} class={styles.Content}>{props.children}</div>
                 {overflow() && (
-                    <div class={styles.ScrollBar} onClick={scrollByClickHandler}>
-                        <div 
-                            onMouseDown={onHandleMouseDown} 
-                            class={styles.Handle} 
-                            style={{ height: `${handleHeight()}px`, top: `${handleTop()}px` }}>
-                        </div>
+                    <div
+                        class={styles.ScrollBar + ' ' + slots.Bar?.class || ''}
+                        style={scrollBarStyles()}
+                        onClick={scrollByClickHandler}
+                    >
+                        {slots.Bar?.children}
+                        <ScrollHandle
+                            handleSlot={slots.Handle}
+                            mouseDown={onHandleMouseDown}
+                            style={{ height: `${handleHeight()}px`, top: `${handleTop()}px` }}
+                        />
                     </div>
                 )}
             </div>
-        </LayoutBase>
+        </LayoutBase >
     )
-}
+};
 
-export default Scroll;
+export default withSlots(Scroll);

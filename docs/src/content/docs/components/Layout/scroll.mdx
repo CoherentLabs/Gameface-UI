@@ -42,11 +42,77 @@ In this example, the text is wrapped inside the `Scroll` component, and the maxi
 ### Methods
 |Method |Parameters |Return Value |Description |
 |---|---|---|---|
-| `scrollToElement` | `element`: string \| HTMLElement  | `void` | Scrolls the content to the specified element. The element must be part of the content inside the Scroll component. |
+| `scrollToElement` | `element: string \| HTMLElement`  | `void` | Scrolls the content to the specified element. The element must be part of the content inside the Scroll component. |
 | `scrollUp` | none | `void` | Scrolls the content upward by a fixed amount. |
 | `scrollDown` | none | `void` | Scrolls the content downward by a fixed amount. |
 | `begin` | none | `void` | Instantly scrolls the content to the very beginning (top). |
 | `end` | none | `void` | Instantly scrolls the content to the very end (bottom). |
+
+## Slots
+
+### `Scroll.Bar`
+
+Allows customization of the scrollbar within the `Scroll` component. This slot can be used to apply custom styles or include additional elements in the scrollbar.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the scrollbar. |
+| `class`   | `string` | `""` | Additional CSS classes to style the scrollbar. |
+| `children`| `JSX.Element` | `undefined` | Content to render inside the scrollbar, which can be any valid JSX element. |
+
+#### Usage
+
+```diff lang="tsx"
+import Scroll from '@components/Layout/Scroll/Scroll'
+import Block from '@components/Layout/Block/Block';
+
+const App = () => {
+    return (
+        <Scroll style={{"max-width": '200px', "max-height": '200px',}}>
+            <Block>
+                I am a very long and dynamic text that can be scrolled - lorem Eaque, perspiciatis ad iusto expedita consectetur rerum tempora non nisi, porro tenetur repudiandae. 
+                Voluptatem magni dolore consequuntur officia nemo quidem minus. Possimus, quibusdam.
+            </Block> 
++            <Scroll.Bar style={{ "background-color": 'black' }}>
++                <Block style={{ background: 'red' }}>Custom Scroll Bar content</Block>
++            </Scroll.Bar>
+        </Scroll>
+    );
+};
+```
+
+### `Scroll.Handle`
+
+This slot allows you to customize the handle of the `Scroll` component. Use it to apply custom styles or include additional elements in the handle.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the scroll handle. |
+| `class`   | `string` | `""` | Additional CSS classes to style the scroll handle. |
+| `children`| `JSX.Element` | `undefined` | Content to render inside the scroll handle, which can be any valid JSX element. |
+
+#### Usage
+
+```diff lang="tsx"
+import Scroll from '@components/Layout/Scroll/Scroll'
+import Block from '@components/Layout/Block/Block';
+
+const App = () => {
+    return (
+        <Scroll style={{"max-width": '200px', "max-height": '200px',}}>
+            <Block>
+                I am a very long and dynamic text that can be scrolled - lorem Eaque, perspiciatis ad iusto expedita consectetur rerum tempora non nisi, porro tenetur repudiandae. 
+                Voluptatem magni dolore consequuntur officia nemo quidem minus. Possimus, quibusdam.
+            </Block> 
++            <Scroll.Handle style={{ "background-color": 'white' }} />
+        </Scroll>
+    );
+};
+```
 
 ## Guide
 
