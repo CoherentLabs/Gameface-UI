@@ -1,0 +1,229 @@
+---
+title: Checkbox
+---
+
+The `Checkbox` component is used to create a checkbox element in the UI.
+
+## Usage
+
+The `Checkbox` component allows the user to select or deselect a value.
+
+```tsx
+import Checkbox from '@components/Basic/Checkbox/Checkbox';
+
+const App = () => {
+    return (
+        <>
+            <Checkbox value="v-sync">V-Sync</Checkbox>
+            <Checkbox value="fullscreen" checked>Fullscreen Mode</Checkbox>
+            <Checkbox value="motion blur" checked>Motion Blur</Checkbox>
+            <Checkbox value="anti-aliasing">Anti-Aliasing</Checkbox>
+        </>
+    );
+};
+
+export default App;
+```
+
+## API
+
+### Props
+
+| Prop Name  | Type                                   | Default     | Description                                                                                                                                                                                  |
+| ---------- | -------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `style`    | `JSX.CSSProperties`                    | `{}`        | Inline styles to apply directly to the component's root element.                                                                                                                             |
+| `class`    | `string`                               | `""`        | Additional CSS classes to apply to the component                                                                                                                                             |
+| `ref`      | `CheckboxRef  \| undefined`            | `undefined` | A reference to the component that gives you access to its methods and the underlying HTML element. Useful if you need to toggle the checkbox programmatically.                                                             |
+| `disabled` | `boolean`                              | `false`     | Specify if the checkbox is disabled                                                                                                                                                            |
+| `value`    | `any`                                  | `''`        | The value associated with the checkbox component. |
+| `checked`  | `boolean`                              | `false`     | Specify if the checkbox is checked initially. |
+| `onChange` | `(checked: boolean) => void`           | `undefined` | A function that is called every time the checkbox is toggled. It can be used to retrieve whether the checkbox is checked. |
+
+### Methods
+
+|Method |Parameters |Return Value |Description |
+|---|---|---|---|
+| `toggle` | `(e?: MouseEvent) => void`  | `void` | Toggles the checkbox |
+
+## Slots
+
+### `Checkbox.Label`
+
+Allows customization of the checkbox's label. This slot can be used to include additional elements in the label or place the label before the control of the checkbox.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `before`  | `boolean` | `false` | Specify if the label should be put before the checkbox control |
+| `children`| `JSX.Element` | `undefined` | Content to render inside the label, which can be any valid JSX element. |
+
+#### Usage
+
+```diff lang="tsx"
+import Checkbox from '@components/Basic/Checkbox/Checkbox';
+import Block from '@components/Layout/Block/Block';
+
+const App = () => {
+    return (
+        <>
+            <Checkbox value="v-sync">V-Sync</Checkbox>
+            <Checkbox value="fullscreen" checked>Fullscreen Mode</Checkbox>
+            <Checkbox value="motion blur" checked>Motion Blur</Checkbox>
++            <Checkbox value="anti-aliasing">
++                <Checkbox.Label>
++                    <Block style={{ 'font-weight': 'bold' }}>Anti-aliasing</Block>
++                </Checkbox.Label>
++            </Checkbox>
+        </>
+    );
+};
+
+export default App;
+```
+
+:::caution
+If the `Label` slot is used other `children` of the `Checkbox` component won't be rendered.  
+:::
+
+### `Checkbox.Control`
+
+This slot allows you to customize the control of the `Checkbox` component when it is unchecked. 
+Use it to apply custom styles, classes or include additional elements in the control of the checkbox.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the checkbox control. |
+| `class`   | `string` | `""` | Additional CSS classes to style the checkbox control. |
+| `children`| `JSX.Element` | `undefined` | Content to render inside the checkbox control, which can be any valid JSX element. |
+
+#### Usage
+
+```diff lang="tsx"
+import Checkbox from '@components/Basic/Checkbox/Checkbox';
+
+const App = () => {
+    return (
+        <>
+            <Checkbox value="v-sync">V-Sync</Checkbox>
+            <Checkbox value="fullscreen" checked>Fullscreen Mode</Checkbox>
+            <Checkbox value="motion blur" checked>Motion Blur</Checkbox>
++            <Checkbox value="anti-aliasing">
++                Anti-aliasing
++                <Checkbox.Control style={{'border-color': 'blueviolet', "background-color": 'black'}} />
++            </Checkbox>
+        </>
+    );
+};
+
+export default App;
+```
+
+### `Checkbox.Indicator`
+
+This slot allows you to override the default indicator displayed when the checkbox is checked.
+Use it to apply custom styles, classes or include additional elements in the indicator of the checkbox.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the checkbox indicator. |
+| `class`   | `string` | `""` | Additional CSS classes to style the checkbox indicator. |
+| `children`| `JSX.Element` | `undefined` | Content to render inside the checkbox indicator, which can be any valid JSX element. |
+
+#### Usage
+
+```diff lang="tsx"
+import Checkbox from '@components/Basic/Checkbox/Checkbox';
+import Icon from '@assets/check-mark.svg?component-solid';
+
+const App = () => {
+    return (
+        <>
+            <Checkbox value="v-sync">V-Sync</Checkbox>
+            <Checkbox value="fullscreen" checked>Fullscreen Mode</Checkbox>
+            <Checkbox value="motion blur" checked>Motion Blur</Checkbox>
++            <Checkbox value="anti-aliasing">
++               <Checkbox.Indicator style={{"background-color": color()}}>
++                    <Icon style={{width: '100%', height: '100%' }}/>
++                </Checkbox.Indicator>
++            </Checkbox>
+        </>
+    );
+};
+
+export default App;
+```
+
+## Guide
+
+### Retrive the Checkbox Value
+
+To retrieve the value assigned to the Checkbox component:
+
+- Use a `ref` to access the component instance
+- Use the `onChange` prop to respond when the checked state changes
+- Combine both to work with the value only when the checkbox is checked
+
+#### Steps 
+
+1. Declare a `ref` variable with type `CheckboxRef` and pass it to the `Checkbox` component.
+2. Provide a callback to the `onChange` prop to respond to state changes.
+3. Inside the callback, access the checkbox value via the `ref` and act based on the checked state.
+
+```tsx
+import Checkbox, { CheckboxRef } from '@components/Basic/Checkbox/Checkbox';
+
+const App = () => {
+    let checkboxRef!: CheckboxRef
+    const getValue = (checked: boolean) => {
+        if (checked) {
+            // Log the value whenever the checkbox is checked
+            console.log(checkboxRef.value);
+        }
+    }
+
+    return (
+        <>
+            <Checkbox value="v-sync" onChange={getValue} ref={checkboxRef} >
+                <Checkbox.Label before>Enable V-Sync</Checkbox.Label>
+            </Checkbox>
+        </>
+    );
+};
+
+export default App;
+```
+
+### Toggle the Checkbox Programmatically 
+
+The `Checkbox` component lets you toggle the `checked` state through code.
+
+#### Steps
+
+1. Declare a `ref` variable with type `CheckboxRef` and pass it to the `Checkbox` component.
+2. Call `ref.toggle()` from anywhere (e.g., a keyboard event or external button) to toggle the checked state programmatically.
+
+```tsx
+import Checkbox, { CheckboxRef } from '@components/Basic/Checkbox/Checkbox';
+
+const App = () => {
+    let checkboxRef!: CheckboxRef
+    const handleKeyPress = (e: KeyboardEvent) => {
+        if (e.keyCode !== 13) return
+        
+        checkboxRef.toggle();
+    }
+
+    return (
+        <>
+            <Checkbox value="v-sync" ref={checkboxRef} keypress={handleKeyPress}>Enable V-Sync</Checkbox>
+        </>
+    );
+};
+
+export default App;
+```
