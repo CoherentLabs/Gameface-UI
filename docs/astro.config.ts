@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config'
 import starlightThemeRapide from 'starlight-theme-rapide'
 import starlightLinksValidator from 'starlight-links-validator';
 import starlightHeadingBadges from 'starlight-heading-badges'
+import starlightAutoSidebar from 'starlight-auto-sidebar';
 
 export default defineConfig({
   integrations: [
@@ -18,7 +19,7 @@ export default defineConfig({
       },
       credits: false,
       customCss: ['./src/styles/custom.css'],
-      plugins: [starlightThemeRapide(), starlightLinksValidator(), starlightHeadingBadges()],
+      plugins: [starlightThemeRapide(), starlightLinksValidator(), starlightHeadingBadges(), starlightAutoSidebar()],
       sidebar: [
         {
           label: 'Gettings Started',
