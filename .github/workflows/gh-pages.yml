@@ -2,8 +2,10 @@ name: Deploy Documentation
 
 on:
   workflow_dispatch:
-  push:
-    branches: [master]
+  workflow_run:
+    workflows: ["GamefaceUI release"]
+    types:
+      - completed
 
 jobs:
   deploy:
