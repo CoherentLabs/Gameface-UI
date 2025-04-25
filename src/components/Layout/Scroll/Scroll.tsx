@@ -38,7 +38,7 @@ const { useSlots, withSlots } = createSlots({
 });
 
 const Scroll: ParentComponent<ScrollProps> = (props) => {
-    const { slots } = useSlots();
+    const slots = useSlots();
 
     const [overflow, setOverflow] = createSignal(false);
     const [handleHeight, setHandleHeight] = createSignal(0);

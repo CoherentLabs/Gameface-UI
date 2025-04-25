@@ -1,17 +1,15 @@
 import {
-    createSignal,
     createContext,
     useContext,
     ParentComponent,
+    ParentProps,
+    children,
 } from 'solid-js';
 
-type SlotContextType<SlotMap extends Record<string, any>> = {
-    register: <K extends keyof SlotMap>(key: K, props: SlotMap[K]) => void;
-    slots: { [K in keyof SlotMap]?: SlotMap[K] };
-};
+type SlotContextType<SlotMap extends Record<string, any>> = { [K in keyof SlotMap]?: SlotMap[K] };
 
-export function createSlot<T>() {
-    return (props: T) => <></>
+export function createSlot<T extends ParentProps>(): ParentComponent<T> {
+    return (props) => <></>
 }
 
 export const createSlots = <SlotMap extends Record<string, any>>(
@@ -23,23 +21,15 @@ export const createSlots = <SlotMap extends Record<string, any>>(
 
     const useSlots = () => {
         const context = useContext(ctx);
-        if (!context) throw new Error("Slot component must be used inside its parent component.");
+        if (!context) throw new Error("Slots can be accessed only inside a component wrapped with 'withSlots' HOC.");
         return context;
     };
 
-    const createSlot = <K extends keyof SlotMap>(key: K): ParentComponent<SlotMap[K]> => {
+    const createSlot = <K extends keyof SlotMap>(key: K): ((props: SlotMap[K]) => { slotName: string, props: SlotMap[K] }) => {
         const componentName = `${wrapperComponentName}.${key as string}`;
-
         const slotComponent = {
             [componentName]: (props: SlotMap[K]) => {
-                try {
-                    const ctx = useSlots();
-                    ctx.register(key, props);
-                } catch (error) {
-                    console.error(`"${componentName}" could not be used outside of "${wrapperComponentName}" component.`);
-                } finally {
-                    return null;
-                }
+                return { slotName: key as string, props };
             }
         }
         return slotComponent[componentName];
@@ -52,14 +42,20 @@ export const createSlots = <SlotMap extends Record<string, any>>(
 
         const WrappedComponent: ParentComponent<Props> = (props) => {
             const slots: Partial<{ [K in keyof SlotMap]: SlotMap[K] }> = {};
-            const register = <K extends keyof SlotMap>(key: K, props: SlotMap[K]) => {
-                const [signal] = createSignal(props);
-                slots[key] = signal();
-            };
+            const resolvedChildren = children(() => {
+                const children = (Array.isArray(props.children) ? props.children : [props.children])
+                return children.flat().filter((el: any) => {
+                    if (typeof el === 'object' && el !== null && 'slotName' in el && 'props' in el) {
+                        slots[el.slotName as keyof SlotMap] = el.props as SlotMap[keyof SlotMap];
+                        return false;
+                    }
+                    return true;
+                })
+            });
 
             return (
-                <ctx.Provider value={{ register, slots }}>
-                    {component(props)}
+                <ctx.Provider value={slots}>
+                    {component({ ...props, children: resolvedChildren as unknown as Element })}
                 </ctx.Provider>
             );
         };
