@@ -1,6 +1,6 @@
 import { createSlot, createSlots } from "@components/BaseComponent/Slots";
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, createSignal, onMount, ParentComponent, ParentProps, Show } from "solid-js";
+import { Accessor, Setter, createSignal, onMount, ParentComponent, ParentProps, Show } from "solid-js";
 import styles from './Checkbox.module.css';
 import { BaseComponent } from "@components/BaseComponent/BaseComponent";
 import CheckboxControl, { CheckboxSlotProps } from "./CheckboxControl";
@@ -8,7 +8,7 @@ import CheckboxControl, { CheckboxSlotProps } from "./CheckboxControl";
 export interface CheckboxRef {
     checked: Accessor<boolean>,
     value: any,
-    toggle: (e?: MouseEvent) => void,
+    setChecked: Setter<boolean>,
     element: HTMLDivElement,
 }
 
@@ -30,7 +30,7 @@ const { useSlots, withSlots } = createSlots({
 });
 
 const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
-    const { slots } = useSlots();
+    const slots = useSlots();
     const [checked, setChecked] = createSignal(props.checked ?? false);
     const isBefore = slots.Label?.before;
     let element!: HTMLDivElement;
@@ -51,7 +51,7 @@ const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
         (props.ref as unknown as (ref: any) => void)({
             checked,
             value: props.value,
-            toggle,
+            setChecked,
             element,
         });
     });

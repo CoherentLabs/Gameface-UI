@@ -33,7 +33,7 @@ export default App;
 | ---------- | -------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `style`    | `JSX.CSSProperties`                    | `{}`        | Inline styles to apply directly to the component's root element.                                                                                                                             |
 | `class`    | `string`                               | `""`        | Additional CSS classes to apply to the component                                                                                                                                             |
-| `ref`      | `CheckboxRef  \| undefined`            | `undefined` | A reference to the component that gives you access to its methods and the underlying HTML element. Useful if you need to toggle the checkbox programmatically.                                                             |
+| `ref`      | `CheckboxRef  \| undefined`            | `undefined` | A reference to the component that gives you access to its methods and the underlying HTML element. Useful if you need to set the value of the checkbox programmatically.                                                             |
 | `disabled` | `boolean`                              | `false`     | Specify if the checkbox is disabled                                                                                                                                                            |
 | `value`    | `any`                                  | `''`        | The value associated with the checkbox component. |
 | `checked`  | `boolean`                              | `false`     | Specify if the checkbox is checked initially. |
@@ -43,7 +43,7 @@ export default App;
 
 |Method |Parameters |Return Value |Description |
 |---|---|---|---|
-| `toggle` | `(e?: MouseEvent) => void`  | `void` | Toggles the checkbox |
+| `setChecked ` | `Setter<boolean>`  | `void` | Sets the value of the checkbox |
 
 ## Slots
 
@@ -83,7 +83,7 @@ export default App;
 ```
 
 :::caution
-If the `Label` slot is used other `children` of the `Checkbox` component won't be rendered.  
+If the `Label` slot is used then the other `children` of the `Checkbox` component won't be rendered.  
 :::
 
 ### `Checkbox.Control`
@@ -198,14 +198,14 @@ const App = () => {
 export default App;
 ```
 
-### Toggle the Checkbox Programmatically 
+### Set the value of the Checkbox Programmatically 
 
-The `Checkbox` component lets you toggle the `checked` state through code.
+The `Checkbox` component lets you set the `checked` state through code.
 
 #### Steps
 
 1. Declare a `ref` variable with type `CheckboxRef` and pass it to the `Checkbox` component.
-2. Call `ref.toggle()` from anywhere (e.g., a keyboard event or external button) to toggle the checked state programmatically.
+2. Call `ref.setChecked()` from anywhere (e.g., a keyboard event or external button) to set the checked state programmatically.
 
 ```tsx
 import Checkbox, { CheckboxRef } from '@components/Basic/Checkbox/Checkbox';
@@ -215,7 +215,7 @@ const App = () => {
     const handleKeyPress = (e: KeyboardEvent) => {
         if (e.keyCode !== 13) return
         
-        checkboxRef.toggle();
+        checkboxRef.setChecked(true);
     }
 
     return (
