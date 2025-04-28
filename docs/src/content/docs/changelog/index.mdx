@@ -1,10 +1,33 @@
 ---
-title: Overview
-sidebar:
-    order: 1
+title: Changelog
 ---
 
 import { Badge } from '@astrojs/starlight/components'
 
-### <Badge text="Latest" variant="note" size="medium" /> [0.0.2-beta](/changelog/0-0-2-beta)
-### [0.0.1-beta](/changelog/0-0-1-beta)
+## 0.0.2-beta :badge[Latest]{variant="note"}
+
+<Badge text="Feature" variant="success" size="small" /> Added support for slots in components, allowing for more flexible and reusable component structures.
+
+<Badge text="Feature" variant="success" size="small" /> Added `Bar` and `Handle` slots for the [Scroll](/components/layout/scroll/#slots) component.
+
+<Badge text="Feature" variant="success" size="small" /> Added an option to use `attr:` for adding attributes to GamefaceUI components.
+
+<Badge text="Fix" variant="danger" size="small" /> Fixed reactivity in `componentStyles`.
+
+## 0.0.1-beta
+
+<Badge text="New" variant="tip" size="small" /> GamefaceUI's initial release.
+
+<Badge text="New" variant="tip" size="small" /> Core [components](/components) for building intuitive game user interfaces.
+
+<Badge text="New" variant="tip" size="small" /> Seamless integration with the SolidJS framework for reactive and efficient UI development.
+
+<Badge text="New" variant="tip" size="small" /> Detailed documentation to help you get started quickly.
+
+<Badge text="Feature" variant="success" size="small" /> Support for using [SVGs as SolidJS components](/concepts/svg).
+
+<Badge text="Feature" variant="success" size="small" /> Introduced a [Vite plugin](/concepts/plugins#vite-gameface-plugin) to optimize and transform UI source code for Gameface.
+
+<Badge text="Feature" variant="success" size="small" /> Added a [Vite plugin](/concepts/plugins#vite-solid-style-to-css-plugin) to convert `style` properties to `class`, enhancing performance by reducing inline styles and leveraging CSS for better caching and reusability.
+
+<Badge text="Feature" variant="success" size="small" /> Simplified importing of UI assets with a new [mechanism](/concepts/assets).
