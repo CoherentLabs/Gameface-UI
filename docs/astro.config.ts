@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config'
 import starlightThemeRapide from 'starlight-theme-rapide'
 import starlightLinksValidator from 'starlight-links-validator';
 import starlightHeadingBadges from 'starlight-heading-badges'
+import changelogSidebar from './src/changelogSideBar';
 
 export default defineConfig({
   integrations: [
@@ -34,11 +35,7 @@ export default defineConfig({
           autogenerate: { directory: 'components', collapsed: false },
 
         },
-        {
-          label: 'Changelog',
-          collapsed: true,
-          autogenerate: { directory: 'changelog', collapsed: false },
-        },
+        changelogSidebar,
       ],
       social: {
         email: 'https://coherent-labs.com/get-in-touch',

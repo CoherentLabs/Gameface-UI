@@ -157,3 +157,60 @@ const Button:ParentComponent<ButtonProps> = (props) => {
 
 export default withSlots(Button);
 ```
+
+:::tip
+Rendering the component's children is optional. If you decide not to render the children, you can omit the `{props.children}` line from the button's template, and the slots will still work as intended. The `Icon` slot will render based on the `before` property. However, including `{props.children}` will not render the slots as part of the component's children. To utilize the slots, you must access their properties through the `slots` object.
+:::
+
+## Known issues
+
+* The `createSlots` function **does not support nested slots**. For instance, attempting to nest slots as shown below will not work:
+
+```tsx
+<Button>
+    <Button.Text>
+        <Button.Icon />
+    </Button.Text>
+</Button>
+```
+
+All the slots must be defined at the same level in the component's template.
+
+```tsx
+<Button>
+    <Button.Icon />
+    <Button.Text />
+</Button>
+```
+
+* Conditional rendering of a slot is **not supported**. For instance, attempting to render a slot based on a condition:
+
+```tsx del="{renderIconBefore() && <Button.Icon before/>}"
+const [renderIconBefore, setRenderIconBefore] = createSignal(false);
+<Button>
+    {renderIconBefore() && <Button.Icon before/>}
+    Text
+</Button>
+```
+
+Or
+
+```tsx del="<Show when={renderIconBefore()}>" del="<Button.Icon before/>" del="</Show>"
+const [renderIconBefore, setRenderIconBefore] = createSignal(false);
+<Button>
+    <Show when={renderIconBefore()}>
+        <Button.Icon before/>
+    </Show>
+    Text
+</Button>
+```
+
+To conditionally modify a slot's properties, you can directly manipulate the slot's properties in the component. For instance, to dynamically update the `before` property of the `Icon` slot based on a condition:
+
+```tsx ins="<Button.Icon before={renderIconBefore()} />"
+const [renderIconBefore, setRenderIconBefore] = createSignal(false);
+<Button>
+    <Button.Icon before={renderIconBefore()} />
+    Text
+</Button>
+```
