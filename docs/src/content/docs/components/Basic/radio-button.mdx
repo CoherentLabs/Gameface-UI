@@ -1,0 +1,161 @@
+---
+title: RadioButton
+---
+
+The `RadioButton` component represents a single option within a `RadioGroup`. It renders a clickable control with a label.
+
+## Usage
+
+To create a `RadioButton` you need to wrap it in the `RadioGroup` component and provide a value to it. You must also provide the `selected` prop to the `RadioButton` you wish
+to be selected by default.
+
+```tsx
+import RadioGroup from '@components/Basic/RadioGroup/RadioGroup';
+import RadioButton from '@components/Basic/RadioButton/RadioButton';
+
+const App = () => {
+    return (
+        <>
+            <RadioGroup>
+                <RadioButton selected value="red">red</RadioButton>
+                <RadioButton value="green">green</RadioButton>
+                <RadioButton value="blue">blue</RadioButton>
+            </RadioGroup>
+        </>
+    );
+};
+
+export default App;
+```
+
+## API
+
+### Props
+
+| Prop Name  | Type                                   | Default     | Description                                                                                                                                                                                  |
+| ---------- | -------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `style`    | `JSX.CSSProperties`                    | `{}`        | Inline styles to apply directly to the component's root element.                                                                                                                             |
+| `class`    | `string`                               | `""`        | Additional CSS classes to apply to the component.                                                                                                                                             |
+| `value`    | `string`                               | `undefined` | The string value the radio button is associated with.                                                                                                                                                     |
+| `selected` | `boolean`                              | `false`     | Specify if the radio button is selected.                                                                                                                                                     |
+| `disabled` | `boolean`                              | `false`     | Specify if the radio group is disabled.                                                                                                                                                    |
+
+## Slots
+
+### `RadioButton.Label`
+
+Allows customization of the radio button's label. This slot can be used to include additional elements in the label or place the label before the control of the radio button.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `before`  | `boolean` | `false` | Specify if the label should be put before the radio button control |
+| `children`| `JSX.Element` | `undefined` | Content to render inside the label, which can be any valid JSX element. |
+
+#### Usage
+
+```diff lang="tsx"
+import RadioGroup from '@components/Basic/RadioGroup/RadioGroup';
+import RadioButton from '@components/Basic/RadioButton/RadioButton';
+import Block from '@components/Layout/Block/Block';
+
+const App = () => {
+    return (
+        <RadioGroup>
+            <RadioButton value="windowed">Windowed</RadioButton>
+            <RadioButton value="fullscreen">Fullscreen Mode</RadioButton>
++            <RadioButton value="borderless">
++                <RadioButton.Label>
++                    <Block style={{ 'font-weight': 'bold' }}>Borderless</Block>
++                </RadioButton.Label>
++            </RadioButton>
+        </RadioGroup>
+    );
+};
+
+export default App;
+```
+
+:::caution
+If the `Label` slot is used then the other `children` of the `RadioButton` component won't be rendered.  
+:::
+
+### `RadioButton.Control`
+
+This slot allows you to customize the control of the `RadioButton` component when it is not selected. 
+Use it to apply custom styles, classes or include additional elements in the control of the radio button.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the radio button control. |
+| `class`   | `string` | `""` | Additional CSS classes to style the radio button control. |
+| `children`| `JSX.Element` | `undefined` | Content to render inside the radio button control, which can be any valid JSX element. |
+
+#### Usage
+
+```diff lang="tsx"
+import RadioGroup from '@components/Basic/RadioGroup/RadioGroup';
+import RadioButton from '@components/Basic/RadioButton/RadioButton';
+import Block from '@components/Layout/Block/Block';
+
+const App = () => {
+    return (
+        <RadioGroup>
+            <RadioButton value="windowed">Windowed</RadioButton>
+            <RadioButton value="fullscreen">Fullscreen Mode</RadioButton>
++            <RadioButton value="borderless">
++                Borderless
++                <RadioButton.Control style={{'border-color': 'blueviolet', "background-color": 'black'}} />
++            </RadioButton>
+        </RadioGroup>
+    );
+};
+
+export default App;
+```
+
+### `RadioButton.Indicator`
+
+This slot allows you to override the default indicator displayed when the radio button is selected.
+Use it to apply custom styles, classes or include additional elements in the indicator of the radio button.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the radio button indicator. |
+| `class`   | `string` | `""` | Additional CSS classes to style the radio button indicator. |
+| `children`| `JSX.Element` | `undefined` | Content to render inside the radio button indicator, which can be any valid JSX element. |
+
+#### Usage
+
+```diff lang="tsx"
+import RadioGroup from '@components/Basic/RadioGroup/RadioGroup';
+import RadioButton from '@components/Basic/RadioButton/RadioButton';
+import Block from '@components/Layout/Block/Block';
+import Icon from '@assets/check-mark.svg?component-solid';
+
+const App = () => {
+    return (
+        <RadioGroup>
+            <RadioButton value="windowed">Windowed</RadioButton>
+            <RadioButton value="fullscreen">Fullscreen Mode</RadioButton>
++            <RadioButton value="borderless">
++                Borderless
++                <RadioButton.Indicator style={{"background-color": 'green'}}>
++                    <Icon style={{width: '100%', height: '100%' }}/>
++                </RadioButton.Indicator>
++            </RadioButton>
+        </RadioGroup>
+    );
+};
+
+export default App;
+```
+
+## Guide
+
+You can find examples of how to work with the radio buttons in the [Radio group documentation](../radio-group#guide).
