@@ -1,5 +1,5 @@
-import { BaseComponentRef, ComponentBaseProps, ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, children, JSX, onMount, ParentComponent, Setter } from "solid-js";
+import { BaseComponentRef, ComponentProps } from "@components/types/ComponentProps";
+import { Accessor, onMount, ParentComponent } from "solid-js";
 import { createContext, createSignal } from "solid-js";
 import styles from './RadioGroup.module.css';
 import { BaseComponent } from "@components/BaseComponent/BaseComponent";
@@ -9,6 +9,7 @@ export const RadioGroupContext = createContext<RadioGroupContextValue>();
 type changeOptionMethod = (newOption: string) => void;
 
 export interface RadioGroupRef extends BaseComponentRef {
+    selected: Accessor<string>,
     changeOption: changeOptionMethod;
 }
 
@@ -35,11 +36,11 @@ const RadioGroup: ParentComponent<RadioGroupProps> = (props) => {
         props.onChange?.(newOption);
     }
 
-    // Lets make an util function
     onMount(() => {
         if (!props.ref || !element) return;
 
         (props.ref as unknown as (ref: any) => void)({
+            selected,
             changeOption,
             element,
         });

@@ -1,4 +1,4 @@
-import { onMount, ParentComponent, useContext } from "solid-js";
+import { ParentComponent, useContext } from "solid-js";
 import { RadioGroupContext } from "../RadioGroup/RadioGroup";
 import { ComponentProps } from "@components/types/ComponentProps";
 import styles from './RadioButton.module.css';
