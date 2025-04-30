@@ -42,7 +42,8 @@ In this example, the text is wrapped inside the `Scroll` component, and the maxi
 ### Methods
 |Method |Parameters |Return Value |Description |
 |---|---|---|---|
-| `scrollToElement` | `element: string \| HTMLElement`  | `void` | Scrolls the content to the specified element. The element must be part of the content inside the Scroll component. |
+| `scrollToElement` | `element: string \| HTMLElement`  | `void` | Scrolls the container so the target element is aligned at the top of the scrollable area. The element must be part of the content inside the Scroll component. |
+| `scrollIntoView`  | `element: string \| HTMLElement`  | `void` | Scrolls just enough to ensure the element is fully visible within the scrollable area. The element must be part of the content inside the Scroll component. |
 | `scrollUp` | none | `void` | Scrolls the content upward by a fixed amount. |
 | `scrollDown` | none | `void` | Scrolls the content downward by a fixed amount. |
 | `begin` | none | `void` | Instantly scrolls the content to the very beginning (top). |
