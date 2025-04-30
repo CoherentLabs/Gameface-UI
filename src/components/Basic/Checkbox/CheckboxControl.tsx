@@ -18,7 +18,7 @@ const CheckboxControl: ParentComponent<CheckboxControlProps> = (props) => {
         <div
             class={`${styles.Control} ${props.before ? styles.Before : ''} ${props.controlSlot?.class || ''}`}
             style={props.controlSlot?.style || {}}>
-            {props.controlSlot?.children && props.controlSlot.children}
+            {props.controlSlot?.children}
             <div 
                 class={`${styles.Indicator} ${props.checked() ? styles.Checked : ''} ${props.indicatorSlot?.class || ''}`}
                 style={props.indicatorSlot?.style || {}}>
