@@ -1,6 +1,6 @@
 import { createSlot, createSlots } from "@components/BaseComponent/Slots";
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, Setter, createSignal, onMount, ParentComponent, ParentProps, Show } from "solid-js";
+import { Accessor, Setter, createSignal, onMount, ParentComponent, ParentProps, Show, createEffect } from "solid-js";
 import styles from './Checkbox.module.css';
 import { BaseComponent } from "@components/BaseComponent/BaseComponent";
 import CheckboxControl, { CheckboxSlotProps } from "./CheckboxControl";
@@ -42,8 +42,11 @@ const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
 
         setChecked(prev => !prev);
         props.click?.(e as MouseEvent);
-        props.onChange?.(checked())
     }
+
+    createEffect(() => {
+        props.onChange?.(checked());
+    })
 
     onMount(() => {
         if (!props.ref || !element) return;
