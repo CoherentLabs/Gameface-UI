@@ -1,5 +1,5 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, Setter, createSignal, onMount, ParentComponent, ParentProps, Show, createContext, createMemo } from "solid-js";
+import { Accessor, Setter, createSignal, onMount, ParentComponent, Show, createContext, createMemo, createEffect } from "solid-js";
 import styles from './Checkbox.module.css';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { Control, CheckboxControl } from "./CheckboxControl";
@@ -41,6 +41,10 @@ const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
         setChecked(prev => !prev);
         props.onChange?.(checked())
     }
+
+    createEffect(() => {
+        props.onChange?.(checked());
+    })
 
     onMount(() => {
         if (!props.ref || !element) return;
