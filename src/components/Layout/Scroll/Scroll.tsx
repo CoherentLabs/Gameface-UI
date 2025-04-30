@@ -16,6 +16,7 @@ export const ScrollContext = createContext<{
 
 export interface ScrollComponentRef extends BaseComponentRef {
     scrollToElement: (element: HTMLElement | string) => void,
+    scrollIntoView: (element: HTMLElement | string) => void,
     scrollUp: () => void,
     scrollDown: () => void,
     end: () => void,
@@ -160,8 +161,44 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
         scrollTo(maxScroll, 1);
     }
 
+    function scrollIntoView(element: HTMLElement | string) {
+        if (!overflow()) return;
+
+        if (typeof element === 'string') {
+            element = contentRef!.querySelector(element) as HTMLElement
+        }
+
+        if (!element) return;
+
+        // Current scrollable container info
+        const contentTop = contentRef!.scrollTop;
+        const contentHeight = contentRef!.clientHeight;
+        const contentBottom = contentTop + contentHeight;
+
+        // Element’s bounding info relative to the scroll container
+        const elTop = element.offsetTop;
+        const elHeight = element.offsetHeight;
+        const elBottom = elTop + elHeight;
+
+        // If the element is already in view, do nothing
+        if (elTop >= contentTop && elBottom <= contentBottom) {
+            return;
+        }
+
+        // If element is above the current view, scroll so that element is at the top
+        if (elTop < contentTop) {
+            scrollTo(elTop, 0);
+        }
+        // If element is below the current view, scroll so element’s bottom is aligned with the container’s bottom
+        else if (elBottom > contentBottom) {
+            const newScrollTop = elBottom - contentHeight;
+            scrollTo(newScrollTop, 1); 
+        }
+    }
+
     const scrollObjectRef = {
         scrollToElement,
+        scrollIntoView,
         scrollUp,
         scrollDown,
         begin,
