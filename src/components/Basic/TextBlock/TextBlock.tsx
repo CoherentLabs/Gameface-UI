@@ -1,14 +1,15 @@
 import { ParentComponent } from "solid-js";
 import { ComponentProps } from "../../types/ComponentProps";
-import { BaseComponent } from "../../BaseComponent/BaseComponent";
+import useBaseComponent from "@components/BaseComponent/BaseComponent";
 
 const TextBlock: ParentComponent<ComponentProps> = (props) => {
-
+    const {className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
+    
     return <p ref={props.ref as HTMLParagraphElement}
-            {...BaseComponent(props).attributes}
-            {...BaseComponent(props).eventHandlers} 
-            class={BaseComponent(props).className}
-            style={BaseComponent(props).style}>
+            class={className()}
+            style={inlineStyles()}
+            use:forwardEvents={props}
+            use:forwardAttrs={props}>
                 {props.children}
             </p>
 }

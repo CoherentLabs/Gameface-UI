@@ -1,4 +1,4 @@
-import { children, ParentComponent, useContext } from "solid-js";
+import { ParentComponent, useContext } from "solid-js";
 import { ComponentBaseProps } from "../../types/ComponentProps";
 import { TabsContext } from "../Tabs/Tabs";
 import LayoutBase from "../LayoutBase";
@@ -22,7 +22,7 @@ const TabLink: ParentComponent<TabLinkProps> = (props) => {
     };
   
     return (
-        <LayoutBase {...props} click={handleTabChange} active={props.location === tabs.current() ? props.activeClass : ''}>
+        <LayoutBase {...props} click={handleTabChange} active={() => props.location === tabs.current() ? props.activeClass : ''}>
             {props.children}
         </LayoutBase>
     );

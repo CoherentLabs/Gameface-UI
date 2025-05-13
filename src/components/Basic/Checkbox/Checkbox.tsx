@@ -2,7 +2,7 @@ import { createSlot, createSlots } from "@components/BaseComponent/Slots";
 import { ComponentProps } from "@components/types/ComponentProps";
 import { Accessor, Setter, createSignal, onMount, ParentComponent, ParentProps, Show } from "solid-js";
 import styles from './Checkbox.module.css';
-import { BaseComponent } from "@components/BaseComponent/BaseComponent";
+import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import CheckboxControl, { CheckboxSlotProps } from "./CheckboxControl";
 
 export interface CheckboxRef {
@@ -36,6 +36,7 @@ const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
     let element!: HTMLDivElement;
 
     props.componentClasses = `${styles.Checkbox} ${props.disabled ? styles.Disabled : ''}`;
+    const {className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
  
     const toggle = (e?: MouseEvent) => {
         if (props.disabled) return;
@@ -59,10 +60,10 @@ const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
     return (
         <div
             ref={element!}
-            {...BaseComponent(props).attributes}
-            {...BaseComponent(props).eventHandlers} 
-            class={BaseComponent(props).className}
-            style={BaseComponent(props).style}
+            class={className()}
+            style={inlineStyles()}
+            use:forwardEvents={props}
+            use:forwardAttrs={props}
             onclick={toggle}>
 
             <Show when={isBefore}>
