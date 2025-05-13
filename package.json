@@ -15,10 +15,11 @@
     "vite-plugin-solid-svg": "^0.8.1"
   },
   "dependencies": {
+    "@solid-primitives/jsx-tokenizer": "^1.1.1",
     "@types/node": "^22.9.0",
     "glob": "^11.0.0",
     "solid-js": "^1.9.3",
     "vite-gameface": "^1.0.0",
-    "vite-solid-style-to-css": "^1.0.0"
+    "vite-solid-style-to-css": "^1.0.1"
   }
 }
