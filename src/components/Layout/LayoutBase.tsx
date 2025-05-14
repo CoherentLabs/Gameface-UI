@@ -1,9 +1,10 @@
-import { ParentComponent, onMount } from 'solid-js';
+import { onMount, ParentComponent } from 'solid-js';
 import { ComponentProps } from '../types/ComponentProps';
-import { BaseComponent } from '../BaseComponent/BaseComponent';
+import useBaseComponent from '@components/BaseComponent/BaseComponent';
 
 const LayoutBase: ParentComponent<ComponentProps> = (props) => {
     let element: HTMLDivElement | undefined;
+    const {className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     onMount(() => {
         if (props.ref && element) {
@@ -17,10 +18,10 @@ const LayoutBase: ParentComponent<ComponentProps> = (props) => {
     return (
         <div
             ref={element}
-            {...BaseComponent(props).attributes}
-            {...BaseComponent(props).eventHandlers}
-            class={BaseComponent(props).className}
-            style={BaseComponent(props).style}
+            class={className()}
+            style={inlineStyles()}
+            use:forwardEvents={props}
+            use:forwardAttrs={props}
         >
             {props.children}
         </div>
