@@ -37,10 +37,18 @@ export default defineConfig({
         },
         changelogSidebar,
       ],
-      social: {
-        email: 'https://coherent-labs.com/get-in-touch',
-        github: 'https://github.com/CoherentLabs/Gameface-UI',
-      },
+      social: [
+        {
+          icon: 'open-book',
+          label: 'Documentation',
+          href: 'https://coherent-labs.com/documentation',
+        },
+        {
+          icon: 'email',
+          label: 'Email',
+          href: 'https://coherent-labs.com/get-in-touch'
+        },
+      ],
       title: 'GamefaceUI',
     }),
   ],
