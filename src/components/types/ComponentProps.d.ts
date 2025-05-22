@@ -35,6 +35,10 @@ export interface ComponentProps<T extends Record<string, any> = {}> extends Comp
     active?: () => string;
 }
 
+export interface TokenComponentProps {
+    parentChildren: JSX.Element,
+}
+
 declare module "solid-js" {
     namespace JSX {
         interface IntrinsicElements {

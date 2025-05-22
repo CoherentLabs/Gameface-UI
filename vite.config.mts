@@ -5,12 +5,18 @@ import { globSync } from 'glob';
 import path, { relative, extname, resolve } from 'node:path';
 import solidStyleToCssPlugin from 'vite-solid-style-to-css';
 import solidGameface from 'vite-gameface';
+import eslint from 'vite-plugin-eslint';
 
 const root = 'src/views';
 
 export default defineConfig({
   root: root,
   plugins: [
+    eslint({
+      include: ['src/**/*.ts', 'src/**/*.tsx'],
+      emitWarning: true,
+      emitError: false,
+    }),
     solidStyleToCssPlugin(),
     solidPlugin(),
     solidSvg({

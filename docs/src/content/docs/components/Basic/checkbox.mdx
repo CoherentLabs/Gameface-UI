@@ -126,6 +126,10 @@ export default App;
 This slot allows you to override the default indicator displayed when the checkbox is checked.
 Use it to apply custom styles, classes or include additional elements in the indicator of the checkbox.
 
+:::note
+The `Checkbox.Indicator` slot is only rendered when used inside the `Checkbox.Control` slot.
+:::
+
 #### Properties
 
 | Prop Name | Type | Default | Description |
@@ -146,11 +150,13 @@ const App = () => {
             <Checkbox value="v-sync">V-Sync</Checkbox>
             <Checkbox value="fullscreen" checked>Fullscreen Mode</Checkbox>
             <Checkbox value="motion blur" checked>Motion Blur</Checkbox>
-+            <Checkbox value="anti-aliasing">
-+               <Checkbox.Indicator style={{"background-color": color()}}>
-+                    <Icon style={{width: '100%', height: '100%' }}/>
-+                </Checkbox.Indicator>
-+            </Checkbox>
+            <Checkbox value="anti-aliasing">
+                <Checkbox.Control style={{'border-color': 'blueviolet', "background-color": 'black'}}>
++                    <Checkbox.Indicator style={{"background-color": color()}}>
++                        <Icon style={{width: '100%', height: '100%' }}/>
++                    </Checkbox.Indicator>
+                </Checkbox.Control>
+            </Checkbox>
         </>
     );
 };

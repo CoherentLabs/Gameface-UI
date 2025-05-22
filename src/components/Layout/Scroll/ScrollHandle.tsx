@@ -1,34 +1,40 @@
-import { JSX, ParentComponent, ParentProps } from "solid-js";
+import { createMemo, JSX, ParentComponent, useContext } from "solid-js";
 import styles from './ScrollHandle.module.css';
+import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
+import { ScrollContext } from "./Scroll";
+import { TokenComponentProps } from "@components/types/ComponentProps";
 
-export interface HandleSlotProps extends ParentProps {
-    style?: JSX.CSSProperties
-    class?: string,
+interface HandleTokenProps {
+    style?: JSX.CSSProperties | undefined
+    class?: string
 }
 
-interface ScrollHandleProps {
-    style: JSX.CSSProperties | undefined
-    handleSlot?: HandleSlotProps
-    mouseDown: (e: MouseEvent) => void
-}
+export const Handle = createTokenComponent<HandleTokenProps>();
 
-const ScrollHandle: ParentComponent<ScrollHandleProps> = (props) => {
-    if (props.handleSlot) {
-        return <div
-            onMouseDown={props.mouseDown}
-            class={styles.Handle + ' ' + props.handleSlot?.class || ''}
-            style={{ ...props.style, ...(props.handleSlot?.style) || {} }}>
-            {props.handleSlot?.children}
-        </div>
-    }
+export const ScrollHandle: ParentComponent<TokenComponentProps> = (props) => {
+    const scrollContext = useContext(ScrollContext);
+    const HandleToken = useToken(Handle, props.parentChildren);
+
+    const handleStyles = createMemo(() => {
+        const styles = { height: `${scrollContext?.handleHeight()}px`, top: `${scrollContext?.handleTop()}px` };
+        const token = HandleToken();
+        if (token && token.style) return { ...styles, ...token.style };
+
+        return styles;
+    });
+
+    const scrollHandleClasses = createMemo(() => {
+        if (HandleToken()?.class) return styles.Handle + ' ' + HandleToken()?.class;
+
+        return styles.Handle;
+    });
 
     return (
         <div
-            onMouseDown={props.mouseDown}
-            class={styles.Handle}
-            style={{ ...props.style }}>
+            onMouseDown={scrollContext?.onHandleMouseDown}
+            class={scrollHandleClasses()}
+            style={handleStyles()}>
+            {HandleToken()?.children}
         </div>
-    )
-}
-
-export default ScrollHandle;
+    );
+};
