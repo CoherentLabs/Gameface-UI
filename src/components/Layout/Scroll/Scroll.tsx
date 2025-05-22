@@ -1,11 +1,19 @@
-import { createMemo, createSignal, JSX, onCleanup, onMount, ParentProps } from "solid-js";
+import { Accessor, createContext, createSignal, onCleanup, onMount, ParentComponent } from 'solid-js';
 import styles from './Scroll.module.css';
-import LayoutBase from "../LayoutBase";
-import { clamp } from "../../utils/clamp";
-import { BaseComponentRef, ComponentBaseProps } from "../../types/ComponentProps";
-import { createSlot, createSlots } from "@components/BaseComponent/Slots";
-import ScrollHandle, { HandleSlotProps } from "./ScrollHandle";
-import { ParentComponent } from "solid-js";
+import LayoutBase from '../LayoutBase';
+import { clamp } from '@components/utils/clamp';
+import { Content, ScrollContent } from './ScrollContent';
+import { Bar, ScrollBar } from './ScrollBar';
+import { BaseComponentRef, ComponentBaseProps } from '@components/types/ComponentProps';
+import { Handle } from './ScrollHandle';
+
+export const ScrollContext = createContext<{
+    scrollByClickHandler: (event: MouseEvent) => void,
+    onHandleMouseDown: (event: MouseEvent) => void,
+    handleHeight: Accessor<number>,
+    handleTop: Accessor<number>
+}>();
+
 export interface ScrollComponentRef extends BaseComponentRef {
     scrollToElement: (element: HTMLElement | string) => void,
     scrollUp: () => void,
@@ -27,19 +35,7 @@ interface ScrollProps extends ComponentBaseProps {
     onScroll?: OnScrollHandler
 }
 
-interface BarSlotProps extends ParentProps {
-    style?: JSX.CSSProperties
-    class?: string,
-}
-
-const { useSlots, withSlots } = createSlots({
-    Handle: createSlot<HandleSlotProps>(),
-    Bar: createSlot<BarSlotProps>()
-});
-
 const Scroll: ParentComponent<ScrollProps> = (props) => {
-    const slots = useSlots();
-
     const [overflow, setOverflow] = createSignal(false);
     const [handleHeight, setHandleHeight] = createSignal(0);
     const [handleTop, setHandleTop] = createSignal(0);
@@ -74,7 +70,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     function getScrollDirection(): ScrollDirections {
         if (maxScroll === contentRef!.scrollTop) return 'down';
 
-        return prevScrollTop < contentRef!.scrollTop ? 'down' : 'up'
+        return prevScrollTop < contentRef!.scrollTop ? 'down' : 'up';
     }
 
     function handleOnScroll() {
@@ -91,8 +87,8 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     function onHandleMouseDown(e: MouseEvent) {
         startY = e.clientY;
         startScrollTop = contentRef!.scrollTop;
-        window.addEventListener("mousemove", onHandleMouseMove);
-        window.addEventListener("mouseup", onHandleMouseUp);
+        window.addEventListener('mousemove', onHandleMouseMove);
+        window.addEventListener('mouseup', onHandleMouseUp);
     }
 
     function onHandleMouseMove(e: MouseEvent) {
@@ -107,25 +103,25 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     }
 
     function onHandleMouseUp() {
-        window.removeEventListener("mousemove", onHandleMouseMove);
-        window.removeEventListener("mouseup", onHandleMouseUp);
+        window.removeEventListener('mousemove', onHandleMouseMove);
+        window.removeEventListener('mouseup', onHandleMouseUp);
     }
 
     function updateHandlePosition() {
         const newHandleTop = maxScroll > 0 ? (contentRef!.scrollTop / maxScroll) * maxHandleMovement : 0;
         setHandleTop(clamp(newHandleTop, 0, maxHandleMovement));
-        handleOnScroll()
+        handleOnScroll();
     }
 
     function scrollToElement(element: HTMLElement | string) {
         if (!overflow()) return;
 
         if (typeof element === 'string') {
-            element = contentRef!.querySelector(element) as HTMLElement
+            element = contentRef!.querySelector(element) as HTMLElement;
         }
 
         if (element instanceof HTMLElement) {
-            contentRef!.scrollTop = element.offsetTop
+            contentRef!.scrollTop = element.offsetTop;
             updateHandlePosition();
         }
     }
@@ -149,11 +145,11 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     }
 
     function scrollUp() {
-        scrollWith(-100)
+        scrollWith(-100);
     }
 
     function scrollDown() {
-        scrollWith(100, 1)
+        scrollWith(100, 1);
     }
 
     function begin() {
@@ -161,7 +157,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     }
 
     function end() {
-        scrollTo(maxScroll, 1)
+        scrollTo(maxScroll, 1);
     }
 
     const scrollObjectRef = {
@@ -170,7 +166,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
         scrollDown,
         begin,
         end
-    }
+    };
 
     const scrollByClickHandler = (event: MouseEvent) => {
         if (event.target !== event.currentTarget) return;
@@ -179,48 +175,33 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
 
         contentRef!.scrollTop = scrollPosition;
         updateHandlePosition();
-    }
+    };
 
     onMount(() => {
         resizeObserver = new ResizeObserver(updateMeasurements);
 
-        if (contentRef!) resizeObserver.observe(contentRef);
+        if (contentRef!) {
+            resizeObserver.observe(contentRef);
 
-        contentRef!.addEventListener("scroll", updateHandlePosition);
+            contentRef!.addEventListener('scroll', updateHandlePosition);
+        }
     });
 
     onCleanup(() => {
         if (resizeObserver) resizeObserver.disconnect();
-        if (contentRef!) contentRef.removeEventListener("scroll", updateHandlePosition);
-    });
-
-    const scrollBarStyles = createMemo(() => {
-        if (slots.Bar?.style) return { ...slots.Bar?.style };
-
-        return {};
+        if (contentRef!) contentRef.removeEventListener('scroll', updateHandlePosition);
     });
 
     return (
-        <LayoutBase {...props} refObject={scrollObjectRef} >
-            <div ref={containerRef!} class={styles.Scroll}>
-                <div ref={contentRef!} class={styles.Content}>{props.children}</div>
-                {overflow() && (
-                    <div
-                        class={styles.ScrollBar + ' ' + slots.Bar?.class || ''}
-                        style={scrollBarStyles()}
-                        onClick={scrollByClickHandler}
-                    >
-                        {slots.Bar?.children}
-                        <ScrollHandle
-                            handleSlot={slots.Handle}
-                            mouseDown={onHandleMouseDown}
-                            style={{ height: `${handleHeight()}px`, top: `${handleTop()}px` }}
-                        />
-                    </div>
-                )}
-            </div>
-        </LayoutBase >
-    )
+        <ScrollContext.Provider value={{ scrollByClickHandler, onHandleMouseDown, handleHeight, handleTop }}>
+            <LayoutBase {...props} refObject={scrollObjectRef}>
+                <div ref={containerRef!} class={styles.Scroll}>
+                    <ScrollContent ref={contentRef!} parentChildren={props.children} />
+                    {overflow() && (<ScrollBar parentChildren={props.children} />)}
+                </div>
+            </LayoutBase>
+        </ScrollContext.Provider>
+    );
 };
 
-export default withSlots(Scroll);
+export default Object.assign(Scroll, { Content, Bar, Handle });
