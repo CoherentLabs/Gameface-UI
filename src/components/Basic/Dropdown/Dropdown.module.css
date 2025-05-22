@@ -1,0 +1,31 @@
+.dropdown {
+    position: relative;
+}
+
+.dropdown-box {
+    padding: 1.5vh;
+    border: 0.2vh solid #7d7d7d;
+    border-radius: 0.5vh;
+    background-color: #D9D9D9;
+    width: 35vh;
+    display: flex;
+}
+
+.dropdown-box:hover {
+    border-color: #00da9a;
+}
+
+.dropdown-selected {
+    width: 90%;
+    color: #666666;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.dropdown-icon {
+    width: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

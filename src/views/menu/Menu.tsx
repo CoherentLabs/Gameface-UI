@@ -12,9 +12,14 @@ import Content from '@components/Layout/Content/Content';
 import Bottom from '@components/Layout/Bottom/Bottom';
 import Scroll from '@components/Layout/Scroll/Scroll';
 import MenuItems from '@custom-components/Menu/MenuItems/MenuItems';
-import { For } from 'solid-js';
+import { Accessor, createSignal, For, Show } from 'solid-js';
+import ScrollWrapper from './ScrollWrapper';
+
+
 
 const Menu = () => {
+    const [show, setShow] = createSignal(false);
+
     return (
         <div class={styles.Menu}>
             <Row style={{ height: '100%' }}>
@@ -61,22 +66,25 @@ const Menu = () => {
                         <Layout>
                             <Top></Top>
                             <Content>
-                                <Scroll style={{ 'max-height': '60vh', width: '90%' }}>
-                                    <Tab location="Gameplay">
-                                        <MenuItems count={40} />
-                                    </Tab>
-                                    <Tab location="Graphics">
-                                        <MenuItems count={5} />
-                                    </Tab>
-                                    <Tab location="Keybinds">
-                                        <MenuItems count={60} />
-                                    </Tab>
-                                    <Tab location="Audio">
-                                        <MenuItems count={20} />
-                                    </Tab>
-                                    <Tab location="Credits">
-                                        <MenuItems count={2} />
-                                    </Tab>
+                                <Scroll click={() => setShow(!show())} style={{ 'max-height': '60vh', width: '90%' }}>
+                                    <Scroll.Content>
+                                        <Tab location="Gameplay">
+                                            <MenuItems count={40} />
+                                        </Tab>
+                                        <Tab location="Graphics">
+                                            <MenuItems count={5} />
+                                        </Tab>
+                                        <Tab location="Keybinds">
+                                            <MenuItems count={60} />
+                                        </Tab>
+                                        <Tab location="Audio">
+                                            <MenuItems count={20} />
+                                        </Tab>
+                                        <Tab location="Credits">
+                                            <MenuItems count={2} />
+                                        </Tab>
+                                    </Scroll.Content>
+                                    <ScrollWrapper show={show} />
                                 </Scroll>
                             </Content>
                             <Bottom></Bottom>
