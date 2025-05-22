@@ -1,31 +1,29 @@
-import { Accessor, JSX, ParentComponent, ParentProps } from "solid-js";
+import { JSX, ParentComponent } from "solid-js";
 import styles from './Checkbox.module.css';
+import { TokenComponentProps } from '@components/types/ComponentProps';
+import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
+import { CheckboxIndicator } from "./CheckboxIndicator";
 
-export interface CheckboxSlotProps extends ParentProps  {
+interface ControlTokenProps {
     style?: JSX.CSSProperties,
     class?: string,
 }
 
-interface CheckboxControlProps {
-    controlSlot?: CheckboxSlotProps,
-    indicatorSlot?: CheckboxSlotProps
-    checked: Accessor<boolean>,
-    before: boolean | undefined
-} 
+export const Control = createTokenComponent<ControlTokenProps>();
 
-const CheckboxControl: ParentComponent<CheckboxControlProps> = (props) => {
+interface CheckboxControlProps extends TokenComponentProps {
+    before: boolean | undefined
+}
+
+export const CheckboxControl: ParentComponent<CheckboxControlProps> = (props) => {
+    const ControlToken = useToken(Control, props.parentChildren);
+
     return (
         <div
-            class={`${styles.Control} ${props.before ? styles.Before : ''} ${props.controlSlot?.class || ''}`}
-            style={props.controlSlot?.style || {}}>
-            {props.controlSlot?.children && props.controlSlot.children}
-            <div 
-                class={`${styles.Indicator} ${props.checked() ? styles.Checked : ''} ${props.indicatorSlot?.class || ''}`}
-                style={props.indicatorSlot?.style || {}}>
-                {props.indicatorSlot?.children}
-            </div>
+            class={`${styles.Control} ${props.before ? styles.Before : ''} ${ControlToken()?.class || ''}`}
+            style={ControlToken()?.style || {}}>
+            {ControlToken()?.children}
+            <CheckboxIndicator parentChildren={ControlToken()?.children}></CheckboxIndicator>
         </div>
     )
 }
-
-export default CheckboxControl
