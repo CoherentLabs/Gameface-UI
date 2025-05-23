@@ -19,6 +19,8 @@ interface CheckBoxProps extends ComponentProps {
     value?: any
     checked?: boolean
     disabled?: boolean
+    'class-disabled'?: string
+    'class-checked'?: string
     onChange?: (checked: boolean) => void;
 }
 
@@ -32,7 +34,23 @@ const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
     const isBefore = createMemo(() => LabelToken()?.before);
     let element!: HTMLDivElement;
 
-    props.componentClasses = `${styles.Checkbox} ${props.disabled ? styles.Disabled : ''}`;
+    const checkboxClasses = createMemo(() => {
+        const classes = [styles.Checkbox];
+
+        if (props.disabled) {
+            if (props['class-disabled']) classes.push(`${styles.Disabled} ${props['class-disabled']}`);
+            else classes.push(styles.Disabled);
+        }
+
+        if (checked() && props['class-checked']) {
+            classes.push(`${props['class-checked']}`);
+        }
+
+        return classes.join(' ');
+    });
+
+
+    props.componentClasses = () => checkboxClasses();
     const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     const toggle = (e?: MouseEvent) => {

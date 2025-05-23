@@ -1,26 +1,25 @@
 ---
-title: RadioButton
+title: Radio.Button
 ---
 
-The `RadioButton` component represents a single option within a `RadioGroup`. It renders a clickable control with a label.
+The `Radio.Button` slot represents a single option within a `Radio`. It renders a clickable control with a label.
 
 ## Usage
 
-To create a `RadioButton` you need to wrap it in the `RadioGroup` component and provide a value to it. You must also provide the `selected` prop to the `RadioButton` you wish
+To create a `Radio.Button` you need to wrap it in the `Radio` component and provide a value to it. You must also provide the `selected` prop to the `Radio.Button` you wish
 to be selected by default.
 
 ```tsx
-import RadioGroup from '@components/Basic/RadioGroup/RadioGroup';
-import RadioButton from '@components/Basic/RadioButton/RadioButton';
+import Radio from '@components/Basic/RadioGroup/Radio';
 
 const App = () => {
     return (
         <>
-            <RadioGroup>
-                <RadioButton selected value="red">red</RadioButton>
-                <RadioButton value="green">green</RadioButton>
-                <RadioButton value="blue">blue</RadioButton>
-            </RadioGroup>
+            <Radio>
+                <Radio.Button selected value="red">red</Radio.Button>
+                <Radio.Button value="green">green</Radio.Button>
+                <Radio.Button value="blue">blue</Radio.Button>
+            </Radio>
         </>
     );
 };
@@ -32,17 +31,19 @@ export default App;
 
 ### Props
 
-| Prop Name  | Type                                   | Default     | Description                                                                                                                                                                                  |
-| ---------- | -------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `style`    | `JSX.CSSProperties`                    | `{}`        | Inline styles to apply directly to the component's root element.                                                                                                                             |
-| `class`    | `string`                               | `""`        | Additional CSS classes to apply to the component.                                                                                                                                             |
-| `value`    | `string`                               | `undefined` | The string value the radio button is associated with.                                                                                                                                                     |
-| `selected` | `boolean`                              | `false`     | Specify if the radio button is selected.                                                                                                                                                     |
-| `disabled` | `boolean`                              | `false`     | Specify if the radio group is disabled.                                                                                                                                                    |
+| Prop Name        | Type                                   | Default     | Description                                                                                                                                                                                  |
+| ---------------- | -------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `style`          | `JSX.CSSProperties`                    | `{}`        | Inline styles to apply directly to the component's root element.                                                                                                                             |
+| `class`          | `string`                               | `""`        | Additional CSS classes to apply to the component.                                                                                                                                            |
+| `value`          | `string`                               | `undefined` | The string value the radio button is associated with.                                                                                                                                        |
+| `selected`       | `boolean`                              | `false`     | Specify if the radio button is selected.                                                                                                                                                     |
+| `disabled`       | `boolean`                              | `false`     | Specify if the radio button is disabled.                                                                                                                                                      |
+| `class-selected` | `string`                               | `""`        | Additional CSS classes to apply to the button when selected.                                                                                                                              |
+| `class-disabled` | `string`                               | `""`        | Additional CSS classes to apply to the button when disabled.                                                                                                                              |
 
 ## Slots
 
-### `RadioButton.Label`
+### `Radio.ButtonLabel`
 
 Allows customization of the radio button's label. This slot can be used to include additional elements in the label or place the label before the control of the radio button.
 
@@ -56,21 +57,20 @@ Allows customization of the radio button's label. This slot can be used to inclu
 #### Usage
 
 ```diff lang="tsx"
-import RadioGroup from '@components/Basic/RadioGroup/RadioGroup';
-import RadioButton from '@components/Basic/RadioButton/RadioButton';
+import Radio from '@components/Basic/RadioGroup/Radio';
 import Block from '@components/Layout/Block/Block';
 
 const App = () => {
     return (
-        <RadioGroup>
-            <RadioButton value="windowed">Windowed</RadioButton>
-            <RadioButton value="fullscreen">Fullscreen Mode</RadioButton>
-+            <RadioButton value="borderless">
-+                <RadioButton.Label>
+        <Radio>
+            <Radio.Button value="windowed">Windowed</Radio.Button>
+            <Radio.Button value="fullscreen">Fullscreen Mode</Radio.Button>
++            <Radio.Button value="borderless">
++                <Radio.ButtonLabel>
 +                    <Block style={{ 'font-weight': 'bold' }}>Borderless</Block>
-+                </RadioButton.Label>
-+            </RadioButton>
-        </RadioGroup>
++                </Radio.ButtonLabel>
++            </Radio.Button>
+        </Radio>
     );
 };
 
@@ -78,12 +78,12 @@ export default App;
 ```
 
 :::caution
-If the `Label` slot is used then the other `children` of the `RadioButton` component won't be rendered.  
+If the `Label` slot is used then the other `children` of the `Radio.Button` component won't be rendered.  
 :::
 
-### `RadioButton.Control`
+### `Radio.ButtonControl`
 
-This slot allows you to customize the control of the `RadioButton` component when it is not selected. 
+This slot allows you to customize the control of the `Radio.Button` component when it is not selected. 
 Use it to apply custom styles, classes or include additional elements in the control of the radio button.
 
 #### Properties
@@ -97,27 +97,26 @@ Use it to apply custom styles, classes or include additional elements in the con
 #### Usage
 
 ```diff lang="tsx"
-import RadioGroup from '@components/Basic/RadioGroup/RadioGroup';
-import RadioButton from '@components/Basic/RadioButton/RadioButton';
+import Radio from '@components/Basic/RadioGroup/Radio';
 import Block from '@components/Layout/Block/Block';
 
 const App = () => {
     return (
-        <RadioGroup>
-            <RadioButton value="windowed">Windowed</RadioButton>
-            <RadioButton value="fullscreen">Fullscreen Mode</RadioButton>
-+            <RadioButton value="borderless">
+        <Radio>
+            <Radio.Button value="windowed">Windowed</Radio.Button>
+            <Radio.Button value="fullscreen">Fullscreen Mode</Radio.Button>
++            <Radio.Button value="borderless">
 +                Borderless
-+                <RadioButton.Control style={{'border-color': 'blueviolet', "background-color": 'black'}} />
-+            </RadioButton>
-        </RadioGroup>
++                <Radio.ButtonControl style={{'border-color': 'blueviolet', "background-color": 'black'}} />
++            </Radio.Button>
+        </Radio>
     );
 };
 
 export default App;
 ```
 
-### `RadioButton.Indicator`
+### `Radio.ButtonIndicator`
 
 This slot allows you to override the default indicator displayed when the radio button is selected.
 Use it to apply custom styles, classes or include additional elements in the indicator of the radio button.
@@ -133,29 +132,34 @@ Use it to apply custom styles, classes or include additional elements in the ind
 #### Usage
 
 ```diff lang="tsx"
-import RadioGroup from '@components/Basic/RadioGroup/RadioGroup';
-import RadioButton from '@components/Basic/RadioButton/RadioButton';
+import Radio from '@components/Basic/RadioGroup/Radio';
 import Block from '@components/Layout/Block/Block';
 import Icon from '@assets/check-mark.svg?component-solid';
 
 const App = () => {
     return (
-        <RadioGroup>
-            <RadioButton value="windowed">Windowed</RadioButton>
-            <RadioButton value="fullscreen">Fullscreen Mode</RadioButton>
-+            <RadioButton value="borderless">
+        <Radio>
+            <Radio.Button value="windowed">Windowed</Radio.Button>
+            <Radio.Button value="fullscreen">Fullscreen Mode</Radio.Button>
++            <Radio.Button value="borderless">
 +                Borderless
-+                <RadioButton.Indicator style={{"background-color": 'green'}}>
-+                    <Icon style={{width: '100%', height: '100%' }}/>
-+                </RadioButton.Indicator>
-+            </RadioButton>
-        </RadioGroup>
++                <Radio.ButtonControl style={{'border-color': 'blueviolet', "background-color": 'black'}}>
++                   <Radio.ButtonIndicator style={{"background-color": 'green'}}>
++                       <Icon style={{width: '100%', height: '100%' }}/>
++                   </Radio.ButtonIndicator>
++                </Radio.ButtonControl>
++            </Radio.Button>
+        </Radio>
     );
 };
 
 export default App;
 ```
 
+:::note
+The `Radio.ButtonIndicator` slot is only rendered when used inside the `Radio.ButtonControl` slot.
+:::
+
 ## Guide
 
-You can find examples of how to work with the radio buttons in the [Radio group documentation](../radio-group#guide).
+You can find examples of how to work with the radio buttons in the [Radio documentation](/components/basic/radio#guide).

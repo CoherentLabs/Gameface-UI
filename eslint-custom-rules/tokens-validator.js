@@ -3,6 +3,9 @@ const componentsWithSlotTokens = {
   SCROLL_BAR: 'Scroll.Bar',
   CHECKBOX: 'Checkbox',
   CHECKBOX_CONTROL: 'Checkbox.Control',
+  RADIO: 'Radio',
+  RADIO_BUTTON: 'Radio.Button',
+  RADIO_BUTTON_CONTROL: 'Radio.ButtonControl',
 }
 
 const tokenComponetsParents = {
@@ -12,6 +15,10 @@ const tokenComponetsParents = {
   'Checkbox.Label': componentsWithSlotTokens.CHECKBOX,
   'Checkbox.Control': componentsWithSlotTokens.CHECKBOX,
   'Checkbox.Indicator': componentsWithSlotTokens.CHECKBOX_CONTROL,
+  'Radio.Button': componentsWithSlotTokens.RADIO,
+  'Radio.ButtonLabel': componentsWithSlotTokens.RADIO_BUTTON,
+  'Radio.ButtonControl': componentsWithSlotTokens.RADIO_BUTTON,
+  'Radio.ButtonIndicator': componentsWithSlotTokens.RADIO_BUTTON_CONTROL,
 }
 
 function isUsedAsDirectChild(node, parent) {

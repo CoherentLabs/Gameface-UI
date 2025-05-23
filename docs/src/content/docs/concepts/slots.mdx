@@ -245,7 +245,7 @@ Assign nested slots to the parent component using `Object.assign` to ensure they
 
 Conditional rendering of a slot is **supported**. For instance, attempting to render a slot based on a condition:
 
-```tsx del="{renderIconBefore() && <Button.Icon before/>}"
+```tsx ins="{renderIconBefore() && <Button.Icon before/>}"
 const [renderIconBefore, setRenderIconBefore] = createSignal(false);
 <Button>
     {renderIconBefore() && <Button.Icon before/>}
@@ -255,7 +255,7 @@ const [renderIconBefore, setRenderIconBefore] = createSignal(false);
 
 Or
 
-```tsx del="<Show when={renderIconBefore()}>" del="<Button.Icon before/>" del="</Show>"
+```tsx ins="<Show when={renderIconBefore()}>" ins="<Button.Icon before/>" ins="</Show>"
 const [renderIconBefore, setRenderIconBefore] = createSignal(false);
 <Button>
     <Show when={renderIconBefore()}>
