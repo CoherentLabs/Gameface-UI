@@ -41,27 +41,27 @@ const baseEventsSet = new Set([
 
 function forwardAttrs(el: HTMLElement, getData: () => Record<string, any>) {
     let prev = new Set<string>();
-  
+
     return createEffect(() => {
-      const data = getData();
-      const seen = new Set<string>();
-  
-      for (const key in data) {
-        if (!key.startsWith("attr:")) continue;
-        
-        const name = key.slice(5);
-        const val = data[key];
-        seen.add(name);
-  
-        if (val != null) el.setAttribute(name, String(val));
-        else el.removeAttribute(name);
-      }
-  
-      for (const old of prev) {
-        if (!seen.has(old)) el.removeAttribute(old);
-      }
-  
-      prev = seen;
+        const data = getData();
+        const seen = new Set<string>();
+
+        for (const key in data) {
+            if (!key.startsWith("attr:")) continue;
+
+            const name = key.slice(5);
+            const val = data[key];
+            seen.add(name);
+
+            if (val != null) el.setAttribute(name, String(val));
+            else el.removeAttribute(name);
+        }
+
+        for (const old of prev) {
+            if (!seen.has(old)) el.removeAttribute(old);
+        }
+
+        prev = seen;
     });
 }
 
@@ -86,14 +86,14 @@ function forwardEvents(el: HTMLElement, getData: () => Record<string, any>) {
 export function useBaseComponent(props: ComponentProps) {
     const activeClass = props.active ? props.active : () => '';
     const className = () => {
-        const classes = (props.componentClasses || '') + " " + (props.class || '') + " " + activeClass();
+        const classes = (typeof props.componentClasses === "function" ? props.componentClasses() : props.componentClasses || '') + " " + (props.class || '') + " " + activeClass();
         return classes.trim();
     };
 
     const inlineStyles = () => ({
-        ...(typeof props.componentStyles === "function" ? props.componentStyles() : props.componentStyles),  
+        ...(typeof props.componentStyles === "function" ? props.componentStyles() : props.componentStyles),
         ...props.style
-      });
+    });
 
     return { className, inlineStyles, forwardAttrs, forwardEvents };
 }
