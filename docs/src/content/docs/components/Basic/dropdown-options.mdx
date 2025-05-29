@@ -1,0 +1,123 @@
+---
+title: Dropdown.Options
+---
+The `Dropdown.Options` slot serves as the container for all the options within the `Dropdown` component.
+
+## Usage
+
+To use `Dropdown.Options`, wrap it inside the `Dropdown` component.
+
+```tsx
+import Dropdown from '@components/Basic/Dropdown/Dropdown';
+
+const App = () => {
+    return (
+        <Dropdown>
+            <Dropdown.Options>
+                <Dropdown.Option selected value="red">red</Dropdown.Option>
+                <Dropdown.Option value="green">green</Dropdown.Option>
+                <Dropdown.Option value="blue">blue</Dropdown.Option>
+            </Dropdown.Options>
+        </Dropdown>
+    );
+};
+
+export default App;
+```
+
+## API
+
+### Props
+
+| Prop Name | Type                | Default | Description                                                                                     |
+|-----------|---------------------|---------|-------------------------------------------------------------------------------------------------|
+| `style`   | `JSX.CSSProperties` | `{}`    | Inline styles to apply directly to the dropdown options container element.                     |
+| `class`   | `string`            | `""`    | Additional CSS classes to apply to the dropdown options container element.                     |
+| `children`| `JSX.Element`       | `""`    | The children of `Dropdown.Options` should include all the `Dropdown.Option` slots.             |
+
+## Slots
+
+### `Dropdown.Option`
+
+This slot is used to add a new option to the Dropdown. It also allows customization of the option's appearance.
+
+:::note
+The `Dropdown.Option` must be used within the `Dropdown.Options` slot.
+:::
+
+#### Properties
+
+| Prop Name        | Type                | Default     | Description                                                                                     |
+|-------------------|---------------------|-------------|-------------------------------------------------------------------------------------------------|
+| `style`          | `JSX.CSSProperties` | `{}`        | Inline styles applied directly to the dropdown option element.                                 |
+| `class`          | `string`            | `""`        | Additional CSS classes for the dropdown option element.                                        |
+| `value`          | `string`            | `undefined` | The value associated with the dropdown option.                                                |
+| `selected`       | `boolean`           | `false`     | Indicates if the dropdown option is selected.                                                 |
+| `disabled`       | `boolean`           | `false`     | Indicates if the dropdown option is disabled.                                                 |
+| `class-selected` | `string`            | `""`        | Additional CSS classes applied when the dropdown option is selected.                          |
+| `class-disabled` | `string`            | `""`        | Additional CSS classes applied when the dropdown option is disabled.                          |
+| `children`       | `JSX.Element`       | `""`        | Content of the option, used to render text, HTML, or JSX elements within the option.           |
+
+#### Usage
+
+```tsx
+import Dropdown from '@components/Basic/Dropdown/Dropdown';
+
+const App = () => {
+    return (
+        <Dropdown>
+            <Dropdown.Options>
+                <Dropdown.Option selected value="red">red</Dropdown.Option>
+                <Dropdown.Option disabled class-disabled="my-disabled-class" value="green">green</Dropdown.Option>
+                <Dropdown.Option value="blue">blue</Dropdown.Option>
+            </Dropdown.Options>
+        </Dropdown>
+    );
+};
+
+export default App;
+```
+
+:::note
+You can use the `Dropdown.Option` slot multiple times within the `Dropdown.Options` slot as needed.
+:::
+
+:::tip
+To dynamically render options, you can use an array and map over it:
+
+```tsx
+const options = [
+    {value: 'option-1', text: 'Option 1', selected: true, disabled: false},
+    {value: 'option-2', text: 'Option 2', selected: false}
+    ...
+];
+...
+<Dropdown.Options>
+    {options.map((option) => (
+        <Dropdown.Option selected={option.selected} disabled={option.disabled} value={option.value}>
+            {option.text}
+        </Dropdown.Option>
+    ))}
+</Dropdown.Options>
+```
+
+Alternatively, you can use the SolidJS `For` component:
+
+```tsx
+const options = [
+    {value: 'option-1', text: 'Option 1', selected: true, disabled: false},
+    {value: 'option-2', text: 'Option 2', selected: false}
+    ...
+];
+...
+<Dropdown.Options>
+    <For each={options}>
+        {(option) => (
+            <Dropdown.Option selected={option.selected} disabled={option.disabled} value={option.value}>
+                {option.text}
+            </Dropdown.Option>
+        )}
+    </For>
+</Dropdown.Options>
+```
+:::
