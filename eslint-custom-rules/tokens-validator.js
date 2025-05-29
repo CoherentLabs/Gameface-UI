@@ -6,31 +6,53 @@ const componentsWithSlotTokens = {
   RADIO: 'Radio',
   RADIO_BUTTON: 'Radio.Button',
   RADIO_BUTTON_CONTROL: 'Radio.ButtonControl',
+  DROPDOWN: 'Dropdown',
+  DROPDOWN_OPTIONS: 'Dropdown.Options',
 }
 
 const tokenComponetsParents = {
   'Scroll.Bar': componentsWithSlotTokens.SCROLL,
   'Scroll.Content': componentsWithSlotTokens.SCROLL,
   'Scroll.Handle': componentsWithSlotTokens.SCROLL_BAR,
+
   'Checkbox.Label': componentsWithSlotTokens.CHECKBOX,
   'Checkbox.Control': componentsWithSlotTokens.CHECKBOX,
   'Checkbox.Indicator': componentsWithSlotTokens.CHECKBOX_CONTROL,
+
   'Radio.Button': componentsWithSlotTokens.RADIO,
   'Radio.ButtonLabel': componentsWithSlotTokens.RADIO_BUTTON,
   'Radio.ButtonControl': componentsWithSlotTokens.RADIO_BUTTON,
   'Radio.ButtonIndicator': componentsWithSlotTokens.RADIO_BUTTON_CONTROL,
+
+  'Dropdown.Options': componentsWithSlotTokens.DROPDOWN,
+  'Dropdown.Icon': componentsWithSlotTokens.DROPDOWN,
+  'Dropdown.Placeholder': componentsWithSlotTokens.DROPDOWN,
+  'Dropdown.Trigger': componentsWithSlotTokens.DROPDOWN,
+  'Dropdown.Handle': componentsWithSlotTokens.DROPDOWN,
+  'Dropdown.Track': componentsWithSlotTokens.DROPDOWN,
+  'Dropdown.Option': componentsWithSlotTokens.DROPDOWN_OPTIONS,
+}
+
+const availbleForedTokenComponets = new Set(['Radio.Button', 'Dropdown.Option'])
+
+function isParentMatchingPath(node, path, wrapperName) {
+  let currentNode = node.parent;
+
+  for (const type of path) {
+    if (!currentNode || currentNode.type !== type) return false;
+    currentNode = currentNode.parent;
+  }
+
+  if (wrapperName && getComponentName(currentNode) !== wrapperName) return false;
+
+  return isUsedAsDirectChild(node, wrapperName ? currentNode.parent : currentNode);
 }
 
 function isUsedAsDirectChild(node, parent) {
   const name = getComponentName(node);
   const parentWrapperName = tokenComponetsParents[name];
 
-  if (node.type === 'JSXElement') {
-    const parentName = getComponentName(parent);
-    if (parentName === parentWrapperName) {
-      return true;
-    }
-  }
+  if (node.type === 'JSXElement' && getComponentName(parent) === parentWrapperName) return true;
 
   return false;
 }
@@ -43,16 +65,8 @@ function validateComponent(node, context) {
   let parent = node.parent;
 
   if (parent.type === 'LogicalExpression' && parent.operator === '&&') {
-    let grandParent = parent.parent;
-    if (grandParent.type === 'JSXExpressionContainer') {
-      if (grandParent.parent.type === 'JSXFragment') {
-        grandParent = grandParent.parent;
-
-        if (isUsedAsDirectChild(node, grandParent)) return;
-      } else {
-        if (isUsedAsDirectChild(node, grandParent)) return;
-      }
-    }
+    if (isParentMatchingPath(node, ['LogicalExpression', 'JSXExpressionContainer', 'JSXFragment'])) return;
+    if (isParentMatchingPath(node, ['LogicalExpression', 'JSXExpressionContainer'])) return;
   }
 
   if (parent.type === 'JSXElement' && getComponentName(parent) === 'Show') {
@@ -60,6 +74,20 @@ function validateComponent(node, context) {
   }
 
   if (isUsedAsDirectChild(node, parent)) return;
+
+  if (availbleForedTokenComponets.has(name)) {
+    // Rendered with For component
+    // When arrow function is used without return statement
+    if (isParentMatchingPath(node, ['ArrowFunctionExpression', 'JSXExpressionContainer'], 'For')) return;
+    // When arrow function is used with return statement
+    if (isParentMatchingPath(node, ['ReturnStatement', 'BlockStatement', 'ArrowFunctionExpression', 'JSXExpressionContainer'], 'For')) return;
+
+    // Rendered with .map
+    // When arrow function is used without return statement
+    if (isParentMatchingPath(node, ['ArrowFunctionExpression', 'CallExpression', 'JSXExpressionContainer'])) return;
+    // When arrow function is used with return statement
+    if (isParentMatchingPath(node, ['ReturnStatement', 'BlockStatement', 'ArrowFunctionExpression', 'CallExpression', 'JSXExpressionContainer'])) return;
+  }
 
   context.report({
     node,
