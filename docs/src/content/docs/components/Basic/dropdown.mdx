@@ -1,0 +1,329 @@
+---
+title: Dropdown
+---
+The `Dropdown` component allows you to create a dropdown menu with selectable options. It works seamlessly with the `Dropdown.Options` and `Dropdown.Option` slots.
+
+For detailed information about the `Dropdown.Options` and `Dropdown.Option` slots, refer to the [Dropdown.Options documentation](/components/basic/dropdown-options).
+
+## Usage
+
+To implement a dropdown in your UI, wrap the `Dropdown.Options` and `Dropdown.Option` slots within the `Dropdown` component:
+
+```tsx
+import Dropdown from '@components/Basic/Dropdown/Dropdown';
+
+const App = () => {
+    return (
+        <Dropdown>
+            <Dropdown.Options>
+                <Dropdown.Option selected value="red">red</Dropdown.Option>
+                <Dropdown.Option value="green">green</Dropdown.Option>
+                <Dropdown.Option value="blue">blue</Dropdown.Option>
+            </Dropdown.Options>
+        </Dropdown>
+    );
+};
+
+export default App;
+```
+
+## API
+
+### Props
+
+| Prop Name         | Type                  | Default     | Description                                                                                                     |
+|-------------------|-----------------------|-------------|-----------------------------------------------------------------------------------------------------------------|
+| `style`           | `JSX.CSSProperties`  | `{}`        | Inline styles to apply directly to the component's root element.                                               |
+| `class`           | `string`             | `""`        | Additional CSS classes to apply to the component.                                                              |
+| `ref`             | `DropdownRef \| undefined` | `undefined` | A reference to the component, providing access to its methods and underlying HTML element for programmatic control. |
+| `disabled`        | `boolean`            | `false`     | Disables the dropdown when set to `true`.                                                                      |
+| `class-disabled`  | `string`             | `""`        | Additional CSS classes to apply when the dropdown is disabled.                                                 |
+| `onChange`        | `(value: string) => void` | `undefined` | Callback function triggered whenever the selected option changes, providing the selected option's value.        |
+
+### DropdownRef Methods
+
+| Method          | Parameters       | Return Value | Description                                      |
+|------------------|------------------|--------------|--------------------------------------------------|
+| `selected`       | None             | `void`       | Retrieves the currently selected option.         |
+| `selectOption`   | `newOption: string` | `void`    | Sets a new selected option programmatically.     |
+
+## Slots
+
+### `Dropdown.Trigger`
+
+The `Dropdown.Trigger` slot allows you to customize the dropdown's trigger button, which toggles the dropdown's open or closed state when clicked. Use this slot to modify the trigger's appearance by applying custom styles or CSS classes.
+
+#### Properties
+
+| Prop Name | Type                  | Default | Description                                                                 |
+|-----------|-----------------------|---------|-----------------------------------------------------------------------------|
+| `style`   | `JSX.CSSProperties`  | `{}`    | Inline styles to apply directly to the trigger element.                     |
+| `class`   | `string`             | `""`    | Additional CSS classes to apply to the trigger element.                     |
+
+#### Usage
+
+```diff lang="tsx"
+import Dropdown from '@components/Basic/Dropdown/Dropdown';
+
+const App = () => {
+    return (
+        <Dropdown>
+            <Dropdown.Options>
+                <Dropdown.Option selected value="red">red</Dropdown.Option>
+                <Dropdown.Option value="green">green</Dropdown.Option>
+                <Dropdown.Option value="blue">blue</Dropdown.Option>
+            </Dropdown.Options>
++            <Dropdown.Trigger style={{ background: '#cccccc' }}/>
+        </Dropdown>
+    );
+};
+
+export default App;
+```
+
+### `Dropdown.Placeholder`
+
+The `Dropdown.Placeholder` slot allows you to display a placeholder when no option is selected in the dropdown. If this slot is not used, no placeholder will be shown by default.
+
+:::note
+To display the default placeholder with the text `Select an option`, include the `<Dropdown.Placeholder/>` as a direct child of the `<Dropdown>` component.
+:::
+
+:::note
+To use a custom placeholder, include the `<Dropdown.Placeholder>` slot with your desired content, such as `<Dropdown.Placeholder>Select any option</Dropdown.Placeholder>`.
+:::
+
+#### Properties
+
+| Prop Name  | Type                  | Default | Description                                                                 |
+|------------|-----------------------|---------|-----------------------------------------------------------------------------|
+| `style`    | `JSX.CSSProperties`  | `{}`    | Inline styles to apply directly to the placeholder element.                |
+| `class`    | `string`             | `""`    | Additional CSS classes to apply to the placeholder element.                |
+| `children` | `JSX.Element`        | `""`    | Content to display when no option is selected, such as text or JSX.        |
+
+#### Usage
+
+```tsx
+import Dropdown from '@components/Basic/Dropdown/Dropdown';
+
+const App = () => {
+    return (
+        <Dropdown>
+            <Dropdown.Options>
+                <Dropdown.Option value="red">red</Dropdown.Option>
+                <Dropdown.Option value="green">green</Dropdown.Option>
+                <Dropdown.Option value="blue">blue</Dropdown.Option>
+            </Dropdown.Options>
+            <Dropdown.Placeholder style={{ color: '#cccccc' }}>Select any option</Dropdown.Placeholder>
+        </Dropdown>
+    );
+};
+
+export default App;
+```
+
+### `Dropdown.Icon`
+
+The `Dropdown.Icon` slot allows you to add or customize the icon displayed inside the dropdown's trigger, typically on the right side.
+
+:::note
+To use the default icon, include the `<Dropdown.Icon/>` slot as a child of the `<Dropdown>` component.
+:::
+
+:::note
+To use a custom icon, provide your desired content as children of the `Dropdown.Icon` slot:
+
+```jsx
+<Dropdown.Icon>
+    <svg>
+        ...
+    </svg>
+</Dropdown.Icon>
+```
+
+:::
+
+#### Properties
+
+| Prop Name | Type                  | Default | Description                                                                 |
+|-----------|-----------------------|---------|-----------------------------------------------------------------------------|
+| `style`   | `JSX.CSSProperties`  | `{}`    | Inline styles to apply directly to the dropdown trigger's icon element.    |
+| `class`   | `string`             | `""`    | Additional CSS classes to apply to the dropdown trigger's icon element.    |
+| `children`| `JSX.Element`        | `""`    | Custom content, such as text, HTML, or JSX, to render as the dropdown icon.|
+
+#### Usage
+
+```tsx
+import Dropdown from '@components/Basic/Dropdown/Dropdown';
+
+const App = () => {
+    return (
+        <Dropdown>
+            <Dropdown.Options>
+                <Dropdown.Option selected value="red">red</Dropdown.Option>
+                <Dropdown.Option value="green">green</Dropdown.Option>
+                <Dropdown.Option value="blue">blue</Dropdown.Option>
+            </Dropdown.Options>
+            <Dropdown.Icon style={{ background: '#cccccc' }}>
+                <img src="my-custom-icon.png" />
+            </Dropdown.Icon>
+        </Dropdown>
+    );
+};
+
+export default App;
+```
+
+### `Dropdown.Track`
+
+The `Dropdown.Track` slot enables you to customize the scroll track of the dropdown when the options overflow the container.
+
+#### Properties
+
+| Prop Name | Type                  | Default | Description                                                                 |
+|-----------|-----------------------|---------|-----------------------------------------------------------------------------|
+| `style`   | `JSX.CSSProperties`  | `{}`    | Inline styles to apply directly to the dropdown's track element.           |
+| `class`   | `string`             | `""`    | Additional CSS classes to apply to the dropdown's track element.           |
+| `children`| `JSX.Element`        | `""`    | Custom content, such as text, HTML, or JSX, to render inside the track.    |
+
+#### Usage
+
+```tsx
+import Dropdown from '@components/Basic/Dropdown/Dropdown';
+
+const App = () => {
+    return (
+        <Dropdown>
+            <Dropdown.Options>
+                <Dropdown.Option selected value="red">red</Dropdown.Option>
+                <Dropdown.Option value="green">green</Dropdown.Option>
+                <Dropdown.Option value="blue">blue</Dropdown.Option>
+            </Dropdown.Options>
+            <Dropdown.Track style={{ background: '#cccccc' }}/>
+        </Dropdown>
+    );
+};
+
+export default App;
+```
+
+:::tip
+To hide the `Dropdown.Track`, you can set its `display` style to `none`:
+
+```tsx
+<Dropdown.Track style={{ display: 'none' }}/>
+```
+
+:::
+
+### `Dropdown.Handle`
+
+The `Dropdown.Handle` slot lets you customize the scroll handle for the dropdown when the options overflow the container.
+
+#### Properties
+
+| Prop Name  | Type                  | Default | Description                                                                 |
+|------------|-----------------------|---------|-----------------------------------------------------------------------------|
+| `style`    | `JSX.CSSProperties`  | `{}`    | Inline styles to apply directly to the handle element.                     |
+| `class`    | `string`             | `""`    | Additional CSS classes to apply to the handle element.                     |
+| `children` | `JSX.Element`        | `""`    | Custom content, such as text, HTML, or JSX, to render inside the handle.   |
+
+#### Usage
+
+```tsx
+import Dropdown from '@components/Basic/Dropdown/Dropdown';
+
+const App = () => {
+    return (
+        <Dropdown>
+            <Dropdown.Options>
+                <Dropdown.Option selected value="red">red</Dropdown.Option>
+                <Dropdown.Option value="green">green</Dropdown.Option>
+                <Dropdown.Option value="blue">blue</Dropdown.Option>
+            </Dropdown.Options>
+            <Dropdown.Handle style={{ background: '#cccccc' }}/>
+        </Dropdown>
+    );
+};
+
+export default App;
+```
+
+:::tip
+To hide the `Dropdown.Handle`, set its `display` style to `none`:
+
+```tsx
+<Dropdown.Handle style={{ display: 'none' }}/>
+```
+
+:::
+
+## Guide
+
+### Retrieve the selected option's value on change
+
+To capture the value of the selected option:
+
+- Use the `onChange` prop to handle changes in the selected option.
+
+#### Steps
+
+1. Pass a callback function to the `onChange` prop to handle state updates.
+2. Access the selected option's value through the `selected` parameter in the callback.
+
+```tsx
+import Dropdown from '@components/Basic/Dropdown/Dropdown';
+
+const App = () => {
+    const handleSelectionChange = (selected: string) => {
+        console.log(selected);
+    };
+    
+    return (
+        <Dropdown onChange={handleSelectionChange}>
+            <Dropdown.Options>
+                <Dropdown.Option selected value="red">red</Dropdown.Option>
+                <Dropdown.Option value="green">green</Dropdown.Option>
+                <Dropdown.Option value="blue">blue</Dropdown.Option>
+            </Dropdown.Options>
+        </Dropdown>
+    );
+};
+
+export default App;
+```
+
+### Programmatically set the selected option
+
+The `Dropdown` component allows you to programmatically update the selected option.
+
+#### Steps
+
+1. Create a `ref` variable of type `DropdownRef` and assign it to the `Dropdown` component.
+2. Use the `ref.selectOption()` method to programmatically set a new selected option, such as in response to a button click or keyboard event.
+
+```tsx
+import Dropdown, { DropdownRef } from '@components/Basic/Dropdown/Dropdown';
+
+const App = () => {
+    let dropdownRef!: DropdownRef;
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+        if (e.keyCode !== 13) return
+        
+        dropdownRef.selectOption('green');
+    };
+    
+    return (
+        <Dropdown ref={dropdownRef} keypress={handleKeyPress}>
+            <Dropdown.Options>
+                <Dropdown.Option selected value="red">red</Dropdown.Option>
+                <Dropdown.Option value="green">green</Dropdown.Option>
+                <Dropdown.Option value="blue">blue</Dropdown.Option>
+            </Dropdown.Options>
+        </Dropdown>
+    );
+};
+
+export default App;
+```
