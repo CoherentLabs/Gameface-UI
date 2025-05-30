@@ -62,21 +62,23 @@ const Menu = () => {
                             <Top></Top>
                             <Content>
                                 <Scroll style={{ 'max-height': '60vh', width: '90%' }}>
-                                    <Tab location="Gameplay">
-                                        <MenuItems count={40} />
-                                    </Tab>
-                                    <Tab location="Graphics">
-                                        <MenuItems count={5} />
-                                    </Tab>
-                                    <Tab location="Keybinds">
-                                        <MenuItems count={60} />
-                                    </Tab>
-                                    <Tab location="Audio">
-                                        <MenuItems count={20} />
-                                    </Tab>
-                                    <Tab location="Credits">
-                                        <MenuItems count={2} />
-                                    </Tab>
+                                    <Scroll.Content>
+                                        <Tab location="Gameplay">
+                                            <MenuItems count={40} />
+                                        </Tab>
+                                        <Tab location="Graphics">
+                                            <MenuItems count={5} />
+                                        </Tab>
+                                        <Tab location="Keybinds">
+                                            <MenuItems count={60} />
+                                        </Tab>
+                                        <Tab location="Audio">
+                                            <MenuItems count={20} />
+                                        </Tab>
+                                        <Tab location="Credits">
+                                            <MenuItems count={2} />
+                                        </Tab>
+                                    </Scroll.Content>
                                 </Scroll>
                             </Content>
                             <Bottom></Bottom>

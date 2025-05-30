@@ -43,7 +43,8 @@ The slot placeholder must be placed inside the component's children, as shown wi
         </>
     );
 ```
-it will not be used by the component, and an error will be logged in the console.
+
+it will not be used by the component, and nothing will be rendered.
 :::
 
 ### Adding slots to your component
@@ -70,30 +71,32 @@ const Button:ParentComponent<ButtonProps> = (props) => {
 export default Button;
 ```
 
-To add an `Icon` slot to the button, use the `createSlots` and `createSlot` functions provided by GamefaceUI. The `createSlots` function defines the slots for the component, while `createSlot` creates individual slots.
+To add an `Icon` slot to the `Button` component, use the `createTokenComponent` function from the `src/components/utils/tokenComponents.tsx` file. This utility helps create token slots that can be integrated into the component's template. You can define the slot's properties by passing their types to the `createTokenComponent` function. For instance, to define an `Icon` slot with a `before` property, you can do the following:
 
-The `createSlots` function takes an object where each key represents a slot name, and the value is the result of calling `createSlot` for that slot.
+```tsx
+import { createTokenComponent } from '@components/utils/tokenComponents';
 
-`createSlots` returns two functions: `useSlots` and `withSlots`:
-
-- `useSlots`: Accesses the slots in the component.
-- `withSlots`: Wraps the component with the slots. This ensures the slots are added to the component.
-
-```diff lang="tsx"
-+import { createSlot, createSlots } from "@components/BaseComponent/Slots";
-+import { ParentProps } from "solid-js";
-
-interface ButtonProps {
-    disabled: boolean
+interface IconProps {
+    before?: boolean;
 }
 
-+interface IconSlotProps extends ParentProps {
-+    before?: boolean
+const Icon = createTokenComponent<IconProps>();
+```
+
+Next, to make the `Icon` slot accessible via `Button.Icon`, assign it to the `Button` component:
+
+```diff lang="tsx"
++import { createTokenComponent } from '@components/utils/tokenComponents';
+
++interface IconProps {
++    before?: boolean;
 +}
 
-+const { useSlots, withSlots } = createSlots({
-+    Icon: createSlot<IconSlotProps>(),
-+});
++const Icon = createTokenComponent<IconProps>();
+
+interface ButtonProps {
+    disabled: boolean;
+}
 
 const Button:ParentComponent<ButtonProps> = (props) => {
     return (
@@ -106,84 +109,141 @@ const Button:ParentComponent<ButtonProps> = (props) => {
 };
 
 -export default Button;
-+export default withSlots(Button);
++export default Object.assign(Button, { Icon });
 ```
 
-In this example, the `Icon` slot is defined to accept `IconSlotProps`, which extends `ParentProps`. This allows the `Icon` slot to accept any valid JSX or HTML content as its children. The optional `before` property determines whether the icon is rendered before or after the button text.
-
-This setup enables the use of the `Icon` slot when the button is used:
+With this setup, you can now use the `Button.Icon` slot within the `Button` component. The `Icon` slot can accept any valid JSX or HTML content as its children, and you can also pass the `before` property to customize its behavior.
 
 ```tsx
 <Button>
-    <Button.Icon />
+    <Button.Icon before>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            ...
+        </svg>
+    </Button.Icon>
 </Button>
 ```
 
-### Using slot properties in the component
+### Leveraging slot properties in components
 
-To use slot properties in the component, access the slots using the `useSlots` function. This function returns an object where each key represents a slot name, and the value contains the slot's properties. You can use these properties to customize the component's behavior and appearance.
+To utilize slot properties within a component, you can access them using the `useToken` function. This function retrieves the slot component, allowing you to work with its properties and children. The `useToken` function requires the slot component and the **parent** component's children as arguments (in this case, the `Button` component's children). Passing the parent component's children ensures the slot and its properties are correctly identified.
 
-In the following example, the `before` property of the `Icon` slot is used to render the icon before the button text if it is set.
+In the example below, the `before` property of the `Icon` slot determines whether the icon is rendered before or after the button text.
 
 ```diff lang="tsx"
-import { createSlot, createSlots } from "@components/BaseComponent/Slots";
-import { ParentProps } from "solid-js";
+-import { createTokenComponent } from '@components/utils/tokenComponents';
++import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
+
+interface IconProps {
+    before?: boolean
+}
+
+const Icon = createTokenComponent<IconProps>();
 
 interface ButtonProps {
     disabled: boolean
 }
 
-interface IconSlotProps extends ParentProps {
-    before?: boolean
-}
-
-const { useSlots, withSlots } = createSlots({
-    Icon: createSlot<IconSlotProps>(),
-});
-
 const Button:ParentComponent<ButtonProps> = (props) => {
-+    const { slots } = useSlots();
++    const IconToken = useToken(Icon, props.children);
 
     return (
         <div>
             <button disabled={props.disabled}>
-+                {slots.Icon?.before && slots.Icon?.children}
++                {IconToken?.().before && IconToken?.().children}
                 {props.children}
-+                {!slots.Icon?.before && slots.Icon?.children}
++                {!IconToken?.().before && IconToken?.().children}
             </button>
         </div>
     );
 };
 
-export default withSlots(Button);
+-export default Button;
++export default Object.assign(Button, { Icon });
 ```
 
-:::tip
-Rendering the component's children is optional. If you decide not to render the children, you can omit the `{props.children}` line from the button's template, and the slots will still work as intended. The `Icon` slot will render based on the `before` property. However, including `{props.children}` will not render the slots as part of the component's children. To utilize the slots, you must access their properties through the `slots` object.
+:::note
+To maintain reactivity, always use the `IconToken?.()` syntax. This ensures the slot's properties are accessed only if the slot is defined, preventing potential errors and preserving the component's behavior.
 :::
 
-## Known issues
+### Nested slots and wrapping slots with components
 
-* The `createSlots` function **does not support nested slots**. For instance, attempting to nest slots as shown below will not work:
+Nested slots are supported but require careful handling to ensure proper reactivity and accessibility of slot properties. When nesting slots, you must pass the parent component's children correctly to the child slot.
+
+For example, to wrap the `Icon` slot with another component and nest the `IconSVG` slot in it, you can use the following structure:
+
+```tsx
+import { ParentComponent } from "solid-js";
+import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
+import { TokenComponentProps } from '@components/types/ComponentProps';
+
+const Icon = createTokenComponent<{ before?: boolean }>();
+const IconSVG = createTokenComponent<{ src?: string }>();
+
+const ButtonIconSVG: ParentComponent<TokenComponentProps> = (props) => {
+    const IconSVGToken = useToken(IconSVG, props.parentChildren);
+
+    return (
+        <div style={{ 'background-image': IconSVGToken?.().src }} />
+    );
+};
+
+const ButtonIcon: ParentComponent<TokenComponentProps> = (props) => {
+    const IconToken = useToken(Icon, props.parentChildren);
+
+    return (
+        <>
+            IconSVG:
+            <ButtonIconSVG parentChildren={IconToken?.().children} />
+        </>
+    );
+};
+
+interface ButtonProps {
+    disabled: boolean;
+}
+
+const Button: ParentComponent<ButtonProps> = (props) => {
+    const IconToken = useToken(Icon, props.children);
+
+    return (
+        <div>
+            <button disabled={props.disabled}>
+                <Show when={IconToken?.().before}>
+                    <ButtonIcon parentChildren={props.children} />
+                </Show>
+                {props.children}
+                <Show when={!IconToken?.().before}>
+                    <ButtonIcon parentChildren={props.children} />
+                </Show>
+            </button>
+        </div>
+    );
+};
+
+export default Object.assign(Button, { Icon, IconSVG });
+```
+
+Here, the `TokenComponentProps` type ensures that the `parentChildren` prop is passed to the `ButtonIcon` and `ButtonIconSVG` components. This prop allows the `useToken` function to correctly identify the slot and its properties.
+
+With this setup, you can use the `Button` component with nested `Icon` and `IconSVG` slots. The `Icon` slot renders the icon before or after the button text, while the `IconSVG` slot handles the SVG icon. This approach also supports nesting the `IconSVG` slot inside the `Icon` slot, enabling more complex structures and better component organization.
 
 ```tsx
 <Button>
-    <Button.Text>
-        <Button.Icon />
-    </Button.Text>
+    <Button.Icon before>
+        <Button.IconSVG src="path/to/icon.svg" />
+    </Button.Icon>
+    Button text
 </Button>
 ```
 
-All the slots must be defined at the same level in the component's template.
+:::note
+Assign nested slots to the parent component using `Object.assign` to ensure they are easily accessible. For example, assigning `Icon` and `IconSVG` to `Button` allows usage like `Button.Icon` and `Button.IconSVG`. Avoid assigning `IconSVG` to `Icon`, as it would require accessing it via `Button.Icon.IconSVG`, which is less convenient.
+:::
 
-```tsx
-<Button>
-    <Button.Icon />
-    <Button.Text />
-</Button>
-```
+### Conditional rendering of slots and their properties
 
-* Conditional rendering of a slot is **not supported**. For instance, attempting to render a slot based on a condition:
+Conditional rendering of a slot is **supported**. For instance, attempting to render a slot based on a condition:
 
 ```tsx del="{renderIconBefore() && <Button.Icon before/>}"
 const [renderIconBefore, setRenderIconBefore] = createSignal(false);
@@ -205,7 +265,7 @@ const [renderIconBefore, setRenderIconBefore] = createSignal(false);
 </Button>
 ```
 
-To conditionally modify a slot's properties, you can directly manipulate the slot's properties in the component. For instance, to dynamically update the `before` property of the `Icon` slot based on a condition:
+To conditionally modify a slot's properties, you can also directly manipulate the slot's properties in the component. For instance, to dynamically update the `before` property of the `Icon` slot based on a condition:
 
 ```tsx ins="<Button.Icon before={renderIconBefore()} />"
 const [renderIconBefore, setRenderIconBefore] = createSignal(false);
