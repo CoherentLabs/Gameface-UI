@@ -4,7 +4,7 @@ import { createTokenComponent, useToken } from "@components/utils/tokenComponent
 import { ScrollContext } from "./Scroll";
 import { TokenComponentProps } from "@components/types/ComponentProps";
 
-interface HandleTokenProps {
+export interface HandleTokenProps {
     style?: JSX.CSSProperties | undefined
     class?: string
 }
