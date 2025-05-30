@@ -29,7 +29,7 @@ export interface ComponentBaseProps extends ParentProps, Omit<Events, ExcludedEv
 
 export interface ComponentProps<T extends Record<string, any> = {}> extends ComponentBaseProps {
     componentStyles?: JSX.CSSProperties | (() => JSX.CSSProperties),
-    componentClasses?: string
+    componentClasses?: string | (() => string)
     ref?: unknown | ((ref: BaseComponentRef & T) => void);
     refObject?: T;
     active?: () => string;
