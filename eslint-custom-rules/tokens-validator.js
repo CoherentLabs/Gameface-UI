@@ -8,6 +8,8 @@ const componentsWithSlotTokens = {
   RADIO_BUTTON_CONTROL: 'Radio.ButtonControl',
   DROPDOWN: 'Dropdown',
   DROPDOWN_OPTIONS: 'Dropdown.Options',
+  STEPPER: 'Stepper',
+  STEPPER_ITEMS: 'Stepper.Items',
 }
 
 const tokenComponetsParents = {
@@ -31,6 +33,10 @@ const tokenComponetsParents = {
   'Dropdown.Handle': componentsWithSlotTokens.DROPDOWN,
   'Dropdown.Track': componentsWithSlotTokens.DROPDOWN,
   'Dropdown.Option': componentsWithSlotTokens.DROPDOWN_OPTIONS,
+
+  'Stepper.Control': componentsWithSlotTokens.STEPPER,
+  'Stepper.Items': componentsWithSlotTokens.STEPPER,
+  'Stepper.Item': componentsWithSlotTokens.STEPPER_ITEMS,
 }
 
 const availbleForedTokenComponets = new Set(['Radio.Button', 'Dropdown.Option'])
