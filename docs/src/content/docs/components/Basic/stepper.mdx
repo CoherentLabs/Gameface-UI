@@ -1,0 +1,216 @@
+---
+title: Stepper
+---
+The `Stepper` component enables users to navigate through a set of options. It integrates seamlessly with the `Stepper.Items` and `Stepper.Item` slots.
+
+For more details about `Stepper.Items` and `Stepper.Item`, refer to the [Stepper.Items documentation](/components/basic/stepper-items).
+
+## Usage
+
+To include a stepper in your UI, wrap the `Stepper.Items` and `Stepper.Item` slots within the `Stepper` component:
+
+```tsx
+import Stepper from '@components/Basic/Stepper/Stepper';
+
+const App = () => {
+    return (
+        <Stepper>
+            <Stepper.Items>
+                <Stepper.Item selected value="red">red</Stepper.Item>
+                <Stepper.Item value="green">green</Stepper.Item>
+                <Stepper.Item value="blue">blue</Stepper.Item>
+            </Stepper.Items>
+        </Stepper>
+    );
+};
+
+export default App;
+```
+
+## API
+
+### Props
+
+| Prop Name         | Type                  | Default     | Description                                                                                                     |
+|-------------------|-----------------------|-------------|-----------------------------------------------------------------------------------------------------------------|
+| `style`           | `JSX.CSSProperties`  | `{}`        | Inline styles to apply directly to the component's root element.                                               |
+| `class`           | `string`             | `""`        | Additional CSS classes to apply to the component.                                                              |
+| `ref`             | `StepperRef \| undefined` | `undefined` | A reference to the component, providing access to its methods and underlying HTML element for programmatic control. |
+| `disabled`        | `boolean`            | `false`     | Disables the stepper when set to `true`.                                                                       |
+| `class-disabled`  | `string`             | `""`        | Additional CSS classes to apply when the stepper is disabled.                                                  |
+| `controls-position` | `'before' \| 'after'` | `''`        | Determines the position of the control arrows. If not set, the selected option appears between the arrows. If set to `'before'`, the arrows appear before the selected option; if `'after'`, they appear after it. |
+| `loop`            | `boolean`            | `false`     | Enables looping through options when navigating past the first or last option using the controls.              |
+| `onChange`        | `(value: string) => void` | `undefined` | Callback function triggered whenever the selected option changes, providing the selected option's value.        |
+
+### StepperRef Props
+
+| Prop Name         | Type                  | Default     | Description                                                                                                     |
+|-------------------|-----------------------|-------------|-----------------------------------------------------------------------------------------------------------------|
+| `options`         | `string[]`           | `[]`        | Retrieves all available options for the stepper as an array of strings.                                        |
+
+### StepperRef Methods
+
+| Method          | Parameters       | Return Value | Description                                      |
+|------------------|------------------|--------------|--------------------------------------------------|
+| `selected`       | None             | `void`       | Retrieves the currently selected option.         |
+| `setOption`      | `newOption: string` | `void`    | Programmatically sets a new selected option.     |
+
+## Slots
+
+### `Stepper.Control`
+
+The `Stepper.Control` slot lets you customize the buttons used to change the selected option in the stepper.
+
+By default, the control consists of two arrow buttons for navigating to the previous or next option.
+
+:::note
+The right arrow is a rotated version of the left arrow (rotated 180 degrees). Keep this in mind when implementing a custom control. You only need to define the left arrow in the slot, as the right arrow will automatically be a rotated duplicate.
+:::
+
+You can apply additional CSS classes and styles to modify the appearance of the default arrows.
+
+If you want to replace the default arrows with a custom control, you can provide `children` using any valid JSX syntax. When custom content is provided, the default arrows are replaced, and the `style` and `class` props for the slot will no longer apply. Instead, you should style your custom control within the `children` content. The click functionality for navigation is automatically handled, so you only need to focus on the visual design of the control.
+
+:::note
+If the `loop` option is not enabled on the `Stepper` component, the controls will be hidden/disabled when the first or last option is selected. Specifically, the left arrow will be hidden/disabled when the first option is selected, and the right arrow will behave similarly for the last option.
+:::
+
+#### Properties
+
+| Prop Name      | Type                  | Default | Description                                                                 |
+|----------------|-----------------------|---------|-----------------------------------------------------------------------------|
+| `style`        | `JSX.CSSProperties`  | `{}`    | Inline styles to apply to the default arrow elements.                       |
+| `class`        | `string`             | `""`    | Additional CSS classes for the default arrow elements.                      |
+| `children`     | `JSX.Element`        | `""`    | Custom content to replace the default arrow controls.                       |
+| `hidden-class` | `string`             | `""`    | CSS class to override the default behavior when the control is hidden. If `loop` is not enabled, the left control will be hidden/disabled when the first option is selected, and the right control will behave similarly for the last option. |
+
+#### Usage
+
+```css
+.control-hidden {
+    pointer-events: none;
+    opacity: 0.1;
+}
+```
+
+:::tip
+To completely hide the control when no other options are available, you can use `display: none`:
+
+```css
+.control-hidden {
+    display: none;
+}
+```
+
+:::
+
+```diff lang="tsx"
+import Stepper from '@components/Basic/Stepper/Stepper';
+
+const App = () => {
+    return (
+        <Stepper>
+            <Stepper.Items>
+                <Stepper.Item selected value="red">red</Stepper.Item>
+                <Stepper.Item value="green">green</Stepper.Item>
+                <Stepper.Item value="blue">blue</Stepper.Item>
+            </Stepper.Items>
++            <Stepper.Control style={{ background: '#cccccc' }} hidden-class="control-hidden"/>
+        </Stepper>
+    );
+};
+
+export default App;
+```
+
+#### Usage with custom control
+
+```diff lang="tsx"
+import Stepper from '@components/Basic/Stepper/Stepper';
++import MyCustomArrow from '@assets/my-custom-arrow.svg?component-solid';
+
+const App = () => {
+    return (
+        <Stepper>
+            <Stepper.Items>
+                <Stepper.Item selected value="red">red</Stepper.Item>
+                <Stepper.Item value="green">green</Stepper.Item>
+                <Stepper.Item value="blue">blue</Stepper.Item>
+            </Stepper.Items>
++            <Stepper.Control hidden-class="control-hidden">
++                <MyCustomArrow style={{ fill: 'white' }}/>
++            </Stepper.Control>
+        </Stepper>
+    );
+};
+```
+
+## Guide
+
+### Retrieve the selected option's value on change
+
+To capture the value of the selected option:
+
+- Use the `onChange` prop to handle changes in the selected option.
+
+#### Steps
+
+1. Pass a callback function to the `onChange` prop to handle state updates.
+2. Access the selected option's value through the `selected` parameter in the callback.
+
+```tsx
+import Stepper from '@components/Basic/Stepper/Stepper';
+
+const App = () => {
+    const handleSelectionChange = (selected: string) => {
+        console.log(selected);
+    };
+    
+    return (
+        <Stepper onChange={handleSelectionChange}>
+            <Stepper.Items>
+                <Stepper.Item selected value="red">red</Stepper.Item>
+                <Stepper.Item value="green">green</Stepper.Item>
+                <Stepper.Item value="blue">blue</Stepper.Item>
+            </Stepper.Items>
+        </Stepper>
+    );
+};
+
+export default App;
+```
+
+### Programmatically set the selected option
+
+The `Stepper` component allows you to programmatically update the selected option.
+
+#### Steps
+
+1. Create a `ref` variable of type `StepperRef` and assign it to the `Stepper` component.
+2. Use the `ref.setOption()` method to programmatically set a new selected option, such as in response to a button click or keyboard event.
+
+```tsx
+import Stepper, { StepperRef } from '@components/Basic/Stepper/Stepper';
+
+const App = () => {
+    let stepperRef!: StepperRef;
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+        if (e.keyCode !== 13) return
+        
+        stepperRef.setOption('green');
+    };
+    
+    return (
+        <Stepper ref={dropdownRef} keypress={handleKeyPress}>
+            <Stepper.Items>
+                <Stepper.Item selected value="red">red</Stepper.Item>
+                <Stepper.Item value="green">green</Stepper.Item>
+                <Stepper.Item value="blue">blue</Stepper.Item>
+            </Stepper.Items>
+        </Stepper>
+    );
+};
+
+export default App;
+```

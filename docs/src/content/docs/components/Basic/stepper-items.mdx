@@ -1,0 +1,156 @@
+---
+title: Stepper.Items
+---
+The `Stepper.Items` slot acts as a container for all the `Stepper.Item` components within the `Stepper`.
+
+## Usage
+
+To use `Stepper.Items`, place it inside the `Stepper` component as shown below:
+
+```tsx
+import Stepper from '@components/Basic/Stepper/Stepper';
+
+const App = () => {
+    return (
+        <Stepper>
+            <Stepper.Items>
+                <Stepper.Item selected value="red">red</Stepper.Item>
+                <Stepper.Item value="green">green</Stepper.Item>
+                <Stepper.Item value="blue">blue</Stepper.Item>
+            </Stepper.Items>
+        </Stepper>
+    );
+};
+
+export default App;
+```
+
+## API
+
+### Props
+
+| Prop Name | Type                | Default | Description                                                                                     |
+|-----------|---------------------|---------|-------------------------------------------------------------------------------------------------|
+| `style`   | `JSX.CSSProperties` | `{}`    | Inline styles applied directly to the container element of the stepper items.               |
+| `class`   | `string`            | `""`    | Additional CSS classes for the container element of the stepper items.                      |
+| `children`| `JSX.Element`       | `""`    | The children of `Stepper.Items` should include all `Stepper.Item` components.              |
+
+## Guide - Customize the container's appearance
+
+To modify the width of the container displaying the selected item, you can use the following approach:
+
+```diff lang="tsx"
+import Stepper from '@components/Basic/Stepper/Stepper';
+
+const App = () => {
+    return (
+        <Stepper>
+-            <Stepper.Items>
++            <Stepper.Items style={{ width: '200px', flex: 'none' }}>
+                <Stepper.Item selected value="red">red</Stepper.Item>
+                <Stepper.Item value="green">green</Stepper.Item>
+                <Stepper.Item value="blue">blue</Stepper.Item>
+            </Stepper.Items>
+        </Stepper>
+    );
+};
+
+export default App;
+```
+
+:::note
+Ensure you set `flex: 'none'` because the default container uses `flex: 1 0 0`, which automatically adjusts its size based on the stepper's width. Without disabling this behavior, the `width` property in the `style` prop will not take effect!
+:::
+
+:::tip
+You can adjust the width of the items container to accommodate items with longer text that might otherwise overflow. Alternatively, you can modify the width of the entire Stepper component to achieve a similar effect.
+:::
+
+## Slots
+
+### `Stepper.Item`
+
+This slot is used to add individual items to the Stepper and customize their appearance.
+
+:::note
+The `Stepper.Item` must always be placed within the `Stepper.Items` slot.
+:::
+
+#### Properties
+
+| Prop Name        | Type                | Default     | Description                                                                                     |
+|-------------------|---------------------|-------------|-------------------------------------------------------------------------------------------------|
+| `style`          | `JSX.CSSProperties` | `{}`        | Inline styles applied directly to the stepper item element.                                     |
+| `class`          | `string`            | `""`        | Additional CSS classes for the stepper item element.                                            |
+| `value`          | `string`            | `undefined` | The value associated with the stepper item.                                                    |
+| `selected`       | `boolean`           | `false`     | Specifies whether the stepper item is selected.                                                |
+| `class-selected` | `string`            | `""`        | Additional CSS classes applied when the stepper item is selected.                               |
+| `children`       | `JSX.Element`       | `""`        | Content of the item, which can include text, HTML, or JSX elements.                             |
+
+#### Usage
+
+```tsx
+import Stepper from '@components/Basic/Stepper/Stepper';
+
+const App = () => {
+    return (
+        <Stepper>
+            <Stepper.Items>
+                <Stepper.Item selected value="red">red</Stepper.Item>
+                <Stepper.Item value="green">green</Stepper.Item>
+                <Stepper.Item value="blue">blue</Stepper.Item>
+            </Stepper.Items>
+        </Stepper>
+    );
+};
+
+export default App;
+```
+
+:::note
+You can include multiple `Stepper.Item` components within the `Stepper.Items` slot as needed.
+:::
+
+:::note
+Only one `Stepper.Item` can be selected at a time. If multiple `Stepper.Item` components have the `selected` prop enabled, the last one will be selected on initial load.
+:::
+
+:::tip
+To dynamically generate items, you can use an array and map over it:
+
+```tsx
+const options = [
+    {value: 'option-1', text: 'Option 1', selected: true, disabled: false},
+    {value: 'option-2', text: 'Option 2', selected: false}
+    ...
+];
+...
+<Stepper.Items>
+    {options.map((option) => (
+        <Stepper.Item selected={option.selected} value={option.value}>
+            {option.text}
+        </Stepper.Item>
+    ))}
+</Stepper.Items>
+```
+
+Alternatively, you can use the SolidJS `For` component:
+
+```tsx
+const options = [
+    {value: 'option-1', text: 'Option 1', selected: true, disabled: false},
+    {value: 'option-2', text: 'Option 2', selected: false}
+    ...
+];
+...
+<Stepper.Items>
+    <For each={options}>
+        {(option) => (
+            <Stepper.Item selected={option.selected} disabled={option.disabled} value={option.value}>
+                {option.text}
+            </Stepper.Item>
+        )}
+    </For>
+</Stepper.Items>
+```
+:::
