@@ -51,6 +51,42 @@ In this example, the text is wrapped inside the `Scroll` component, and the maxi
 
 ## Slots
 
+### `Scroll.Content **(Required)**`
+
+Allows customization of the content within the `Scroll` component. This slot can be used to apply custom styles or include additional elements in the scrollable area.
+
+:::note
+This slot is required and must be used inside the `Scroll` component to define the scrollable content.
+:::
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the scrollable content. |
+| `class`   | `string` | `""` | Additional CSS classes to style the scrollable content. |
+| `children`| `JSX.Element` | `undefined` | Content to render inside the scrollable area, which can be any valid JSX element. |
+
+#### Usage
+
+```diff lang="tsx"
+import Scroll from '@components/Layout/Scroll/Scroll'
+import Block from '@components/Layout/Block/Block';
+
+const App = () => {
+    return (
+        <Scroll style={{"max-width": '200px', "max-height": '200px',}}>
++            <Scroll.Content style={{ "background-color": 'black' }}>
++                <Block>
++                    I am a very long and dynamic text that can be scrolled - lorem Eaque, perspiciatis ad iusto expedita consectetur rerum tempora non nisi, porro tenetur repudiandae. 
++                    Voluptatem magni dolore consequuntur officia nemo quidem minus. Possimus, quibusdam.
++                </Block> 
++            </Scroll.Content>
+        </Scroll>
+    );
+};
+```
+
 ### `Scroll.Bar`
 
 Allows customization of the scrollbar within the `Scroll` component. This slot can be used to apply custom styles or include additional elements in the scrollbar.
@@ -72,10 +108,12 @@ import Block from '@components/Layout/Block/Block';
 const App = () => {
     return (
         <Scroll style={{"max-width": '200px', "max-height": '200px',}}>
-            <Block>
-                I am a very long and dynamic text that can be scrolled - lorem Eaque, perspiciatis ad iusto expedita consectetur rerum tempora non nisi, porro tenetur repudiandae. 
-                Voluptatem magni dolore consequuntur officia nemo quidem minus. Possimus, quibusdam.
-            </Block> 
+            <Scroll.Content style={{ "background-color": 'black' }}>
+                <Block>
+                    I am a very long and dynamic text that can be scrolled - lorem Eaque, perspiciatis ad iusto expedita consectetur rerum tempora non nisi, porro tenetur repudiandae. 
+                    Voluptatem magni dolore consequuntur officia nemo quidem minus. Possimus, quibusdam.
+                </Block> 
+            </Scroll.Content>
 +            <Scroll.Bar style={{ "background-color": 'black' }}>
 +                <Block style={{ background: 'red' }}>Custom Scroll Bar content</Block>
 +            </Scroll.Bar>
@@ -87,6 +125,10 @@ const App = () => {
 ### `Scroll.Handle`
 
 This slot allows you to customize the handle of the `Scroll` component. Use it to apply custom styles or include additional elements in the handle.
+
+:::note
+The `Scroll.Handle` slot is only rendered when used inside the `Scroll.Bar` slot.
+:::
 
 #### Properties
 
@@ -105,11 +147,16 @@ import Block from '@components/Layout/Block/Block';
 const App = () => {
     return (
         <Scroll style={{"max-width": '200px', "max-height": '200px',}}>
-            <Block>
-                I am a very long and dynamic text that can be scrolled - lorem Eaque, perspiciatis ad iusto expedita consectetur rerum tempora non nisi, porro tenetur repudiandae. 
-                Voluptatem magni dolore consequuntur officia nemo quidem minus. Possimus, quibusdam.
-            </Block> 
-+            <Scroll.Handle style={{ "background-color": 'white' }} />
+            <Scroll.Content style={{ "background-color": 'black' }}>
+                <Block>
+                    I am a very long and dynamic text that can be scrolled - lorem Eaque, perspiciatis ad iusto expedita consectetur rerum tempora non nisi, porro tenetur repudiandae. 
+                    Voluptatem magni dolore consequuntur officia nemo quidem minus. Possimus, quibusdam.
+                </Block> 
+            </Scroll.Content>
+            <Scroll.Bar style={{ "background-color": 'black' }}>
+                <Block style={{ background: 'red' }}>Custom Scroll Bar content</Block>
++                <Scroll.Handle style={{ "background-color": 'white' }} />
+            </Scroll.Bar>
         </Scroll>
     );
 };
@@ -147,10 +194,12 @@ const App = () => {
     return (
         <>
             <Scroll style={{"max-width": '200px', "max-height": '200px',}}>
-                <TextBlock>
-                    I am a very long and dynamic text that can be scrolled - lorem Eaque, perspiciatis ad iusto expedita consectetur rerum tempora non nisi, porro tenetur repudiandae. 
-                    Voluptatem magni dolore consequuntur officia nemo quidem minus. Possimus, quibusdam.
-                </TextBlock> 
+                <Scroll.Content>
+                    <TextBlock>
+                        I am a very long and dynamic text that can be scrolled - lorem Eaque, perspiciatis ad iusto expedita consectetur rerum tempora non nisi, porro tenetur repudiandae. 
+                        Voluptatem magni dolore consequuntur officia nemo quidem minus. Possimus, quibusdam.
+                    </TextBlock> 
+                </Scroll.Content>
             </Scroll>
 
             <Button size='small' click={scrollUp}>Scroll Up</Button>
@@ -189,12 +238,14 @@ const App = () => {
 
     return (
         <>
-            <Scroll style={{"max-width": '100px', "max-height": '100px',}}>
-                <Block>
-                    I am a very long and dynamic text that can be scrolled - lorem Eaque, perspiciatis ad iusto expedita consectetur rerum tempora non nisi, porro tenetur repudiandae. 
-                    <Block class="scroll-example" style={{ border: '1px solid white' }}>Scroll to me</Block>
-                    Voluptatem magni dolore consequuntur officia nemo quidem minus. Possimus, quibusdam.
-                </Block> 
+            <Scroll style={{ "max-width": '100px', "max-height": '100px' }}>
+                <Scroll.Content>
+                    <Block>
+                        I am a very long and dynamic text that can be scrolled - lorem Eaque, perspiciatis ad iusto expedita consectetur rerum tempora non nisi, porro tenetur repudiandae. 
+                        <Block class="scroll-example" style={{ border: '1px solid white' }}>Scroll to me</Block>
+                        Voluptatem magni dolore consequuntur officia nemo quidem minus. Possimus, quibusdam.
+                    </Block> 
+                </Scroll.Content>
             </Scroll>
 
             <Button size='small' click={scrollToBlock}>Scroll to Block</Button>
@@ -232,10 +283,12 @@ const App = () => {
     return (
         <>
             <Scroll onScroll={handleScroll} style={{"max-width": '200px', "max-height": '200px',}}>
-                <Block>
-                    I am a very long and dynamic text that can be scrolled - lorem Eaque, perspiciatis ad iusto expedita consectetur rerum tempora non nisi, porro tenetur repudiandae. 
-                    Voluptatem magni dolore consequuntur officia nemo quidem minus. Possimus, quibusdam.
-                </Block> 
+                <Scroll.Content>
+                    <Block>
+                        I am a very long and dynamic text that can be scrolled - lorem Eaque, perspiciatis ad iusto expedita consectetur rerum tempora non nisi, porro tenetur repudiandae. 
+                        Voluptatem magni dolore consequuntur officia nemo quidem minus. Possimus, quibusdam.
+                    </Block> 
+                </Scroll.Content>
             </Scroll>
         </>
     );

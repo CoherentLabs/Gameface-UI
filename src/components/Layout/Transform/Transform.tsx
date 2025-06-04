@@ -1,6 +1,5 @@
 import { createMemo, ParentComponent } from "solid-js";
 import LayoutBase from "../LayoutBase";
-import styles from './Transform.module.css'
 import { ComponentBaseProps } from "../../types/ComponentProps";
 
 interface TransformMethods {
@@ -82,7 +81,8 @@ const Transform: ParentComponent<Transform> = (props) => {
         }
     });
 
-    return <LayoutBase {...props} componentStyles={transformStyles()} componentClasses={styles.Transform} />
+
+    return <LayoutBase {...props} componentStyles={transformStyles} />
 }
 
 export default Transform

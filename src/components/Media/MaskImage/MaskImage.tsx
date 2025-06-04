@@ -1,14 +1,16 @@
 import { ParentComponent } from "solid-js";
 import styles from './MaskImage.module.css';
-import ImageBase, { getImageBaseClasses, ImageBaseProps } from "../ImageBase/ImageBase";
+import ImageBase, { ImageComponentProps } from "../ImageBase/ImageBase";
 
-export interface MaskImageProps extends ImageBaseProps { }
+export interface MaskImageProps extends ImageComponentProps { }
 
-const Mask: ParentComponent<MaskImageProps> = (props) => {
-    props.componentStyles = { "mask-image": `url(${props.src})` };
-    props.componentClasses = getImageBaseClasses({ props, styles, classPrefix: 'MaskImage', stylePrefix: 'mask' });
-
-    return <ImageBase {...props} />
-}
+const Mask: ParentComponent<MaskImageProps> = (props) => (
+    <ImageBase
+      {...props}
+      styles={styles}
+      classPrefix="MaskImage"
+      stylePrefix="mask"
+    />
+)
 
 export default Mask;

@@ -1,4 +1,4 @@
-import { createMemo, mergeProps, ParentComponent } from "solid-js";
+import { createMemo, ParentComponent } from "solid-js";
 import styles from './Absolute.module.css';
 import { ComponentBaseProps } from "../../types/ComponentProps";
 import LayoutBase from "../LayoutBase";
@@ -20,7 +20,7 @@ const Absolute: ParentComponent<AbsoluteProps> = (props) => {
         }
     });
 
-    return <LayoutBase {...props} componentClasses={styles.Absolute} componentStyles={positionStyle()} />
+    return <LayoutBase {...props} componentClasses={styles.Absolute} componentStyles={positionStyle} />
 }
 
 export default Absolute;

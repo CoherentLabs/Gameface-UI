@@ -13,14 +13,14 @@ interface RelativeProps extends ComponentBaseProps {
 const Relative: ParentComponent<RelativeProps> = (props) => {
     const positionStyle = createMemo(() => {
         return {
-        top: props.top,
-        left: props.left,
-        right: props.right,
-        bottom: props.bottom,
-    }
-});
+            top: props.top,
+            left: props.left,
+            right: props.right,
+            bottom: props.bottom,
+        }
+    });
 
-    return <LayoutBase {...props} componentClasses={styles.Relative} componentStyles={positionStyle()} />
+    return <LayoutBase {...props} componentClasses={styles.Relative} componentStyles={positionStyle} />
 }
 
 export default Relative;

@@ -28,17 +28,26 @@ export interface ComponentBaseProps extends ParentProps, Omit<Events, ExcludedEv
 }
 
 export interface ComponentProps<T extends Record<string, any> = {}> extends ComponentBaseProps {
-    componentStyles?: JSX.CSSProperties,
-    componentClasses?: string
+    componentStyles?: JSX.CSSProperties | (() => JSX.CSSProperties),
+    componentClasses?: string | (() => string)
     ref?: unknown | ((ref: BaseComponentRef & T) => void);
     refObject?: T;
-    active?: string;
+    active?: () => string;
+}
+
+export interface TokenComponentProps {
+    parentChildren: JSX.Element,
 }
 
 declare module "solid-js" {
     namespace JSX {
         interface IntrinsicElements {
             p: JSX.HTMLAttributes<HTMLParagraphElement> & { cohinline?: any };
+        }
+        
+        interface Directives {
+            forwardEvents: ComponentProps<any>;
+            forwardAttrs:  ComponentProps<any>;
         }
     }
 }

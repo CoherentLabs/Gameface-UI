@@ -1,9 +1,5 @@
-import { mergeProps } from "solid-js";
-import Events from "../types/BaseComponent";
-import { ComponentProps } from "../types/ComponentProps";
-import assignEventHandlers from "../utils/assignEventHandlers";
-
-interface BaseComponentProps extends Events { }
+import { ComponentProps } from "@components/types/ComponentProps";
+import { createEffect } from "solid-js";
 
 const baseEventsSet = new Set([
     "abort",
@@ -43,59 +39,63 @@ const baseEventsSet = new Set([
     "wheel",
 ]);
 
-function assignEvents(props: BaseComponentProps) {
-    const events: Events = {};
-    if (!props) return events;
+function forwardAttrs(el: HTMLElement, getData: () => Record<string, any>) {
+    let prev = new Set<string>();
 
-    for (const key in props) {
-        const typedKey = key as keyof Events;
+    return createEffect(() => {
+        const data = getData();
+        const seen = new Set<string>();
 
-        if (typedKey in props && baseEventsSet.has(typedKey)) {
-            events[typedKey] = props[typedKey] as any;
+        for (const key in data) {
+            if (!key.startsWith("attr:")) continue;
+
+            const name = key.slice(5);
+            const val = data[key];
+            seen.add(name);
+
+            if (val != null) el.setAttribute(name, String(val));
+            else el.removeAttribute(name);
+        }
+
+        for (const old of prev) {
+            if (!seen.has(old)) el.removeAttribute(old);
+        }
+
+        prev = seen;
+    });
+}
+
+function forwardEvents(el: HTMLElement, getData: () => Record<string, any>) {
+    const listeners: Array<[string, EventListener]> = [];
+    const data = getData();
+
+    for (const name of baseEventsSet) {
+        const handler = data[name];
+        if (handler) {
+            el.addEventListener(name, handler as EventListener);
+            listeners.push([name, handler as EventListener]);
         }
     }
-
-    return events
-}
-
-function assignAttributes(props: BaseComponentProps) {
-    const attributes: Record<string, any> = {};
-    if (!props) return attributes;
-
-    for (const key in props) {
-        if (key.startsWith("attr:")) {
-            const typedKey = key as `attr:${string}`;
-            attributes[typedKey] = (props as Record<string, any>)[typedKey];
+    return () => {
+        for (const [eventName, fn] of listeners) {
+            el.removeEventListener(eventName, fn);
         }
     }
-
-    return attributes
 }
 
-type BaseComponentType<P = BaseComponentProps> = (props: P) => {
-    GFUI: {}
-    log: typeof console.log,
-    events: Events,
-    attributes: Record<string, any>;
+export function useBaseComponent(props: ComponentProps) {
+    const activeClass = props.active ? props.active : () => '';
+    const className = () => {
+        const classes = (typeof props.componentClasses === "function" ? props.componentClasses() : props.componentClasses || '') + " " + (props.class || '') + " " + activeClass();
+        return classes.trim();
+    };
+
+    const inlineStyles = () => ({
+        ...(typeof props.componentStyles === "function" ? props.componentStyles() : props.componentStyles),
+        ...props.style
+    });
+
+    return { className, inlineStyles, forwardAttrs, forwardEvents };
 }
 
-export const createBaseComponent: BaseComponentType = (props) => {
-    const GFUI = {}
-    const log = console.log;
-
-    return { GFUI, log, events: assignEvents(props), attributes: assignAttributes(props) };
-}
-
-export const BaseComponent = (props: ComponentProps) => {
-    const { GFUI, log, events, attributes } = createBaseComponent(props);
-    const eventHandlers = assignEventHandlers(events);
-    const classes = `${props.componentClasses || ''} ${props.class || ""} ${props.active || ""}`.trim();
-    const inlineStyles = mergeProps(props.style, props.componentStyles);
-
-    return {
-        attributes,
-        eventHandlers,
-        className: classes,
-        style: inlineStyles
-    }
-}
+export default useBaseComponent;

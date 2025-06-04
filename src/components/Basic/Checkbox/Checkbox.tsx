@@ -1,9 +1,12 @@
-import { createSlot, createSlots } from "@components/BaseComponent/Slots";
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, Setter, createSignal, onMount, ParentComponent, ParentProps, Show, createEffect } from "solid-js";
+import { Accessor, Setter, createSignal, onMount, ParentComponent, Show, createContext, createMemo, createEffect } from "solid-js";
 import styles from './Checkbox.module.css';
-import { BaseComponent } from "@components/BaseComponent/BaseComponent";
-import CheckboxControl, { CheckboxSlotProps } from "./CheckboxControl";
+import useBaseComponent from "@components/BaseComponent/BaseComponent";
+import { Control, CheckboxControl } from "./CheckboxControl";
+import { Indicator } from "./CheckboxIndicator";
+import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
+
+const Label = createTokenComponent<{ before?: boolean }>();
 
 export interface CheckboxRef {
     checked: Accessor<boolean>,
@@ -16,32 +19,45 @@ interface CheckBoxProps extends ComponentProps {
     value?: any
     checked?: boolean
     disabled?: boolean
+    'class-disabled'?: string
+    'class-checked'?: string
     onChange?: (checked: boolean) => void;
 }
 
-interface LabelProps extends ParentProps  {
-    before?: boolean
-}
 
-const { useSlots, withSlots } = createSlots({
-    Label: createSlot<LabelProps>(),
-    Control: createSlot<CheckboxSlotProps>(),
-    Indicator: createSlot<CheckboxSlotProps>(),
-});
+export const CheckboxContext = createContext<{ checked: Accessor<boolean> }>();
 
 const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
-    const slots = useSlots();
+    const LabelToken = useToken(Label, props.children);
+
     const [checked, setChecked] = createSignal(props.checked ?? false);
-    const isBefore = slots.Label?.before;
+    const isBefore = createMemo(() => LabelToken()?.before);
     let element!: HTMLDivElement;
 
-    props.componentClasses = `${styles.Checkbox} ${props.disabled ? styles.Disabled : ''}`;
- 
+    const checkboxClasses = createMemo(() => {
+        const classes = [styles.Checkbox];
+
+        if (props.disabled) {
+            if (props['class-disabled']) classes.push(`${styles.Disabled} ${props['class-disabled']}`);
+            else classes.push(styles.Disabled);
+        }
+
+        if (checked() && props['class-checked']) {
+            classes.push(`${props['class-checked']}`);
+        }
+
+        return classes.join(' ');
+    });
+
+
+    props.componentClasses = () => checkboxClasses();
+    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
+
     const toggle = (e?: MouseEvent) => {
         if (props.disabled) return;
 
         setChecked(prev => !prev);
-        props.click?.(e as MouseEvent);
+        props.onChange?.(checked())
     }
 
     createEffect(() => {
@@ -60,30 +76,32 @@ const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
     });
 
     return (
-        <div
-            ref={element!}
-            {...BaseComponent(props).attributes}
-            {...BaseComponent(props).eventHandlers} 
-            class={BaseComponent(props).className}
-            style={BaseComponent(props).style}
-            onclick={toggle}>
+        <CheckboxContext.Provider value={{ checked }}>
+            <div
+                ref={element!}
+                class={className()}
+                style={inlineStyles()}
+                use:forwardEvents={props}
+                use:forwardAttrs={props}
+                onclick={toggle}>
 
-            <Show when={isBefore}>
-                {slots.Label?.children}
-            </Show>
+                <Show when={isBefore()}>
+                    {LabelToken()?.children}
+                </Show>
 
-            <CheckboxControl controlSlot={slots.Control} indicatorSlot={slots.Indicator} before={isBefore} checked={checked} />
+                <CheckboxControl parentChildren={props.children} before={isBefore()} />
 
-            <Show when={!slots.Label}>
-                {props.children}
-            </Show>
+                <Show when={!LabelToken()}>
+                    {props.children}
+                </Show>
 
-            <Show when={!isBefore}>
-                {slots.Label?.children}
-            </Show>
+                <Show when={!isBefore()}>
+                    {LabelToken()?.children}
+                </Show>
 
-        </div>
+            </div>
+        </CheckboxContext.Provider>
     )
 }
 
-export default withSlots(Checkbox)
+export default Object.assign(Checkbox, { Label, Control, Indicator });
