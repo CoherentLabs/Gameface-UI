@@ -66,7 +66,7 @@ const Radio: ParentComponent<RadioProps> = (props) => {
 
     return (
         <RadioContext.Provider value={{ selected, changeOption }}>
-            <div ref={props.ref as HTMLDivElement}
+            <div ref={element}
                 class={className()}
                 style={inlineStyles()}
                 use:forwardEvents={props}
