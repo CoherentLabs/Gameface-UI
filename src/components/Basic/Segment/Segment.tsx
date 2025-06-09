@@ -5,9 +5,10 @@ import styles from './Segment.module.css';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { SegmentButtons } from "./SegmentButtons";
 import { Button } from "./SegmentButton";
+import SegmentIndicator, { Indicator } from "./SegmentIndicator";
 
 export const SegmentContext = createContext<SegmentContextValue>();
-export interface SegmentIndicator {
+export interface SegmentIndicatorData {
     left: number,
     width: number,
     showTransition: boolean,
@@ -35,12 +36,12 @@ interface SegmentProps extends ComponentProps {
 
 const Segment: ParentComponent<SegmentProps> = (props) => {
     const [selected, setSelected] = createSignal('');
-    const [indicator, setIndicator] = createSignal<SegmentIndicator>({
+    const [indicator, setIndicator] = createSignal<SegmentIndicatorData>({
         width: 0,
         left: 0,
         showTransition: false,
     });
-    const [opacity, setOpacity] = createSignal(0);
+    
     const options = new Map<string, HTMLDivElement>();
     let element!: HTMLDivElement;
 
@@ -50,20 +51,6 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
     };
 
     const unregisterOption = (value: string) => options.delete(value);
-
-    const segmentClasses = createMemo(() => {
-        const classes = [styles.Segment];
-
-        if (props.disabled) {
-            if (props['class-disabled']) classes.push(`${styles.Disabled} ${props['class-disabled']}`);
-            else classes.push(styles.Disabled);
-        }
-
-        return classes.join(' ');
-    });
-
-    props.componentClasses = () => segmentClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     const selectOption = (newOption: string) => {
         if (props.disabled) return;
@@ -102,6 +89,20 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
         props.onChange?.(newOption);
     }
 
+    const segmentClasses = createMemo(() => {
+        const classes = [styles.Segment];
+
+        if (props.disabled) {
+            if (props['class-disabled']) classes.push(`${styles.Disabled} ${props['class-disabled']}`);
+            else classes.push(styles.Disabled);
+        }
+
+        return classes.join(' ');
+    });
+
+    props.componentClasses = () => segmentClasses();
+    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
+
     onMount(() => {
         if (!props.ref || !element) return;
 
@@ -121,15 +122,11 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
                     use:forwardEvents={props}
                     use:forwardAttrs={props}>
                     <SegmentButtons parentChildren={props.children} />
-                    <div 
-                        onTransitionStart={() => setOpacity(1)} 
-                        onTransitionEnd={() => setOpacity(0)} 
-                        style={{transform: `translate(${indicator().left}px)`, width: `${indicator().width}px`, opacity: opacity() }} 
-                        class={`${styles.Indocator} ${indicator().showTransition ? styles['show-transition'] : ''}`}></div>
+                    <SegmentIndicator data={indicator} parentChildren={props.children} />
                 </div>
             </div>
         </SegmentContext.Provider>
     );
 }
 
-export default Object.assign(Segment, { Button });
+export default Object.assign(Segment, { Button, Indicator });
