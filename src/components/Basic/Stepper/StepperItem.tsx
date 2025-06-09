@@ -31,12 +31,11 @@ export const StepperItem: ParentComponent<StepperItempProps> = (props) => {
 
     return (
         <Show when={stepperContext?.selected() === props.item.value}>
-            <Flex align-items="center"
-                justify-content="center"
+            <div
                 class={`${styles.StepperItem} ${props.item.class || ''}`}
                 style={props.item.style || {}}>
                 {props.item.children}
-            </Flex>
+            </div>
         </Show>
     )
 }

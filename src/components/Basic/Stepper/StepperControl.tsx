@@ -52,10 +52,9 @@ export const StepperControl: ParentComponent<StepperControlProps> = (props) => {
 
     return (
         <>
-            <Flex align-items="center" direction="row"
-                class={controlContainerClasses()}
+            <div class={controlContainerClasses()}
                 style={ControlToken()?.style || {}}
-                click={() => stepperContext?.changeSelected(props.direction)}>
+                onClick={() => stepperContext?.changeSelected(props.direction)}>
                 <Show when={props.direction === 'prev'}>
                     <ControlComponent ControlToken={ControlToken} />
                 </Show>
@@ -64,7 +63,7 @@ export const StepperControl: ParentComponent<StepperControlProps> = (props) => {
                         <ControlComponent ControlToken={ControlToken} />
                     </Transform>
                 </Show>
-            </Flex>
+            </div>
         </>
 
     )

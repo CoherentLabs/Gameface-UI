@@ -156,27 +156,25 @@ const Stepper: ParentComponent<StepperProps> = (props) => {
                 use:forwardEvents={props}
                 use:forwardAttrs={props}
             >
-                <Flex align-items="center" direction="row">
-                    <Show when={!props["controls-position"] || controlsBefore()}>
-                        <StepperControl direction='prev' visible={showPrevControl()} parentChildren={props.children} />
-                    </Show>
-                    <Show when={controlsBefore()}>
-                        <StepperControl direction='next' visible={showNextControl()} parentChildren={props.children} />
-                    </Show>
+                <Show when={!props["controls-position"] || controlsBefore()}>
+                    <StepperControl direction='prev' visible={showPrevControl()} parentChildren={props.children} />
+                </Show>
+                <Show when={controlsBefore()}>
+                    <StepperControl direction='next' visible={showNextControl()} parentChildren={props.children} />
+                </Show>
 
-                    <div class={styles.StepperItems + ' ' + (StepperItemsToken?.()?.class || '')} style={StepperItemsToken?.()?.style}>
-                        <For each={StepperItems()}>
-                            {(item) => <StepperItem item={item} />}
-                        </For>
-                    </div>
+                <div class={styles.StepperItems + ' ' + (StepperItemsToken?.()?.class || '')} style={StepperItemsToken?.()?.style}>
+                    <For each={StepperItems()}>
+                        {(item) => <StepperItem item={item} />}
+                    </For>
+                </div>
 
-                    <Show when={controlsAfter()}>
-                        <StepperControl direction='prev' visible={showPrevControl()} parentChildren={props.children} />
-                    </Show>
-                    <Show when={!props["controls-position"] || controlsAfter()}>
-                        <StepperControl direction='next' visible={showNextControl()} parentChildren={props.children} />
-                    </Show>
-                </Flex>
+                <Show when={controlsAfter()}>
+                    <StepperControl direction='prev' visible={showPrevControl()} parentChildren={props.children} />
+                </Show>
+                <Show when={!props["controls-position"] || controlsAfter()}>
+                    <StepperControl direction='next' visible={showNextControl()} parentChildren={props.children} />
+                </Show>
             </div>
         </StepperContext.Provider >
     )
