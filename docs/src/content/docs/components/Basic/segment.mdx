@@ -1,0 +1,162 @@
+---
+title: Segment
+---
+
+The `Segment` component lets you render a set of mutually-exclusive options in your UI, where only one choice can be selected at a time.
+It functions the same way as the [Radio component](/components/basic/radio) 
+Under the hood it uses Solid's context API and it works in conjunction with the `Segment.Button` slot.
+
+For more information about the `Segment.Button` slot, check out the [Segment.Button documentation](/components/basic/Segment-button).
+
+## Usage
+
+To create a Segment options in your UI, you need to wrap the `Segment.Button` slots with the `Segment` component. 
+
+```tsx
+import Segment from '@components/Basic/Segment';
+
+const App = () => {
+    return (
+        <>
+            <Segment>
+                <Segment.Button selected value="red">red</Segment.Button>
+                <Segment.Button value="green">green</Segment.Button>
+                <Segment.Button value="blue">blue</Segment.Button>
+            </Segment>
+        </>
+    );
+};
+
+export default App;
+```
+
+## API
+
+### Props
+
+| Prop Name  | Type                                   | Default     | Description                                                                                                                                                                                  |
+| ---------- | -------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `style`    | `JSX.CSSProperties`                    | `{}`        | Inline styles to apply directly to the component's root element.                                                                                                                             |
+| `class`    | `string`                               | `""`        | Additional CSS classes to apply to the component                                                                                                                                             |
+| `ref`      | `SegmentRef \| undefined`           | `undefined` | A reference to the component that gives you access to its methods and the underlying HTML element. Useful if you need to set the selected option programmatically.                                                             |
+| `disabled` | `boolean`                              | `false`     | Specify if the Segment is disabled                                                                                                                                                            |
+| `class-disabled` | `string`                         | `""`        | Additional CSS classes to apply to the component when disabled.                                                                                                                              |
+| `onChange` | `(selected: string) => void            | `undefined` | A function that is called every time the selected option changes. It can be used to retrieve the selected option's value. |
+
+### Methods
+
+|Method |Parameters |Return Value |Description |
+|---|---|---|---|
+| `selectOption ` | `newOption: string`  | `void` | Sets new selected option. |
+
+## Slots
+
+### `Segment.Indicator`
+
+Allows customization of the segment's indicator element which is responsible for the transition when the selected option is switched.
+This slot can be used to customize the element's appereance.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the segment indicator. |
+| `class`   | `string` | `""` | Additional CSS classes to style the segment indicator. |
+
+#### Usage
+
+In the following example, we are going to change the background color of the indicator and apply a custom class.
+
+```diff lang="tsx"
+import Radio from '@components/Basic/RadioGroup/Radio';
+import Block from '@components/Layout/Block/Block';
+
+const App = () => {
+    return (
+        <Segment>
+            <Segment.Button value='Easy'>Easy</Segment.Button>
+            <Segment.Button value='Medium'>Medium</Segment.Button>
+            <Segment.Button disabled value='Hard'>Hard</Segment.Button>
+            <Segment.Button selected value='Very Hard'>Very Hard ;)</Segment.Button>
++           <Segment.Indicator style={{ 'background-color': 'red'}} class={styles['Custom-Indicator']}></Segment.Indicator>
+        </Segment>
+    );
+};
+
+export default App;
+```
+
+:::caution
+The indicator is responsible only for the moving part of the transition. To fully style the transition, you also need to apply styles to the `::before` pseudo element of the `Segment.Button`
+:::
+
+
+## Guide
+
+### Retrieve the value of the selected option when it changes
+
+To retrieve the value of the selected option:
+
+- Use the `onChange` prop to respond when the selected option changes
+
+#### Steps 
+
+1. Provide a callback to the `onChange` prop to respond to state changes.
+2. Inside the callback, access the selected option's value via the `selected` argument.
+
+```tsx
+import Segment from '@components/Basic/Segment';
+
+const App = () => {
+    const getValue = (selected: string) => {
+        console.log(selected);
+    }
+    
+    return (
+        <>
+            <Segment onChange={getValue}>
+                <Segment.Button selected value="red">red</Segment.Button>
+                <Segment.Button value="green">green</Segment.Button>
+                <Segment.Button value="blue">blue</Segment.Button>
+            </Segment>
+        </>
+    );
+};
+
+export default App;
+```
+
+### Set the selected option Programmatically 
+
+The `Segment` component lets you set the selected option through code.
+
+#### Steps
+
+1. Declare a `ref` variable with type `SegmentRef` and pass it to the `Segment` component.
+2. Call `ref.selectOption()` from anywhere (e.g., a keyboard event or external button) to set a new selected option programmatically.
+
+```tsx
+import Segment, { SegmentRef } from '@components/Basic/Segment';
+
+const App = () => {
+    let SegmentRef!: SegmentRef;
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+        if (e.keyCode !== 13) return
+        
+        SegmentRef.selectOption('green');
+    }
+    
+    return (
+        <>
+            <Segment ref={SegmentRef} keypress={handleKeyPress}>
+                <Segment.Button selected value="red">red</Segment.Button>
+                <Segment.Button value="green">green</Segment.Button>
+                <Segment.Button value="blue">blue</Segment.Button>
+            </Segment>
+        </>
+    );
+};
+
+export default App;
+```

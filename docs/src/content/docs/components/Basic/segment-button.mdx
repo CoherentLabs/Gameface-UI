@@ -1,0 +1,45 @@
+---
+title: Segment.Button
+---
+
+The `Segment.Button` slot represents a single option within a `Segment`. It renders a clickable button with a transition.
+
+## Usage
+
+To create a `Segment.Button` you need to wrap it in the `Segment` component and provide a value to it. You must also provide the `selected` prop to the `Segment.Button` you wish
+to be selected by default.
+
+```tsx
+import Segment from '@components/Basic/Segment';
+
+const App = () => {
+    return (
+        <>
+            <Segment>
+                <Segment.Button selected value="red">red</Segment.Button>
+                <Segment.Button value="green">green</Segment.Button>
+                <Segment.Button value="blue">blue</Segment.Button>
+            </Segment>
+        </>
+    );
+};
+
+export default App;
+```
+
+## API
+
+### Props
+
+| Prop Name        | Type                                   | Default     | Description                                                                                                                                                                                  |
+| ---------------- | -------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `style`          | `JSX.CSSProperties`                    | `{}`        | Inline styles to apply directly to the component's root element.                                                                                                                             |
+| `class`          | `string`                               | `""`        | Additional CSS classes to apply to the component.                                                                                                                                            |
+| `value`          | `string`                               | `undefined` | The string value the Segment button is associated with.                                                                                                                                        |
+| `selected`       | `boolean`                              | `false`     | Specify if the Segment button is selected.                                                                                                                                                     |
+| `disabled`       | `boolean`                              | `false`     | Specify if the Segment button is disabled.                                                                                                                                                      |
+| `class-disabled` | `string`                               | `""`        | Additional CSS classes to apply to the button when disabled.                                                                                                                              |
+
+## Guide
+
+You can find examples of how to work with the Segment buttons in the [Segment documentation](/components/basic/Segment#guide).
