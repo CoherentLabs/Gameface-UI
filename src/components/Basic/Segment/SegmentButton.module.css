@@ -16,7 +16,7 @@
     height: 65%;
     z-index: 1;
     border-radius: 10px;
-    background-color: #ebebeb;
+    background-color: #bbbbbb;
     transition: visibility 0.35s ease-in-out;
 }
 
@@ -74,7 +74,7 @@
     opacity: 1;
 }
 
-.Disabled {
+.Disabled .Content{
     opacity: 0.5;
     pointer-events: none;
 }
