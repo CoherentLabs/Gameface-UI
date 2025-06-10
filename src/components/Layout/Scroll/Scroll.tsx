@@ -12,6 +12,7 @@ export const ScrollContext = createContext<{
     onHandleMouseDown: (event: MouseEvent) => void,
     handleHeight: Accessor<number>,
     handleTop: Accessor<number>
+    overflow: Accessor<boolean>
 }>();
 
 export interface ScrollComponentRef extends BaseComponentRef {
@@ -230,11 +231,11 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     });
 
     return (
-        <ScrollContext.Provider value={{ scrollByClickHandler, onHandleMouseDown, handleHeight, handleTop }}>
+        <ScrollContext.Provider value={{ scrollByClickHandler, onHandleMouseDown, handleHeight, handleTop, overflow }}>
             <LayoutBase {...props} refObject={scrollObjectRef}>
                 <div ref={containerRef!} class={styles.Scroll}>
                     <ScrollContent ref={contentRef!} parentChildren={props.children} />
-                    {overflow() && (<ScrollBar parentChildren={props.children} />)}
+                    <ScrollBar parentChildren={props.children} />
                 </div>
             </LayoutBase>
         </ScrollContext.Provider>
