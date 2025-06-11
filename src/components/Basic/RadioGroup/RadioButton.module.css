@@ -1,15 +1,16 @@
-.Checkbox {
+.RadioButton {
     display: flex;
     align-items: center;
+    margin-right: 0.75vmax;
     cursor: pointer;
 }
 
 .Control {
-    width: 1.5vmax;
-    height: 1.5vmax;
+    width: 1.25vmax;
+    height: 1.25vmax;
     position: relative;
     margin-right: 0.35vmax;
-    border-radius: 8px;
+    border-radius: 50%;
     border: 0.1vmax solid #00DA9A;
     background-color: #D9D9D9;
 }
@@ -26,17 +27,18 @@
 
 .Indicator {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 6px;
-    top: 0;
-    left: 0;
+    width: 60%;
+    height: 60%;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     z-index: 1;
     background-color: #00DA9A;
     opacity: 0;
     transition: opacity ease-in-out 0.2s;
 }
 
-.Checked {
+.Selected {
     opacity: 1;
 }
