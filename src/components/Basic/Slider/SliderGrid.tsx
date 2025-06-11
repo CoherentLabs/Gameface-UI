@@ -1,7 +1,8 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import styles from './SliderGrid.module.css';
-import { createMemo, For, JSX, Show } from 'solid-js';
+import { createMemo, For, JSX, Show, useContext } from 'solid-js';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
+import { SliderContext } from './Slider';
 
 interface SliderGridProps {
     style?: JSX.CSSProperties,
@@ -15,7 +16,6 @@ interface SliderGridProps {
 interface SliderGridComponentProps extends TokenComponentProps {
     min: number,
     max: number,
-    orientation?: 'horizontal' | 'vertical', 
 }
 
 function fitsOneDecimal(v: number) {
@@ -25,12 +25,13 @@ function fitsOneDecimal(v: number) {
 export const Grid = createTokenComponent<SliderGridProps>();
 
 export const SliderGrid = (props: SliderGridComponentProps) => {
+    const sliderContext = useContext(SliderContext)
     const GridToken = useToken(Grid, props.parentChildren);
 
     const polsCount = GridToken()?.pols || 5;
 
     const createPolsArray = () => {
-        const isVertical = props.orientation === 'vertical';
+        const isVertical = sliderContext?.isVertical();
         let minValue = props.min, maxValue = props.max;
 
         if (isVertical) {
@@ -60,7 +61,7 @@ export const SliderGrid = (props: SliderGridComponentProps) => {
         const classes = [styles.Grid];
 
         if (GridToken?.()?.class) classes.push(GridToken?.()?.class as string);
-        if (props.orientation === 'vertical') classes.push(styles.Vertical)
+        if (sliderContext?.isVertical()) classes.push(styles.Vertical)
 
         return classes.join(' ');
     });

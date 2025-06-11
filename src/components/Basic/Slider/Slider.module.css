@@ -1,5 +1,6 @@
 .Slider {
     display: flex;
+    flex-direction: column;
     width: 500px;
     height: 0.35vmax;
     margin: 5vmax 5vmax;
@@ -8,6 +9,7 @@
 .Vertical.Slider {
     width: 0.35vmax;
     height: 500px;
+    position: relative;
 }
 
 .Track {

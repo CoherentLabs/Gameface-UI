@@ -7,7 +7,7 @@ import { Grid, SliderGrid } from "./SliderGrid";
 import { Fill, SliderFill } from "./SliderFill";
 import { Handle, SliderHandle } from "./SliderHandle";
 import { SliderThumb, Thumb } from "./SliderThumb";
-import { useToken } from "@components/utils/tokenComponents";
+import { SliderTrack, Track } from "./SliderTrack";
 
 export interface SliderRef {
     element: HTMLDivElement,
@@ -25,6 +25,7 @@ interface SliderProps extends ComponentProps {
 interface SliderContext {
     value: Accessor<number>,
     percent: () => number;
+    isVertical: () => boolean;
 }
 
 export const SliderContext = createContext<SliderContext>();
@@ -32,7 +33,9 @@ export const SliderContext = createContext<SliderContext>();
 const Slider: ParentComponent<SliderProps> = (props) => {
     const [value, setValue] = createSignal(clamp(props.value, props.min, props.max));
     const [sliding, setSliding] = createSignal(false);
+    const isVertical = () => props.orientation === 'vertical';
     const percent = () => ((value() - props.min) / (props.max - props.min)) * 100;
+
     let element!: HTMLDivElement;
     let trackElement!: HTMLDivElement;
     let start: number,
@@ -49,8 +52,8 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         }
 
         calculateInitialValues(e);
-        const offSet = props.orientation === 'vertical' ?  props.max : props.min;
-        const valueRange = props.orientation === 'vertical' ? (props.min - props.max) : (props.max - props.min);
+        const offSet = isVertical() ?  props.max : props.min;
+        const valueRange = isVertical() ? (props.min - props.max) : (props.max - props.min);
 
         const delta = start - minValue;
         const newValue = offSet + (delta / pixelRange) * valueRange;
@@ -99,7 +102,7 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     const SliderClasses = createMemo(() => {
         const classes = [styles.Slider];
 
-        if (props.orientation === 'vertical') classes.push(styles.Vertical)
+        if (isVertical()) classes.push(styles.Vertical)
 
         return classes.join(' ');
     });
@@ -107,12 +110,11 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     const calculateInitialValues = (e: MouseEvent) => {
         const { top, left, width, height } = trackElement.getBoundingClientRect();
 
-        if (props.orientation === 'vertical') {
+        if (isVertical()) {
             start = e.clientY;
             minValue = top
             maxValue = top + height;
             pixelRange = maxValue - minValue;
-
             return;
         }
  
@@ -135,22 +137,22 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     });
 
     return (
-        <SliderContext.Provider value={{ value, percent }}>
+        <SliderContext.Provider value={{ value, percent, isVertical }}>
             <div
                 ref={element!}
                 class={className()}
                 style={inlineStyles()}
                 use:forwardEvents={props}
                 use:forwardAttrs={props}>
-                    <div ref={trackElement} class={styles.Track} onClick={handleTrackClick}>
-                        <SliderHandle orientation={props.orientation || 'horizontal'} handleMouseDown={handleMouseDown} parentChildren={props.children} />
-                        <SliderFill orientation={props.orientation || 'horizontal'} parentChildren={props.children} />
-                        <SliderThumb orientation={props.orientation || 'horizontal'} parentChildren={props.children} />
-                        <SliderGrid min={props.min} max={props.max} orientation={props.orientation} parentChildren={props.children} />
-                    </div>
+                    <SliderTrack handleClick={handleTrackClick} ref={trackElement} parentChildren={props.children}>
+                        <SliderHandle handleMouseDown={handleMouseDown} parentChildren={props.children} />
+                        <SliderFill parentChildren={props.children} />
+                        <SliderThumb parentChildren={props.children} />
+                    </SliderTrack>
+                    <SliderGrid min={props.min} max={props.max} parentChildren={props.children} />
             </div>
         </SliderContext.Provider>
     )
 }
 
-export default Object.assign(Slider, {Grid, Fill, Handle, Thumb});
+export default Object.assign(Slider, {Grid, Fill, Handle, Thumb, Track});

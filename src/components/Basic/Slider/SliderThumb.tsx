@@ -9,13 +9,9 @@ interface SliderThumbProps {
     class?: string,
 }
 
-interface SliderThumbComponentProps extends TokenComponentProps {
-    orientation?: 'horizontal' | 'vertical',
-}
-
 export const Thumb = createTokenComponent<SliderThumbProps>();
 
-export const SliderThumb = (props: SliderThumbComponentProps) => {
+export const SliderThumb = (props: TokenComponentProps) => {
     const sliderContext = useContext(SliderContext);
     const ThumbToken = useToken(Thumb, props.parentChildren);
 
@@ -23,13 +19,13 @@ export const SliderThumb = (props: SliderThumbComponentProps) => {
         const classes = [styles.Thumb];
 
         if (ThumbToken?.()?.class) classes.push(ThumbToken?.()?.class as string);
-        if (props.orientation === 'vertical') classes.push(styles.Vertical)
+        if (sliderContext?.isVertical()) classes.push(styles.Vertical)
 
         return classes.join(' ');
     });
 
     const thumbStyle = createMemo(() => {
-        const position = props.orientation === 'vertical' ? {top: `${100 - sliderContext!.percent()}%`} : {left: `${sliderContext!.percent()}%`}
+        const position = sliderContext?.isVertical() ? {top: `${100 - sliderContext!.percent()}%`} : {left: `${sliderContext!.percent()}%`}
         return {...ThumbToken()?.style, ...position}
     })
 
