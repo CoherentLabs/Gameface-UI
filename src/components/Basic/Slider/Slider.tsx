@@ -31,10 +31,10 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     let element!: HTMLDivElement;
     let trackElement!: HTMLDivElement;
     let fillElement!: HTMLDivElement;
-    let startX: number,
+    let start: number,
         maxValue: number,
         minValue: number,
-        range: number,
+        pixelRange: number,
         startValue: number;
     let hasDragged = false;
 
@@ -45,11 +45,14 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         }
 
         calculateInitialValues(e);
-        const dx = startX - minValue;
-        const newValue = props.min + (dx / range) * (props.max - props.min);
+        const offSet = props.orientation === 'vertical' ?  props.max : props.min;
+        const valueRange = props.orientation === 'vertical' ? (props.min - props.max) : (props.max - props.min);
+
+        const delta = start - minValue;
+        const newValue = offSet + (delta / pixelRange) * valueRange;
         const result = clamp(Math.round(newValue / props.step) * props.step, props.min, props.max);
 
-        setValue(result)
+        setValue(Math.round(result));
     }
 
     const handleMouseDown = (e: MouseEvent) => {
@@ -65,12 +68,8 @@ const Slider: ParentComponent<SliderProps> = (props) => {
 
     const handleMouseMove = (e: MouseEvent) => {
         if (!sliding()) return;
-        
-        const dx = e.clientX - startX;
-        const deltaValue = (dx / range) * (props.max - props.min);
-        const newValue = startValue + deltaValue;
-        const result = clamp(Math.round(newValue / props.step) * props.step, props.min, props.max);
 
+        const result = calculateResult(e, props.orientation === 'vertical')        
         setValue(Math.round(result));
     }
     
@@ -83,20 +82,43 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         window.removeEventListener('mouseup', handleMouseUp);
     }
 
+    const calculateResult = (e: MouseEvent, isVertical: boolean) => {
+        const delta = (isVertical ? e.clientY : e.clientX) - start;
+        const valueRange = isVertical ? (props.min - props.max) : (props.max - props.min);
+
+        const deltaValue = (delta / pixelRange) * valueRange
+        const newValue = startValue + deltaValue;
+
+        return clamp(Math.round(newValue / props.step) * props.step, props.min, props.max);
+    }
+
     const SliderClasses = createMemo(() => {
         const classes = [styles.Slider];
+
+        if (props.orientation === 'vertical') classes.push(styles.Vertical)
 
         return classes.join(' ');
     });
 
     const calculateInitialValues = (e: MouseEvent) => {
-        const { left, width } = trackElement.getBoundingClientRect();
+        const { top, left, width, height } = trackElement.getBoundingClientRect();
 
-        startX = e.clientX;
+        if (props.orientation === 'vertical') {
+            start = e.clientY;
+            minValue = top
+            maxValue = top + height;
+            pixelRange = maxValue - minValue;
+
+            return;
+        }
+ 
+        start = e.clientX;
         minValue = left
         maxValue = left + width;
-        range = maxValue - minValue;
+        pixelRange = maxValue - minValue;
     }
+
+    const fillStyle = () => props.orientation === 'vertical' ? {height: `${percent()}%`} : {width: `${percent()}%`}
  
     props.componentClasses = () => SliderClasses();
     const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
@@ -119,11 +141,11 @@ const Slider: ParentComponent<SliderProps> = (props) => {
                 use:forwardEvents={props}
                 use:forwardAttrs={props}>
                     <div ref={trackElement} class={styles.Track} onClick={handleTrackClick}>
-                        <div ref={fillElement} class={styles.Fill} style={{ width: `${percent()}%` }}>
+                        <div ref={fillElement} class={styles.Fill} style={fillStyle()}>
                             <div class={styles.Handle} onMouseDown={handleMouseDown}></div>
                             <div class={styles.Thumb}>{value()}</div>
                         </div>
-                        <SliderGrid min={props.min} max={props.max} parentChildren={props.children} />
+                        <SliderGrid min={props.min} max={props.max} orientation={props.orientation} parentChildren={props.children} />
                     </div>
             </div>
         </SliderContext.Provider>
