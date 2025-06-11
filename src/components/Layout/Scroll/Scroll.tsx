@@ -12,6 +12,7 @@ export const ScrollContext = createContext<{
     onHandleMouseDown: (event: MouseEvent) => void,
     handleHeight: Accessor<number>,
     handleTop: Accessor<number>
+    overflow: Accessor<boolean>
 }>();
 
 export interface ScrollComponentRef extends BaseComponentRef {
@@ -196,41 +197,6 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
         }
     }
 
-    function scrollIntoView(element: HTMLElement | string) {
-        if (!overflow()) return;
-
-        if (typeof element === 'string') {
-            element = contentRef!.querySelector(element) as HTMLElement
-        }
-
-        if (!element) return;
-
-        // Current scrollable container info
-        const contentTop = contentRef!.scrollTop;
-        const contentHeight = contentRef!.clientHeight;
-        const contentBottom = contentTop + contentHeight;
-
-        // Element’s bounding info relative to the scroll container
-        const elTop = element.offsetTop;
-        const elHeight = element.offsetHeight;
-        const elBottom = elTop + elHeight;
-
-        // If the element is already in view, do nothing
-        if (elTop >= contentTop && elBottom <= contentBottom) {
-            return;
-        }
-
-        // If element is above the current view, scroll so that element is at the top
-        if (elTop < contentTop) {
-            scrollTo(elTop, 0);
-        }
-        // If element is below the current view, scroll so element’s bottom is aligned with the container’s bottom
-        else if (elBottom > contentBottom) {
-            const newScrollTop = elBottom - contentHeight;
-            scrollTo(newScrollTop, 1); 
-        }
-    }
-
     const scrollObjectRef = {
         scrollToElement,
         scrollIntoView,
@@ -265,11 +231,11 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     });
 
     return (
-        <ScrollContext.Provider value={{ scrollByClickHandler, onHandleMouseDown, handleHeight, handleTop }}>
+        <ScrollContext.Provider value={{ scrollByClickHandler, onHandleMouseDown, handleHeight, handleTop, overflow }}>
             <LayoutBase {...props} refObject={scrollObjectRef}>
                 <div ref={containerRef!} class={styles.Scroll}>
                     <ScrollContent ref={contentRef!} parentChildren={props.children} />
-                    {overflow() && (<ScrollBar parentChildren={props.children} />)}
+                    <ScrollBar parentChildren={props.children} />
                 </div>
             </LayoutBase>
         </ScrollContext.Provider>
