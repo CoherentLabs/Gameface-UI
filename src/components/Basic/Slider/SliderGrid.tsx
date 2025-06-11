@@ -1,4 +1,4 @@
-import { ComponentProps, TokenComponentProps } from '@components/types/ComponentProps';
+import { TokenComponentProps } from '@components/types/ComponentProps';
 import styles from './SliderGrid.module.css';
 import { createMemo, For, JSX, Show } from 'solid-js';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
@@ -18,12 +18,16 @@ interface SliderGridComponentProps extends TokenComponentProps {
     orientation?: 'horizontal' | 'vertical', 
 }
 
+function fitsOneDecimal(v: number) {
+  return v === parseFloat(v.toFixed(1));
+}
+
 export const Grid = createTokenComponent<SliderGridProps>();
 
 export const SliderGrid = (props: SliderGridComponentProps) => {
     const GridToken = useToken(Grid, props.parentChildren);
 
-    const polsCount =  GridToken()?.pols || 5;
+    const polsCount = GridToken()?.pols || 5;
 
     const createPolsArray = () => {
         const isVertical = props.orientation === 'vertical';
@@ -40,7 +44,11 @@ export const SliderGrid = (props: SliderGridComponentProps) => {
             if (index === polsCount - 1) return maxValue;
 
             const step = (props.max - props.min) / (polsCount - 1);
-            const nextValue = step * index;
+            let nextValue = step * index;
+            
+            if (!fitsOneDecimal(nextValue)) {
+                nextValue = parseFloat(nextValue.toFixed(1));
+            }
 
             return isVertical ? (props.max - nextValue) : (props.min + nextValue);
         });

@@ -4,6 +4,10 @@ import styles from './Slider.module.css';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { clamp } from "@components/utils/clamp";
 import { Grid, SliderGrid } from "./SliderGrid";
+import { Fill, SliderFill } from "./SliderFill";
+import { Handle, SliderHandle } from "./SliderHandle";
+import { SliderThumb, Thumb } from "./SliderThumb";
+import { useToken } from "@components/utils/tokenComponents";
 
 export interface SliderRef {
     element: HTMLDivElement,
@@ -20,6 +24,7 @@ interface SliderProps extends ComponentProps {
 
 interface SliderContext {
     value: Accessor<number>,
+    percent: () => number;
 }
 
 export const SliderContext = createContext<SliderContext>();
@@ -30,7 +35,6 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     const percent = () => ((value() - props.min) / (props.max - props.min)) * 100;
     let element!: HTMLDivElement;
     let trackElement!: HTMLDivElement;
-    let fillElement!: HTMLDivElement;
     let start: number,
         maxValue: number,
         minValue: number,
@@ -117,8 +121,6 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         maxValue = left + width;
         pixelRange = maxValue - minValue;
     }
-
-    const fillStyle = () => props.orientation === 'vertical' ? {height: `${percent()}%`} : {width: `${percent()}%`}
  
     props.componentClasses = () => SliderClasses();
     const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
@@ -133,7 +135,7 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     });
 
     return (
-        <SliderContext.Provider value={{ value }}>
+        <SliderContext.Provider value={{ value, percent }}>
             <div
                 ref={element!}
                 class={className()}
@@ -141,10 +143,9 @@ const Slider: ParentComponent<SliderProps> = (props) => {
                 use:forwardEvents={props}
                 use:forwardAttrs={props}>
                     <div ref={trackElement} class={styles.Track} onClick={handleTrackClick}>
-                        <div ref={fillElement} class={styles.Fill} style={fillStyle()}>
-                            <div class={styles.Handle} onMouseDown={handleMouseDown}></div>
-                            <div class={styles.Thumb}>{value()}</div>
-                        </div>
+                        <SliderHandle orientation={props.orientation || 'horizontal'} handleMouseDown={handleMouseDown} parentChildren={props.children} />
+                        <SliderFill orientation={props.orientation || 'horizontal'} parentChildren={props.children} />
+                        <SliderThumb orientation={props.orientation || 'horizontal'} parentChildren={props.children} />
                         <SliderGrid min={props.min} max={props.max} orientation={props.orientation} parentChildren={props.children} />
                     </div>
             </div>
@@ -152,4 +153,4 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     )
 }
 
-export default Object.assign(Slider, {Grid});
+export default Object.assign(Slider, {Grid, Fill, Handle, Thumb});

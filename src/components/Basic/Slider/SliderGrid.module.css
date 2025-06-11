@@ -10,7 +10,7 @@
     height: 100%;
     width: 0.75vmax;
     flex-direction: column;
-        position: absolute;
+    position: absolute;
     left: 100%;
 }
 
