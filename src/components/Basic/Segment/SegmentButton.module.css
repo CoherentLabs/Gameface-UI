@@ -74,7 +74,7 @@
     opacity: 1;
 }
 
-.Disabled .Content{
+.Disabled .Content {
     opacity: 0.5;
     pointer-events: none;
 }

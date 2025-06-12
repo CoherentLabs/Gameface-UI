@@ -37,9 +37,9 @@ export default App;
 | Prop Name  | Type                                   | Default     | Description                                                                                                                                                                                  |
 | ---------- | -------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `style`    | `JSX.CSSProperties`                    | `{}`        | Inline styles to apply directly to the component's root element.                                                                                                                             |
-| `class`    | `string`                               | `""`        | Additional CSS classes to apply to the component                                                                                                                                             |
+| `class`    | `string`                               | `""`        | Additional CSS classes to apply to the component.                                                                                                                                            |
 | `ref`      | `SegmentRef \| undefined`           | `undefined` | A reference to the component that gives you access to its methods and the underlying HTML element. Useful if you need to set the selected option programmatically.                                                             |
-| `disabled` | `boolean`                              | `false`     | Specify if the Segment is disabled                                                                                                                                                            |
+| `disabled` | `boolean`                              | `false`     | Specify if the Segment is disabled.                                                                                                                                                            |
 | `class-disabled` | `string`                         | `""`        | Additional CSS classes to apply to the component when disabled.                                                                                                                              |
 | `onChange` | `(selected: string) => void            | `undefined` | A function that is called every time the selected option changes. It can be used to retrieve the selected option's value. |
 
@@ -69,7 +69,6 @@ In the following example, we are going to change the background color of the ind
 
 ```diff lang="tsx"
 import Radio from '@components/Basic/RadioGroup/Radio';
-import Block from '@components/Layout/Block/Block';
 
 const App = () => {
     return (
@@ -85,11 +84,6 @@ const App = () => {
 
 export default App;
 ```
-
-:::caution
-The indicator is responsible only for the moving part of the transition. To fully style the transition, you also need to apply styles to the `::before` pseudo element of the `Segment.Button`
-:::
-
 
 ## Guide
 
@@ -126,7 +120,7 @@ const App = () => {
 export default App;
 ```
 
-### Set the selected option Programmatically 
+### Set the selected option programmatically 
 
 The `Segment` component lets you set the selected option through code.
 
@@ -160,3 +154,43 @@ const App = () => {
 
 export default App;
 ```
+
+:::tip
+To dynamically render options, you can use an array and map over it:
+
+```tsx
+const options = [
+    {value: 'option-1', text: 'Option 1', selected: true, disabled: false},
+    {value: 'option-2', text: 'Option 2', selected: false}
+    ...
+];
+...
+<Segment>
+    {options.map((option) => (
+        <Segment.Button selected={option.selected} disabled={option.disabled} value={option.value}>
+            {option.text}
+        </Segment.Button>
+    ))}
+</Segment>
+```
+
+Alternatively, you can use the SolidJS `For` component:
+
+```tsx
+const options = [
+    {value: 'option-1', text: 'Option 1', selected: true, disabled: false},
+    {value: 'option-2', text: 'Option 2', selected: false}
+    ...
+];
+...
+<Segment>
+    <For each={options}>
+        {(option) => (
+            <Segment.Button selected={option.selected} disabled={option.disabled} value={option.value}>
+                {option.text}
+            </Segment.Button>
+        )}
+    </For>
+</Segment>
+```
+:::

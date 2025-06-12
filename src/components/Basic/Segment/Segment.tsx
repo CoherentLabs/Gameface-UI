@@ -1,5 +1,5 @@
 import { BaseComponentRef, ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, createMemo, DEV, onMount, ParentComponent } from "solid-js";
+import { Accessor, createMemo, DEV, onCleanup, onMount, ParentComponent } from "solid-js";
 import { createContext, createSignal } from "solid-js";
 import styles from './Segment.module.css';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
@@ -44,6 +44,7 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
     
     const options = new Map<string, HTMLDivElement>();
     let element!: HTMLDivElement;
+    let transitionTimeout: ReturnType<typeof setTimeout>
 
     const registerOption = (value: string, element: HTMLDivElement, selected?: boolean) => {
         options.set(value, element);
@@ -78,7 +79,7 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
 
         setSelected(newOption);
 
-        setTimeout(() => {
+        transitionTimeout = setTimeout(() => {
             setIndicator({
                 showTransition: true,
                 left: newLeft,
@@ -112,6 +113,10 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
             element,
         });
     });
+
+    onCleanup(() => {
+        window.clearTimeout(transitionTimeout);
+    })
 
     return (
         <SegmentContext.Provider value={{ selected, selectOption, registerOption, unregisterOption }}>
