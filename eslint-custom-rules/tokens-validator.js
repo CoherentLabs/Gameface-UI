@@ -10,6 +10,7 @@ const componentsWithSlotTokens = {
   DROPDOWN_OPTIONS: 'Dropdown.Options',
   STEPPER: 'Stepper',
   STEPPER_ITEMS: 'Stepper.Items',
+  SEGMENT: 'Segment',
 }
 
 const tokenComponetsParents = {
@@ -37,9 +38,12 @@ const tokenComponetsParents = {
   'Stepper.Control': componentsWithSlotTokens.STEPPER,
   'Stepper.Items': componentsWithSlotTokens.STEPPER,
   'Stepper.Item': componentsWithSlotTokens.STEPPER_ITEMS,
+
+  'Segment.Button': componentsWithSlotTokens.SEGMENT,
+  'Segment.Indicator': componentsWithSlotTokens.SEGMENT,
 }
 
-const availbleForedTokenComponets = new Set(['Radio.Button', 'Dropdown.Option'])
+const availbleForedTokenComponets = new Set(['Radio.Button', 'Dropdown.Option', 'Segment.Button'])
 
 function isParentMatchingPath(node, path, wrapperName) {
   let currentNode = node.parent;
