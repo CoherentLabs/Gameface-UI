@@ -23,13 +23,13 @@ export const SliderHandle = (props: SliderHandleComponentProps) => {
         const classes = [styles.Handle];
 
         if (HandleToken?.()?.class) classes.push(HandleToken?.()?.class as string);
-        if (sliderContext?.isVertical()) classes.push(styles.Vertical)
+        if (sliderContext?.isVertical) classes.push(styles.Vertical)
 
         return classes.join(' ');
     });
 
     const handleStyle = createMemo(() => {
-        const position = sliderContext?.isVertical() ? {top: `${100 - sliderContext!.percent()}%`} : {left: `${sliderContext!.percent()}%`}
+        const position = sliderContext?.isVertical ? {top: `${100 - sliderContext!.percent()}%`} : {left: `${sliderContext!.percent()}%`}
         return {...HandleToken()?.style, ...position}
     })
 

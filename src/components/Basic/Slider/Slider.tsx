@@ -8,9 +8,12 @@ import { Fill, SliderFill } from "./SliderFill";
 import { Handle, SliderHandle } from "./SliderHandle";
 import { SliderThumb, Thumb } from "./SliderThumb";
 import { SliderTrack, Track } from "./SliderTrack";
+import { useToken } from "@components/utils/tokenComponents";
 
 export interface SliderRef {
+    value: Accessor<number>,
     element: HTMLDivElement,
+    changeValue: (newValue: number) => void 
 }
 
 interface SliderProps extends ComponentProps {
@@ -25,7 +28,7 @@ interface SliderProps extends ComponentProps {
 interface SliderContext {
     value: Accessor<number>,
     percent: () => number;
-    isVertical: () => boolean;
+    isVertical: boolean;
 }
 
 export const SliderContext = createContext<SliderContext>();
@@ -33,8 +36,8 @@ export const SliderContext = createContext<SliderContext>();
 const Slider: ParentComponent<SliderProps> = (props) => {
     const [value, setValue] = createSignal(clamp(props.value, props.min, props.max));
     const [sliding, setSliding] = createSignal(false);
-    const isVertical = () => props.orientation === 'vertical';
     const percent = () => ((value() - props.min) / (props.max - props.min)) * 100;
+    const isVertical = props.orientation === 'vertical';
 
     let element!: HTMLDivElement;
     let trackElement!: HTMLDivElement;
@@ -45,6 +48,9 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         startValue: number;
     let hasDragged = false;
 
+    const ThumbSlot = useToken(Thumb, props.children)
+    const GridSlot = useToken(Grid, props.children)
+
     const handleTrackClick = (e: MouseEvent) => {
         if (hasDragged) {
             hasDragged = false;
@@ -52,14 +58,15 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         }
 
         calculateInitialValues(e);
-        const offSet = isVertical() ?  props.max : props.min;
-        const valueRange = isVertical() ? (props.min - props.max) : (props.max - props.min);
+        const offSet = isVertical ?  props.max : props.min;
+        const valueRange = isVertical ? (props.min - props.max) : (props.max - props.min);
 
         const delta = start - minValue;
         const newValue = offSet + (delta / pixelRange) * valueRange;
-        const result = clamp(Math.round(newValue / props.step) * props.step, props.min, props.max);
+        const result = Math.round(clamp(Math.round(newValue / props.step) * props.step, props.min, props.max));
 
-        setValue(Math.round(result));
+        setValue(result);
+        props.onChange?.(result);
     }
 
     const handleMouseDown = (e: MouseEvent) => {
@@ -76,8 +83,9 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     const handleMouseMove = (e: MouseEvent) => {
         if (!sliding()) return;
 
-        const result = calculateResult(e, props.orientation === 'vertical')        
-        setValue(Math.round(result));
+        const result = Math.round(calculateResult(e, props.orientation === 'vertical'));
+        setValue(result);
+        props.onChange?.(result);
     }
     
     const handleMouseUp = (e: MouseEvent) => {
@@ -102,7 +110,9 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     const SliderClasses = createMemo(() => {
         const classes = [styles.Slider];
 
-        if (isVertical()) classes.push(styles.Vertical)
+        if (isVertical) classes.push(styles.Vertical)
+        if (ThumbSlot()) classes.push(styles['With-Thumb'])
+        if (GridSlot()) classes.push(styles['With-Grid'])
 
         return classes.join(' ');
     });
@@ -110,7 +120,7 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     const calculateInitialValues = (e: MouseEvent) => {
         const { top, left, width, height } = trackElement.getBoundingClientRect();
 
-        if (isVertical()) {
+        if (isVertical) {
             start = e.clientY;
             minValue = top
             maxValue = top + height;
@@ -123,6 +133,13 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         maxValue = left + width;
         pixelRange = maxValue - minValue;
     }
+
+    const changeValue = (newValue: number) => {
+        const clampedValue = clamp(newValue, props.min, props.max);
+
+        setValue(clampedValue);
+        props.onChange?.(clampedValue);
+    }
  
     props.componentClasses = () => SliderClasses();
     const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
@@ -133,6 +150,7 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         (props.ref as unknown as (ref: any) => void)({
             value: props.value,
             element,
+            changeValue
         });
     });
 

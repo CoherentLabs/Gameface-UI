@@ -3,6 +3,7 @@ import styles from './SliderGrid.module.css';
 import { createMemo, For, JSX, Show, useContext } from 'solid-js';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 import { SliderContext } from './Slider';
+import SliderPol from './SliderPol';
 
 interface SliderGridProps {
     style?: JSX.CSSProperties,
@@ -31,7 +32,7 @@ export const SliderGrid = (props: SliderGridComponentProps) => {
     const polsCount = GridToken()?.pols || 5;
 
     const createPolsArray = () => {
-        const isVertical = sliderContext?.isVertical();
+        const isVertical = sliderContext?.isVertical;
         let minValue = props.min, maxValue = props.max;
 
         if (isVertical) {
@@ -61,7 +62,7 @@ export const SliderGrid = (props: SliderGridComponentProps) => {
         const classes = [styles.Grid];
 
         if (GridToken?.()?.class) classes.push(GridToken?.()?.class as string);
-        if (sliderContext?.isVertical()) classes.push(styles.Vertical)
+        if (sliderContext?.isVertical) classes.push(styles.Vertical)
 
         return classes.join(' ');
     });
@@ -72,16 +73,18 @@ export const SliderGrid = (props: SliderGridComponentProps) => {
                 <For each={polsArr}>
                     {(pol, index) => (
                         <>
-                            <div class={styles['Grid-Pol-Container']}>
-                                <div class={styles['Grid-Pol']}></div>
-                                <div class={styles['Grid-Pol-Text']}>{pol}</div>
-                            </div>
+                            <SliderPol 
+                                size='normal' 
+                                pol-class={GridToken()?.['pol-class']} 
+                                pol-style={GridToken()?.['pol-style']} 
+                                value={pol}/>
                             <Show when={GridToken()?.['pols-without-text'] && index() < polsCount - 1}>
                                 <For each={Array.from({ length: GridToken()?.['pols-without-text'] || 5 })}>
                                     {() => (
-                                        <div class={styles['Grid-Pol-Container']}>
-                                            <div class={styles['Grid-Pol-Small']}></div>
-                                        </div>
+                                        <SliderPol 
+                                            size='small' 
+                                            pol-class={GridToken()?.['pol-class']} 
+                                            pol-style={GridToken()?.['pol-style']} />
                                     )}
                                 </For>
                             </Show>

@@ -10,6 +10,7 @@ const componentsWithSlotTokens = {
   DROPDOWN_OPTIONS: 'Dropdown.Options',
   STEPPER: 'Stepper',
   STEPPER_ITEMS: 'Stepper.Items',
+  SLIDER: 'Slider',
   SEGMENT: 'Segment',
 }
 
@@ -38,6 +39,12 @@ const tokenComponetsParents = {
   'Stepper.Control': componentsWithSlotTokens.STEPPER,
   'Stepper.Items': componentsWithSlotTokens.STEPPER,
   'Stepper.Item': componentsWithSlotTokens.STEPPER_ITEMS,
+
+  'Slider.Fill': componentsWithSlotTokens.SLIDER,
+  'Slider.Track': componentsWithSlotTokens.SLIDER,
+  'Slider.Grid': componentsWithSlotTokens.SLIDER,
+  'Slider.Handle': componentsWithSlotTokens.SLIDER,
+  'Slider.Thumb': componentsWithSlotTokens.SLIDER,
 
   'Segment.Button': componentsWithSlotTokens.SEGMENT,
   'Segment.Indicator': componentsWithSlotTokens.SEGMENT,

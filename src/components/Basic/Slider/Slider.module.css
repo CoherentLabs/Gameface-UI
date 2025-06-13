@@ -1,15 +1,33 @@
 .Slider {
     display: flex;
     flex-direction: column;
-    width: 500px;
+    width: 15vmax;
     height: 0.35vmax;
-    margin: 5vmax 5vmax;
+    margin: 0 1.5vmax;
 }
 
 .Vertical.Slider {
     width: 0.35vmax;
-    height: 500px;
+    height: 15vmax;
     position: relative;
+}
+
+.With-Thumb {
+    margin-top: 3vmax;
+}
+
+.Vertical.With-Thumb {
+    margin-top: 1.5vmax;
+    margin-left: 3vmax;
+}
+
+.With-Grid {
+    margin-bottom: 2vmax;
+}
+
+.Vertical.With-Grid {
+    margin-bottom: 1.5vmax;
+    margin-right: 2vmax;
 }
 
 .Track {
