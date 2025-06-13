@@ -1,0 +1,270 @@
+---
+title: Slider
+---
+
+The `Slider` component allows users to select a numeric value from a specified range by dragging a handle along a track.
+
+## Usage
+
+To use the `Slider` component, specify the minimum (`min`), maximum (`max`), initial value (`value`), and step size (`step`).  
+You can also choose between a horizontal (default) or vertical orientation using the `vertical` prop.
+
+```tsx
+import Slider from '@components/Basic/Slider/Slider';
+
+const App = () => {
+    return (
+        <>
+            <Slider min={0} max={100} value={35} step={1} />
+        </>
+    );
+};
+
+export default App;
+```
+
+## API
+
+### Props
+
+| Prop Name  | Type                                   | Default     | Description                                                                                                                                                                                  |
+| ---------- | -------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `style`    | `JSX.CSSProperties`                    | `{}`        | Inline styles to apply directly to the component's root element.                                                                                                                             |
+| `class`    | `string`                               | `""`        | Additional CSS classes to apply to the component                                                                                                                                             |
+| `ref`      | `SliderRef  \| undefined`            | `undefined` | A reference to the component that gives you access to its methods and the underlying HTML element. Useful if you need to set the value of the slider programmatically.                                                             |
+| `value`       | `number`                            | `undefined`   | The current value of the slider. Use this to control or set the slider's position. |
+| `min`         | `number`                            | `undefined`   | The minimum value that the slider can select. |
+| `max`         | `number`                            | `undefined`   | The maximum value that the slider can select. |
+| `step`        | `number`                            | `undefined`   | The amount by which the slider value changes when the handle is moved. Determines the granularity of the slider. |
+| `orientation` | `string`                            | `horizontal`  | Sets the direction of the slider. Use `"horizontal"` for a standard slider or `"vertical"` for a vertical slider. |
+| `onChange` | `(value: number) => void`              | `undefined` | A function that is called every time the slider's value has changed. It can be used to retrieve the up to date value of the slider. |
+
+### Methods
+
+|Method |Parameters |Return Value |Description |
+|---|---|---|---|
+| `changeValue ` | `newValue: number`  | `void` | Sets new value for the slider |
+
+## Slots
+
+### `Slider.Track`
+
+Customizes the slider's track. Use this slot to apply custom classes or styles to the track area of the slider.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the slider track. |
+| `class`   | `string` | `""` | Additional CSS classes to style the slider track. |
+
+#### Usage
+
+```diff lang="tsx"
+import Slider from '@components/Basic/Slider/Slider';
+
+const App = () => {
+    return (
+        <>
+            <Slider min={0} max={100} value={35} step={1}>
++               <Slider.Track style={{'background-color': 'red'}}></Slider.Track>
+            </Slider>
+        </>
+    );
+};
+
+export default App;
+```
+
+### `Slider.Fill`
+
+Customizes the filled portion of the slider track that visually represents the current value. Use this slot to apply custom styles or classes to the fill area.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the slider fill. |
+| `class`   | `string` | `""` | Additional CSS classes to style the slider fill. |
+
+#### Usage
+
+```diff lang="tsx"
+import Slider from '@components/Basic/Slider/Slider';
+
+const App = () => {
+    return (
+        <>
+            <Slider min={0} max={100} value={35} step={1}>
++               <Slider.Fill style={{'background-color': 'red'}}></Slider.Fill>
+            </Slider>
+        </>
+    );
+};
+
+export default App;
+```
+
+### `Slider.Handle`
+
+Customizes the draggable handle of the slider. Use this slot to apply custom styles or classes to the slider handle.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the slider handle. |
+| `class`   | `string` | `""` | Additional CSS classes to style the slider handle. |
+
+#### Usage
+
+```diff lang="tsx"
+import Slider from '@components/Basic/Slider/Slider';
+
+const App = () => {
+    return (
+        <>
+            <Slider min={0} max={100} value={35} step={1}>
++               <Slider.Handle style={{'background-color': 'red'}}></Slider.Handle>
+            </Slider>
+        </>
+    );
+};
+
+export default App;
+```
+
+### `Slider.Thumb`
+
+The `Slider.Thumb` slot renders a small rectangular element above the handle that displays the current value of the slider. Use this slot to customize the appearance or content of the value indicator.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the slider thumb (value indicator). |
+| `class`   | `string` | `""` | Additional CSS classes to style the slider thumb. |
+
+#### Usage
+
+```diff lang="tsx"
+import Slider from '@components/Basic/Slider/Slider';
+
+const App = () => {
+    return (
+        <>
+            <Slider min={0} max={100} value={35} step={1}>
++               <Slider.Thumb class={styles['Custom-Thumb']} />
+            </Slider>
+        </>
+    );
+};
+
+export default App;
+```
+
+:::caution
+The thumb of the slider won't be displayed by default. To enable it provide the `Thumb` slot inside the `Slider` component.  
+:::
+
+### `Slider.Grid`
+
+The `Slider.Grid` slot displays a visual indicator of progress along the slider's range, dividing the track into evenly spaced segments called "pols." 
+Each pol marks a separation between the minimum and maximum values, helping users see how far the current value has moved. 
+
+You can control the number of main pols (with value labels) using the `pols` prop.  
+Additionally, by enabling the `polsWithoutText` prop, smaller unlabeled pols are rendered between the main pols for finer granularity and enhanced visual feedback.
+
+#### Properties
+
+| Prop Name         | Type                | Default     | Description                                                                                                 |
+|-------------------|---------------------|-------------|-------------------------------------------------------------------------------------------------------------|
+| `style`           | `JSX.CSSProperties` | `{}`        | Inline styles to apply directly to the grid container.                                                      |
+| `class`           | `string`            | `""`        | Additional CSS classes to style the grid container.                                                         |
+| `pols`            | `number`            | `5`         | Number of main pols (segments with value labels) to display along the slider track.                         |
+| `pols-without-text` | `number`          | `5`         | If prop is present, it renders smaller unlabeled pols between main pols for finer granularity.                           |
+| `pol-style`        | `JSX.CSSProperties` | `{}`        | Inline styles to apply directly to each pol (segment marker).                                              |
+| `pol-class`        | `string`            | `""`        | Additional CSS classes to style each pol (segment marker).                                                 |
+
+#### Usage
+
+```diff lang="tsx"
+import Slider from '@components/Basic/Slider/Slider';
+
+const App = () => {
+    return (
+        <>
+            <Slider min={0} max={100} value={35} step={1}>
++               <Slider.Grid pol-style={{'background-color': 'red', 'color': 'green'}} pols={5} pols-without-text={7} />
+            </Slider>
+        </>
+    );
+};
+
+export default App;
+```
+
+:::caution
+The `Slider.Grid` slot will only be rendered if you include it as a child of the `Slider` component.  
+:::
+
+## Guide
+
+### Retrieve and use the slider value
+
+- To get the current value of the `Slider` component, use the `onChange` prop.
+
+#### Steps
+
+1. Define a state variable (e.g., using `createSignal`) to store the slider value.
+2. Pass a callback to the `onChange` prop that updates this state variable.
+3. Use the state variable wherever you need the slider's value.
+
+```tsx
+import Slider from '@components/Basic/Slider/Slider';
+import { createSignal} from 'solid-js';
+
+const App = () => {
+    const [sliderValue, setSliderValue] = createSignal(50);
+
+    return (
+        <>
+            <Slider onChange={(value) => setSliderValue(value)} value={50} max={100} min={0} step={1} />
+            <div>{sliderValue()}</div>
+        </>
+    );
+};
+
+export default App;
+```
+
+### Set the value of the slider programmatically 
+
+The `Slider` component lets you set the `value` through code.
+
+#### Steps
+
+1. Declare a `ref` variable with type `SliderRef` and pass it to the `Slider` component.
+2. Call `ref.changeValue()` from anywhere (e.g., a keyboard event or external button) to set the value programmatically.
+
+```tsx
+import Slider { SliderRef } from '@components/Basic/Slider/Slider';
+
+const App = () => {
+    let sliderRef!: SliderRef;
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+        if (e.keyCode !== 13) return
+        
+        sliderRef.changeValue(100);
+    }
+
+    return (
+        <>
+            <Slider value={50} max={100} min={0} step={1} />
+        </>
+    );
+};
+
+export default App;
+```
