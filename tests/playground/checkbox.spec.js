@@ -13,7 +13,7 @@ describe('Checkbox', function () {
         })
     })
 
-    it('Should render and it\'s slots correctly', async () => {
+    it('Should render itself and it\'s slots correctly', async () => {
         const checkbox = await gf.get('.test-checkbox');
         const indicator = await gf.get('.test-checkbox-indicator');
 

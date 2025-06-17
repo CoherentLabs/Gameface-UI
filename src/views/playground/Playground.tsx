@@ -7,6 +7,8 @@ import { createSignal, For } from 'solid-js';
 import Button from '@components/Basic/Button/Button';
 import Checkbox from '@components/Basic/Checkbox/Checkbox';
 import CheckboxTest from '@custom-components/Playground/Checkbox/CheckboxTest';
+import SegmentTest from '@custom-components/Playground/Segment/SegmentTest';
+import RadioTest from '@custom-components/Playground/Radio/RadioTest';
 
 const Playground = () => {
     const components = [
@@ -14,7 +16,7 @@ const Playground = () => {
         "button",
         "segment",
         "stepper",
-        "radiogroup",
+        "radio",
         "checkbox",
         "input",
         "label",
@@ -51,7 +53,10 @@ const Playground = () => {
                 <Tab location='button'>
                     <div class="test">Wrong boi</div>
                 </Tab>
+
                 <CheckboxTest />
+                <SegmentTest />
+                <RadioTest />
             </Tabs>
         </div>
     );
