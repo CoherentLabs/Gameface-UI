@@ -9,30 +9,28 @@ import Checkbox from '@components/Basic/Checkbox/Checkbox';
 import CheckboxTest from '@custom-components/Playground/Checkbox/CheckboxTest';
 import SegmentTest from '@custom-components/Playground/Segment/SegmentTest';
 import RadioTest from '@custom-components/Playground/Radio/RadioTest';
+import StepperTest from '@custom-components/Playground/Stepper/StepperTest';
+import DropdownTest from '@custom-components/Playground/Dropdown/DropdownTest';
 
 const Playground = () => {
     const components = [
         // Basic components
         "button",
+        "checkbox",
+        "dropdown",
+        "radio",
         "segment",
         "stepper",
-        "radio",
-        "checkbox",
-        "input",
-        "label",
-        "switch",
         "slider",
-        "dropdown",
-        "tooltip",
-        "progressbar",
-        "spinner",
-        "badge",
-        "avatar",
 
         // Layout components
         "absolute",
+        "relative",
         "transform",
-        "scroll"
+        "scroll",
+
+        // Media
+        'images',
     ]
 
     const [test, setTest] = createSignal('test');
@@ -57,6 +55,8 @@ const Playground = () => {
                 <CheckboxTest />
                 <SegmentTest />
                 <RadioTest />
+                <StepperTest />
+                <DropdownTest />
             </Tabs>
         </div>
     );

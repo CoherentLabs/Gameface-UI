@@ -13,11 +13,11 @@ const SegmentTest = () => {
     const resetSegment = () => {
         setDisabled(false);
         setDisabledBtn(false);
-        segmentRef.selectOption('test1');
+        segmentRef?.selectOption('test1');
     };
 
     const changeOption = () => {
-        segmentRef.selectOption('test3');
+        segmentRef?.selectOption('test3');
     }
 
     onMount(() => {

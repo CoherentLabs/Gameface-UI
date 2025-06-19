@@ -18,7 +18,7 @@ const RadioTest = () => {
     const [disabledBtn, setDisabledBtn] = createSignal(false);
 
     const scenarios = [
-        { label: "Select option with ref", action: () => radioRef.changeOption("test2") },
+        { label: "Select option with ref", action: () => radioRef?.changeOption("test2") },
         { label: "Disable entire radio", action: () => setDisabled(true) },
         { label: "Disable buttons", action: () => setDisabledBtn(true) },
     ];
@@ -26,7 +26,7 @@ const RadioTest = () => {
     const resetRadio = () => {
         setDisabled(false);
         setDisabledBtn(false);
-        radioRef.changeOption('test0')
+        radioRef?.changeOption('test0')
     };
 
     const isReactive = createMemo(() => selected() === 'test1');
@@ -53,8 +53,8 @@ const RadioTest = () => {
                 disabled={disabled()} 
                 class-disabled="radio-disabled" 
                 ref={radioRef}
-                class={`test-radio ${reactiveClass()}`}
-                style={{ "background-color": selected() === 'test1' ? 'green' : '' }} >
+                class={`radio ${reactiveClass()}`}
+                style={reactiveStyle()} >
                     <For each={radioButtons}>
                         {(button, index) => (
                             <Radio.Button 
@@ -62,13 +62,13 @@ const RadioTest = () => {
                                 value={button.value + index()} 
                                 disabled={disabledBtn()}
                                 class-disabled="radio-button-disabled"
-                                class={`test-button${index()} ${reactiveClass()}`}
+                                class={`radio-button radio-button${index()} ${reactiveClass()}`}
                                 style={reactiveStyle()}>
                                 <Radio.ButtonControl 
-                                    class={`test-control${index()} ${reactiveClass()}`}
+                                    class={`radio-control${index()} ${reactiveClass()}`}
                                     style={reactiveStyle()}>
                                         <Radio.ButtonIndicator 
-                                            class={`test-indicator${index()} ${reactiveClass()}`}
+                                            class={`radio-indicator${index()} ${reactiveClass()}`}
                                             style={reactiveStyle()}></Radio.ButtonIndicator>
                                     </Radio.ButtonControl>
                                 <Radio.ButtonLabel before={button.isBefore}>{button.value + index()}</Radio.ButtonLabel>

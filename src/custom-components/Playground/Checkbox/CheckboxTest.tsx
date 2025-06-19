@@ -9,7 +9,7 @@ const CheckboxTest = () => {
     let checkboxRef!: CheckboxRef;
 
     const resetCheckbox = () => {
-        checkboxRef.setChecked(false);
+        checkboxRef?.setChecked(false);
         setDisabled(false);
     };
 
