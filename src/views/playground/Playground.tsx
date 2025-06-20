@@ -11,6 +11,12 @@ import SegmentTest from '@custom-components/Playground/Segment/SegmentTest';
 import RadioTest from '@custom-components/Playground/Radio/RadioTest';
 import StepperTest from '@custom-components/Playground/Stepper/StepperTest';
 import DropdownTest from '@custom-components/Playground/Dropdown/DropdownTest';
+import ButtonTest from '@custom-components/Playground/Button/ButtonTest';
+import PositionTest from '@custom-components/Playground/Position/PositionTest';
+import Absolute from '@components/Layout/Absolute/Absolute';
+import Relative from '@components/Layout/Relative/Relative';
+import TransformTest from '@custom-components/Playground/Transform/Transform';
+import ScrollTest from '@custom-components/Playground/Scroll/ScrollTest';
 
 const Playground = () => {
     const components = [
@@ -48,15 +54,16 @@ const Playground = () => {
                     </For>
                 </Flex>
 
-                <Tab location='button'>
-                    <div class="test">Wrong boi</div>
-                </Tab>
-
+                <ButtonTest />
                 <CheckboxTest />
                 <SegmentTest />
                 <RadioTest />
                 <StepperTest />
                 <DropdownTest />
+                <PositionTest Component={Absolute} baseClass='absolute' location='absolute' />
+                <PositionTest Component={Relative} baseClass='relative' location='relative' />
+                <TransformTest />
+                <ScrollTest />
             </Tabs>
         </div>
     );

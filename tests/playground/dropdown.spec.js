@@ -1,5 +1,4 @@
 const assert = require('assert');
-const { retryIfFails } = require('gameface-e2e/core/utils');
 
 describe('Dropdown', function () {
     this.beforeAll(async () => {
