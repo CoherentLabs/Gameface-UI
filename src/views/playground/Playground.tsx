@@ -17,6 +17,7 @@ import Absolute from '@components/Layout/Absolute/Absolute';
 import Relative from '@components/Layout/Relative/Relative';
 import TransformTest from '@custom-components/Playground/Transform/Transform';
 import ScrollTest from '@custom-components/Playground/Scroll/ScrollTest';
+import MediaTest from '@custom-components/Playground/Media/MediaTest';
 
 const Playground = () => {
     const components = [
@@ -36,7 +37,7 @@ const Playground = () => {
         "scroll",
 
         // Media
-        'images',
+        'media',
     ]
 
     const [test, setTest] = createSignal('test');
@@ -64,6 +65,7 @@ const Playground = () => {
                 <PositionTest Component={Relative} baseClass='relative' location='relative' />
                 <TransformTest />
                 <ScrollTest />
+                <MediaTest />
             </Tabs>
         </div>
     );
