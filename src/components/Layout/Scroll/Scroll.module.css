@@ -3,12 +3,12 @@
     position: relative;
 }
 
-.Content {
+.Content-Wrapper {
     overflow: scroll;
     max-height: 100%;
 }
 
-.Content-Overflow {
+.Content-Wrapper-Overflow {
     padding-right: 10px;
 }
 
