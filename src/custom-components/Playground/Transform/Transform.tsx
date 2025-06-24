@@ -1,7 +1,7 @@
 // src/playground/PositionTester.tsx
 import Tab from "@components/Layout/Tab/Tab";
 import Transform from "@components/Layout/Transform/Transform";
-import { createSignal, createMemo, onMount, onCleanup, For, ParentComponent } from "solid-js";
+import { createSignal, createMemo, onMount, onCleanup, For } from "solid-js";
 import './transform.css'
 
 const TransformTest = () => {

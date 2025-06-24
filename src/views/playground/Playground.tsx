@@ -18,6 +18,7 @@ import Relative from '@components/Layout/Relative/Relative';
 import TransformTest from '@custom-components/Playground/Transform/Transform';
 import ScrollTest from '@custom-components/Playground/Scroll/ScrollTest';
 import MediaTest from '@custom-components/Playground/Media/MediaTest';
+import BaseTest from '@custom-components/Playground/Base/BaseTest';
 
 const Playground = () => {
     const components = [
@@ -38,6 +39,8 @@ const Playground = () => {
 
         // Media
         'media',
+        // base
+        'base',
     ]
 
     const [test, setTest] = createSignal('test');
@@ -55,6 +58,7 @@ const Playground = () => {
                     </For>
                 </Flex>
 
+                <BaseTest />
                 <ButtonTest />
                 <CheckboxTest />
                 <SegmentTest />

@@ -15,6 +15,7 @@
 .TabLink {
     padding: 0.5vmax 1.25vmax;    
     flex: 1;
+    width: 10%;
     text-align: center;
     margin: 0.25vmax;
     border: 0.1vmax solid rgb(208, 208, 208);

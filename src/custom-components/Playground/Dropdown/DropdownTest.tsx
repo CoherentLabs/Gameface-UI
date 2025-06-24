@@ -1,5 +1,5 @@
 import Tab from "@components/Layout/Tab/Tab";
-import { createEffect, createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import Dropdown, { DropdownRef } from "@components/Basic/Dropdown/Dropdown";
 import './dropdown.css';
 

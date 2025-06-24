@@ -1,7 +1,5 @@
-import Checkbox, { CheckboxRef } from "@components/Basic/Checkbox/Checkbox";
 import Tab from "@components/Layout/Tab/Tab";
-import { createEffect, createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
-
+import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
 import Radio, { RadioRef } from "@components/Basic/RadioGroup/Radio";
 import './radio.css';
 

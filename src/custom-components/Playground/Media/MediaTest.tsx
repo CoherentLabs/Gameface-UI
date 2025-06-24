@@ -1,12 +1,12 @@
 import Tab from "@components/Layout/Tab/Tab";
-import { createSignal, createMemo, onMount, onCleanup, For, ParentComponent } from "solid-js";
+import { createSignal, createMemo, onMount, onCleanup, For } from "solid-js";
 import grandeImage from '@assets/grenade.png'
 import weaponImage from '@assets/weapon.png'
 import Image from "@components/Media/Image/Image";
 import BackgroundImage from "@components/Media/BackgroundImage/BackgroundImage";
-import './media.css';
 import MaskImage from "@components/Media/MaskImage/MaskImage";
 import LiveView from "@components/Media/LiveView/LiveView";
+import './media.css';
 
 const MediaTest = () => {
     const [reactivity, setReactivity] = createSignal(false);

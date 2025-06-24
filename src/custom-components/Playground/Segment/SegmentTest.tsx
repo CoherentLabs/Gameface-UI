@@ -1,6 +1,5 @@
-import Checkbox, { CheckboxRef } from "@components/Basic/Checkbox/Checkbox";
 import Tab from "@components/Layout/Tab/Tab";
-import { createEffect, createSignal, onCleanup, onMount } from "solid-js";
+import { createSignal, onCleanup, onMount } from "solid-js";
 import Segment, { SegmentRef } from "@components/Basic/Segment/Segment";
 import './segment.css';
 

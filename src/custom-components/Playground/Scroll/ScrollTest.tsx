@@ -1,5 +1,5 @@
 import Tab from "@components/Layout/Tab/Tab";
-import { createEffect, createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import Scroll, { ScrollComponentRef } from "@components/Layout/Scroll/Scroll";
 import Block from "@components/Layout/Block/Block";
 import './scroll.css';

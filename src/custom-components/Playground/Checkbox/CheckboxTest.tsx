@@ -1,7 +1,7 @@
 import Checkbox, { CheckboxRef } from "@components/Basic/Checkbox/Checkbox";
 import Tab from "@components/Layout/Tab/Tab";
-import './checkbox.css';
 import { createSignal, onCleanup, onMount } from "solid-js";
+import './checkbox.css';
 
 const CheckboxTest = () => {
     const [checked, setChecked] = createSignal(false);

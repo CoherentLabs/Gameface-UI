@@ -1,5 +1,5 @@
 import Tab from "@components/Layout/Tab/Tab";
-import { createEffect, createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
 import Button from "@components/Basic/Button/Button";
 import './button.css';
 

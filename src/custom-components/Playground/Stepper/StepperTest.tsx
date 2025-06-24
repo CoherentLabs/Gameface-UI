@@ -1,5 +1,5 @@
 import Tab from "@components/Layout/Tab/Tab";
-import { createEffect, createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import Stepper, { StepperRef } from "@components/Basic/Stepper/Stepper";
 import './stepper.css';
 
