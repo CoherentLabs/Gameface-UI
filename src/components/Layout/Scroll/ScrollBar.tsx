@@ -32,7 +32,8 @@ export const ScrollBar: ParentComponent<TokenComponentProps> = (props) => {
             <div
                 class={scrollBarClasses()}
                 style={scrollBarStyles()}
-                onClick={scrollContext!.scrollByClickHandler}
+                onMouseDown={scrollContext!.scrollToMouseHandler}
+                onMouseUp={scrollContext!.stopScrollingToMouse}
             >
                 {BarToken()?.children}
                 <ScrollHandle parentChildren={BarToken()?.children} />
