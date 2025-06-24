@@ -7,7 +7,6 @@ The `Slider` component allows users to select a numeric value from a specified r
 ## Usage
 
 To use the `Slider` component, specify the minimum (`min`), maximum (`max`), initial value (`value`), and step size (`step`).  
-You can also choose between a horizontal (default) or vertical orientation using the `vertical` prop.
 
 ```tsx
 import Slider from '@components/Basic/Slider/Slider';
@@ -36,7 +35,6 @@ export default App;
 | `min`         | `number`                            | `undefined`   | The minimum value that the slider can select. |
 | `max`         | `number`                            | `undefined`   | The maximum value that the slider can select. |
 | `step`        | `number`                            | `undefined`   | The amount by which the slider value changes when the handle is moved. Determines the granularity of the slider. |
-| `orientation` | `string`                            | `horizontal`  | Sets the direction of the slider. Use `"horizontal"` for a standard slider or `"vertical"` for a vertical slider. |
 | `onChange` | `(value: number) => void`              | `undefined` | A function that is called every time the slider's value has changed. It can be used to retrieve the up to date value of the slider. |
 
 ### Methods
@@ -173,7 +171,7 @@ The `Slider.Grid` slot displays a visual indicator of progress along the slider'
 Each pol marks a separation between the minimum and maximum values, helping users see how far the current value has moved. 
 
 You can control the number of main pols (with value labels) using the `pols` prop.  
-Additionally, by enabling the `polsWithoutText` prop, smaller unlabeled pols are rendered between the main pols for finer granularity and enhanced visual feedback.
+Additionally, by enabling the `pols-without-text` prop, smaller unlabeled pols are rendered between the main pols for finer granularity and enhanced visual feedback.
 
 #### Properties
 

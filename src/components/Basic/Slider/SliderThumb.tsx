@@ -19,13 +19,12 @@ export const SliderThumb = (props: TokenComponentProps) => {
         const classes = [styles.Thumb];
 
         if (ThumbToken?.()?.class) classes.push(ThumbToken?.()?.class as string);
-        if (sliderContext?.isVertical) classes.push(styles.Vertical)
 
         return classes.join(' ');
     });
 
     const thumbStyle = createMemo(() => {
-        const position = sliderContext?.isVertical ? {top: `${100 - sliderContext!.percent()}%`} : {left: `${sliderContext!.percent()}%`}
+        const position = {left: `${sliderContext!.percent()}%`}
         return {...ThumbToken()?.style, ...position}
     })
 

@@ -17,30 +17,30 @@ export interface SliderRef {
 }
 
 interface SliderProps extends ComponentProps {
-    value: number,
-    min: number,
-    max: number,
-    step: number,
-    orientation?: 'horizontal' | 'vertical',
+    value?: number,
+    min?: number,
+    max?: number,
+    step?: number,
     onChange?: (value: number) => void;
 }
 
 interface SliderContext {
     value: Accessor<number>,
     percent: () => number;
-    isVertical: boolean;
 }
 
 export const SliderContext = createContext<SliderContext>();
 
 const Slider: ParentComponent<SliderProps> = (props) => {
-    const [value, setValue] = createSignal(clamp(props.value, props.min, props.max));
-    const [sliding, setSliding] = createSignal(false);
-    const percent = () => ((value() - props.min) / (props.max - props.min)) * 100;
-    const isVertical = props.orientation === 'vertical';
+    const min = () => props.min || 0;
+    const max = () => props.max || 100;
+    const step = () => props.step || 1;
+    const [value, setValue] = createSignal(clamp(props.value || 50, min(), max()));
+    const percent = () => ((value() - min()) / (max() - min())) * 100;
 
     let element!: HTMLDivElement;
     let trackElement!: HTMLDivElement;
+    let sliding = false;
     let start: number,
         maxValue: number,
         minValue: number,
@@ -58,19 +58,17 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         }
 
         calculateInitialValues(e);
-        const offSet = isVertical ?  props.max : props.min;
-        const valueRange = isVertical ? (props.min - props.max) : (props.max - props.min);
-
+        const valueRange = max() - min();
         const delta = start - minValue;
-        const newValue = offSet + (delta / pixelRange) * valueRange;
-        const result = Math.round(clamp(Math.round(newValue / props.step) * props.step, props.min, props.max));
+        const newValue = min() + (delta / pixelRange) * valueRange;
+        const result = Math.round(clamp(Math.round(newValue / step()) * step(), min(), max()));
 
         setValue(result);
         props.onChange?.(result);
     }
 
     const handleMouseDown = (e: MouseEvent) => {
-        setSliding(true);
+        sliding = true;
         hasDragged = false;
 
         calculateInitialValues(e);
@@ -81,36 +79,33 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     }
 
     const handleMouseMove = (e: MouseEvent) => {
-        if (!sliding()) return;
+        if (!sliding) return;
 
-        const result = Math.round(calculateResult(e, props.orientation === 'vertical'));
+        const result = Math.round(calculateResult(e));
         setValue(result);
         props.onChange?.(result);
     }
     
     const handleMouseUp = (e: MouseEvent) => {
-        if (!sliding()) return;
+        if (!sliding) return;
         
         hasDragged = true;
-        setSliding(false);
+        sliding = false;
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
     }
 
-    const calculateResult = (e: MouseEvent, isVertical: boolean) => {
-        const delta = (isVertical ? e.clientY : e.clientX) - start;
-        const valueRange = isVertical ? (props.min - props.max) : (props.max - props.min);
-
+    const calculateResult = (e: MouseEvent) => {
+        const delta = e.clientX - start;
+        const valueRange = max() - min();
         const deltaValue = (delta / pixelRange) * valueRange
         const newValue = startValue + deltaValue;
-
-        return clamp(Math.round(newValue / props.step) * props.step, props.min, props.max);
+        return clamp(Math.round(newValue / step()) * step(), min(), max());
     }
 
     const SliderClasses = createMemo(() => {
         const classes = [styles.Slider];
 
-        if (isVertical) classes.push(styles.Vertical)
         if (ThumbSlot()) classes.push(styles['With-Thumb'])
         if (GridSlot()) classes.push(styles['With-Grid'])
 
@@ -118,16 +113,8 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     });
 
     const calculateInitialValues = (e: MouseEvent) => {
-        const { top, left, width, height } = trackElement.getBoundingClientRect();
+        const { left, width } = trackElement.getBoundingClientRect();
 
-        if (isVertical) {
-            start = e.clientY;
-            minValue = top
-            maxValue = top + height;
-            pixelRange = maxValue - minValue;
-            return;
-        }
- 
         start = e.clientX;
         minValue = left
         maxValue = left + width;
@@ -135,7 +122,7 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     }
 
     const changeValue = (newValue: number) => {
-        const clampedValue = clamp(newValue, props.min, props.max);
+        const clampedValue = clamp(newValue, min(), max());
 
         setValue(clampedValue);
         props.onChange?.(clampedValue);
@@ -155,7 +142,7 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     });
 
     return (
-        <SliderContext.Provider value={{ value, percent, isVertical }}>
+        <SliderContext.Provider value={{ value, percent }}>
             <div
                 ref={element!}
                 class={className()}
@@ -167,7 +154,7 @@ const Slider: ParentComponent<SliderProps> = (props) => {
                         <SliderFill parentChildren={props.children} />
                         <SliderThumb parentChildren={props.children} />
                     </SliderTrack>
-                    <SliderGrid min={props.min} max={props.max} parentChildren={props.children} />
+                    <SliderGrid min={min()} max={max()} parentChildren={props.children} />
             </div>
         </SliderContext.Provider>
     )

@@ -19,13 +19,12 @@ export const SliderFill = (props: TokenComponentProps) => {
         const classes = [styles.Fill];
 
         if (FillToken?.()?.class) classes.push(FillToken?.()?.class as string);
-        if (sliderContext?.isVertical) classes.push(styles.Vertical)
 
         return classes.join(' ');
     });
 
     const fillStyle = createMemo(() => {
-        const position = sliderContext?.isVertical ? {height: `${sliderContext!.percent()}%`} : {width: `${sliderContext!.percent()}%`}
+        const position = {width: `${sliderContext!.percent()}%`}
         return {...FillToken()?.style, ...position}
     })
 

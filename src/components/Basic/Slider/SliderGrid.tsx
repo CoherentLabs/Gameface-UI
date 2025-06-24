@@ -32,13 +32,7 @@ export const SliderGrid = (props: SliderGridComponentProps) => {
     const polsCount = GridToken()?.pols || 5;
 
     const createPolsArray = () => {
-        const isVertical = sliderContext?.isVertical;
         let minValue = props.min, maxValue = props.max;
-
-        if (isVertical) {
-            minValue = props.max;
-            maxValue = props.min;
-        }
 
         return Array.from({ length: polsCount }, (_, index) => {
             if (index === 0) return minValue;
@@ -52,7 +46,7 @@ export const SliderGrid = (props: SliderGridComponentProps) => {
                 nextValue = parseFloat(nextValue.toFixed(1));
             }
 
-            return isVertical ? (props.max - nextValue) : (props.min + nextValue);
+            return (props.min + nextValue);
         });
     }
 
@@ -62,7 +56,6 @@ export const SliderGrid = (props: SliderGridComponentProps) => {
         const classes = [styles.Grid];
 
         if (GridToken?.()?.class) classes.push(GridToken?.()?.class as string);
-        if (sliderContext?.isVertical) classes.push(styles.Vertical)
 
         return classes.join(' ');
     });
