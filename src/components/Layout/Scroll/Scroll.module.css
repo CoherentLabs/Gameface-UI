@@ -3,20 +3,20 @@
     position: relative;
 }
 
-.Content {
+.Content-Wrapper {
     overflow: scroll;
     max-height: 100%;
 }
 
-.Content-Overflow {
-    padding-right: 10px;
+.Content-Wrapper-Overflow {
+    padding-right: 0.9vmax;
 }
 
 .ScrollBar {
     position: absolute;
     top: 0;
     right: 0;
-    width: 10px;
+    width: 0.9vmax;
     height: 100%;
     background-color: rgba(255, 255, 255, 1);
     cursor: pointer;
@@ -28,7 +28,7 @@
     right: 0;
     width: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 3px;
+    border-radius: 0.3vmax;
     cursor: pointer;
 }
 

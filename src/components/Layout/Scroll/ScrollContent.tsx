@@ -1,5 +1,5 @@
 
-import { createMemo, JSX, ParentComponent, useContext } from 'solid-js';
+import { createMemo, JSX, onCleanup, onMount, ParentComponent, useContext } from 'solid-js';
 import styles from './Scroll.module.css';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 import { TokenComponentProps } from '@components/types/ComponentProps';
@@ -17,6 +17,9 @@ interface ContentProps {
 export const Content = createTokenComponent<ContentProps>();
 
 export const ScrollContent: ParentComponent<ScrollContentProps> = (props) => {
+    let resizeObserver: ResizeObserver;
+    let contentRef: HTMLDivElement | undefined;
+
     const scrollContext = useContext(ScrollContext);
     const ContentToken = useToken(Content, props.parentChildren);
 
@@ -28,14 +31,26 @@ export const ScrollContent: ParentComponent<ScrollContentProps> = (props) => {
     });
 
     const contentClasses = createMemo(() => {
-        const classes = [styles.Content];
-        if (scrollContext?.overflow()) classes.push(styles['Content-Overflow']);
+        const classes = [styles['Content-Wrapper']];
+        if (scrollContext?.overflow()) classes.push(styles['Content-Wrapper-Overflow']);
         if (ContentToken()?.class) classes.push(ContentToken()?.class as string);
 
         return classes.join(' ');
     });
 
+    onMount(() => {
+        resizeObserver = new ResizeObserver(scrollContext!.updateMeasurements);
+
+        if (contentRef!) resizeObserver.observe(contentRef);
+    });
+
+    onCleanup(() => {
+        if (resizeObserver) resizeObserver.disconnect();
+    });
+
     return <div ref={props.ref!} style={contentStyles()} class={contentClasses()}>
-        {ContentToken()?.children}
+        <div ref={contentRef!}>
+            {ContentToken()?.children}
+        </div>
     </div>
 }
