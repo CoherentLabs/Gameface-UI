@@ -19,6 +19,7 @@ import TransformTest from '@custom-components/Playground/Transform/Transform';
 import ScrollTest from '@custom-components/Playground/Scroll/ScrollTest';
 import MediaTest from '@custom-components/Playground/Media/MediaTest';
 import BaseTest from '@custom-components/Playground/Base/BaseTest';
+import SliderTest from '@custom-components/Playground/Slider/SliderTest';
 
 const Playground = () => {
     const components = [
@@ -70,6 +71,7 @@ const Playground = () => {
                 <TransformTest />
                 <ScrollTest />
                 <MediaTest />
+                <SliderTest />
             </Tabs>
         </div>
     );
