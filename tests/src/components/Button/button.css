@@ -1,0 +1,11 @@
+.dropdown-disabled {
+    background-color: red;
+}
+
+.option-selected {
+    background-color: red;
+}
+
+.option-disabled {
+    color: red;
+}

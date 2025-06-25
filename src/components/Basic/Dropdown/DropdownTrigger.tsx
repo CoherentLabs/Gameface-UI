@@ -50,7 +50,7 @@ export const DropdownTrigger: ParentComponent<TokenComponentProps> = (props) => 
             </div>
             <div class={style['dropdown-icon'] + ` ${IconToken?.()?.class || ''}`} style={IconStyles()}>
                 <Show when={IconToken?.()}>
-                    {PlaceholderToken?.()?.children || <DropdownIcon />}
+                    {IconToken?.()?.children || <DropdownIcon />}
                 </Show>
             </div>
         </div>

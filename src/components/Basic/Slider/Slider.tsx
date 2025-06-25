@@ -46,17 +46,11 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         minValue: number,
         pixelRange: number,
         startValue: number;
-    let hasDragged = false;
 
     const ThumbSlot = useToken(Thumb, props.children)
     const GridSlot = useToken(Grid, props.children)
 
     const handleTrackClick = (e: MouseEvent) => {
-        if (hasDragged) {
-            hasDragged = false;
-            return;
-        }
-
         calculateInitialValues(e);
         const valueRange = max() - min();
         const delta = start - minValue;
@@ -68,8 +62,8 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     }
 
     const handleMouseDown = (e: MouseEvent) => {
+        e.stopImmediatePropagation();
         sliding = true;
-        hasDragged = false;
 
         calculateInitialValues(e);
         startValue = value();
@@ -89,7 +83,6 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     const handleMouseUp = (e: MouseEvent) => {
         if (!sliding) return;
         
-        hasDragged = true;
         sliding = false;
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
@@ -135,7 +128,7 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         if (!props.ref || !element) return;
 
         (props.ref as unknown as (ref: any) => void)({
-            value: props.value,
+            value: value,
             element,
             changeValue
         });

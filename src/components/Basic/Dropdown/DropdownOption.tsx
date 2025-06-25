@@ -6,8 +6,8 @@ import { createTokenComponent } from '@components/utils/tokenComponents';
 export interface OptionTokenProps extends CommonDropdownSlotProps {
     value: string;
     selected?: boolean
-    classSelected?: string;
-    classDisabled?: string;
+    'class-selected'?: string;
+    'class-disabled'?: string;
     disabled?: boolean;
 }
 
@@ -36,11 +36,11 @@ export const DropdownOption: ParentComponent<{ option: ParentProps<OptionTokenPr
         if (option.value === dropdown?.selected()) {
             classes.push(style['dropdown-option-selected']);
             classes.push('selected');
-            if (option.classSelected) classes.push(option.classSelected);
+            if (option['class-selected']) classes.push(option['class-selected']);
         }
         if (option.disabled) {
             classes.push(style['dropdown-option-disabled']);
-            if (option.classDisabled) classes.push(option.classDisabled);
+            if (option['class-disabled']) classes.push(option['class-disabled']);
         }
 
         return classes.join(' ');

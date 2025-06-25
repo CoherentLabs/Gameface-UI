@@ -8,7 +8,6 @@ import Flex from "@components/Layout/Flex/Flex";
 interface ItemTokenProps {
     style?: JSX.CSSProperties,
     class?: string,
-    'class-selected'?: string
     selected?: boolean
     value: string
 }

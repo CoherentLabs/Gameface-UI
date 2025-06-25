@@ -1,0 +1,9 @@
+.scroll {
+    max-width: 10vmax;
+    max-height: 10vmax;
+    border: 1px solid white;
+}
+
+.scroll-child {
+    background-color: green;
+}

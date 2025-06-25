@@ -28,4 +28,5 @@
 
 .Button-disabled {
     background-color: #e7e7e7;
+    pointer-events: none;
 }
