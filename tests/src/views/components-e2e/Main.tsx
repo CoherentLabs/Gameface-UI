@@ -1,27 +1,24 @@
 import Tabs from '@components/Layout/Tabs/Tabs';
-import styles from './Playground.module.css';
+import styles from './Main.module.css';
 import TabLink from '@components/Layout/TabLink/TabLink';
 import Flex from '@components/Layout/Flex/Flex';
-import Tab from '@components/Layout/Tab/Tab';
-import { createSignal, For } from 'solid-js';
-import Button from '@components/Basic/Button/Button';
-import Checkbox from '@components/Basic/Checkbox/Checkbox';
-import CheckboxTest from '@custom-components/Playground/Checkbox/CheckboxTest';
-import SegmentTest from '@custom-components/Playground/Segment/SegmentTest';
-import RadioTest from '@custom-components/Playground/Radio/RadioTest';
-import StepperTest from '@custom-components/Playground/Stepper/StepperTest';
-import DropdownTest from '@custom-components/Playground/Dropdown/DropdownTest';
-import ButtonTest from '@custom-components/Playground/Button/ButtonTest';
-import PositionTest from '@custom-components/Playground/Position/PositionTest';
+import { For } from 'solid-js';
+import CheckboxTest from '../../components/Checkbox/CheckboxTest';
+import SegmentTest from '../../components/Segment/SegmentTest';
+import RadioTest from '../../components/Radio/RadioTest';
+import StepperTest from '../../components/Stepper/StepperTest';
+import DropdownTest from '../../components/Dropdown/DropdownTest';
+import ButtonTest from '../../components/Button/ButtonTest';
+import PositionTest from '../../components/Position/PositionTest';
 import Absolute from '@components/Layout/Absolute/Absolute';
 import Relative from '@components/Layout/Relative/Relative';
-import TransformTest from '@custom-components/Playground/Transform/Transform';
-import ScrollTest from '@custom-components/Playground/Scroll/ScrollTest';
-import MediaTest from '@custom-components/Playground/Media/MediaTest';
-import BaseTest from '@custom-components/Playground/Base/BaseTest';
-import SliderTest from '@custom-components/Playground/Slider/SliderTest';
+import TransformTest from '../../components/Transform/Transform';
+import ScrollTest from '../../components/Scroll/ScrollTest';
+import MediaTest from '../../components/Media/MediaTest';
+import BaseTest from '../../components/Base/BaseTest';
+import SliderTest from '../../components/Slider/SliderTest';
 
-const Playground = () => {
+const Main = () => {
     const components = [
         // Basic components
         "button",
@@ -44,11 +41,8 @@ const Playground = () => {
         'base',
     ]
 
-    const [test, setTest] = createSignal('test');
-
-
     return (
-        <div class={styles.Playground}>
+        <div class={styles.Main}>
             <Tabs default={components[0]}>
 
                 <Flex class={styles['TabLink-Container']}  align-items='center' wrap='wrap'>
@@ -77,4 +71,4 @@ const Playground = () => {
     );
 };
 
-export default Playground;
+export default Main;
