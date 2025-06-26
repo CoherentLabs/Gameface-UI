@@ -1,8 +1,7 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import styles from './SliderGrid.module.css';
-import { createMemo, For, JSX, Show, useContext } from 'solid-js';
+import { createMemo, For, JSX, Show } from 'solid-js';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
-import { SliderContext } from './Slider';
 import SliderPol from './SliderPol';
 
 interface SliderGridProps {
@@ -12,6 +11,8 @@ interface SliderGridProps {
     'pols-without-text'?: number,
     'pol-style'?: JSX.CSSProperties,
     'pol-class'?: string
+    'pol-value-style'?: JSX.CSSProperties,
+    'pol-value-class'?: string
 }
 
 interface SliderGridComponentProps extends TokenComponentProps {
@@ -26,7 +27,6 @@ function fitsOneDecimal(v: number) {
 export const Grid = createTokenComponent<SliderGridProps>();
 
 export const SliderGrid = (props: SliderGridComponentProps) => {
-    const sliderContext = useContext(SliderContext)
     const GridToken = useToken(Grid, props.parentChildren);
 
     const polsCount = GridToken()?.pols || 5;
@@ -77,7 +77,9 @@ export const SliderGrid = (props: SliderGridComponentProps) => {
                                         <SliderPol 
                                             size='small' 
                                             pol-class={GridToken()?.['pol-class']} 
-                                            pol-style={GridToken()?.['pol-style']} />
+                                            pol-style={GridToken()?.['pol-style']}
+                                            pol-value-class={GridToken()?.['pol-value-class']} 
+                                            pol-value-style={GridToken()?.['pol-value-style']} />
                                     )}
                                 </For>
                             </Show>

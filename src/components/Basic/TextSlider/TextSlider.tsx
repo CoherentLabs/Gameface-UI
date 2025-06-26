@@ -1,39 +1,50 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, Setter, createSignal, onMount, ParentComponent, Show, createContext, createMemo, createEffect, For } from "solid-js";
-import styles from './Slider.module.css';
+import { Accessor, createSignal, onMount, ParentComponent, createContext, createMemo } from "solid-js";
+import styles from '@components/Basic/Slider/Slider.module.css';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { clamp } from "@components/utils/clamp";
-import { Grid, SliderGrid } from "./SliderGrid";
-import { Fill, SliderFill } from "./SliderFill";
-import { Handle, SliderHandle } from "./SliderHandle";
-import { SliderThumb, Thumb } from "./SliderThumb";
-import { SliderTrack, Track } from "./SliderTrack";
+import { Grid, TextSliderGrid } from "./TextSliderGrid";
+import { Fill, SliderFill } from "@components/Basic/Slider/SliderFill";
+import { Handle, SliderHandle } from "@components/Basic/Slider/SliderHandle";
+import { SliderThumb, Thumb } from "@components/Basic/Slider/SliderThumb";
+import { SliderTrack, Track } from "@components/Basic/Slider/SliderTrack";
 import { useToken } from "@components/utils/tokenComponents";
 
-export interface SliderRef {
-    value: Accessor<number>,
+export interface TextSliderRef {
+    value: Accessor<string>,
+    values: Accessor<string[]>
     element: HTMLDivElement,
-    changeValue: (newValue: number) => void
+    changeValue: (newValue: string) => void
 }
 
-interface SliderProps extends ComponentProps {
-    value?: number,
-    min?: number,
-    max?: number,
-    step?: number,
-    onChange?: (value: number) => void;
+interface TextSliderProps extends ComponentProps {
+    value?: string,
+    values: string[],
+    onChange?: (value: string) => void;
 }
 
-interface SliderContext { }
+interface TextSliderContext {
+    values: Accessor<string[]>,
+}
 
-export const SliderContext = createContext<SliderContext>();
+export const TextSliderContext = createContext<TextSliderContext>();
 
-const Slider: ParentComponent<SliderProps> = (props) => {
-    const min = () => props.min || 0;
-    const max = () => props.max || 100;
-    const step = () => props.step || 1;
-    const [value, setValue] = createSignal(clamp(props.value || 50, min(), max()));
-    const percent = () => ((value() - min()) / (max() - min())) * 100;
+const TextSlider: ParentComponent<TextSliderProps> = (props) => {
+    const [value, setValue] = createSignal(props.value || '');
+    const values = () => props.values || [];
+    const getValuePercent = (value: string) => {
+        const valueIndex = values().indexOf(value);
+        if (valueIndex === -1) return 0;
+
+        return valueIndex / (values().length - 1) * 100;
+    }
+
+    const findValueInPercent = (percent: number) => {
+        const index = Math.round((percent / 100) * (values().length - 1));
+        return values()[index] || '';
+    }
+
+    const percent = () => getValuePercent(value());
 
     let element!: HTMLDivElement;
     let trackElement!: HTMLDivElement;
@@ -49,13 +60,12 @@ const Slider: ParentComponent<SliderProps> = (props) => {
 
     const handleTrackClick = (e: MouseEvent) => {
         calculateInitialValues(e);
-        const valueRange = max() - min();
         const delta = start - minValue;
-        const newValue = min() + (delta / pixelRange) * valueRange;
-        const result = Math.round(clamp(Math.round(newValue / step()) * step(), min(), max()));
+        const result = Math.round(clamp(Math.round((delta / pixelRange) * 100), 0, 100));
+        const newValue = findValueInPercent(result)
 
-        setValue(result);
-        props.onChange?.(result);
+        setValue(newValue);
+        props.onChange?.(newValue);
     }
 
     const handleMouseDown = (e: MouseEvent) => {
@@ -63,7 +73,7 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         sliding = true;
 
         calculateInitialValues(e);
-        startValue = value();
+        startValue = getValuePercent(value());
 
         window.addEventListener('mousemove', handleMouseMove);
         window.addEventListener('mouseup', handleMouseUp);
@@ -73,13 +83,15 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         if (!sliding) return;
 
         const result = Math.round(calculateResult(e));
-        setValue(result);
-        props.onChange?.(result);
+        const newValue = findValueInPercent(result)
+
+        setValue(newValue);
+        props.onChange?.(newValue);
     }
 
     const handleMouseUp = (e: MouseEvent) => {
         if (!sliding) return;
-        
+
         sliding = false;
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
@@ -87,10 +99,9 @@ const Slider: ParentComponent<SliderProps> = (props) => {
 
     const calculateResult = (e: MouseEvent) => {
         const delta = e.clientX - start;
-        const valueRange = max() - min();
-        const deltaValue = (delta / pixelRange) * valueRange
+        const deltaValue = (delta / pixelRange) * 100;
         const newValue = startValue + deltaValue;
-        return clamp(Math.round(newValue / step()) * step(), min(), max());
+        return clamp(Math.round(newValue), 0, 100);
     }
 
     const SliderClasses = createMemo(() => {
@@ -106,16 +117,18 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         const { left, width } = trackElement.getBoundingClientRect();
 
         start = e.clientX;
-        minValue = left
+        minValue = left;
         maxValue = left + width;
         pixelRange = maxValue - minValue;
     }
 
-    const changeValue = (newValue: number) => {
-        const clampedValue = clamp(newValue, min(), max());
-
-        setValue(clampedValue);
-        props.onChange?.(clampedValue);
+    const changeValue = (newValue: string) => {
+        if (!values().includes(newValue)) {
+            console.warn(`Value "${newValue}" is not in the list of allowed values.`);
+            return;
+        }
+        setValue(newValue);
+        props.onChange?.(newValue);
     }
 
     props.componentClasses = () => SliderClasses();
@@ -125,14 +138,15 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         if (!props.ref || !element) return;
 
         (props.ref as unknown as (ref: any) => void)({
-            value,
+            value: value,
+            values: values,
             element,
             changeValue
         });
     });
 
     return (
-        <SliderContext.Provider value={{ }}>
+        <TextSliderContext.Provider value={{ values }}>
             <div
                 ref={element!}
                 class={className()}
@@ -144,10 +158,10 @@ const Slider: ParentComponent<SliderProps> = (props) => {
                     <SliderFill percent={percent} parentChildren={props.children} />
                     <SliderThumb value={value} percent={percent} parentChildren={props.children} />
                 </SliderTrack>
-                <SliderGrid min={min()} max={max()} parentChildren={props.children} />
+                <TextSliderGrid parentChildren={props.children} />
             </div>
-        </SliderContext.Provider>
+        </TextSliderContext.Provider>
     )
 }
 
-export default Object.assign(Slider, { Grid, Fill, Handle, Thumb, Track });
+export default Object.assign(TextSlider, { Grid, Fill, Handle, Thumb, Track });
