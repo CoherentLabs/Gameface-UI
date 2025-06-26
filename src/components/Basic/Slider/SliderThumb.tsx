@@ -1,18 +1,21 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import styles from './Slider.module.css';
-import { createMemo, JSX, Show, useContext } from 'solid-js';
+import { createMemo, JSX, ParentComponent, Show } from 'solid-js';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
-import { SliderContext } from './Slider';
 
 interface SliderThumbProps {
     style?: JSX.CSSProperties,
     class?: string,
 }
 
+interface SliderThumbComponentProps extends TokenComponentProps {
+    percent: () => number
+    value: () => number | string
+}
+
 export const Thumb = createTokenComponent<SliderThumbProps>();
 
-export const SliderThumb = (props: TokenComponentProps) => {
-    const sliderContext = useContext(SliderContext);
+export const SliderThumb: ParentComponent<SliderThumbComponentProps> = (props) => {
     const ThumbToken = useToken(Thumb, props.parentChildren);
 
     const thumbClasses = createMemo(() => {
@@ -24,13 +27,13 @@ export const SliderThumb = (props: TokenComponentProps) => {
     });
 
     const thumbStyle = createMemo(() => {
-        const position = {left: `${sliderContext!.percent()}%`}
-        return {...ThumbToken()?.style, ...position}
+        const position = { left: `${props.percent()}%` }
+        return { ...ThumbToken()?.style, ...position }
     })
 
     return (
         <Show when={ThumbToken()}>
-            <div class={thumbClasses()} style={thumbStyle()}>{sliderContext?.value()}</div>
+            <div class={thumbClasses()} style={thumbStyle()}>{props.value()}</div>
         </Show>
     )
 }
