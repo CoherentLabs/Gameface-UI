@@ -1,10 +1,10 @@
 import { createMemo, JSX, ParentComponent } from "solid-js";
-import styles from './Switch.module.css';
+import styles from './ToggleButton.module.css';
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
-import { SwitchIndicator } from "./SwitchIndicator";
-import { SwitchHandle } from "./SwitchHandle";
-import { LabelLeft, LabelRight } from "./Switch";
+import { ToggleButtonIndicator } from "./ToggleButtonIndicator";
+import { ToggleButtonHandle } from "./ToggleButtonHandle";
+import { LabelLeft, LabelRight } from "./ToggleButton";
 
 interface ControlTokenProps {
     style?: JSX.CSSProperties,
@@ -13,7 +13,7 @@ interface ControlTokenProps {
 
 export const Control = createTokenComponent<ControlTokenProps>();
 
-export const SwitchControl: ParentComponent<TokenComponentProps> = (props) => {
+export const ToggleButtonControl: ParentComponent<TokenComponentProps> = (props) => {
     const ControlToken = useToken(Control, props.parentChildren);
     const LabelLeftToken = useToken(LabelLeft, props.parentChildren);
     const LabelRightToken = useToken(LabelRight, props.parentChildren);
@@ -33,8 +33,8 @@ export const SwitchControl: ParentComponent<TokenComponentProps> = (props) => {
             class={controlClasses()}
             style={ControlToken()?.style || {}}>
             {ControlToken()?.children}
-            <SwitchIndicator parentChildren={ControlToken()?.children} />
-            <SwitchHandle parentChildren={ControlToken()?.children} />
+            <ToggleButtonIndicator parentChildren={ControlToken()?.children} />
+            <ToggleButtonHandle parentChildren={ControlToken()?.children} />
         </div>
     )
 }

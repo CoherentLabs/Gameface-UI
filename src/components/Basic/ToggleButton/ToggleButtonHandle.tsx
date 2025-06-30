@@ -1,9 +1,9 @@
 import { createMemo, JSX, ParentComponent, useContext } from "solid-js";
-import styles from './Switch.module.css';
+import styles from './ToggleButton.module.css';
 
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
-import { SwitchContext } from "./Switch";
+import { ToggleButtonContext } from "./ToggleButton";
 
 interface HandleTokenProps {
     style?: JSX.CSSProperties,
@@ -14,8 +14,8 @@ interface HandleTokenProps {
 
 export const Handle = createTokenComponent<HandleTokenProps>();
 
-export const SwitchHandle: ParentComponent<TokenComponentProps> = (props) => {
-    const switchContext = useContext(SwitchContext);
+export const ToggleButtonHandle: ParentComponent<TokenComponentProps> = (props) => {
+    const toggleButtonContext = useContext(ToggleButtonContext);
     const HandleToken = useToken(Handle, props.parentChildren);
 
     const handleClasses = createMemo(() => {
@@ -23,7 +23,7 @@ export const SwitchHandle: ParentComponent<TokenComponentProps> = (props) => {
 
         if (HandleToken()?.class) classes.push(HandleToken()?.class ?? '');
 
-        if (switchContext?.checked()) {
+        if (toggleButtonContext?.checked()) {
             if (HandleToken()?.['class-checked']) classes.push(`${HandleToken()?.['class-checked']}`);
             else classes.push(styles.HandleChecked);
         }
@@ -35,7 +35,7 @@ export const SwitchHandle: ParentComponent<TokenComponentProps> = (props) => {
         const styles: JSX.CSSProperties = {};
         Object.assign(styles, HandleToken()?.style || {});
 
-        if (switchContext?.checked() && HandleToken()?.['style-checked']) {
+        if (toggleButtonContext?.checked() && HandleToken()?.['style-checked']) {
             Object.assign(styles, HandleToken()?.['style-checked']);
         }
 

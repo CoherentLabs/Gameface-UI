@@ -1,22 +1,22 @@
 import { ComponentProps } from "@components/types/ComponentProps";
 import { Accessor, Setter, createSignal, onMount, ParentComponent, Show, createContext, createMemo, createEffect } from "solid-js";
-import styles from './Switch.module.css';
+import styles from './ToggleButton.module.css';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
-import { Control, SwitchControl } from "./SwitchControl";
-import { Indicator } from "./SwitchIndicator";
+import { Control, ToggleButtonControl } from "./ToggleButtonControl";
+import { Indicator } from "./ToggleButtonIndicator";
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
-import { Handle } from "./SwitchHandle";
+import { Handle } from "./ToggleButtonHandle";
 
 export const LabelLeft = createTokenComponent();
 export const LabelRight = createTokenComponent();
 
-export interface SwitchRef {
+export interface ToggleButtonRef {
     checked: Accessor<boolean>,
     setChecked: Setter<boolean>,
     element: HTMLDivElement,
 }
 
-interface SwitchProps extends ComponentProps {
+interface ToggleButtonProps extends ComponentProps {
     checked?: boolean
     disabled?: boolean
     'class-disabled'?: string
@@ -25,17 +25,17 @@ interface SwitchProps extends ComponentProps {
 }
 
 
-export const SwitchContext = createContext<{ checked: Accessor<boolean> }>();
+export const ToggleButtonContext = createContext<{ checked: Accessor<boolean> }>();
 
-const Switch: ParentComponent<SwitchProps> = (props) => {
+const ToggleButton: ParentComponent<ToggleButtonProps> = (props) => {
     const LabelLeftToken = useToken(LabelLeft, props.children);
     const LabelRightToken = useToken(LabelRight, props.children);
 
     const [checked, setChecked] = createSignal(props.checked ?? false);
     let element!: HTMLDivElement;
 
-    const switchClasses = createMemo(() => {
-        const classes = [styles.Switch];
+    const toggleButtonClasses = createMemo(() => {
+        const classes = [styles.ToggleButton];
 
         if (props.disabled) {
             if (props['class-disabled']) classes.push(`${styles.Disabled} ${props['class-disabled']}`);
@@ -50,7 +50,7 @@ const Switch: ParentComponent<SwitchProps> = (props) => {
     });
 
 
-    props.componentClasses = () => switchClasses();
+    props.componentClasses = () => toggleButtonClasses();
     const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     const toggle = (e?: MouseEvent) => {
@@ -75,7 +75,7 @@ const Switch: ParentComponent<SwitchProps> = (props) => {
     });
 
     return (
-        <SwitchContext.Provider value={{ checked }}>
+        <ToggleButtonContext.Provider value={{ checked }}>
             <div
                 ref={element!}
                 class={className()}
@@ -88,14 +88,14 @@ const Switch: ParentComponent<SwitchProps> = (props) => {
                     {LabelLeftToken()?.children}
                 </Show>
 
-                <SwitchControl parentChildren={props.children} />
+                <ToggleButtonControl parentChildren={props.children} />
 
                 <Show when={LabelRightToken()}>
                     {LabelRightToken()?.children}
                 </Show>
             </div>
-        </SwitchContext.Provider>
+        </ToggleButtonContext.Provider>
     )
 }
 
-export default Object.assign(Switch, { LabelLeft, LabelRight, Control, Indicator, Handle });
+export default Object.assign(ToggleButton, { LabelLeft, LabelRight, Control, Indicator, Handle });
