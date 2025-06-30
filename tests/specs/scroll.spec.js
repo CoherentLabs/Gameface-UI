@@ -3,7 +3,7 @@ const { sleep } = require('gameface-e2e/core/utils');
 
 describe('Scroll', function () {
     this.beforeAll(async () => {
-        await gf.navigate('http://localhost:3000/playground/');
+        await gf.navigate(`http://localhost:3000/components-e2e/`);
         await gf.click('.scroll-link');
     })
 

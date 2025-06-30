@@ -6,7 +6,7 @@ const assert = require('assert');
     const compSelector = `.${type}`;
 
     this.beforeAll(async () => {
-      await gf.navigate('http://localhost:3000/playground/');
+      await gf.navigate(`http://localhost:3000/components-e2e/`);
       await gf.click(linkSelector);
     });
 
