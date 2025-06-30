@@ -1,0 +1,241 @@
+---
+title: ToggleButton
+---
+
+The `ToggleButton` component is a versatile UI element that allows users to toggle between two states, such as "on" and "off."
+
+## Usage
+
+To use the `ToggleButton` component, you can customize its labels and behavior as shown below:
+
+```tsx
+import ToggleButton from '@components/Basic/ToggleButton/ToggleButton';
+
+const App = () => {
+    return (
+        <ToggleButton>
+            <ToggleButton.LabelLeft>Off</ToggleButton.LabelLeft>
+            <ToggleButton.LabelRight>On</ToggleButton.LabelRight>
+        </ToggleButton>
+    );
+};
+
+export default App;
+```
+
+## API
+
+### Props
+
+| Prop Name       | Type                        | Default     | Description                                                                                                   |
+|------------------|-----------------------------|-------------|---------------------------------------------------------------------------------------------------------------|
+| `style`         | `JSX.CSSProperties`        | `{}`        | Inline styles to apply directly to the root element of the component.                                        |
+| `class`         | `string`                   | `""`        | Additional CSS classes to apply to the component.                                                            |
+| `ref`           | `ToggleButtonRef \| undefined`   | `undefined` | A reference to the component, providing access to its methods and underlying HTML element.                   |
+| `disabled`      | `boolean`                  | `false`     | Disables the toggle button, preventing user interaction.                                                            |
+| `class-checked` | `string`                   | `""`        | Additional CSS classes applied when the toggle button is checked.                                                   |
+| `class-disabled`| `string`                   | `""`        | Additional CSS classes applied when the toggle button is disabled.                                                  |
+| `checked`       | `boolean`                  | `false`     | Specifies the initial checked state of the toggle button.                                                           |
+| `onChange`      | `(checked: boolean) => void`| `undefined` | Callback function triggered whenever the toggle button is toggled, providing the current checked state.             |
+
+### Methods
+
+| Method       | Parameters         | Return Value | Description                                                                 |
+|--------------|--------------------|--------------|-----------------------------------------------------------------------------|
+| `setChecked` | `Setter<boolean>`  | `void`       | Programmatically sets the checked state of the toggle button based on the provided boolean value. |
+
+## Slots
+
+### `ToggleButton.LabelLeft`
+
+This slot enables customization of the left label of the toggle button. You can use it to include additional elements or modify the content of the left label.
+
+#### Properties
+
+| Prop Name | Type         | Default     | Description                                                                 |
+|-----------|--------------|-------------|-----------------------------------------------------------------------------|
+| `children`| `JSX.Element`| `undefined` | The content to display inside the left label, which can be any valid JSX element. |
+
+#### Example
+
+```tsx
+import ToggleButton from '@components/Basic/ToggleButton/ToggleButton';
+
+const App = () => {
+    return (
+        <ToggleButton>
+            <ToggleButton.LabelLeft>Off</ToggleButton.LabelLeft>
+        </ToggleButton>
+    );
+};
+
+export default App;
+```
+
+### `ToggleButton.LabelRight`
+
+This slot enables customization of the right label of the toggle button. You can use it to include additional elements or modify the content of the right label.
+
+#### Properties
+
+| Prop Name | Type         | Default     | Description                                                                  |
+|-----------|--------------|-------------|------------------------------------------------------------------------------|
+| `children`| `JSX.Element`| `undefined` | The content to display inside the right label, which can be any valid JSX element. |
+
+#### Example
+
+```tsx
+import ToggleButton from '@components/Basic/ToggleButton/ToggleButton';
+
+const App = () => {
+    return (
+        <ToggleButton>
+            <ToggleButton.LabelRight>On</ToggleButton.LabelRight>
+        </ToggleButton>
+    );
+};
+
+export default App;
+```
+
+### `ToggleButton.Control`
+
+This slot allows you to customize the appearance and behavior of the `ToggleButton` control when it is in its unchecked state. You can use it to apply custom styles, add CSS classes, or include additional elements within the control.
+
+#### Properties
+
+| Prop Name | Type               | Default | Description                                                                 |
+|-----------|--------------------|---------|-----------------------------------------------------------------------------|
+| `style`   | `JSX.CSSProperties`| `{}`    | Inline styles to apply directly to the control element.                     |
+| `class`   | `string`           | `""`    | Additional CSS classes to style the control element.                        |
+| `children`| `JSX.Element`      | `undefined` | Content to render inside the control, which can be any valid JSX element. |
+
+#### Example
+
+```tsx
+import ToggleButton from '@components/Basic/ToggleButton/ToggleButton';
+
+const App = () => {
+    return (
+        <ToggleButton>
+            <ToggleButton.LabelLeft>Off</ToggleButton.LabelLeft>
+            <ToggleButton.LabelRight>On</ToggleButton.LabelRight>
+            <ToggleButton.Control style={{ 'background-color': 'gray' }}>
+            </ToggleButton.Control>
+        </ToggleButton>
+    );
+};
+
+export default App;
+```
+
+### `ToggleButton.Indicator`
+
+This slot allows you to customize the indicator displayed when the toggle button is toggled. It can be styled or replaced with custom elements to suit your design needs.
+
+:::note
+The `ToggleButton.Indicator` slot must be used within the `ToggleButton.Control` slot.
+:::
+
+#### Properties
+
+| Prop Name | Type               | Default | Description                                                                 |
+|-----------|--------------------|---------|-----------------------------------------------------------------------------|
+| `style`   | `JSX.CSSProperties`| `{}`    | Inline styles to apply directly to the indicator element.                   |
+| `class`   | `string`           | `""`    | Additional CSS classes to style the indicator element.                      |
+| `children`| `JSX.Element`      | `undefined` | Content to render inside the indicator, which can be any valid JSX element. |
+
+#### Example
+
+```tsx
+import ToggleButton from '@components/Basic/ToggleButton/ToggleButton';
+
+const App = () => {
+    return (
+        <ToggleButton>
+            <ToggleButton.LabelLeft>Off</ToggleButton.LabelLeft>
+            <ToggleButton.LabelRight>On</ToggleButton.LabelRight>
+            <ToggleButton.Control style={{ 'background-color': 'gray' }}>
+                <ToggleButton.Indicator style={{ background: 'white' }}></ToggleButton.Indicator>
+            </ToggleButton.Control>
+        </ToggleButton>
+    );
+};
+
+export default App;
+```
+
+### `ToggleButton.Handle`
+
+This slot allows you to customize the handle of the `ToggleButton` component. You can use it to apply custom styles, add CSS classes, or include additional elements.
+
+:::note
+The `ToggleButton.Handle` slot must be used within the `ToggleButton.Control` slot.
+:::
+
+#### Properties
+
+| Prop Name       | Type               | Default | Description                                                                 |
+|------------------|--------------------|---------|-----------------------------------------------------------------------------|
+| `style`         | `JSX.CSSProperties`| `{}`    | Inline styles to apply directly to the handle element.                      |
+| `style-checked` | `JSX.CSSProperties`| `{}`    | Inline styles to apply when the toggle button is in the checked state.             |
+| `class`         | `string`           | `""`    | Additional CSS classes to style the handle element.                         |
+| `class-checked` | `string`           | `""`    | Additional CSS classes to style the handle when the toggle button is checked.      |
+| `children`      | `JSX.Element`      | `undefined` | Content to render inside the handle, which can be any valid JSX element.    |
+
+:::note
+The `style` and `class` properties are applied when the toggle button is unchecked, while `style-checked` and `class-checked` are applied when it is checked.
+:::
+
+#### Example
+
+```tsx
+import ToggleButton from '@components/Basic/ToggleButton/ToggleButton';
+
+const App = () => {
+    return (
+        <ToggleButton>
+            <ToggleButton.LabelLeft>Off</ToggleButton.LabelLeft>
+            <ToggleButton.LabelRight>On</ToggleButton.LabelRight>
+            <ToggleButton.Control style={{ 'background-color': 'gray' }}>
+                <ToggleButton.Indicator style={{ background: 'white' }}></ToggleButton.Indicator>
+                <ToggleButton.Handle style={{ background: 'red' }} style-checked={{ background: 'black' }}></ToggleButton.Handle>
+            </ToggleButton.Control>
+        </ToggleButton>
+    );
+};
+
+export default App;
+```
+
+## Guide
+
+### Set the value of the ToggleButton Programmatically 
+
+The `ToggleButton` component lets you set the `checked` state through code.
+
+#### Steps
+
+1. Declare a `ref` variable with type `ToggleButtonRef` and pass it to the `ToggleButton` component.
+2. Call `ref.setChecked()` from anywhere (e.g., a keyboard event or external button) to set the checked state programmatically.
+
+```tsx
+import ToggleButton, { ToggleButtonRef } from '@components/Basic/ToggleButton/ToggleButton';
+
+const App = () => {
+    let toggleButtonRef!: ToggleButtonRef
+    const handleKeyPress = (e: KeyboardEvent) => {
+        if (e.keyCode !== 13) return
+        
+        toggleButtonRef.setChecked(true);
+    }
+
+    return (
+        <>
+            <ToggleButton ref={toggleButtonRef} keypress={handleKeyPress}></ToggleButton>
+        </>
+    );
+};
+
+export default App;
+```

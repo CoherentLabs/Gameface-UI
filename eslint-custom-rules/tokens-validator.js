@@ -3,6 +3,8 @@ const componentsWithSlotTokens = {
   SCROLL_BAR: 'Scroll.Bar',
   CHECKBOX: 'Checkbox',
   CHECKBOX_CONTROL: 'Checkbox.Control',
+  TOGGLE_BUTTON: 'ToggleButton',
+  TOGGLE_BUTTON_CONTROL: 'ToggleButton.Control',
   RADIO: 'Radio',
   RADIO_BUTTON: 'Radio.Button',
   RADIO_BUTTON_CONTROL: 'Radio.ButtonControl',
@@ -22,6 +24,11 @@ const tokenComponetsParents = {
   'Checkbox.Label': componentsWithSlotTokens.CHECKBOX,
   'Checkbox.Control': componentsWithSlotTokens.CHECKBOX,
   'Checkbox.Indicator': componentsWithSlotTokens.CHECKBOX_CONTROL,
+
+  'ToggleButton.Label': componentsWithSlotTokens.TOGGLE_BUTTON,
+  'ToggleButton.Control': componentsWithSlotTokens.TOGGLE_BUTTON,
+  'ToggleButton.Handle': componentsWithSlotTokens.TOGGLE_BUTTON_CONTROL,
+  'ToggleButton.Indicator': componentsWithSlotTokens.TOGGLE_BUTTON_CONTROL,
 
   'Radio.Button': componentsWithSlotTokens.RADIO,
   'Radio.ButtonLabel': componentsWithSlotTokens.RADIO_BUTTON,
