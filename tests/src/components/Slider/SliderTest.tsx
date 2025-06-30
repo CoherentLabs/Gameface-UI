@@ -2,6 +2,7 @@ import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount} from "solid-js";
 import Slider, { SliderRef } from "@components/Basic/Slider/Slider";
 import './slider.css';
+import selectors from "../../../shared/slider-selectors.json";
 
 const initialValue = 10;
 const SliderTest = () => {
@@ -29,11 +30,11 @@ const SliderTest = () => {
 
     return (
         <Tab location='slider'>
-            <div class="assertion-element">{value()}</div>
+            <div class={selectors.assertionElement}>{value()}</div>
             
             <For each={scenarios}>
                 {(sc, i) => (
-                    <button class={`scenario-btn scenario-${i()}`} onClick={sc.action} >
+                    <button class={`${selectors.scenarioBtn} scenario-${i()}`} onClick={sc.action} >
                         {sc.label}
                     </button>
                 )}
@@ -47,17 +48,17 @@ const SliderTest = () => {
                 step={10}
                 value={initialValue}
                 style={reactiveStyle()} 
-                class={`slider ${reactiveClass()}`}>
-                <Slider.Fill style={reactiveStyle()} class={`slider-fill ${reactiveClass()}`} />
-                <Slider.Track style={reactiveStyle()} class={`slider-track ${reactiveClass()}`} />
-                <Slider.Handle style={reactiveStyle()} class={`slider-handle ${reactiveClass()}`} />
-                <Slider.Thumb style={reactiveStyle()} class={`slider-thumb ${reactiveClass()}`} />
+                class={`${selectors.slider} ${reactiveClass()}`}>
+                <Slider.Fill style={reactiveStyle()} class={`${selectors.sliderFill} ${reactiveClass()}`} />
+                <Slider.Track style={reactiveStyle()} class={`${selectors.sliderTrack} ${reactiveClass()}`} />
+                <Slider.Handle style={reactiveStyle()} class={`${selectors.sliderHandle} ${reactiveClass()}`} />
+                <Slider.Thumb style={reactiveStyle()} class={`${selectors.sliderThumb} ${reactiveClass()}`} />
                 <Slider.Grid 
                     style={reactiveStyle()} 
-                    class={`slider-grid ${reactiveClass()}`} 
+                    class={`${selectors.sliderGrid} ${reactiveClass()}`} 
                     pols-without-text={5} pols={5} 
                     pol-style={reactiveStyle()} 
-                    pol-class={`slider-pol ${reactiveClass()}`} />
+                    pol-class={`${selectors.sliderPol} ${reactiveClass()}`} />
             </Slider>
         </Tab> 
     )

@@ -128,7 +128,7 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         if (!props.ref || !element) return;
 
         (props.ref as unknown as (ref: any) => void)({
-            value: value,
+            value,
             element,
             changeValue
         });

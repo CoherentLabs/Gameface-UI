@@ -2,6 +2,7 @@ import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
 import Block from "@components/Layout/Block/Block";
 import './base.css';
+import selectors from "../../../shared/base-selectors.json";
 
 const BaseTest = () => {
     const [test, setTest] = createSignal('red');
@@ -27,11 +28,11 @@ const BaseTest = () => {
 
     return (
         <Tab location='base'>
-            <div class="assertion-element">{text()}</div>
+            <div class={selectors.assertionElement}>{text()}</div>
 
             <For each={scenarios}>
                 {(sc, i) => (
-                    <button class={`scenario-btn scenario-${i()}`} onClick={sc.action} >
+                    <button class={`${selectors.scenarioBtn} scenario-${i()}`} onClick={sc.action} >
                         {sc.label}
                     </button>
                 )}
@@ -40,13 +41,13 @@ const BaseTest = () => {
             <Block 
                 click={() => setText('click')}
                 dblclick={() => setText('double click')}
-                class="click">
+                class={selectors.click}>
                 Click
             </Block>
 
             <Block 
                 dblclick={() => setText('double click')}
-                class="double-click">
+                class={selectors.doubleClick}>
                 Double click
             </Block>
 
@@ -54,7 +55,7 @@ const BaseTest = () => {
                 focus={() => setText('focus')}
                 blur={() => setText('blur')}
                 attr:tabindex={0}
-                class="focus">
+                class={selectors.focus}>
                 Focus
             </Block>
 
@@ -62,7 +63,7 @@ const BaseTest = () => {
                 mousedown={() => setText('mouse down')}
                 mouseup={() => setText('mouse up')}
                 mouseenter={() => setText('mouse enter')}
-                class="mouse">
+                class={selectors.mouse}>
                 Mouse
             </Block>
             
@@ -71,27 +72,27 @@ const BaseTest = () => {
                 keydown={() => setText('key down')}
                 keyup={() => setText('key up')}
                 keypress={() => setText('key press')}
-                class="key">
+                class={selectors.key}>
                 Key
             </Block>
 
             <Block 
                 attr:tabindex={0}
                 keypress={() => setText('key press')}
-                class="key-press">
+                class={selectors.keyPress}>
                 Key press
             </Block>
 
             <Block 
                 style={reactiveStyle()} 
-                class={`reactivity ${reactiveClass()}`}>
+                class={`${selectors.reactivity} ${reactiveClass()}`}>
                 Reactivity
             </Block>
 
             <Block 
                 attr:tabindex={tabIndex()}
                 attr:disabled
-                class="attributes">
+                class={selectors.attributes}>
                 Attributes
             </Block>
         </Tab> 

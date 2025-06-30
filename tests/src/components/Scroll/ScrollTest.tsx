@@ -3,6 +3,7 @@ import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-j
 import Scroll, { ScrollComponentRef } from "@components/Layout/Scroll/Scroll";
 import Block from "@components/Layout/Block/Block";
 import './scroll.css';
+import selectors from "../../../shared/scroll-selectors.json";
 
 const ScrollTest = () => {
     let scrollRef!: ScrollComponentRef;
@@ -37,7 +38,7 @@ const ScrollTest = () => {
         <Tab location='scroll'>
             <For each={scenarios}>
                 {(sc, i) => (
-                    <button class={`scenario-btn scenario-${i()}`} onClick={sc.action} >
+                    <button class={`${selectors.scenarioBtn} scenario-${i()}`} onClick={sc.action} >
                         {sc.label}
                     </button>
                 )}
@@ -47,9 +48,9 @@ const ScrollTest = () => {
                 ref={scrollRef}
                 onScroll={(args) => setDirection(args.scrollDirection)}
                 style={reactiveStyle()} 
-                class={`scroll ${reactiveClass()}`}>
-                <Scroll.Content style={reactiveStyle()} class={`content ${reactiveClass()}`} >
-                    <Block class="scroll-child">
+                class={`${selectors.scroll} ${reactiveClass()}`}>
+                <Scroll.Content style={reactiveStyle()} class={`${selectors.content} ${reactiveClass()}`} >
+                    <Block class={selectors.scrollChild}>
                         I am a very long and dynamic text that can be scrolled
                     </Block>
                     <Show when={overflow()}>
@@ -57,15 +58,15 @@ const ScrollTest = () => {
                         lorem Eaque, perspiciatis ad iusto expedita consectetur rerum tempora non nisi, porro tenetur repudiandae.
                             Voluptatem magni dolore consequuntur officia nemo quidem minus. Possimus, quibusdam.
                         </Block>
-                        <div class="assertion-element" style={{width: '5vmax', height: '3vmax', 'background-color': 'green'}}>{direction()}</div>
+                        <div class={selectors.assertionElement} style={{width: '5vmax', height: '3vmax', 'background-color': 'green'}}>{direction()}</div>
                         <Block>
                             I am a very long and dynamic text that can be scrolled - lorem Eaque, perspiciatis ad iusto expedita consectetur rerum tempora non nisi, porro tenetur repudiandae.
                             Voluptatem magni dolore consequuntur officia nemo quidem minus. Possimus, quibusdam.
                         </Block>
                     </Show>
                 </Scroll.Content>
-                <Scroll.Bar style={reactiveStyle()} class={`bar ${reactiveClass()}`}>
-                    <Scroll.Handle style={reactiveStyle()} class={`handle ${reactiveClass()}`} />
+                <Scroll.Bar style={reactiveStyle()} class={`${selectors.bar} ${reactiveClass()}`}>
+                    <Scroll.Handle style={reactiveStyle()} class={`${selectors.handle} ${reactiveClass()}`} />
                 </Scroll.Bar>
             </Scroll>
         </Tab> 

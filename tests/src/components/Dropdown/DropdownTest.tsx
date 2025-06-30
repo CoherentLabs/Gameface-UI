@@ -1,6 +1,7 @@
 import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import Dropdown, { DropdownRef } from "@components/Basic/Dropdown/Dropdown";
+import selectors from '../../../shared/dropdown-selectors.json';
 import './dropdown.css';
 
 const dropdownOptions = [
@@ -9,6 +10,7 @@ const dropdownOptions = [
     { value: 'test', },
 ]
 
+console.log(selectors)
 const DropdownTest = () => {
     let dropdownRef!: DropdownRef;
     const [selected, setSelected] = createSignal("");
@@ -39,36 +41,36 @@ const DropdownTest = () => {
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
     onMount(() => document.addEventListener('reset', reset))
-    onCleanup(() => document.removeEventListener('reset', reset)) 
+    onCleanup(() => document.removeEventListener('reset', reset))
 
     return (
         <Tab location='dropdown'>
-            <div class="assertion-element">{selected()}</div>
+            <div class={selectors.assertionElement}>{selected()}</div>
 
             <For each={scenarios}>
                 {(sc, i) => (
-                    <button class={`scenario-btn scenario-${i()}`} onClick={sc.action} >
+                    <button class={`${selectors.scenarioBtn} scenario-${i()}`} onClick={sc.action} >
                         {sc.label}
                     </button>
                 )}
             </For>
 
-            <Dropdown 
+            <Dropdown
                 ref={dropdownRef}
-                onChange={(value) => setSelected(value)} 
+                onChange={(value) => setSelected(value)}
                 disabled={disabled()}
-                class-disabled={'dropdown-disabled'}
-                style={reactiveStyle()} 
-                class={`dropdown ${reactiveClass()}`}>
-                <Dropdown.Options style={reactiveStyle()} class={`dropdown-options ${reactiveClass()}`}>
-                        <For each={options()}>
+                class-disabled={`${selectors.base}-disabled`}
+                style={reactiveStyle()}
+                class={`${selectors.base} ${reactiveClass()}`}>
+                <Dropdown.Options style={reactiveStyle()} class={`${selectors.options} ${reactiveClass()}`}>
+                    <For each={options()}>
                         {(option, index) => (
                             <Dropdown.Option
                                 value={option.value + index()}
                                 disabled={btnDisabled()}
                                 class-disabled="option-disabled"
                                 class-selected="option-selected"
-                                class={`dropdown-option dropdown-option${index()} ${reactiveClass()}`}
+                                class={`${selectors.option} ${selectors.option}${index()} ${reactiveClass()}`}
                                 style={reactiveStyle()}>
                                 {option.value + index()}
                             </Dropdown.Option>
@@ -76,17 +78,17 @@ const DropdownTest = () => {
                     </For>
                 </Dropdown.Options>
 
-                <Dropdown.Trigger style={reactiveStyle()} class={`dropdown-trigger ${reactiveClass()}`} />
-                <Dropdown.Placeholder class="dropdown-placeholder">Select any option</Dropdown.Placeholder>
-                <Dropdown.Icon style={reactiveStyle()} class={`dropdown-icon ${reactiveClass()}`}>
+                <Dropdown.Trigger style={reactiveStyle()} class={`${selectors.trigger} ${reactiveClass()}`} />
+                <Dropdown.Placeholder class={`${selectors.placeholder}`}>Select any option</Dropdown.Placeholder>
+                <Dropdown.Icon style={reactiveStyle()} class={`${selectors.icon} ${reactiveClass()}`}>
                     <Show when={customIcon()}>
                         Custom Icon
                     </Show>
                 </Dropdown.Icon>
-                <Dropdown.Track style={reactiveStyle()} class={`dropdown-track ${reactiveClass()}`} />
-                <Dropdown.Handle style={reactiveStyle()} class={`dropdown-handle ${reactiveClass()}`}/>
+                <Dropdown.Track style={reactiveStyle()} class={`${selectors.track} ${reactiveClass()}`} />
+                <Dropdown.Handle style={reactiveStyle()} class={`${selectors.handle} ${reactiveClass()}`} />
             </Dropdown>
-        </Tab> 
+        </Tab>
     )
 }
 

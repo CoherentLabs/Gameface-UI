@@ -1,9 +1,10 @@
 const assert = require('assert');
+const selectors = require('../shared/position-selectors.json');
 
 ['absolute', 'relative'].forEach((type) => {
   describe(type.charAt(0).toUpperCase() + type.slice(1), function () {
     const linkSelector = `.${type}-link`;
-    const compSelector = `.${type}`;
+    const compSelector = `.${selectors[type]}`;
 
     this.beforeAll(async () => {
       await gf.navigate(`http://localhost:3000/components-e2e/`);
@@ -18,7 +19,7 @@ const assert = require('assert');
       const el = await gf.get(compSelector);
       const orig = await el.getPositionOnScreen();
 
-      await gf.click('.scenario-0');
+      await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
       await gf.retryIfFails(async () => {
         const moved = await el.getPositionOnScreen();
         assert.notEqual(orig.x, moved.x, 'X should change');
@@ -34,7 +35,7 @@ const assert = require('assert');
       const classes = await el.classes();
 
       assert.equal(styles['background-color'], 'rgba(0, 0, 255, 1)', 'background-color should update');
-      assert.ok(classes.includes('reactive'), 'reactive class applied');
+      assert.ok(classes.includes(selectors.reactive), 'reactive class applied');
     });
   });
 });

@@ -1,4 +1,5 @@
 const assert = require('assert');
+const selectors = require('../shared/base-selectors.json');
 
 describe('Base', function () {
     this.beforeAll(async () => {
@@ -11,32 +12,31 @@ describe('Base', function () {
     })
 
     it('Should change state on click', async () => {
-        const assertEl = await gf.get('.assertion-element')
-        const el = await gf.get('.click')
-        await el.click();
+        const assertEl = await gf.get(`.${selectors.assertionElement}`)
+        await gf.click(`.${selectors.click}`)
 
         assert.equal(await assertEl.text(), 'click', 'Element\'s text should change');
     })
 
     it('Should change state on double click', async () => {
-        const assertEl = await gf.get('.assertion-element')
-        const el = await gf.get('.double-click')
+        const assertEl = await gf.get(`.${selectors.assertionElement}`)
+        const el = await gf.get(`.${selectors.doubleClick}`)
         await el.doubleClick();
 
         assert.equal(await assertEl.text(), 'double click', 'Element\'s text should change');
     })
 
     it('Should change state on focus', async () => {
-        const assertEl = await gf.get('.assertion-element')
-        const el = await gf.get('.focus')
+        const assertEl = await gf.get(`.${selectors.assertionElement}`)
+        const el = await gf.get(`.${selectors.focus}`)
         await el.focus();
 
         assert.equal(await assertEl.text(), 'focus', 'Element\'s text should change');
     })
 
     it('Should change state on blur', async () => {
-        const assertEl = await gf.get('.assertion-element')
-        const el = await gf.get('.focus')
+        const assertEl = await gf.get(`.${selectors.assertionElement}`)
+        const el = await gf.get(`.${selectors.focus}`)
         await el.focus();
         await gf.click('body');
 
@@ -44,56 +44,55 @@ describe('Base', function () {
     })
 
     it('Should change state on mouse down', async () => {
-        const assertEl = await gf.get('.assertion-element')
-        const el = await gf.get('.mouse')
+        const assertEl = await gf.get(`.${selectors.assertionElement}`)
+        const el = await gf.get(`.${selectors.mouse}`)
         await el.mousePress();
 
         assert.equal(await assertEl.text(), 'mouse down', 'Element\'s text should change');
     })
 
     it('Should change state on mouse up', async () => {
-        const assertEl = await gf.get('.assertion-element')
-        const el = await gf.get('.mouse')
+        const assertEl = await gf.get(`.${selectors.assertionElement}`)
+        const el = await gf.get(`.${selectors.mouse}`)
         await el.mouseRelease();
 
         assert.equal(await assertEl.text(), 'mouse up', 'Element\'s text should change');
     })
 
     it('Should change state on mouse enter', async () => {
-        const assertEl = await gf.get('.assertion-element')
-        const el = await gf.get('.mouse')
+        const assertEl = await gf.get(`.${selectors.assertionElement}`)
+        const el = await gf.get(`.${selectors.mouse}`)
         await el.hover();
 
         assert.equal(await assertEl.text(), 'mouse enter', 'Element\'s text should change');
     })
 
     it('Should change state on key down', async () => {
-        const assertEl = await gf.get('.assertion-element')
-        const el = await gf.get('.key')
+        const assertEl = await gf.get(`.${selectors.assertionElement}`)
+        const el = await gf.get(`.${selectors.key}`)
         await el.keyDown('a');
 
         assert.equal(await assertEl.text(), 'key down', 'Element\'s text should change');
     })
 
-    it('Should change state on key down', async () => {
-        const assertEl = await gf.get('.assertion-element')
-        const el = await gf.get('.key')
-        await el.keyDown('a');
+    it('Should change state on key up', async () => {
+        const assertEl = await gf.get(`.${selectors.assertionElement}`)
+        const el = await gf.get(`.${selectors.key}`)
         await el.keyUp('a');
 
         assert.equal(await assertEl.text(), 'key up', 'Element\'s text should change');
     })
 
-    it('Should change state on key down', async () => {
-        const assertEl = await gf.get('.assertion-element')
-        const el = await gf.get('.key-press')
+    it('Should change state on key press', async () => {
+        const assertEl = await gf.get(`.${selectors.assertionElement}`)
+        const el = await gf.get(`.${selectors.keyPress}`)
         await el.keyPress('a');
 
         assert.equal(await assertEl.text(), 'key press', 'Element\'s text should change');
     })
 
     it('Should apply and change attribute reactively', async () => {
-        const el = await gf.get('.attributes');
+        const el = await gf.get(`.${selectors.attributes}`);
 
         const hasAttribute = await el.hasAttribute('tabindex');
         assert.ok(hasAttribute, 'Element should have "tabindex" attribute initially');
@@ -107,7 +106,7 @@ describe('Base', function () {
     })
 
     it('Should change attribute via code', async () => {
-        const el = await gf.get('.attributes');
+        const el = await gf.get(`.${selectors.attributes}`);
         await el.setAttribute('data-test', 'true');
 
         const styles = await el.styles();
@@ -115,7 +114,7 @@ describe('Base', function () {
     })
 
     it(`should update styles & classes reactively`, async () => {
-        const el = await gf.get('.reactivity');
+        const el = await gf.get(`.${selectors.reactivity}`);
         await gf.click('.scenario-0');
 
         const styles = await el.styles();

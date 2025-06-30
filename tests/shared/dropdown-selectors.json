@@ -1,0 +1,12 @@
+{
+    "base": "dropdown",
+    "options": "dropdown-options",
+    "option": "dropdown-option",
+    "trigger": "dropdown-trigger",
+    "placeholder": "dropdown-placeholder",
+    "icon": "dropdown-icon",
+    "track": "dropdown-track",
+    "handle": "dropdown-handle",
+    "assertionElement": "assertion-element",
+    "scenarioBtn": "scenario-btn"
+}

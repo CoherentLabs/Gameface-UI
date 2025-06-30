@@ -1,0 +1,9 @@
+{
+  "assertionElement": "assertion-element",
+  "scenarioBtn": "scenario-btn",
+  "image": "image",
+  "liveView": "live-view",
+  "backgroundImage": "background-image",
+  "maskImage": "mask-image",
+  "reactive": "reactive"
+}

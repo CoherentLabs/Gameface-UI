@@ -2,6 +2,7 @@ import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
 import Radio, { RadioRef } from "@components/Basic/RadioGroup/Radio";
 import './radio.css';
+import selectors from "../../../shared/radio-selectors.json";
 
 const radioButtons = [
     { value: 'test', selected: true, isBefore: false},
@@ -36,11 +37,11 @@ const RadioTest = () => {
 
     return (
         <Tab location='radio'>
-            <div class="assertion-element">{selected()}</div>
+            <div class={selectors.assertionElement}>{selected()}</div>
 
             <For each={scenarios}>
                 {(sc, i) => (
-                    <button class={`scenario-btn scenario-${i()}`} onClick={sc.action} >
+                    <button class={`${selectors.scenarioBtn} scenario-${i()}`} onClick={sc.action} >
                         {sc.label}
                     </button>
                 )}
@@ -49,9 +50,9 @@ const RadioTest = () => {
             <Radio 
                 onChange={(selected) => setSelected(selected)} 
                 disabled={disabled()} 
-                class-disabled="radio-disabled" 
+                class-disabled={selectors.radioDisabled}
                 ref={radioRef}
-                class={`radio ${reactiveClass()}`}
+                class={`${selectors.radio} ${reactiveClass()}`}
                 style={reactiveStyle()} >
                     <For each={radioButtons}>
                         {(button, index) => (
@@ -59,14 +60,14 @@ const RadioTest = () => {
                                 selected={button.selected} 
                                 value={button.value + index()} 
                                 disabled={disabledBtn()}
-                                class-disabled="radio-button-disabled"
-                                class={`radio-button radio-button${index()} ${reactiveClass()}`}
+                                class-disabled={selectors.radioButtonDisabled}
+                                class={`${selectors.radioButton} ${selectors.radioButton}${index()} ${reactiveClass()}`}
                                 style={reactiveStyle()}>
                                 <Radio.ButtonControl 
-                                    class={`radio-control${index()} ${reactiveClass()}`}
+                                    class={`${selectors.radioControl}${index()} ${reactiveClass()}`}
                                     style={reactiveStyle()}>
                                         <Radio.ButtonIndicator 
-                                            class={`radio-indicator${index()} ${reactiveClass()}`}
+                                            class={`${selectors.radioIndicator}${index()} ${reactiveClass()}`}
                                             style={reactiveStyle()}></Radio.ButtonIndicator>
                                     </Radio.ButtonControl>
                                 <Radio.ButtonLabel before={button.isBefore}>{button.value + index()}</Radio.ButtonLabel>

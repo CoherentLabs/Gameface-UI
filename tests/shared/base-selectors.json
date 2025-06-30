@@ -1,0 +1,12 @@
+{
+  "assertionElement": "assertion-element",
+  "scenarioBtn": "scenario-btn",
+  "click": "click",
+  "doubleClick": "double-click",
+  "focus": "focus",
+  "mouse": "mouse",
+  "key": "key",
+  "keyPress": "key-press",
+  "reactivity": "reactivity",
+  "attributes": "attributes"
+}

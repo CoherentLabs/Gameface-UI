@@ -2,6 +2,7 @@ import Tab from "@components/Layout/Tab/Tab";
 import { createSignal, onCleanup, onMount } from "solid-js";
 import Segment, { SegmentRef } from "@components/Basic/Segment/Segment";
 import './segment.css';
+import selectors from "../../../shared/segment-selectors.json";
 
 const SegmentTest = () => {
     let segmentRef!: SegmentRef;
@@ -31,25 +32,25 @@ const SegmentTest = () => {
 
     return (
         <Tab location='segment'>
-            <div class="assertion-element">{selected()}</div>
-            <button onClick={() => setDisabled(true)} class="disable-segment">Disable Segment</button>
-            <button onClick={() => setDisabledBtn(true)} class="disable-segment-btn">Disable Segment button</button>
+            <div class={selectors.assertionElement}>{selected()}</div>
+            <button onClick={() => setDisabled(true)} class={selectors.disableSegment}>Disable Segment</button>
+            <button onClick={() => setDisabledBtn(true)} class={selectors.disableSegmentBtn}>Disable Segment button</button>
 
             <Segment 
                 onChange={(selected) => setSelected(selected)} 
                 disabled={disabled()} 
-                class-disabled="segment-disabled" 
+                class-disabled={selectors.segmentDisabled} 
                 ref={segmentRef}
-                class={`test-segment ${selected() !== '' ? 'reactive' : ''}`}
+                class={`${selectors.segment} ${selected() !== '' ? selectors.reactive : ''}`}
                 style={{ "background-color": selected() === 'test3' ? 'green' : '' }} >
-                <Segment.Button selected value="test1" class="test-button1">test1</Segment.Button>
+                <Segment.Button selected value="test1" class={selectors.segmentButton1}>test1</Segment.Button>
                 <Segment.Button 
                     disabled={disabledBtn()} 
-                    class-disabled="segment-button-disabled" 
+                    class-disabled={selectors.segmentButtonDisabled} 
                     value="test2" 
-                    class={`test-button2 ${selected() !== '' ? 'reactive' : ''}`}
+                    class={`${selectors.segmentButton2} ${selected() !== '' ? selectors.reactive : ''}`}
                     style={{ "background-color": selected() === 'test2' ? 'green' : '' }}>test2</Segment.Button>
-                <Segment.Button value="test3" class="test-button3">test3</Segment.Button>
+                <Segment.Button value="test3" class={selectors.segmentButton3}>test3</Segment.Button>
                 <Segment.Indicator></Segment.Indicator>
             </Segment>
 

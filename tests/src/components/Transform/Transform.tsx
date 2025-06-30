@@ -3,6 +3,7 @@ import Tab from "@components/Layout/Tab/Tab";
 import Transform from "@components/Layout/Transform/Transform";
 import { createSignal, createMemo, onMount, onCleanup, For } from "solid-js";
 import './transform.css'
+import selectors from "../../../shared/transform-selectors.json";
 
 const TransformTest = () => {
   const [test, setTest] = createSignal("red");
@@ -35,7 +36,7 @@ const TransformTest = () => {
       <For each={scenarios}>
         {(sc, i) => (
           <button
-            class={`scenario-btn scenario-${i()}`}
+            class={`${selectors.scenarioBtn} scenario-${i()}`}
             onClick={sc.action}
           >
             {sc.label}
@@ -49,7 +50,7 @@ const TransformTest = () => {
         origin={origin()}
         style={reactiveStyle()}
         click={() => setTest("blue")}
-        class={`transform ${reactiveClass()}`}
+        class={`${selectors.transform} ${reactiveClass()}`}
       >
         Transform
       </Transform>

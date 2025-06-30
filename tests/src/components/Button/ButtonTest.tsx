@@ -2,6 +2,7 @@ import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
 import Button from "@components/Basic/Button/Button";
 import './button.css';
+import selectors from "../../../shared/button-selectors.json";
 
 const ButtonTest = () => {
     const [test, setTest] = createSignal('red')
@@ -28,11 +29,11 @@ const ButtonTest = () => {
 
     return (
         <Tab location='button'>
-            <div class="assertion-element">{test()}</div>
+            <div class={selectors.assertionElement}>{test()}</div>
 
             <For each={scenarios}>
                 {(sc, i) => (
-                    <Button textFit={false} size="middle" class={`scenario-btn scenario-${i()}`} click={sc.action} >
+                    <Button textFit={false} size="middle" class={`${selectors.scenarioBtn} scenario-${i()}`} click={sc.action} >
                         {sc.label}
                     </Button>
                 )}
@@ -43,7 +44,7 @@ const ButtonTest = () => {
                 style={reactiveStyle()} 
                 click={() => setTest('blue')}
                 size={size()}
-                class={`button ${reactiveClass()}`}>
+                class={`${selectors.button} ${reactiveClass()}`}>
                     Button
             </Button>
         </Tab> 

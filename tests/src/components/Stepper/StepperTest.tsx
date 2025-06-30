@@ -2,11 +2,12 @@ import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import Stepper, { StepperRef } from "@components/Basic/Stepper/Stepper";
 import './stepper.css';
+import selectors from "../../../shared/stepper-selectors.json";
 
 const stepperOptions = [
-    { value: 'test', selected: true, isBefore: false},
-    { value: 'test', selected: false, isBefore: true},
-    { value: 'test', selected: false, isBefore: false}
+    { value: 'test0', selected: true, isBefore: false},
+    { value: 'test1', selected: false, isBefore: true},
+    { value: 'test2', selected: false, isBefore: false}
 ]
 
 const StepperTest = () => {
@@ -47,11 +48,11 @@ const StepperTest = () => {
 
     return (
         <Tab location='stepper'>
-            <div class="assertion-element">{selected()}</div>
+            <div class={selectors.assertionElement}>{selected()}</div>
 
             <For each={scenarios}>
                 {(sc, i) => (
-                    <button class={`scenario-btn scenario-${i()}`} onClick={sc.action} >
+                    <button class={`${selectors.scenarioBtn} scenario-${i()}`} onClick={sc.action} >
                         {sc.label}
                     </button>
                 )}
@@ -63,33 +64,32 @@ const StepperTest = () => {
                 disabled={disabled()}
                 loop={shouldLoop()}
                 controls-position={position()}
-                class-disabled={'stepper-disabled'}
+                class-disabled={selectors.stepperDisabled}
                 style={reactiveStyle()} 
-                class={`stepper ${reactiveClass()}`}>
-                <Stepper.Items style={reactiveStyle()} class={`stepper-items ${reactiveClass()}`}>
-                     <For each={stepperOptions}>
+                class={`${selectors.stepper} ${reactiveClass()}`}>
+                <Stepper.Items style={reactiveStyle()} class={`${selectors.stepperItems} ${reactiveClass()}`}>
+                    <For each={stepperOptions}>
                         {(option, index) => (
                             <Stepper.Item 
                                 selected={option.selected}
-                                value={option.value + index()}
-                                class-selected="custom-selected"
-                                class={`stepper-item stepper-item${index()} ${reactiveClass()}`}
+                                value={option.value}
+                                class-selected={selectors.customSelected}
+                                class={`${selectors.stepperItem} ${selectors.stepperItem}${index()} ${reactiveClass()}`}
                                 style={reactiveStyle()}>
-                                {option.value + index()}
+                                {option.value}
                             </Stepper.Item>
                         )}
                     </For>
                 </Stepper.Items>
                 <Show when={!customBtn()}>
-                    <Stepper.Control style={reactiveStyle()} class={`stepper-control ${reactiveClass()}`} />
+                    <Stepper.Control style={reactiveStyle()} class={`${selectors.stepperControl} ${reactiveClass()}`} />
                 </Show>
                 <Show when={customBtn()}>
-                    <Stepper.Control hidden-class="control-hidden" class="stepper-control">
-                            <div class="stepper-custom-control"></div>
+                    <Stepper.Control hidden-class={selectors.controlHidden} class={selectors.stepperControl}>
+                        <div class={selectors.stepperCustomControl}></div>
                     </Stepper.Control>
                 </Show>
             </Stepper>
-            
         </Tab>
     )
 }

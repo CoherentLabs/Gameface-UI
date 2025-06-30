@@ -7,6 +7,7 @@ import BackgroundImage from "@components/Media/BackgroundImage/BackgroundImage";
 import MaskImage from "@components/Media/MaskImage/MaskImage";
 import LiveView from "@components/Media/LiveView/LiveView";
 import './media.css';
+import selectors from "../../../shared/media-selectors.json";
 
 const MediaTest = () => {
     const [reactivity, setReactivity] = createSignal(false);
@@ -33,20 +34,20 @@ const MediaTest = () => {
 
     return (
         <Tab location='media'>
-            <div class="assertion-element">{reactivity()}</div>
+            <div class={selectors.assertionElement}>{reactivity()}</div>
 
             <For each={scenarios}>
                 {(sc, i) => (
-                    <button class={`scenario-btn scenario-${i()}`} onClick={sc.action} >
+                    <button class={`${selectors.scenarioBtn} scenario-${i()}`} onClick={sc.action} >
                         {sc.label}
                     </button>
                 )}
             </For>
 
-            <Image click={() => setReactivity(true)} src={src()} style={reactiveStyle()} class={`image ${reactiveClass()}`} />
-            <LiveView click={() => setReactivity(true)} src={src()} style={reactiveStyle()} class={`live-view ${reactiveClass()}`} />
-            <BackgroundImage click={() => setReactivity(true)} options={options()} src={src()} style={reactiveStyle()} class={`background-image ${reactiveClass()}`} />
-            <MaskImage click={() => setReactivity(true)} src={src()} options={options()}  style={reactiveStyle()} class={`mask-image ${reactiveClass()}`}>
+            <Image click={() => setReactivity(true)} src={src()} style={reactiveStyle()} class={`${selectors.image} ${reactiveClass()}`} />
+            <LiveView click={() => setReactivity(true)} src={src()} style={reactiveStyle()} class={`${selectors.liveView} ${reactiveClass()}`} />
+            <BackgroundImage click={() => setReactivity(true)} options={options()} src={src()} style={reactiveStyle()} class={`${selectors.backgroundImage} ${reactiveClass()}`} />
+            <MaskImage click={() => setReactivity(true)} src={src()} options={options()}  style={reactiveStyle()} class={`${selectors.maskImage} ${reactiveClass()}`}>
               <div>
                 Masked content
                 Masked content
