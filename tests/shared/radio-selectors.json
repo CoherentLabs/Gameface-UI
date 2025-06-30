@@ -1,0 +1,11 @@
+{
+  "assertionElement": "assertion-element",
+  "scenarioBtn": "scenario-btn",
+  "radio": "radio",
+  "radioButton": "radio-button",
+  "radioButtonDisabled": "radio-button-disabled",
+  "radioDisabled": "radio-disabled",
+  "radioControl": "radio-control",
+  "radioIndicator": "radio-indicator",
+  "reactive": "reactive"
+}

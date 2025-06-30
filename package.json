@@ -5,12 +5,18 @@
   "scripts": {
     "start": "vite",
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "run-test": "gameface-e2e --config=./tests/gameface-e2e-config.js",
+    "dev:host": "set NODE_ENV=test&&vite --host",
+    "test": "start-server-and-test dev:host http://localhost:3000/components-e2e/ run-test",
+    "dev:test-view": "set NODE_ENV=test&&vite"
   },
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^9.27.0",
     "eslint": "^9.27.0",
+    "gameface-e2e": "^1.0.1",
+    "start-server-and-test": "^2.0.12",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.32.1",
     "vite": "^5.4.10",

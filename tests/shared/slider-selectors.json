@@ -1,0 +1,12 @@
+{
+  "assertionElement": "assertion-element",
+  "scenarioBtn": "scenario-btn",
+  "slider": "slider",
+  "sliderFill": "slider-fill",
+  "sliderTrack": "slider-track",
+  "sliderHandle": "slider-handle",
+  "sliderThumb": "slider-thumb",
+  "sliderGrid": "slider-grid",
+  "sliderPol": "slider-pol",
+  "reactive": "reactive"
+}

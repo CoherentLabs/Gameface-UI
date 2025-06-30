@@ -1,0 +1,10 @@
+{
+  "scenarioBtn": "scenario-btn",
+  "scroll": "scroll",
+  "content": "content",
+  "scrollChild": "scroll-child",
+  "assertionElement": "assertion-element",
+  "bar": "bar",
+  "handle": "handle",
+  "reactive": "reactive"
+}

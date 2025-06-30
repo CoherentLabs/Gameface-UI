@@ -1,0 +1,12 @@
+{
+  "assertionElement": "assertion-element",
+  "disableSegment": "disable-segment",
+  "disableSegmentBtn": "disable-segment-btn",
+  "segment": "test-segment",
+  "segmentDisabled": "segment-disabled",
+  "segmentButton1": "test-button1",
+  "segmentButton2": "test-button2",
+  "segmentButton3": "test-button3",
+  "segmentButtonDisabled": "segment-button-disabled",
+  "reactive": "reactive"
+}

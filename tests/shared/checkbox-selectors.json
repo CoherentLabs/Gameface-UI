@@ -1,0 +1,6 @@
+{
+    "base": "checkbox",
+    "indicator": "checkbox-indicator",
+    "assertionElement": "assertion-element",
+    "scenarioBtn": "scenario-btn"
+}

@@ -7,7 +7,8 @@ import solidStyleToCssPlugin from 'vite-solid-style-to-css';
 import solidGameface from 'vite-gameface';
 import eslint from 'vite-plugin-eslint';
 
-const root = 'src/views';
+const root = process.env.NODE_ENV === 'test' ? 'tests/src/views' : 'src/views';
+const pathPattern = process.env.NODE_ENV === 'test' ? 'tests/src/views/**/index.html' : 'src/views/**/index.html'
 
 export default defineConfig({
   root: root,
@@ -35,7 +36,7 @@ export default defineConfig({
     modulePreload: false,
     rollupOptions: {
       input: Object.fromEntries(
-        globSync('src/views/**/index.html').map((file) =>
+        globSync(pathPattern).map((file) =>
           [
             relative(root, file.slice(0, file.length - extname(file).length)),
             resolve(__dirname, file)

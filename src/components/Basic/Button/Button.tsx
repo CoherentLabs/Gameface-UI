@@ -1,4 +1,4 @@
-import { ParentComponent, mergeProps } from "solid-js";
+import { ParentComponent, createMemo, mergeProps } from "solid-js";
 import { ComponentProps } from "../../types/ComponentProps";
 import useBaseComponent from "../../BaseComponent/BaseComponent";
 import styles from './Button.module.css';
@@ -23,16 +23,16 @@ const getButtonClasses = (props: ButtonProps) => {
 
 const Button: ParentComponent<ButtonProps> = (props) => {
     const mergedProps = mergeProps({ textFit: true }, props);
-    props.componentClasses = getButtonClasses(mergedProps).join(' ');
+    props.componentClasses = createMemo(() => getButtonClasses(mergedProps).join(' '))
 
     const {className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
-    return <button disabled={props.disabled} 
-                    ref={props.ref as HTMLButtonElement}
-                    class={className()}
-                    style={inlineStyles()}
-                    use:forwardEvents={props}
-                    use:forwardAttrs={props}>
+    return <button  
+                ref={props.ref as HTMLButtonElement}
+                class={className()}
+                style={inlineStyles()}
+                use:forwardEvents={props}
+                use:forwardAttrs={props}>
                 {props.children}
             </button>
 }

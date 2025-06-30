@@ -12,6 +12,7 @@
       "vite-plugin-solid-svg/types",
       "vite/client"
     ],
+    "resolveJsonModule": true,    
     "noEmit": true,
     "isolatedModules": true,
     "noImplicitAny": true, // Raise error on expressions and declarations with an implied 'any' type

@@ -57,7 +57,7 @@ const tokenComponetsParents = {
   'Segment.Indicator': componentsWithSlotTokens.SEGMENT,
 }
 
-const availbleForedTokenComponets = new Set(['Radio.Button', 'Dropdown.Option', 'Segment.Button'])
+const availbleForedTokenComponets = new Set(['Radio.Button', 'Dropdown.Option', 'Segment.Button', 'Stepper.Item'])
 
 function isParentMatchingPath(node, path, wrapperName) {
   let currentNode = node.parent;

@@ -1,0 +1,13 @@
+{
+  "assertionElement": "assertion-element",
+  "scenarioBtn": "scenario-btn",
+  "stepper": "stepper",
+  "stepperDisabled": "stepper-disabled",
+  "stepperItems": "stepper-items",
+  "stepperItem": "stepper-item",
+  "stepperControl": "stepper-control",
+  "stepperCustomControl": "stepper-custom-control",
+  "customSelected": "custom-selected",
+  "controlHidden": "control-hidden",
+  "reactive": "reactive"
+}

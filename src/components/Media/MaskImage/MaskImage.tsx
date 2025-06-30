@@ -4,7 +4,7 @@ import ImageBase, { ImageComponentProps } from "../ImageBase/ImageBase";
 
 export interface MaskImageProps extends ImageComponentProps { }
 
-const Mask: ParentComponent<MaskImageProps> = (props) => (
+const MaskImage: ParentComponent<MaskImageProps> = (props) => (
     <ImageBase
       {...props}
       styles={styles}
@@ -13,4 +13,4 @@ const Mask: ParentComponent<MaskImageProps> = (props) => (
     />
 )
 
-export default Mask;
+export default MaskImage;
