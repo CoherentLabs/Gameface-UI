@@ -1,0 +1,168 @@
+---
+title: XYSlider
+---
+
+The `XYSlider` component allows users to select a value in a two-dimensional space, providing a more intuitive way to select values that require both horizontal and vertical input.
+
+The slider automatically handles the selection of a value between a minimum and maximum range on the horizontal and vertical axes. The slider itself provides slots to customize its appearance and behavior. For example you can customize its background or the handle to make it more visually appealing or to fit the design of your UI.
+
+## Usage
+
+Using the `XYSlider` component is straightforward. You can import it and use it in your application as follows:
+
+```tsx
+import XYSlider from '@components/Basic/XYSlider/XYSlider';
+
+const App = () => {
+    return (
+        <XYSlider maxX={150} maxY={150} value={{x: 50, y: 50}} />
+    );
+};
+
+export default App;
+```
+
+## API
+
+### Props
+
+| Prop Name  | Type                                   | Default     | Description                                                                                                                                                                                  |
+| ---------- | -------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `style`    | `JSX.CSSProperties`                    | `{}`        | Inline styles to apply directly to the component's root element.                                                                                                                             |
+| `class`    | `string`                               | `""`        | Additional CSS classes to apply to the component.                                                                                                                                             |
+| `ref`      | `XYSliderRef  \| undefined`            | `undefined` | A reference to the component that gives you access to its methods and the underlying HTML element. Useful if you need to set the value of the slider programmatically.                                                             |
+| `value`       | `{x:number, y: number}`                            | `{ x: 50, y: 50 }`   | The current value of the slider. Use this to control or set the slider's position. |
+| `minX`         | `number`                            | `0`   | The minimum value that the slider can select on the X-axis. |
+| `minY`         | `number`                            | `0`   | The minimum value that the slider can select on the Y-axis.|
+| `maxX`         | `number`                            | `100`   | The maximum value that the slider can select on the X-axis. |
+| `maxY`         | `number`                            | `100`   | The maximum value that the slider can select on the Y-axis. |
+| `onChange` | `(value: {x:number, y: number}) => void`              | `undefined` | A function that is called every time the slider's value has changed. It can be used to retrieve the up to date value of the slider. |
+
+### Methods
+
+|Method |Parameters |Return Value |Description |
+|---|---|---|---|
+| `changeValue ` | `newValue: {x:number, y: number}`  | `void` | Sets new value for the slider on the X and Y axes|
+
+## Slots
+
+### `XYSlider.Background`
+
+Customizes the slider's background. Use this slot to apply add a custom background to the slider, such as a gradient or an image.
+
+:::tip
+The default background has absolute position and covers the entire slider area by having width and height set to `100%`. If you want to add a custom background, make sure to set the width and height of the background element to `100%` and the position to `absolute` as it is shown in the usage section of the `XYSlider.Background` slot.
+:::
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `children`   | `JSX.Element` | `""` | Content to be rendered inside the background slot. This can be used to add custom elements or styles. |
+
+#### Usage
+
+```tsx
+import XYSlider from '@components/Basic/XYSlider/XYSlider';
+
+const App = () => {
+    return (
+        <XYSlider>
+            <XYSlider.Background>
+                <div style={{width: '100%', height: '100%', position: 'absolute', 'background-image': 'linear-gradient(to right bottom, #ffffff, #b9b9b9, #777777, #3b3b3b, #000000)'}}>
+                    Custom Background
+                </div>
+            </XYSlider.Background>
+        </XYSlider>
+    );
+};
+
+export default App;
+```
+
+### `XYSlider.Handle`
+
+Customizes the draggable handle of the slider. Use this slot to apply custom styles or classes to the slider's handle.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the slider's handle. |
+| `class`   | `string` | `""` | Additional CSS classes to style the slider's handle. |
+
+#### Usage
+
+```tsx
+import XYSlider from '@components/Basic/XYSlider/XYSlider';
+
+const App = () => {
+    return (
+        <XYSlider>
+            <XYSlider.Handle style={{ width: '2vmax', height: '2vmax', background: 'black' }} />
+        </XYSlider>
+    );
+};
+
+export default App;
+```
+
+## Guide
+
+### Retrieve and use the slider value
+
+- To get the current value of the `XYSlider` component, use the `onChange` prop.
+- When you save the value in a state variable, you can use it in your UI to display or process the slider's value.
+
+#### Steps
+
+1. Define a state variable (e.g., using `createSignal`) to store the slider value.
+2. Pass a callback to the `onChange` prop that updates this state variable.
+3. Use the state variable wherever you need the slider's value.
+
+```tsx
+import XYSlider from '@components/Basic/XYSlider/XYSlider';
+import { createSignal } from 'solid-js';
+
+const App = () => {
+    const [sliderValue, setSliderValue] = createSignal({x: 50, y: 50});
+
+    return (
+        <>
+            <XYSlider onChange={(value) => setSliderValue(value)} />
+            <div>X: {sliderValue().x} | Y: {sliderValue().y}</div>
+        </>
+    );
+};
+
+export default App;
+```
+
+### Set the value of the slider programmatically 
+
+The `Slider` component lets you set the `value` through code.
+
+#### Steps
+
+1. Declare a `ref` variable with type `XYSliderRef` and pass it to the `XYSlider` component.
+2. Call `ref.changeValue()` from anywhere (e.g., a keyboard event or external button) to set the value programmatically.
+
+```tsx
+import XYSlider { XYSliderRef } from '@components/Basic/XYSlider/XYSlider';
+
+const App = () => {
+    let sliderRef!: XYSliderRef;
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+        if (e.keyCode !== 13) return
+        
+        sliderRef.changeValue({x: 150, y: 50});
+    }
+
+    return (
+        <XYSlider ref={sliderRef} maxX={200} />
+    );
+};
+
+export default App;
+```
