@@ -3,12 +3,13 @@ import { Accessor, createSignal, onMount, ParentComponent, createContext, create
 import styles from '@components/Basic/Slider/Slider.module.css';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { clamp } from "@components/utils/clamp";
-import { Grid, TextSliderGrid } from "./TextSliderGrid";
+import { TextSliderGrid } from "./TextSliderGrid";
 import { Fill, SliderFill } from "@components/Basic/Slider/SliderFill";
 import { Handle, SliderHandle } from "@components/Basic/Slider/SliderHandle";
 import { SliderThumb, Thumb } from "@components/Basic/Slider/SliderThumb";
 import { SliderTrack, Track } from "@components/Basic/Slider/SliderTrack";
 import { useToken } from "@components/utils/tokenComponents";
+import { Pol } from "./TextSliderPol";
 
 export interface TextSliderRef {
     value: Accessor<string>,
@@ -30,8 +31,8 @@ interface TextSliderContext {
 export const TextSliderContext = createContext<TextSliderContext>();
 
 const TextSlider: ParentComponent<TextSliderProps> = (props) => {
-    const [value, setValue] = createSignal(props.value || '');
     const values = () => props.values || [];
+    const [value, setValue] = createSignal(props.value || values()[0] || '');
     const getValuePercent = (value: string) => {
         const valueIndex = values().indexOf(value);
         if (valueIndex === -1) return 0;
@@ -56,7 +57,6 @@ const TextSlider: ParentComponent<TextSliderProps> = (props) => {
         startValue: number;
 
     const ThumbSlot = useToken(Thumb, props.children)
-    const GridSlot = useToken(Grid, props.children)
 
     const handleTrackClick = (e: MouseEvent) => {
         calculateInitialValues(e);
@@ -105,10 +105,9 @@ const TextSlider: ParentComponent<TextSliderProps> = (props) => {
     }
 
     const SliderClasses = createMemo(() => {
-        const classes = [styles.Slider];
+        const classes = [styles.Slider, styles['With-Grid']];
 
         if (ThumbSlot()) classes.push(styles['With-Thumb'])
-        if (GridSlot()) classes.push(styles['With-Grid'])
 
         return classes.join(' ');
     });
@@ -138,8 +137,8 @@ const TextSlider: ParentComponent<TextSliderProps> = (props) => {
         if (!props.ref || !element) return;
 
         (props.ref as unknown as (ref: any) => void)({
-            value: value,
-            values: values,
+            value,
+            values,
             element,
             changeValue
         });
@@ -164,4 +163,4 @@ const TextSlider: ParentComponent<TextSliderProps> = (props) => {
     )
 }
 
-export default Object.assign(TextSlider, { Grid, Fill, Handle, Thumb, Track });
+export default Object.assign(TextSlider, { Pol, Fill, Handle, Thumb, Track });

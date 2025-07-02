@@ -56,7 +56,7 @@ const tokenComponetsParents = {
 
   'TextSlider.Fill': componentsWithSlotTokens.TEXT_SLIDER,
   'TextSlider.Track': componentsWithSlotTokens.TEXT_SLIDER,
-  'TextSlider.Grid': componentsWithSlotTokens.TEXT_SLIDER,
+  'TextSlider.Pol': componentsWithSlotTokens.TEXT_SLIDER,
   'TextSlider.Handle': componentsWithSlotTokens.TEXT_SLIDER,
   'TextSlider.Thumb': componentsWithSlotTokens.TEXT_SLIDER,
 

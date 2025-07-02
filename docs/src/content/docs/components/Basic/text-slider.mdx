@@ -58,8 +58,8 @@ import TextSlider from '@components/Basic/TextSlider/TextSlider';
 
 const App = () => {
     return (
-        <TextSlider values={['Easy', 'Medium', 'Hard']} >
-            <TextSlider.Track style={{ backgroundColor: 'red' }} />
+        <TextSlider value="Medium" values={['Easy', 'Medium', 'Hard']} >
+            <TextSlider.Track style={{ 'background-color': 'red' }} />
         </TextSlider>
     );
 };
@@ -85,8 +85,8 @@ import TextSlider from '@components/Basic/TextSlider/TextSlider';
 
 const App = () => {
     return (
-        <TextSlider values={['Easy', 'Medium', 'Hard']} >
-            <TextSlider.Fill style={{ backgroundColor: 'red' }} />
+        <TextSlider value="Medium" values={['Easy', 'Medium', 'Hard']} >
+            <TextSlider.Fill style={{ 'background-color': 'red' }} />
         </TextSlider>
     );
 };
@@ -112,8 +112,8 @@ import TextSlider from '@components/Basic/TextSlider/TextSlider';
 
 const App = () => {
     return (
-        <TextSlider values={['Easy', 'Medium', 'Hard']} >
-            <TextSlider.Handle style={{ backgroundColor: 'red' }} />
+        <TextSlider value="Medium" values={['Easy', 'Medium', 'Hard']} >
+            <TextSlider.Handle style={{ 'background-color': 'red' }} />
         </TextSlider>
     );
 };
@@ -139,7 +139,7 @@ import TextSlider from '@components/Basic/TextSlider/TextSlider';
 
 const App = () => {
     return (
-        <TextSlider values={['Easy', 'Medium', 'Hard']} >
+        <TextSlider value="Medium" values={['Easy', 'Medium', 'Hard']} >
             <TextSlider.Thumb class={styles['Custom-Thumb']} />
         </TextSlider>
     );
@@ -151,21 +151,18 @@ export default App;
 :::caution
 The slider thumb is not displayed by default. To enable it, include the `Thumb` slot within the `TextSlider` component.  
 :::
+### `TextSlider.Pol`
 
-### `TextSlider.Grid`
-
-The `TextSlider.Grid` slot provides a visual representation of progress along the slider's range by dividing the track into evenly spaced segments, called "poles." These poles help users gauge the slider's current position relative to its range.
+The `TextSlider.Pol` slot allows you to customize the appearance of the poles that represent the slider's selectable values in a grid layout. You can style both the poles and the text displayed on them.
 
 #### Properties
 
-| Prop Name         | Type                | Default     | Description                                                                 |
-|-------------------|---------------------|-------------|-----------------------------------------------------------------------------|
-| `style`           | `JSX.CSSProperties` | `{}`        | Inline styles for the grid container.                                      |
-| `class`           | `string`            | `""`        | Additional CSS classes for the grid container.                             |
-| `pol-style`       | `JSX.CSSProperties` | `{}`        | Inline styles for each pole (segment marker).                              |
-| `pol-value-style` | `JSX.CSSProperties` | `{}`        | Inline styles for poles displaying the slider's current value.             |
-| `pol-class`       | `string`            | `""`        | Additional CSS classes for each pole.                                      |
-| `pol-value-class` | `string`            | `""`        | Additional CSS classes for poles displaying the slider's current value.    |
+| Prop Name    | Type                | Default     | Description                                                                 |
+|--------------|---------------------|-------------|-----------------------------------------------------------------------------|
+| `style`      | `JSX.CSSProperties` | `{}`        | Inline styles for the poles. Use this to customize their appearance.       |
+| `class`      | `string`            | `""`        | Additional CSS classes for the poles.                                      |
+| `text-style` | `JSX.CSSProperties` | `{}`        | Inline styles for the text displayed on the poles.                         |
+| `text-class` | `string`            | `""`        | Additional CSS classes for the text displayed on the poles.                |
 
 #### Usage
 
@@ -174,18 +171,14 @@ import TextSlider from '@components/Basic/TextSlider/TextSlider';
 
 const App = () => {
     return (
-        <TextSlider values={['Easy', 'Medium', 'Hard']} >
-            <TextSlider.Grid pol-style={{ backgroundColor: 'red', color: 'green' }} />
+        <TextSlider value="Medium" values={['Easy', 'Medium', 'Hard']} >
+            <TextSlider.Pol style={{ 'background-color': 'red' }} text-style={{ color: 'green' }} />
         </TextSlider>
     );
 };
 
 export default App;
 ```
-
-:::caution
-The `TextSlider.Grid` slot is not rendered by default. To display it, include the `Grid` slot as a child of the `TextSlider` component.  
-:::
 
 ## Guide
 
@@ -243,27 +236,5 @@ const App = () => {
     );
 };
 
-export default App;
-```
-
-### Customizing grid pols
-
-You can customize the grid pols that display values using the `pol-value-style` and `pol-value-class` properties of the `Slider.Grid` slot.
-
-This is particularly useful for adjusting the font size, width, or text wrapping behavior of the pol value elements.
-
-By default, the text wraps to break words based on the width of the pol value element.
-
-In the following example, you can see how to modify the font size, width, and disable the `overflow-wrap` property for the pol value elements.
-
-```diff lang="tsx
-import TextSlider from '@components/Basic/TextSlider/TextSlider';
-const App = () => {
-    return (
-        <TextSlider values={['Easy', 'Medium', 'Hard']}>
-+            <TextSlider.Grid pol-value-style={{'font-size': '0.9vmax', width: '1.5vmax', 'overflow-wrap': 'normal'}} pol-value-class="custom-pol-value" />
-        </TextSlider>
-    );
-};
 export default App;
 ```

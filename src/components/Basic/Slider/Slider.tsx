@@ -1,5 +1,5 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, Setter, createSignal, onMount, ParentComponent, Show, createContext, createMemo, createEffect, For } from "solid-js";
+import { Accessor, createSignal, onMount, ParentComponent, createMemo } from "solid-js";
 import styles from './Slider.module.css';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { clamp } from "@components/utils/clamp";
@@ -23,10 +23,6 @@ interface SliderProps extends ComponentProps {
     step?: number,
     onChange?: (value: number) => void;
 }
-
-interface SliderContext { }
-
-export const SliderContext = createContext<SliderContext>();
 
 const Slider: ParentComponent<SliderProps> = (props) => {
     const min = () => props.min || 0;
@@ -79,7 +75,7 @@ const Slider: ParentComponent<SliderProps> = (props) => {
 
     const handleMouseUp = (e: MouseEvent) => {
         if (!sliding) return;
-        
+
         sliding = false;
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
@@ -132,21 +128,19 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     });
 
     return (
-        <SliderContext.Provider value={{ }}>
-            <div
-                ref={element!}
-                class={className()}
-                style={inlineStyles()}
-                use:forwardEvents={props}
-                use:forwardAttrs={props}>
-                <SliderTrack handleClick={handleTrackClick} ref={trackElement} parentChildren={props.children}>
-                    <SliderHandle percent={percent} handleMouseDown={handleMouseDown} parentChildren={props.children} />
-                    <SliderFill percent={percent} parentChildren={props.children} />
-                    <SliderThumb value={value} percent={percent} parentChildren={props.children} />
-                </SliderTrack>
-                <SliderGrid min={min()} max={max()} parentChildren={props.children} />
-            </div>
-        </SliderContext.Provider>
+        <div
+            ref={element!}
+            class={className()}
+            style={inlineStyles()}
+            use:forwardEvents={props}
+            use:forwardAttrs={props}>
+            <SliderTrack handleClick={handleTrackClick} ref={trackElement} parentChildren={props.children}>
+                <SliderHandle percent={percent} handleMouseDown={handleMouseDown} parentChildren={props.children} />
+                <SliderFill percent={percent} parentChildren={props.children} />
+                <SliderThumb value={value} percent={percent} parentChildren={props.children} />
+            </SliderTrack>
+            <SliderGrid min={min()} max={max()} parentChildren={props.children} />
+        </div>
     )
 }
 

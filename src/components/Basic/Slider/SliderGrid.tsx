@@ -21,7 +21,7 @@ interface SliderGridComponentProps extends TokenComponentProps {
 }
 
 function fitsOneDecimal(v: number) {
-  return v === parseFloat(v.toFixed(1));
+    return v === parseFloat(v.toFixed(1));
 }
 
 export const Grid = createTokenComponent<SliderGridProps>();
@@ -41,7 +41,7 @@ export const SliderGrid = (props: SliderGridComponentProps) => {
 
             const step = (props.max - props.min) / (polsCount - 1);
             let nextValue = step * index;
-            
+
             if (!fitsOneDecimal(nextValue)) {
                 nextValue = parseFloat(nextValue.toFixed(1));
             }
@@ -66,20 +66,22 @@ export const SliderGrid = (props: SliderGridComponentProps) => {
                 <For each={polsArr}>
                     {(pol, index) => (
                         <>
-                            <SliderPol 
-                                size='normal' 
-                                pol-class={GridToken()?.['pol-class']} 
-                                pol-style={GridToken()?.['pol-style']} 
-                                value={pol}/>
+                            <SliderPol
+                                size='normal'
+                                pol-class={GridToken()?.['pol-class']}
+                                pol-style={GridToken()?.['pol-style']}
+                                pol-value-class={GridToken()?.['pol-value-class']}
+                                pol-value-style={GridToken()?.['pol-value-style']}
+                                value={pol}
+                            />
                             <Show when={GridToken()?.['pols-without-text'] && index() < polsCount - 1}>
                                 <For each={Array.from({ length: GridToken()?.['pols-without-text'] || 5 })}>
                                     {() => (
-                                        <SliderPol 
-                                            size='small' 
-                                            pol-class={GridToken()?.['pol-class']} 
+                                        <SliderPol
+                                            size='small'
+                                            pol-class={GridToken()?.['pol-class']}
                                             pol-style={GridToken()?.['pol-style']}
-                                            pol-value-class={GridToken()?.['pol-value-class']} 
-                                            pol-value-style={GridToken()?.['pol-value-style']} />
+                                        />
                                     )}
                                 </For>
                             </Show>
