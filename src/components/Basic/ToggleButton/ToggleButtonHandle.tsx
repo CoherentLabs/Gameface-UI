@@ -24,8 +24,8 @@ export const ToggleButtonHandle: ParentComponent<TokenComponentProps> = (props) 
         if (HandleToken()?.class) classes.push(HandleToken()?.class ?? '');
 
         if (toggleButtonContext?.checked()) {
+            classes.push(styles.HandleChecked);
             if (HandleToken()?.['class-checked']) classes.push(`${HandleToken()?.['class-checked']}`);
-            else classes.push(styles.HandleChecked);
         }
 
         return classes.join(' ');
