@@ -17,6 +17,7 @@ import ScrollTest from '../../components/Scroll/ScrollTest';
 import MediaTest from '../../components/Media/MediaTest';
 import BaseTest from '../../components/Base/BaseTest';
 import SliderTest from '../../components/Slider/SliderTest';
+import ToggleButtonTest from '../../components/toggleButton/ToggleButton';
 
 const Main = () => {
     const components = [
@@ -28,6 +29,7 @@ const Main = () => {
         "segment",
         "stepper",
         "slider",
+        "toggle",
 
         // Layout components
         "absolute",
@@ -66,6 +68,7 @@ const Main = () => {
                 <ScrollTest />
                 <MediaTest />
                 <SliderTest />
+                <ToggleButtonTest />
             </Tabs>
         </div>
     );
