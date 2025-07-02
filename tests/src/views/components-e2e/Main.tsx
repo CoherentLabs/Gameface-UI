@@ -18,6 +18,7 @@ import MediaTest from '../../components/Media/MediaTest';
 import BaseTest from '../../components/Base/BaseTest';
 import SliderTest from '../../components/Slider/SliderTest';
 import TextSliderTest from '../../components/TextSlider/TextSliderTest';
+import XYSliderTest from '../../components/XYSlider/XYSliderTest';
 
 const Main = () => {
     const components = [
@@ -30,6 +31,7 @@ const Main = () => {
         "stepper",
         "slider",
         "text-slider",
+        "xy-slider",
 
         // Layout components
         "absolute",
@@ -47,9 +49,9 @@ const Main = () => {
         <div class={styles.Main}>
             <Tabs default={components[0]}>
 
-                <Flex class={styles['TabLink-Container']}  align-items='center' wrap='wrap'>
+                <Flex class={styles['TabLink-Container']} align-items='center' wrap='wrap'>
                     <For each={components}>
-                        {(component)=>(
+                        {(component) => (
                             <TabLink location={component} class={`${styles.TabLink} ${component}-link`} activeClass={styles['Active-Tab']}>{component}</TabLink>
                         )}
                     </For>
@@ -69,6 +71,7 @@ const Main = () => {
                 <MediaTest />
                 <SliderTest />
                 <TextSliderTest />
+                <XYSliderTest />
             </Tabs>
         </div>
     );

@@ -10,7 +10,6 @@ const dropdownOptions = [
     { value: 'test', },
 ]
 
-console.log(selectors)
 const DropdownTest = () => {
     let dropdownRef!: DropdownRef;
     const [selected, setSelected] = createSignal("");
