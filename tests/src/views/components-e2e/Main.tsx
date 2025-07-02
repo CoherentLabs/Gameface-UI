@@ -19,6 +19,7 @@ import BaseTest from '../../components/Base/BaseTest';
 import SliderTest from '../../components/Slider/SliderTest';
 import TextSliderTest from '../../components/TextSlider/TextSliderTest';
 import XYSliderTest from '../../components/XYSlider/XYSliderTest';
+import ToggleButtonTest from '../../components/toggleButton/ToggleButton';
 
 const Main = () => {
     const components = [
@@ -32,6 +33,7 @@ const Main = () => {
         "slider",
         "text-slider",
         "xy-slider",
+        "toggle",
 
         // Layout components
         "absolute",
@@ -72,6 +74,7 @@ const Main = () => {
                 <SliderTest />
                 <TextSliderTest />
                 <XYSliderTest />
+                <ToggleButtonTest />
             </Tabs>
         </div>
     );
