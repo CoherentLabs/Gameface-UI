@@ -9,10 +9,12 @@ const XYSliderTest = () => {
     let sliderRef!: XYSliderRef;
     const [value, setValue] = createSignal(initialValue);
     const [test, setTest] = createSignal('red');
+    const [minMaxTest, setMinMaxTest] = createSignal({ minX: 0, maxX: 200, minY: 0, maxY: 200 });
 
     const scenarios = [
         { label: "Change value with ref", action: () => { sliderRef.changeValue({ x: 30, y: 30 }) } },
         { label: "Change styles", action: () => { setTest('blue') } },
+        { label: "Change min max reactively", action: () => { setMinMaxTest({ minX: 60, maxX: 100, minY: 60, maxY: 100 }) } },
     ];
 
     const reset = () => {
@@ -45,10 +47,10 @@ const XYSliderTest = () => {
                 ref={sliderRef}
                 //@ts-ignore
                 onChange={(value) => setValue({ x: parseInt(value.x), y: parseInt(value.y) })}
-                minX={0}
-                maxX={200}
-                minY={0}
-                maxY={200}
+                minX={minMaxTest().minX}
+                maxX={minMaxTest().maxX}
+                minY={minMaxTest().minY}
+                maxY={minMaxTest().maxY}
                 value={initialValue}
                 style={reactiveStyle()}
                 class={`${selectors.slider} ${reactiveClass()}`}>

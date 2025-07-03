@@ -50,28 +50,27 @@ export default App;
 
 Customizes the slider's background. Use this slot to apply add a custom background to the slider, such as a gradient or an image.
 
-:::tip
-The default background has absolute position and covers the entire slider area by having width and height set to `100%`. If you want to add a custom background, make sure to set the width and height of the background element to `100%` and the position to `absolute` as it is shown in the usage section of the `XYSlider.Background` slot.
-:::
-
 #### Properties
 
 | Prop Name | Type | Default | Description |
 |-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the slider's background. |
+| `class`   | `string` | `""` | Additional CSS classes to style the slider's background. |
 | `children`   | `JSX.Element` | `""` | Content to be rendered inside the background slot. This can be used to add custom elements or styles. |
 
 #### Usage
 
 ```tsx
 import XYSlider from '@components/Basic/XYSlider/XYSlider';
+import Absolute from '@components/Layout/Absolute/Absolute';
 
 const App = () => {
     return (
         <XYSlider>
-            <XYSlider.Background>
-                <div style={{width: '100%', height: '100%', position: 'absolute', 'background-image': 'linear-gradient(to right bottom, #ffffff, #b9b9b9, #777777, #3b3b3b, #000000)'}}>
+            <XYSlider.Background style={{ background: 'linear-gradient(to right, #ff7e5f, #feb47b)' }}>
+                <Absolute style={{ width: '100%', height: '100%', background: 'rgba(0, 0, 0, 0.2)' }}>
                     Custom Background
-                </div>
+                </Absolute>
             </XYSlider.Background>
         </XYSlider>
     );

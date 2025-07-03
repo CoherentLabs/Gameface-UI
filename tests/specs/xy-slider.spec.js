@@ -26,7 +26,7 @@ describe('XYSlider', function () {
         const handle = await gf.get(`.${selectors.sliderHandle}`);
         await handle.drag(25, 250);
 
-        assert.equal(await assertionEl.text(), 'x: 39 | y: 106', 'Slider\'s value should change to \'x: 39 | y: 106\'');
+        assert.equal(await assertionEl.text(), 'x: 39 | y: 62', 'Slider\'s value should change to \'x: 39 | y: 62\'');
     })
 
     it('Should change value via ref', async () => {
@@ -42,6 +42,13 @@ describe('XYSlider', function () {
         const assertionEl = await gf.get(`.${selectors.assertionElement}`);
 
         assert.equal(await assertionEl.text(), 'x: 100 | y: 99', 'Slider\'s thumb should move to the center');
+    })
+
+    it('Should change min and max reactively', async () => {
+        const assertionEl = await gf.get(`.${selectors.assertionElement}`);
+        await gf.click(`.${selectors.scenarioBtn}.scenario-2`);
+
+        assert.equal(await assertionEl.text(), 'x: 60 | y: 60', 'Slider\'s value should change to \'x: 60 | y: 60\'');
     })
 
     describe('reactivity', () => {
