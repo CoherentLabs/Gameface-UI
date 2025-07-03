@@ -1,0 +1,24 @@
+.XYSlider {
+    position: relative;
+    width: 10vmax;
+    height: 10vmax;
+    border: 1px solid #ccc;
+}
+
+.Background {
+    background: #ddd;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.Handle {
+    position: absolute;
+    width: 1vmax;
+    height: 1vmax;
+    background: transparent;
+    border-radius: 50%;
+    border: 0.15vmax solid rgba(255, 255, 255, 0.8);
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+}

@@ -15,6 +15,7 @@ const componentsWithSlotTokens = {
   SLIDER: 'Slider',
   TEXT_SLIDER: 'TextSlider',
   SEGMENT: 'Segment',
+  XYSlider: 'XYSlider',
 }
 
 const tokenComponetsParents = {
@@ -62,6 +63,9 @@ const tokenComponetsParents = {
 
   'Segment.Button': componentsWithSlotTokens.SEGMENT,
   'Segment.Indicator': componentsWithSlotTokens.SEGMENT,
+
+  'XYSlider.Background': componentsWithSlotTokens.XYSlider,
+  'XYSlider.Handle': componentsWithSlotTokens.XYSlider,
 }
 
 const availbleForedTokenComponets = new Set(['Radio.Button', 'Dropdown.Option', 'Segment.Button', 'Stepper.Item'])
