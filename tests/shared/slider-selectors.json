@@ -8,5 +8,6 @@
   "sliderThumb": "slider-thumb",
   "sliderGrid": "slider-grid",
   "sliderPol": "slider-pol",
+  "sliderPolText": "slider-pol-text",
   "reactive": "reactive"
 }

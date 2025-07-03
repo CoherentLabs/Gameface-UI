@@ -13,6 +13,7 @@ const componentsWithSlotTokens = {
   STEPPER: 'Stepper',
   STEPPER_ITEMS: 'Stepper.Items',
   SLIDER: 'Slider',
+  TEXT_SLIDER: 'TextSlider',
   SEGMENT: 'Segment',
 }
 
@@ -52,6 +53,12 @@ const tokenComponetsParents = {
   'Slider.Grid': componentsWithSlotTokens.SLIDER,
   'Slider.Handle': componentsWithSlotTokens.SLIDER,
   'Slider.Thumb': componentsWithSlotTokens.SLIDER,
+
+  'TextSlider.Fill': componentsWithSlotTokens.TEXT_SLIDER,
+  'TextSlider.Track': componentsWithSlotTokens.TEXT_SLIDER,
+  'TextSlider.Pol': componentsWithSlotTokens.TEXT_SLIDER,
+  'TextSlider.Handle': componentsWithSlotTokens.TEXT_SLIDER,
+  'TextSlider.Thumb': componentsWithSlotTokens.TEXT_SLIDER,
 
   'Segment.Button': componentsWithSlotTokens.SEGMENT,
   'Segment.Indicator': componentsWithSlotTokens.SEGMENT,

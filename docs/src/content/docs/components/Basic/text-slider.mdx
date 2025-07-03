@@ -1,0 +1,240 @@
+---
+title: TextSlider
+---
+The `TextSlider` component enables users to select a string value from a predefined set of options by dragging a handle along a track.
+
+## Usage
+
+To use the `TextSlider` component, specify the selectable options using the `values` prop.
+
+```tsx
+import TextSlider from '@components/Basic/TextSlider/TextSlider';
+
+const App = () => {
+    return (
+        <TextSlider values={['Easy', 'Medium', 'Hard']} />
+    );
+};
+
+export default App;
+```
+
+## API
+
+### Props
+
+| Prop Name  | Type                                   | Default     | Description                                                                                                                                                                                  |
+| ---------- | -------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `style`    | `JSX.CSSProperties`                    | `{}`        | Inline styles to apply directly to the component's root element.                                                                                                                             |
+| `class`    | `string`                               | `""`        | Additional CSS classes to apply to the component.                                                                                                                                             |
+| `ref`      | `TextSliderRef  \| undefined`            | `undefined` | A reference to the component, providing access to its methods and the underlying HTML element. Useful for programmatically setting the slider's value.                                                             |
+| `value`    | `string`                            | `undefined`   | The current value of the slider. Use this to control or set the slider's position. |
+| `values`   | `string[]`                            | `undefined`   | An array of options that can be selected by dragging the slider's handle. |
+| `onChange` | `(value: string) => void`              | `undefined` | A callback function triggered whenever the slider's value changes. It provides the updated value of the slider. |
+
+### Methods
+
+| Method          | Parameters          | Return Value | Description                                                                                     |
+|----------------- |-------------------- |--------------|-------------------------------------------------------------------------------------------------|
+| `changeValue`    | `newValue: string` | `void`       | Updates the slider's value. If the new value is not in the `values` array, a warning is logged to the console. |
+
+## Slots
+
+### `TextSlider.Track`
+
+This slot allows customization of the slider's track. Use it to apply custom styles or classes to the track area.
+
+#### Properties
+
+| Prop Name | Type                | Default | Description                                      |
+|-----------|---------------------|---------|--------------------------------------------------|
+| `style`   | `JSX.CSSProperties` | `{}`    | Inline styles for the slider track.             |
+| `class`   | `string`            | `""`    | Additional CSS classes for the slider track.    |
+
+#### Usage
+
+```tsx
+import TextSlider from '@components/Basic/TextSlider/TextSlider';
+
+const App = () => {
+    return (
+        <TextSlider value="Medium" values={['Easy', 'Medium', 'Hard']} >
+            <TextSlider.Track style={{ 'background-color': 'red' }} />
+        </TextSlider>
+    );
+};
+
+export default App;
+```
+
+### `TextSlider.Fill`
+
+This slot customizes the filled portion of the slider track, which visually represents the current value. Use it to apply custom styles or classes to the fill area.
+
+#### Properties
+
+| Prop Name | Type                | Default | Description                                   |
+|-----------|---------------------|---------|-----------------------------------------------|
+| `style`   | `JSX.CSSProperties` | `{}`    | Inline styles for the slider fill.           |
+| `class`   | `string`            | `""`    | Additional CSS classes for the slider fill.  |
+
+#### Usage
+
+```tsx
+import TextSlider from '@components/Basic/TextSlider/TextSlider';
+
+const App = () => {
+    return (
+        <TextSlider value="Medium" values={['Easy', 'Medium', 'Hard']} >
+            <TextSlider.Fill style={{ 'background-color': 'red' }} />
+        </TextSlider>
+    );
+};
+
+export default App;
+```
+
+### `TextSlider.Handle`
+
+This slot customizes the draggable handle of the slider. Use it to apply custom styles or classes to the handle.
+
+#### Properties
+
+| Prop Name | Type                | Default | Description                                   |
+|-----------|---------------------|---------|-----------------------------------------------|
+| `style`   | `JSX.CSSProperties` | `{}`    | Inline styles for the slider handle.         |
+| `class`   | `string`            | `""`    | Additional CSS classes for the slider handle.|
+
+#### Usage
+
+```tsx
+import TextSlider from '@components/Basic/TextSlider/TextSlider';
+
+const App = () => {
+    return (
+        <TextSlider value="Medium" values={['Easy', 'Medium', 'Hard']} >
+            <TextSlider.Handle style={{ 'background-color': 'red' }} />
+        </TextSlider>
+    );
+};
+
+export default App;
+```
+
+### `TextSlider.Thumb`
+
+The `TextSlider.Thumb` slot displays a small rectangular element positioned above the slider's handle, showing the current value of the slider. You can use this slot to customize the appearance or content of the value indicator.
+
+#### Properties
+
+| Prop Name | Type                | Default | Description                                           |
+|-----------|---------------------|---------|-------------------------------------------------------|
+| `style`   | `JSX.CSSProperties` | `{}`    | Inline styles to apply to the slider thumb.           |
+| `class`   | `string`            | `""`    | Additional CSS classes for styling the slider thumb.  |
+
+#### Usage
+
+```tsx
+import TextSlider from '@components/Basic/TextSlider/TextSlider';
+
+const App = () => {
+    return (
+        <TextSlider value="Medium" values={['Easy', 'Medium', 'Hard']} >
+            <TextSlider.Thumb class={styles['Custom-Thumb']} />
+        </TextSlider>
+    );
+};
+
+export default App;
+```
+
+:::caution
+The slider thumb is not displayed by default. To enable it, include the `Thumb` slot within the `TextSlider` component.  
+:::
+### `TextSlider.Pol`
+
+The `TextSlider.Pol` slot allows you to customize the appearance of the poles that represent the slider's selectable values in a grid layout. You can style both the poles and the text displayed on them.
+
+#### Properties
+
+| Prop Name    | Type                | Default     | Description                                                                 |
+|--------------|---------------------|-------------|-----------------------------------------------------------------------------|
+| `style`      | `JSX.CSSProperties` | `{}`        | Inline styles for the poles. Use this to customize their appearance.       |
+| `class`      | `string`            | `""`        | Additional CSS classes for the poles.                                      |
+| `text-style` | `JSX.CSSProperties` | `{}`        | Inline styles for the text displayed on the poles.                         |
+| `text-class` | `string`            | `""`        | Additional CSS classes for the text displayed on the poles.                |
+
+#### Usage
+
+```tsx
+import TextSlider from '@components/Basic/TextSlider/TextSlider';
+
+const App = () => {
+    return (
+        <TextSlider value="Medium" values={['Easy', 'Medium', 'Hard']} >
+            <TextSlider.Pol style={{ 'background-color': 'red' }} text-style={{ color: 'green' }} />
+        </TextSlider>
+    );
+};
+
+export default App;
+```
+
+## Guide
+
+### Retrieve and use the text slider value
+
+- To get the current value of the `TextSlider` component, use the `onChange` prop.
+
+#### Steps
+
+1. Define a state variable (e.g., using `createSignal`) to store the slider value.
+2. Pass a callback to the `onChange` prop that updates this state variable.
+3. Use the state variable wherever you need the slider's value.
+
+```tsx
+import TextSlider from '@components/Basic/TextSlider/TextSlider';
+import { createSignal} from 'solid-js';
+
+const App = () => {
+    const [sliderValue, setSliderValue] = createSignal('Medium');
+
+    return (
+        <>
+            <TextSlider onChange={(value) => setSliderValue(value)} values={['Easy', 'Medium', 'Hard']} />
+            <div>{sliderValue()}</div>
+        </>
+    );
+};
+
+export default App;
+```
+
+### Set the value of the text slider programmatically 
+
+The `TextSlider` component lets you set the `value` through code.
+
+#### Steps
+
+1. Declare a `ref` variable with type `TextSliderRef` and pass it to the `TextSlider` component.
+2. Call `ref.changeValue()` from anywhere (e.g., a keyboard event or external button) to set the value programmatically.
+
+```tsx
+import TextSlider { TextSliderRef } from '@components/Basic/TextSlider/TextSlider';
+
+const App = () => {
+    let textSliderRef!: SliderRef;
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+        if (e.keyCode !== 13) return
+        
+        textSliderRef.changeValue('Easy');
+    }
+
+    return (
+        <TextSlider value="Medium" values={['Easy', 'Medium', 'Hard']} />
+    );
+};
+
+export default App;
+```

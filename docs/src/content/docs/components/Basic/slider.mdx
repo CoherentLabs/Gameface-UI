@@ -183,6 +183,8 @@ Additionally, by enabling the `pols-without-text` prop, smaller unlabeled pols a
 | `pols-without-text` | `number`          | `5`         | If prop is present, it renders smaller unlabeled pols between main pols for finer granularity.                           |
 | `pol-style`        | `JSX.CSSProperties` | `{}`        | Inline styles to apply directly to each pol (segment marker).                                              |
 | `pol-class`        | `string`            | `""`        | Additional CSS classes to style each pol (segment marker).                                                 |
+| `pol-value-style` | `JSX.CSSProperties` | `{}`        | Inline styles for poles displaying the slider's current value.             |
+| `pol-value-class` | `string`            | `""`        | Additional CSS classes for poles displaying the slider's current value.    |
 
 #### Usage
 
@@ -264,5 +266,27 @@ const App = () => {
     );
 };
 
+export default App;
+```
+
+### Customizing grid pols
+
+You can customize the grid pols that display values using the `pol-value-style` and `pol-value-class` properties of the `Slider.Grid` slot.
+
+This is particularly useful for adjusting the font size, width, or text wrapping behavior of the pol value elements.
+
+By default, the text wraps to break words based on the width of the pol value element.
+
+In the following example, you can see how to modify the font size, width, and disable the `overflow-wrap` property for the pol value elements.
+
+```diff lang="tsx
+import Slider from '@components/Basic/Slider/Slider';
+const App = () => {
+    return (
+        <Slider min={0} max={100} value={35} step={1}>
++            <Slider.Grid pol-value-style={{'font-size': '0.9vmax', width: '1.5vmax', 'overflow-wrap': 'normal'}} pol-value-class="custom-pol-value" />
+        </Slider>
+    );
+};
 export default App;
 ```

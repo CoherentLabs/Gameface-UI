@@ -1,8 +1,7 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import styles from './Slider.module.css';
-import { createMemo, JSX, useContext } from 'solid-js';
+import { createMemo, JSX } from 'solid-js';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
-import { SliderContext } from './Slider';
 
 interface SliderHandleProps {
     style?: JSX.CSSProperties,
@@ -10,13 +9,13 @@ interface SliderHandleProps {
 }
 
 interface SliderHandleComponentProps extends TokenComponentProps {
-    handleMouseDown: (e: MouseEvent) => void 
+    handleMouseDown: (e: MouseEvent) => void
+    percent: () => number
 }
 
 export const Handle = createTokenComponent<SliderHandleProps>();
 
 export const SliderHandle = (props: SliderHandleComponentProps) => {
-    const sliderContext = useContext(SliderContext);
     const HandleToken = useToken(Handle, props.parentChildren);
 
     const handleClasses = createMemo(() => {
@@ -28,8 +27,8 @@ export const SliderHandle = (props: SliderHandleComponentProps) => {
     });
 
     const handleStyle = createMemo(() => {
-        const position = {left: `${sliderContext!.percent()}%`}
-        return {...HandleToken()?.style, ...position}
+        const position = { left: `${props.percent()}%` }
+        return { ...HandleToken()?.style, ...position }
     })
 
     return (

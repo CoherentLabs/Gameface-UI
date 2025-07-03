@@ -1,8 +1,7 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import styles from './SliderGrid.module.css';
-import { createMemo, For, JSX, Show, useContext } from 'solid-js';
+import { createMemo, For, JSX, Show } from 'solid-js';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
-import { SliderContext } from './Slider';
 import SliderPol from './SliderPol';
 
 interface SliderGridProps {
@@ -12,6 +11,8 @@ interface SliderGridProps {
     'pols-without-text'?: number,
     'pol-style'?: JSX.CSSProperties,
     'pol-class'?: string
+    'pol-value-style'?: JSX.CSSProperties,
+    'pol-value-class'?: string
 }
 
 interface SliderGridComponentProps extends TokenComponentProps {
@@ -20,13 +21,12 @@ interface SliderGridComponentProps extends TokenComponentProps {
 }
 
 function fitsOneDecimal(v: number) {
-  return v === parseFloat(v.toFixed(1));
+    return v === parseFloat(v.toFixed(1));
 }
 
 export const Grid = createTokenComponent<SliderGridProps>();
 
 export const SliderGrid = (props: SliderGridComponentProps) => {
-    const sliderContext = useContext(SliderContext)
     const GridToken = useToken(Grid, props.parentChildren);
 
     const polsCount = GridToken()?.pols || 5;
@@ -41,7 +41,7 @@ export const SliderGrid = (props: SliderGridComponentProps) => {
 
             const step = (props.max - props.min) / (polsCount - 1);
             let nextValue = step * index;
-            
+
             if (!fitsOneDecimal(nextValue)) {
                 nextValue = parseFloat(nextValue.toFixed(1));
             }
@@ -66,18 +66,22 @@ export const SliderGrid = (props: SliderGridComponentProps) => {
                 <For each={polsArr}>
                     {(pol, index) => (
                         <>
-                            <SliderPol 
-                                size='normal' 
-                                pol-class={GridToken()?.['pol-class']} 
-                                pol-style={GridToken()?.['pol-style']} 
-                                value={pol}/>
+                            <SliderPol
+                                size='normal'
+                                pol-class={GridToken()?.['pol-class']}
+                                pol-style={GridToken()?.['pol-style']}
+                                pol-value-class={GridToken()?.['pol-value-class']}
+                                pol-value-style={GridToken()?.['pol-value-style']}
+                                value={pol}
+                            />
                             <Show when={GridToken()?.['pols-without-text'] && index() < polsCount - 1}>
                                 <For each={Array.from({ length: GridToken()?.['pols-without-text'] || 5 })}>
                                     {() => (
-                                        <SliderPol 
-                                            size='small' 
-                                            pol-class={GridToken()?.['pol-class']} 
-                                            pol-style={GridToken()?.['pol-style']} />
+                                        <SliderPol
+                                            size='small'
+                                            pol-class={GridToken()?.['pol-class']}
+                                            pol-style={GridToken()?.['pol-style']}
+                                        />
                                     )}
                                 </For>
                             </Show>
