@@ -1,0 +1,50 @@
+.Accordion {
+    width: 20vmax;
+    background-color: white;
+    border: 1px solid #bbbbbb;
+    border-bottom: 0;
+}
+
+.Panel {
+    width: 100%;
+    color: black;
+    border-bottom: 1px solid #bbbbbb;
+    overflow: hidden;
+}
+
+.Disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.Heading {
+    width: 100%;
+    padding: 0.75vmax;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.Heading-content {
+    flex: 1;
+}
+
+.Icon {
+    width: 1vmax;
+    height: 1vmax;
+    transform-origin: center center;
+    transition: transform 0.2s ease-in-out;
+}
+
+.Icon-expanded {
+    transform: rotate(180deg);
+}
+
+.Body {
+    width: 100%;
+    transition: height 0.2s ease-in-out;
+}
+
+.Content {
+    padding: 0.5vmax 0.75vmax;
+}
