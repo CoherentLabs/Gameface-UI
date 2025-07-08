@@ -1,0 +1,12 @@
+{
+    "base": "toggle",
+    "base-checked": "toggle-checked",
+    "base-disabled": "toggle-disabled",
+    "control": "toggle-control",
+    "indicator": "toggle-indicator",
+    "handle": "toggle-handle",
+    "handle-checked": "toggle-handle-checked",
+    "handle-disabled": "toggle-handle-disabled",
+    "assertionElement": "assertion-element",
+    "scenarioBtn": "scenario-btn"
+}
