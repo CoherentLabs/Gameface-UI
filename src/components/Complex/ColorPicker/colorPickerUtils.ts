@@ -60,7 +60,7 @@ export function parseHSVAColor(hsva: ColorData) {
  *          - `a`: Alpha, a float between 0 and 1.
  * @throws Will throw an error if the input string is not in a valid RGBA format.
  */
-function RGBAToHSVA(rgba: string): ColorData {
+export function RGBAToHSVA(rgba: string): ColorData {
     const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
     if (!match) {
         throw new Error("Invalid RGBA color format");

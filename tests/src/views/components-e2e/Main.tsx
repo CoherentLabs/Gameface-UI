@@ -20,6 +20,7 @@ import SliderTest from '../../components/Slider/SliderTest';
 import TextSliderTest from '../../components/TextSlider/TextSliderTest';
 import XYSliderTest from '../../components/XYSlider/XYSliderTest';
 import ToggleButtonTest from '../../components/toggleButton/ToggleButton';
+import ColorPickerTest from '../../components/ColorPicker/ColorPickerTest';
 
 const Main = () => {
     const components = [
@@ -34,6 +35,9 @@ const Main = () => {
         "text-slider",
         "xy-slider",
         "toggle",
+
+        // Compex components
+        "color-picker",
 
         // Layout components
         "absolute",
@@ -75,6 +79,7 @@ const Main = () => {
                 <TextSliderTest />
                 <XYSliderTest />
                 <ToggleButtonTest />
+                <ColorPickerTest />
             </Tabs>
         </div>
     );
