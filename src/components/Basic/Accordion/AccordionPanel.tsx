@@ -15,8 +15,14 @@ export interface PanelTokenProps extends ParentProps {
     title?: string;
     disabled?: boolean;
     'class-disabled'?: string;
+    'class-expanded'?: string,
     style?: JSX.CSSProperties;
     class?: string;
+}
+
+export interface CommonAccordionSlotProps extends ParentProps {
+    style?: JSX.CSSProperties,
+    class?: string,
 }
 
 interface AccordionPanelProps {
@@ -40,6 +46,8 @@ export const AccordionPanel: ParentComponent<AccordionPanelProps> = (props) => {
             classes.push(styles.Disabled);
             classes.push(props.panel["class-disabled"] ?? '');
         }
+        
+        if (isExpanded()) classes.push(props.panel['class-expanded'] ?? '');
 
         return classes.join(' ');
     });

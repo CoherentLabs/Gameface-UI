@@ -86,8 +86,6 @@ const Accordion: ParentComponent<AccordionProps> = (props) => {
     }
 
     const collapseAll = () => {
-        if (!props.multiple) return console.error('Accordion must be multiple to execute this method');
-
         const data = panelData();
         if (!data || data.length === 0) {
             return console.error('No panels to collapse!');
