@@ -6,7 +6,7 @@ import { Background, XYSliderBackground } from "./XYSliderBackground";
 import { ComponentProps } from "@components/types/ComponentProps";
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 
-type XYSliderValue = {
+export type XYSliderValue = {
     x: number;
     y: number;
 };
