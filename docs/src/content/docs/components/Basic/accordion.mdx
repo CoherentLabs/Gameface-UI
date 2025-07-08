@@ -1,0 +1,257 @@
+---
+title: Accordion Menu
+---
+The `Accordion` component is a vertically stacked set of interactive headings that each reveal an associated section of content. 
+It allows users to expand and collapse sections to show or hide their content.
+
+## Usage
+
+To include an accordion in your UI, wrap one or more `Accordion.Panel` components within the `Accordion` component. 
+Each panel contains an `Accordion.Heading` and an `Accordion.Body`:
+
+```tsx
+import Accordion from '@components/Basic/Accordion/Accordion';
+
+const App = () => {
+    return (
+        <Accordion>
+            <Accordion.Panel>
+                <Accordion.Heading>Heading 1</Accordion.Heading>
+                <Accordion.Body>Accordion content</Accordion.Body>
+            </Accordion.Panel>
+            <Accordion.Panel>
+                <Accordion.Heading>Heading 2</Accordion.Heading>
+                <Accordion.Body>Accordion content</Accordion.Body>
+            </Accordion.Panel>
+        </Accordion>
+    );
+};
+
+export default App;
+```
+
+## API
+
+### Props
+
+| Prop Name         | Type                      | Default     | Description                                                                                                     |
+|-------------------|---------------------------|-------------|-----------------------------------------------------------------------------------------------------------------|
+| `style`           | `JSX.CSSProperties`       | `{}`        | Inline styles to apply directly to the Accordion's root element.                                                |
+| `class`           | `string`                  | `""`        | Additional CSS classes to apply to the Accordion.                                                               |
+| `ref`             | `AccordionRef \| undefined` | `undefined` | Reference to the Accordion instance, providing access to its methods for programmatic control.                  |
+| `multiple`        | `boolean`                 | `false`     | If `true`, allows multiple panels to be expanded at the same time.                                              |
+| `disabled`        | `boolean`                 | `false`     | Disables the Accordion when set to `true`.                                                                      |
+| `class-disabled`  | `string`                  | `""`        | Additional CSS classes to apply when the Accordion is disabled.                                                 |
+| `onChange`        | `(title: string) => void` | `undefined` | Callback triggered whenever the expanded panels change.             |
+
+### Methods
+
+| Method         | Parameters         | Return Value | Description                                                                                   |
+|----------------|--------------------|--------------|-----------------------------------------------------------------------------------------------|
+| `expand`       | `title: string`    | `void`       | Expands the panel with the given title.                                                       |
+| `collapse`     | `title: string`    | `void`       | Collapses the panel with the given title.                                                     |
+| `expandAll`    | none               | `void`       | Expands all panels. Only works if the Accordion has the `multiple` prop enabled.              |
+| `collapseAll`  | none               | `void`       | Collapses all panels.                                                                         |
+
+## Slots
+
+### `Accordion.Panel`
+
+The `Accordion.Panel` slot represents an individual section within the Accordion and must be included to render a panel on the `Accordion`. 
+It contains a heading (rendered with `Accordion.Heading`) and a body (with `Accordion.Body`).
+
+#### Properties
+
+| Prop Name         | Type                  | Default     | Description                                                                                  |
+|-------------------|-----------------------|-------------|----------------------------------------------------------------------------------------------|
+| `expanded`        | `boolean`             | `false`     | If `true`, the panel is expanded by default.                                                 |
+| `title`           | `string`              | `""`        | The title or label for the panel. It is used for programmatic manipulation.                  |
+| `disabled`        | `boolean`             | `false`     | Disables the panel, preventing user interaction.                                             |
+| `class-disabled`  | `string`              | `""`        | Additional CSS classes applied when the panel is disabled.                                   |
+| `class-expanded`  | `string`              | `""`        | Additional CSS classes applied when the panel is expanded.                                   |
+| `style`           | `JSX.CSSProperties`   | `{}`        | Inline styles to apply to the panel container.                                               |
+| `class`           | `string`              | `""`        | Additional CSS classes for the panel container.                                              |
+
+#### Usage
+
+Creating an accordion menu with an expanded panel by default.
+
+```diff lang="tsx"
+import Accordion from '@components/Basic/Accordion/Accordion';
+
+const App = () => {
+    return (
+        <Accordion>
++            <Accordion.Panel expanded title="panel1">
++                <Accordion.Heading>Heading 1</Accordion.Heading>
++                <Accordion.Body>Accordion content</Accordion.Body>
++            </Accordion.Panel>
+            <Accordion.Panel title="panel2">
+                <Accordion.Heading>Heading 2</Accordion.Heading>
+                <Accordion.Body>Accordion content</Accordion.Body>
+            </Accordion.Panel>
+        </Accordion>
+    );
+};
+
+export default App;
+```
+
+:::caution
+If no `title` prop is provided to `Accordion.Panel`, a unique identifier will be generated automatically. 
+If you plan to programmatically manipulate the panel, it is recommended to specify a `title`.
+:::
+
+## Slots
+
+### `Accordion.Heading`
+
+The `Accordion.Heading` slot is used inside an `Accordion.Panel` to define the clickable heading for that panel.
+It displays the panel's title or label and handles user interaction for expanding or collapsing the panel.
+
+#### Properties
+
+| Prop Name   | Type                | Default   | Description                                                                                  |
+|-------------|---------------------|-----------|----------------------------------------------------------------------------------------------|
+| `style`     | `JSX.CSSProperties` | `{}`      | Inline styles to apply to the heading element.                                               |
+| `class`     | `string`            | `""`      | Additional CSS classes for the heading element.                                              |
+| `children`  | `JSX.Element`       | `""`      | Content of the heading, used to render text, HTML, or JSX elements within the heading.       |
+
+### `Accordion.Icon`
+
+The `Accordion.Icon` slot allows you to customize or change the icon displayed inside the accordion's heading.
+
+#### Properties
+
+| Prop Name   | Type                | Default   | Description                                                                                  |
+|-------------|---------------------|-----------|----------------------------------------------------------------------------------------------|
+| `style`     | `JSX.CSSProperties` | `{}`      | Inline styles to apply to the heading element.                                               |
+| `class`     | `string`            | `""`      | Additional CSS classes for the heading element.                                              |
+| `children`  | `JSX.Element`       | `""`      | Custom content, such as text, HTML, or JSX, to render as the accordion icon.       |
+
+:::note
+By default the icon will rotate by 180 degrees when the panel is expanded. You can customize this behavior by providing a custom class or styles to the icon slot.
+:::
+
+#### Usage
+
+To use a custom icon, provide your desired content as children of the Accordion.Icon slot:
+
+```diff lang="tsx"
+import Accordion from '@components/Basic/Accordion/Accordion';
+import CustomIcon from '@assets/CustomIcon';
+
+const App = () => {
+    return (
+        <Accordion>
+            <Accordion.Panel expanded title="panel1">
+                <Accordion.Heading>
+                    Heading 1
++                    <Accordion.Icon>
++                        <CustomIcon />
++                    </Accordion.Icon>
+                </Accordion.Heading>
+                <Accordion.Body>Accordion content</Accordion.Body>
+            </Accordion.Panel>
+            <Accordion.Panel title="panel2">
+                <Accordion.Heading>Heading 2</Accordion.Heading>
+                <Accordion.Body>Accordion content</Accordion.Body>
+            </Accordion.Panel>
+        </Accordion>
+    );
+};
+
+export default App;
+```
+
+### `Accordion.Body`
+
+The `Accordion.Body` slot is used inside an `Accordion.Panel` to define the content area that is shown or hidden when the panel is expanded or collapsed. 
+It displays the main content associated with the panel.
+
+#### Properties
+
+| Prop Name   | Type                | Default   | Description                                                                                  |
+|-------------|---------------------|-----------|----------------------------------------------------------------------------------------------|
+| `style`     | `JSX.CSSProperties` | `{}`      | Inline styles to apply to the body element.                                                  |
+| `class`     | `string`            | `""`      | Additional CSS classes for the body element.                                                 |
+| `children`  | `JSX.Element`       | `""`      | Content of the body, used to render text, HTML, or JSX elements within the body.             |
+
+## Guide
+
+### Retrieve the modified panel's title on change
+
+To detect which panel was last expanded or collapsed:
+
+- Use the `onChange` prop to handle changes in the Accordion's panels.
+
+#### Steps
+
+1. Pass a callback function to the `onChange` prop.
+2. The callback receives the `title` of the panel that was most recently expanded or collapsed.
+
+```tsx
+import Accordion from '@components/Basic/Accordion/Accordion';
+
+const App = () => {
+    const handleChange = (title: string) => {
+        console.log(title);
+    };
+
+    return (
+        <Accordion onChange={handleChange}>
+            <Accordion.Panel>
+                <Accordion.Heading>Heading 1</Accordion.Heading>
+                <Accordion.Body>Accordion content</Accordion.Body>
+            </Accordion.Panel>
+            <Accordion.Panel>
+                <Accordion.Heading>Heading 2</Accordion.Heading>
+                <Accordion.Body>Accordion content</Accordion.Body>
+            </Accordion.Panel>
+        </Accordion>
+    );
+};
+
+export default App;
+```
+
+### Programmatically toggle a panel
+
+The `Accordion` component allows you to programmatically toggle a panel by providing its title as the argument.
+
+#### Steps
+
+1. Create a `ref` variable of type `accordionRef` and assign it to the `Accordion` component.
+2. Use the `ref.expand(title)` method to programmatically expand the panel, such as in response to a button click or keyboard event.
+3. Use the `ref.collapse(title)` method to programmatically collapse the panel, such as in response to a button click or keyboard event.
+
+```tsx
+import Accordion, {accordionRef} from '@components/Basic/Accordion/Accordion';
+
+const App = () => {
+    let accordion!: accordionRef;
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+        if (e.keyCode === 13) {
+            accordionRef.expand('heading-1');
+        } else if (e.keyCode === 27) {
+            accordionRef.collapse('heading-1');
+        }
+    };
+
+    return (
+        <Accordion ref={accordion} keypress={handleKeyPress}>
+            <Accordion.Panel title="heading-1">
+                <Accordion.Heading>Heading 1</Accordion.Heading>
+                <Accordion.Body>Accordion content</Accordion.Body>
+            </Accordion.Panel>
+            <Accordion.Panel>
+                <Accordion.Heading>Heading 2</Accordion.Heading>
+                <Accordion.Body>Accordion content</Accordion.Body>
+            </Accordion.Panel>
+        </Accordion>
+    );
+};
+
+export default App;
+```

@@ -1,14 +1,14 @@
 .Accordion {
     width: 20vmax;
     background-color: white;
-    border: 1px solid #bbbbbb;
+    border: 0.1vmax solid #bbbbbb;
     border-bottom: 0;
 }
 
 .Panel {
     width: 100%;
     color: black;
-    border-bottom: 1px solid #bbbbbb;
+    border-bottom: 0.1vmax solid #bbbbbb;
     overflow: hidden;
 }
 
