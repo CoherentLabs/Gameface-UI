@@ -19,7 +19,7 @@ interface AccordionProps extends ComponentProps {
     multiple?: boolean;
     disabled?: boolean;
     'class-disabled'?: string;
-    onChange?: (expanded: string) => void;
+    onChange?: (title: string) => void;
 }
 
 interface AccordionContext {
