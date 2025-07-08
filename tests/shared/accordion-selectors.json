@@ -1,0 +1,13 @@
+{
+  "assertionElement": "assertion-element",
+  "scenarioBtn": "scenario-btn",
+  "base": "accordion",
+  "accordionDisabled": "accordion-disabled",
+  "accordionPanel": "accordion-panel",
+  "panelDisabled": "panel-disabled",
+  "panelExpanded": "panel-expanded",
+  "accordionHeading": "accordion-heading",
+  "accordionIcon": "accordion-icon",
+  "accordionBody": "accordion-body",
+  "reactive": "reactive"
+}

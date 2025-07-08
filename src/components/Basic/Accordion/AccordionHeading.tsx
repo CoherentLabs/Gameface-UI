@@ -2,15 +2,10 @@ import { JSX, ParentComponent, ParentProps } from "solid-js";
 import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
 import AccordionIcon from './AccordionIcon.svg?component-solid'
 import styles from './Accordion.module.css';
-import { PanelChildrenComponentProps } from "./AccordionPanel";
+import { CommonAccordionSlotProps, PanelChildrenComponentProps } from "./AccordionPanel";
 
-interface CommonSlotProps extends ParentProps {
-    style?: JSX.CSSProperties,
-    class?: string,
-}
-
-export const Heading = createTokenComponent<CommonSlotProps>();
-export const Icon = createTokenComponent<CommonSlotProps>();
+export const Heading = createTokenComponent<CommonAccordionSlotProps>();
+export const Icon = createTokenComponent<CommonAccordionSlotProps>();
 
 export const AccordionHeading: ParentComponent<PanelChildrenComponentProps> = (props) => {
     const HeadingToken = useToken(Heading, props.parentChildren);

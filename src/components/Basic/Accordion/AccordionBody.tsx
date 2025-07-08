@@ -2,16 +2,9 @@ import { createEffect, createMemo, createSignal, JSX, onMount, ParentComponent }
 import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
 import styles from './Accordion.module.css';
 import { waitForFrames } from "@components/utils/waitForFrames";
-import { PanelChildrenComponentProps } from "./AccordionPanel";
+import { CommonAccordionSlotProps, PanelChildrenComponentProps } from "./AccordionPanel";
 
-interface BodyTokenProps {
-    style?: JSX.CSSProperties,
-    class?: string,
-    'expanded-class'?: string,
-    children: JSX.Element
-}
-
-export const Body = createTokenComponent<BodyTokenProps>();
+export const Body = createTokenComponent<CommonAccordionSlotProps>();
 
 export const AccordionBody: ParentComponent<PanelChildrenComponentProps> = (props) => {
     const BodyToken = useToken(Body, props.parentChildren);
@@ -44,7 +37,7 @@ export const AccordionBody: ParentComponent<PanelChildrenComponentProps> = (prop
             class={`${styles.Body}`}
             style={bodyStyles()}>
             <div
-                class={`${styles.Content} ${props.isExpanded() && (BodyToken()?.["expanded-class"] ?? '')} ${BodyToken()?.class || ''}`}
+                class={`${styles.Content} ${BodyToken()?.class || ''}`}
                 style={BodyToken()?.style}>
                 {BodyToken()?.children}
             </div>
