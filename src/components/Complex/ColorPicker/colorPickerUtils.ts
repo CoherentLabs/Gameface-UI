@@ -107,7 +107,7 @@ export function RGBAToHSVA(rgba: string): ColorData {
  * @returns A `ColorData` object representing the color in HSVA format.
  * @throws An error if the input color format is invalid.
  */
-export function parseInitialValue(color: string): ColorData {
+export function RGBAOrHEXToHSVA(color: string): ColorData {
     if (color.startsWith("#")) {
         const hex = color.slice(1);
         if (hex.length === 6 || hex.length === 8) {

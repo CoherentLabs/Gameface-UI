@@ -5,7 +5,7 @@ import Segment from "@components/Basic/Segment/Segment";
 import styles from './ColorPicker.module.css';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { ComponentProps } from "@components/types/ComponentProps";
-import { parseHSVAColor, parseInitialValue } from "./colorPickerUtils";
+import { parseHSVAColor, RGBAOrHEXToHSVA } from "./colorPickerUtils";
 
 export interface ColorData {
     h: number;
@@ -32,7 +32,7 @@ const ColorPicker: ParentComponent<ColorPickerProps> = (props) => {
     let alphaSliderRef!: SliderRef;
     let changingColorFromRef = false;
 
-    const initialValue = parseInitialValue(props.value ?? 'rgba(255, 0, 0, 1)');
+    const initialValue = RGBAOrHEXToHSVA(props.value ?? 'rgba(255, 0, 0, 1)');
     const [color, setColor] = createSignal(initialValue);
     const [selectedFormat, setSelectedFormat] = createSignal("hex");
 
