@@ -16,6 +16,9 @@ const componentsWithSlotTokens = {
   TEXT_SLIDER: 'TextSlider',
   SEGMENT: 'Segment',
   XYSlider: 'XYSlider',
+  ACCORDION: 'Accordion',
+  ACCORDION_PANEL: 'Accordion.Panel',
+  ACCORDION_HEADING: 'Accordion.Heading',
 }
 
 const tokenComponetsParents = {
@@ -66,9 +69,13 @@ const tokenComponetsParents = {
 
   'XYSlider.Background': componentsWithSlotTokens.XYSlider,
   'XYSlider.Handle': componentsWithSlotTokens.XYSlider,
+  'Accordion.Panel': componentsWithSlotTokens.ACCORDION,
+  'Accordion.Heading': componentsWithSlotTokens.ACCORDION_PANEL,
+  'Accordion.Icon': componentsWithSlotTokens.ACCORDION_HEADING,
+  'Accordion.Body': componentsWithSlotTokens.ACCORDION_PANEL,
 }
 
-const availbleForedTokenComponets = new Set(['Radio.Button', 'Dropdown.Option', 'Segment.Button', 'Stepper.Item'])
+const availbleForedTokenComponets = new Set(['Radio.Button', 'Dropdown.Option', 'Segment.Button', 'Stepper.Item', 'Accordion.Panel'])
 
 function isParentMatchingPath(node, path, wrapperName) {
   let currentNode = node.parent;
