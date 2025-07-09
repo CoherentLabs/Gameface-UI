@@ -1,0 +1,200 @@
+---
+title: Color picker
+---
+
+The `ColorPicker` component is a powerful UI element designed for seamless color selection. It is ideal for applications such as design tools, image editors, or any interface requiring color customization.
+
+As part of the complex components in Gameface UI, the `ColorPicker` combines multiple basic components to deliver advanced functionality. It enables users to adjust hue, saturation, brightness, and transparency, while providing a color preview area for visual feedback.
+
+Internally, the component utilizes the following basic components:
+
+- [XYSlider](/components/basic/xy-slider) for adjusting brightness and saturation.
+- [Slider](/components/basic/slider) for controlling hue and alpha (transparency).
+- [Segment](/components/basic/segment) for toggling the color preview mode between HEX and RGBA.
+
+## Usage
+
+To use the `ColorPicker` component, simply import and render it as shown below:
+
+```tsx
+import ColorPicker from '@components/Complex/ColorPicker/ColorPicker';
+
+const App = () => {
+    return (
+        <ColorPicker />
+    );
+};
+
+export default App;
+```
+
+## API
+
+### Props
+
+| Prop Name  | Type                                   | Default     | Description                                                                                                                                                                                  |
+| ---------- | -------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `style`    | `JSX.CSSProperties`                    | `{}`        | Inline styles to apply directly to the color picker's wrapper element.                                                                                                                             |
+| `class`    | `string`                               | `""`        | Additional CSS classes to apply to the color picker's wrapper element.                                                                                                                                             |
+| `ref`      | `ColorPickerRef  \| undefined`      | `undefined` | A reference to the component, providing access to its methods and the underlying HTML element.                                                             |
+| `value` | `string`           | `rgba(255, 0, 0, 1)` | Initial value of the color picker. Accepts colors as strings in HEX or RGBA format. |
+| `onChange` | `(value: ColorData) => void`           | `undefined` | A callback function triggered whenever the color changes. It can be used to retrieve the updated color value. |
+
+### ColorPickerRef Methods
+
+| Method          | Parameters       | Return Value | Description                                      |
+|------------------|------------------|--------------|--------------------------------------------------|
+| `value`         | None             | `ColorData`  | Retrieves the currently selected color value from the color picker. |
+| `changeColor`   | `newColor: ColorData` | `void`    | Updates the color picker programmatically with a new color. **Only accepts `ColorData` as an argument.** |
+
+### ColorData Type
+
+| Property | Type     | Description                                      |
+|----------|----------|--------------------------------------------------|
+| `h`      | `number` | Represents the hue of the color (0-360).         |
+| `s`      | `number` | Represents the saturation of the color (0-100).  |
+| `v`      | `number` | Represents the brightness of the color (0-100).  |
+| `a`      | `number` | Represents the alpha (transparency) of the color (0-1). |
+
+## Color Picker Utilities
+
+To simplify color format conversions, utility methods are available for translating between `HSVA`, `RGBA`, and `HEX`. These methods can be imported from `@components/Complex/ColorPicker/colorPickerUtils`:
+
+```tsx
+import { RGBAOrHEXToHSVA, RGBAToHSVA, parseHSVAColor } from "@components/Complex/ColorPicker/colorPickerUtils";
+```
+
+### `RGBAOrHEXToHSVA(color: string) => ColorData`
+
+Converts a color string in `RGBA` or `HEX` format to `ColorData`. The method automatically detects the input format and performs the conversion. This is useful for programmatically updating the color picker value via its `ref`. See the [guide](#programmatically-changing-the-color-picker-value) for details.
+
+```tsx
+import { RGBAOrHEXToHSVA } from "@components/Complex/ColorPicker/colorPickerUtils";
+
+RGBAOrHEXToHSVA('rgba(0, 0, 0, 0.5)'); // Returns ColorData: { h: 0, s: 0, v: 0, a: 0.5 }
+RGBAOrHEXToHSVA('#00000080'); // Returns ColorData: { h: 0, s: 0, v: 0, a: 0.5 }
+```
+
+### `RGBAToHSVA(rgba: string) => ColorData`
+
+Converts an `RGBA` color string to `ColorData`. This method is particularly useful for programmatically updating the color picker value via its `ref`. See the [guide](#programmatically-changing-the-color-picker-value) for details.
+
+```tsx
+import { RGBAToHSVA } from "@components/Complex/ColorPicker/colorPickerUtils";
+
+RGBAToHSVA('rgba(0, 0, 0, 0.5)'); // Returns ColorData: { h: 0, s: 0, v: 0, a: 0.5 }
+```
+
+### `parseHSVAColor(color: ColorData) => string`
+
+Converts `ColorData` to a color string in `RGBA` or `HEX` format.
+
+```tsx
+import { parseHSVAColor } from "@components/Complex/ColorPicker/colorPickerUtils";
+
+parseHSVAColor({ h: 0, s: 0, v: 0, a: 1 }); // Returns { rgba: 'rgba(0, 0, 0, 1)', hex: '#000000FF' }
+```
+
+## Guide
+
+### Setting an initial value
+
+To initialize the color picker with a value other than the default `rgba(255, 0, 0, 1)`, use the `value` prop. This prop accepts color strings in either `RGBA` or `HEX` format. Internally, the component converts the provided value to `HSVA` format for internal processing.
+
+```tsx
+import ColorPicker from '@components/Complex/ColorPicker/ColorPicker';
+
+const App = () => {
+    return (
+        <ColorPicker value="rgba(0, 0, 0, 0.5)" />
+        // Or
+        <ColorPicker value="#00000080" />
+    );
+};
+
+export default App;
+```
+
+:::note
+The `value` prop is non-reactive and is intended only for setting the initial color of the picker. To programmatically control the color, use the `ref.changeColor` method.
+:::
+
+### Programmatically changing the color picker value
+
+To update the color picker value programmatically, use the `ref` prop to access the component's instance. The `changeColor` method allows you to set a new color, but it requires a `ColorData` object as input. You can use utility methods like `RGBAOrHEXToHSVA` or `RGBAToHSVA` to convert color strings into `ColorData`.
+
+```tsx
+import ColorPicker from '@components/Complex/ColorPicker/ColorPicker';
+import { RGBAToHSVA } from "@components/Complex/ColorPicker/colorPickerUtils";
+
+const App = () => {
+    let colorPickerRef!: ColorPickerRef;
+
+    const changeColor = () => {
+        if (colorPickerRef) {
+            // Update the color to rgba(0, 0, 0, 0.5)
+            colorPickerRef.changeColor(RGBAToHSVA('rgba(0, 0, 0, 0.5)'));
+        }
+    };
+
+    return (
+        <>
+            <ColorPicker ref={colorPickerRef} />
+            <button onClick={changeColor}>Change Color</button>
+        </>
+    );
+};
+```
+
+### Retrieve the color picker value
+
+To access the current value of the color picker, use the `ref` prop to obtain a reference to the component instance. This reference provides methods for interacting with the color picker.
+
+The `value` method retrieves the current color in `ColorData` format. If you need the color in `RGBA` or `HEX` format, use the `parseHSVAColor` utility method to convert the `ColorData` into the desired format.
+
+```tsx
+import ColorPicker from '@components/Complex/ColorPicker/ColorPicker';
+import { parseHSVAColor } from "@components/Complex/ColorPicker/colorPickerUtils";
+
+const App = () => {
+    let colorPickerRef!: ColorPickerRef;
+
+    const getColor = () => {
+        if (colorPickerRef) {
+            // Retrieve the current color value from the color picker
+            const color = colorPickerRef.value();
+            console.log(parseHSVAColor(color)); // Logs the color in RGBA or HEX format
+            // Example output: { rgba: 'rgba(0, 0, 0, 0.5)', hex: '#00000080' }
+        }
+    };
+
+    return (
+        <>
+            <ColorPicker ref={colorPickerRef} />
+            <button onClick={getColor}>Get Color</button>
+        </>
+    );
+};
+```
+
+### Customizing the component
+
+The `ColorPicker` component can be tailored to fit your application's design by using the `style` and `class` props. These props allow you to apply custom styles and CSS classes to the wrapper element of the color picker.
+
+```tsx
+import ColorPicker from '@components/Complex/ColorPicker/ColorPicker';
+
+const App = () => {
+    return (
+        <ColorPicker
+            style={{ width: '300px', height: '300px' }}
+            class="custom-color-picker"
+        />
+    );
+};
+export default App;
+```
+
+:::note
+To customize the internal components of the `ColorPicker`, such as the `XYSlider` or `Slider`, you can modify the `ColorPicker` component directly or create a copy of it for your specific needs. These internal components are designed to be flexible and can be adjusted using their own props, but no additional customization options are provided for them within the `ColorPicker`.
+:::
