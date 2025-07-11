@@ -27,7 +27,7 @@ export const SliderTrack: ParentComponent<SliderTrackComponentProps> = (props) =
     });
 
     return (
-        <div ref={props.ref} class={trackClasses()} style={TrackToken?.()?.style} onClick={props.handleClick}>
+        <div ref={props.ref} class={trackClasses()} style={TrackToken?.()?.style} onMouseDown={props.handleClick}>
             {props.children}
         </div>
     )

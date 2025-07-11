@@ -1,0 +1,45 @@
+---
+import { transform } from "typescript";
+
+export interface Props {
+  path: string;
+  width?: string;
+  height?: string;
+  translate?: string;
+  inline?: boolean;
+}
+
+const { path, width, height, inline, translate } = Astro.props as Props;
+
+const svgs = import.meta.glob("/src/assets/**/*.svg", {
+  query: "?raw",
+  import: "default",
+});
+
+const matchedKey = Object.keys(svgs).find((key) => key.includes(`${path}`));
+
+if (!matchedKey) {
+  throw new Error(`SVG not found for path: ${path}`);
+}
+
+const rawSvg = await svgs[matchedKey]();
+
+const styles = () => {
+  const styles = {
+    width: width || "100%",
+    height: height || "100%",
+    transform: translate ? `translate(${translate})` : undefined,
+  };
+  return styles;
+};
+---
+
+{
+  inline ? (
+    <div style={styles()}>
+      <Fragment set:html={rawSvg} />
+    </div>
+  ) : (
+    <img src={path} alt={path} style={styles()} />
+  )
+}

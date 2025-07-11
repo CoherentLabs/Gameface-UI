@@ -28,7 +28,7 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     const min = () => props.min || 0;
     const max = () => props.max || 100;
     const step = () => props.step || 1;
-    const [value, setValue] = createSignal(clamp(props.value || 50, min(), max()));
+    const [value, setValue] = createSignal(clamp(props.value ?? 50, min(), max()));
     const percent = () => ((value() - min()) / (max() - min())) * 100;
 
     let element!: HTMLDivElement;
@@ -52,6 +52,8 @@ const Slider: ParentComponent<SliderProps> = (props) => {
 
         setValue(result);
         props.onChange?.(result);
+
+        handleMouseDown(e);
     }
 
     const handleMouseDown = (e: MouseEvent) => {
