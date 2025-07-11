@@ -44,8 +44,8 @@ export default App;
 
 | Method          | Parameters       | Return Value | Description                                      |
 |------------------|------------------|--------------|--------------------------------------------------|
-| `value`         | None             | `ColorData`  | Retrieves the currently selected color value from the color picker. |
-| `changeColor`   | `newColor: ColorData` | `void`    | Updates the color picker programmatically with a new color. **Only accepts `ColorData` as an argument.** |
+| `value`         | None             | `{rgba: string, hex: string}`  | Retrieves the currently selected color value from the color picker into rgba and hex format. |
+| `changeColor`   | `newColor: string` | `void`    | Updates the color picker programmatically with a new color. This method accepts color strings in either `RGBA` or `HEX` format, which are automatically converted to `ColorData` internally. |
 
 ### ColorData Type
 
@@ -66,7 +66,7 @@ import { RGBAOrHEXToHSVA, RGBAToHSVA, parseHSVAColor } from "@components/Complex
 
 ### `RGBAOrHEXToHSVA(color: string) => ColorData`
 
-Converts a color string in `RGBA` or `HEX` format to `ColorData`. The method automatically detects the input format and performs the conversion. This is useful for programmatically updating the color picker value via its `ref`. See the [guide](#programmatically-changing-the-color-picker-value) for details.
+Converts a color string in `RGBA` or `HEX` format to `ColorData`. The method automatically detects the input format and performs the conversion.
 
 ```tsx
 import { RGBAOrHEXToHSVA } from "@components/Complex/ColorPicker/colorPickerUtils";
@@ -77,7 +77,7 @@ RGBAOrHEXToHSVA('#00000080'); // Returns ColorData: { h: 0, s: 0, v: 0, a: 0.5 }
 
 ### `RGBAToHSVA(rgba: string) => ColorData`
 
-Converts an `RGBA` color string to `ColorData`. This method is particularly useful for programmatically updating the color picker value via its `ref`. See the [guide](#programmatically-changing-the-color-picker-value) for details.
+Converts an `RGBA` color string to `ColorData`.
 
 ```tsx
 import { RGBAToHSVA } from "@components/Complex/ColorPicker/colorPickerUtils";
@@ -121,11 +121,10 @@ The `value` prop is non-reactive and is intended only for setting the initial co
 
 ### Programmatically changing the color picker value
 
-To update the color picker value programmatically, use the `ref` prop to access the component's instance. The `changeColor` method allows you to set a new color, but it requires a `ColorData` object as input. You can use utility methods like `RGBAOrHEXToHSVA` or `RGBAToHSVA` to convert color strings into `ColorData`.
+To update the color picker value programmatically, use the `ref` prop to access the component's instance. The `changeColor` method allows you to set a new color. The method accepts string values in `RGBA` or `HEX` format, which are automatically converted to `ColorData` internally.
 
 ```tsx
 import ColorPicker from '@components/Complex/ColorPicker/ColorPicker';
-import { RGBAToHSVA } from "@components/Complex/ColorPicker/colorPickerUtils";
 
 const App = () => {
     let colorPickerRef!: ColorPickerRef;
@@ -133,7 +132,7 @@ const App = () => {
     const changeColor = () => {
         if (colorPickerRef) {
             // Update the color to rgba(0, 0, 0, 0.5)
-            colorPickerRef.changeColor(RGBAToHSVA('rgba(0, 0, 0, 0.5)'));
+            colorPickerRef.changeColor('rgba(0, 0, 0, 0.5)');
         }
     };
 
@@ -150,11 +149,10 @@ const App = () => {
 
 To access the current value of the color picker, use the `ref` prop to obtain a reference to the component instance. This reference provides methods for interacting with the color picker.
 
-The `value` method retrieves the current color in `ColorData` format. If you need the color in `RGBA` or `HEX` format, use the `parseHSVAColor` utility method to convert the `ColorData` into the desired format.
+The `value` method retrieves the current color in `{rgba: string, hex: string}` format. If you need the color in `HSVA` format, use the `RGBAOrHEXToHSVA` utility method to convert the `rgba` or `hex` string to `ColorData` which represents the color in hue, saturation, value, and alpha components.
 
 ```tsx
 import ColorPicker from '@components/Complex/ColorPicker/ColorPicker';
-import { parseHSVAColor } from "@components/Complex/ColorPicker/colorPickerUtils";
 
 const App = () => {
     let colorPickerRef!: ColorPickerRef;
@@ -163,7 +161,7 @@ const App = () => {
         if (colorPickerRef) {
             // Retrieve the current color value from the color picker
             const color = colorPickerRef.value();
-            console.log(parseHSVAColor(color)); // Logs the color in RGBA or HEX format
+            console.log(color); // Logs the color in RGBA and HEX format
             // Example output: { rgba: 'rgba(0, 0, 0, 0.5)', hex: '#00000080' }
         }
     };
@@ -173,6 +171,33 @@ const App = () => {
             <ColorPicker ref={colorPickerRef} />
             <button onClick={getColor}>Get Color</button>
         </>
+    );
+};
+```
+
+### Listen to color changes
+
+To respond to color changes in the `ColorPicker`, use the `onChange` prop. This prop accepts a callback function that receives the updated color value as an argument. The value is provided in `ColorData` format, which includes hue, saturation, brightness, and alpha components.
+
+Because the provided value of the `onChange` callback is in `ColorData` format, you can use the `parseHSVAColor` utility method to convert it to a string in either `RGBA` or `HEX` format if needed.
+
+```tsx
+import ColorPicker, { ColorData } from '@components/Complex/ColorPicker/ColorPicker';
+import { parseHSVAColor } from '@components/Complex/ColorPicker/colorPickerUtils';
+
+const App = () => {
+    const handleColorChange = (color: ColorData) => {
+        console.log('Color changed:', color);
+        // Example output: { h: 0, s: 0, v: 0, a: 0.5 }
+        // Convert to RGBA or HEX string if needed
+        const rgbaString = parseHSVAColor(color).rgba; // 'rgba(0, 0, 0, 0.5)'
+        const hexString = parseHSVAColor(color).hex; // '#00000080'
+        console.log('RGBA:', rgbaString);
+        console.log('HEX:', hexString);
+    };
+
+    return (
+        <ColorPicker onChange={handleColorChange} />
     );
 };
 ```
