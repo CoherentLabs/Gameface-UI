@@ -4,7 +4,7 @@ import { createTokenComponent } from "@components/utils/tokenComponents";
 import styles from './Accordion.module.css';
 import { AccordionBody } from "./AccordionBody";
 import { AccordionHeading } from "./AccordionHeading";
-import { AccordionContext } from "./Accordion";
+import { AccordionContext, PanelData } from "./Accordion";
 
 export interface PanelChildrenComponentProps extends TokenComponentProps {
     isExpanded: () => boolean;
@@ -25,15 +25,9 @@ export interface CommonAccordionSlotProps extends ParentProps {
     class?: string,
 }
 
-interface AccordionPanelProps {
-    toggle: (id: string) => void,
-    id: string,
-    panel: PanelTokenProps;
-}
-
 export const Panel = createTokenComponent<PanelTokenProps>();
 
-export const AccordionPanel: ParentComponent<AccordionPanelProps> = (props) => {
+export const AccordionPanel: ParentComponent<PanelData> = (props) => {
     const accordion = useContext(AccordionContext);
     const isExpanded = createMemo(() => accordion!.expandedPanels().includes(props.id));
 
@@ -55,10 +49,8 @@ export const AccordionPanel: ParentComponent<AccordionPanelProps> = (props) => {
     return (
         <div
             class={panelClasses()}
-            style={props.panel?.style}
-            onClick={() => props.toggle(props.id)}
-            >
-                <AccordionHeading isExpanded={isExpanded} parentChildren={props.panel.children} />
+            style={props.panel?.style} >
+                <AccordionHeading id={props.id} isExpanded={isExpanded} parentChildren={props.panel.children} />
                 <AccordionBody isExpanded={isExpanded} parentChildren={props.panel.children} />
         </div>
     )

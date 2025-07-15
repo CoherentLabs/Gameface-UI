@@ -15,6 +15,11 @@ export interface AccordionRef {
     collapse: (title: string) => void,
 }
 
+export interface PanelData { 
+    panel: PanelTokenProps;
+    id: string 
+}
+
 interface AccordionProps extends ComponentProps {
     multiple?: boolean;
     disabled?: boolean;
@@ -23,10 +28,11 @@ interface AccordionProps extends ComponentProps {
 }
 
 interface AccordionContext {
-    expandedPanels: Accessor<Array<string>>
+    expandedPanels: Accessor<Array<string>>,
+    toggle: (id: string) => void,
 }
 
-function initPanels(panelData: { panel: PanelTokenProps; id: string }[], multiple = false): string[] {
+function initPanels(panelData: PanelData[], multiple = false): string[] {
     const arr: string[] = [];
 
     for (const { panel, id } of panelData) {
@@ -96,14 +102,29 @@ const Accordion: ParentComponent<AccordionProps> = (props) => {
 
     const expand = (title: string) => {
         const data = panelData();
+
         if (!data || data.length === 0) {
             return console.error('No panels to expand!');
+        }
+
+        if (!data.find((panel) => panel.id === title)) {
+            return console.error(`There is no panel with title: ${title}`);
         }
 
         toggle(title);
     }
 
     const collapse = (title: string) => {
+        const data = panelData();
+
+        if (!data || data.length === 0) {
+            return console.error('No panels to collapse!');
+        }
+
+        if (!data.find((panel) => panel.id === title)) {
+            return console.error(`There is no panel with title: ${title}`);
+        }
+
         setExpandedPanels(prev => {
             if (!props.multiple) return [];
 
@@ -142,7 +163,7 @@ const Accordion: ParentComponent<AccordionProps> = (props) => {
     });
 
     return (
-        <AccordionContext.Provider value={{ expandedPanels }}>
+        <AccordionContext.Provider value={{ expandedPanels, toggle }}>
             <div
                 ref={element!}
                 class={className()}
@@ -150,7 +171,7 @@ const Accordion: ParentComponent<AccordionProps> = (props) => {
                 use:forwardEvents={props}
                 use:forwardAttrs={props} >
                 <For each={panelData()}>
-                    {(data) => <AccordionPanel id={data.id} toggle={toggle} panel={data.panel} />}
+                    {(data) => <AccordionPanel id={data.id} panel={data.panel} />}
                 </For>
             </div>
         </AccordionContext.Provider>
