@@ -1,0 +1,52 @@
+.InputWrapper {
+  display: flex;
+  align-items: center;
+  margin: 10px;
+  border: 3px solid #7d7d7d;
+  border-radius: 10px;
+  font-size: 1vmax;
+  color: #323232;
+  background-color: #ebebeb;
+  overflow: hidden;
+}
+
+.InputWrapper:hover {
+  border-color: #00da9a;
+}
+
+.InputElementWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.Input {
+  border: none;
+  border-radius: 10px;
+  padding: 0.35vmax;
+  font-size: 1vmax;
+  height: 100%;
+}
+
+.hasBefore {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.hasAfter {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.Disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.Placeholder {
+  opacity: 0.8;
+  margin: 0;
+  position: absolute;
+  left: 0;
+  padding-left: 0.25vmax;
+}
