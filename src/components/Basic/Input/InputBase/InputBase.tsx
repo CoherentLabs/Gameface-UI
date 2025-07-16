@@ -1,8 +1,7 @@
 import { Accessor, Component, createMemo, Show } from "solid-js";
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { useToken } from "@components/utils/tokenComponents";
-import { Input, Placeholder } from "./tokens";
-import InlineTextBlock from "@components/Basic/InlineTextBlock/InlineTextBlock";
+import { Input, Placeholder } from "../shared/tokens";
 import styles from './InputBase.module.css';
 
 interface InputComponentProps extends TokenComponentProps {
@@ -21,11 +20,10 @@ export const InputBase: Component<InputComponentProps> = (props) => {
     const InputClasses = createMemo(() => {
         const classes = [styles.Input];
 
-        if (InputToken()?.class) classes.push(InputToken()?.class ?? '');
-
         if (props.hasBefore) classes.push(styles.hasBefore)
         if (props.hasAfter) classes.push(styles.hasAfter)
-
+                
+        classes.push(InputToken()?.class ?? '');
         return classes.join(' ');
     });
 
@@ -39,7 +37,7 @@ export const InputBase: Component<InputComponentProps> = (props) => {
                 onInput={props.handleChange}
                 value={props.value()} />
             <Show when={PlaceholderToken() && !props.value()}>
-                <div class={`${styles.Placeholder} ${PlaceholderToken()?.class}`} style={PlaceholderToken()?.style}>
+                <div class={`${styles.Placeholder} ${PlaceholderToken()?.class ?? ''}`} style={PlaceholderToken()?.style}>
                     {PlaceholderToken()?.children || ""}
                 </div>
             </Show>

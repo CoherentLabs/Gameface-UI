@@ -1,0 +1,17 @@
+.Before, .After {
+    display: flex;
+    align-items: center;
+    padding: 0.35vmax;
+    font-size: 1vmax;
+    height: 100%;
+}
+
+.Before {
+    border-top-left-radius: 0.4vmax;
+    border-bottom-left-radius: 0.4vmax;
+}
+
+.After {
+    border-top-right-radius: 0.4vmax;
+    border-bottom-right-radius: 0.4vmax;
+}

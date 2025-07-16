@@ -6,7 +6,12 @@ interface InputTokenProps  {
     class?: string,
 }
 
+interface VisibilityButtonTokenProps extends InputTokenProps {
+    position?: 'before' | 'after'
+}
+
 export const Input = createTokenComponent<InputTokenProps>();
 export const Placeholder = createTokenComponent<InputTokenProps>();
-export const Before = createTokenComponent();
-export const After = createTokenComponent();
+export const VisibilityButton = createTokenComponent<VisibilityButtonTokenProps>();
+export const Before = createTokenComponent<InputTokenProps>();
+export const After = createTokenComponent<InputTokenProps>();

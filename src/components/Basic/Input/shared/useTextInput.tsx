@@ -1,5 +1,5 @@
 import { createSignal } from "solid-js";
-import { TextInputProps } from "./createTextInputVariant";
+import { TextInputProps } from "./types";
 
 function useTextInput (props: TextInputProps) {
     const [value, setValue] = createSignal<string>(props.value ?? '');

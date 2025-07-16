@@ -1,5 +1,116 @@
-import { After, Before, Input } from "../InputBase/tokens";
-import { createTextInputVariant } from "../TextInputVariants/createTextInputVariant";
+import { After, Before, Input, VisibilityButton } from "../shared/tokens";
+import { onMount, createMemo, ParentComponent, createSignal, Switch, Match } from "solid-js";
+import useBaseComponent from "@components/BaseComponent/BaseComponent";
+import { useToken } from '@components/utils/tokenComponents';
+import { InputBase } from "../InputBase/InputBase";
+import useTextInput from "../shared/useTextInput";
+import { TextInputProps, TextInputRef } from "../shared/types";
+import { VisibilityButtonComponent } from "./VisibilityButton";
+import styles from '../shared/TextInput.module.css';
+import baseStyles from '../InputBase/InputBase.module.css';
+import AddonSlot from "../shared/AddonSlot";
 
-const PasswordInput = createTextInputVariant('password');
-export default Object.assign(PasswordInput, { Before, After, Input });
+export interface PasswordInputRef extends TextInputRef {
+    show: () => void,
+    hide: () => void,
+}
+
+const PasswordInput: ParentComponent<TextInputProps> = (props) => {
+    const BeforeToken = useToken(Before, props.children);
+    const AfterToken = useToken(After, props.children);
+    const VisibilityButtonToken = useToken(VisibilityButton, props.children);
+
+    let element!: HTMLDivElement;
+    let inputElement!: HTMLInputElement;
+
+    const {value, handleChange, changeValue, clear } = useTextInput(props);
+    const [type, setType] = createSignal<'text' | 'password'>('password');
+
+    const toggleVisibility = () => {
+        const current = type();
+        if (current === 'password') show();
+        else hide();
+    }
+
+    const show = () => setType('text');
+    const hide = () => setType('password');
+
+    const hasBefore = createMemo(() => !!BeforeToken() || VisibilityButtonToken()?.position === 'before')
+    const hasAfter = createMemo(() => !!AfterToken() || VisibilityButtonToken()?.position === 'after')
+    
+    const passwordInputClasses = createMemo(() => {
+        const classes = [baseStyles.InputWrapper];
+        
+        if (props.disabled) {
+            classes.push(baseStyles.Disabled);
+            
+            if (props['class-disabled']) classes.push(`${props['class-disabled']}`);
+        }
+        
+        return classes.join(' ');
+    });
+    
+    props.componentClasses = () => passwordInputClasses();
+    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
+    
+    onMount(() => {
+        if (!props.ref || !element) return;
+        
+        (props.ref as unknown as (ref: any) => void)({
+            element,
+            input: inputElement,
+            value,
+            changeValue,
+            clear,
+            show,
+            hide
+        });
+    });
+    
+    return (
+        <div 
+            ref={element!}
+            class={className()} 
+            style={inlineStyles()} 
+            use:forwardEvents={props}
+            use:forwardAttrs={props}>
+
+            <Switch>
+                <Match when={VisibilityButtonToken()?.position === 'before'}>
+                    <VisibilityButtonComponent 
+                        type={type()} 
+                        toggle={toggleVisibility}
+                        parentChildren={props.children} />
+                </Match>
+                <Match when={VisibilityButtonToken()?.position !== 'before'}>
+                    <AddonSlot token={BeforeToken} className={styles.Before} />
+                </Match>
+            </Switch>
+
+            <InputBase 
+                type={type()}
+                value={value}
+                ref={inputElement!}
+                handleChange={handleChange} 
+                parentChildren={props.children}
+                hasBefore={hasBefore()}
+                hasAfter={hasAfter()}
+            />
+
+            <Switch>
+                <Match when={VisibilityButtonToken()?.position === 'after'}>
+                    <VisibilityButtonComponent 
+                        type={type()} 
+                        toggle={toggleVisibility}
+                        parentChildren={props.children} />
+                </Match>
+                <Match when={VisibilityButtonToken()?.position !== 'after'}>
+                    <AddonSlot token={AfterToken} className={styles.After} />
+                </Match>
+            </Switch>
+
+        </div>
+    )
+}
+
+export default Object.assign(PasswordInput, { Before, After, Input, VisibilityButton });
