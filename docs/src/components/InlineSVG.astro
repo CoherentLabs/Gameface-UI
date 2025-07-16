@@ -6,22 +6,23 @@ export interface Props {
   width?: string;
   height?: string;
   translate?: string;
-  inline?: boolean;
 }
 
 const { path, width, height, translate } = Astro.props as Props;
 
-const links = import.meta.glob("/src/assets/**/*.svg", {
+const svgs = import.meta.glob("/src/assets/**/*.svg", {
+  query: "?raw",
   import: "default",
 });
 
-const matchedKey = Object.keys(links).find((key) => key.includes(`${path}`));
+
+const matchedKey = Object.keys(svgs).find((key) => key.includes(`${path}`));
 
 if (!matchedKey) {
   throw new Error(`SVG not found for path: ${path}`);
 }
 
-const linkedSvg = await links[matchedKey]();
+const rawSvg = await svgs[matchedKey]();
 
 const styles = () => {
   const styles = {
@@ -33,4 +34,6 @@ const styles = () => {
 };
 ---
 
-<img src={linkedSvg.src} alt={linkedSvg.src} style={styles()} />
+<div style={styles()}>
+  <Fragment set:html={rawSvg} />
+</div>
