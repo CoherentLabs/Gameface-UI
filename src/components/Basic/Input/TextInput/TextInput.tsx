@@ -1,5 +1,5 @@
 import { After, Before, Input, Placeholder } from "../shared/tokens";
-import { onMount, Show, createMemo, ParentComponent } from "solid-js";
+import { onMount, createMemo, ParentComponent } from "solid-js";
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { useToken } from '@components/utils/tokenComponents';
 import { InputBase } from "../InputBase/InputBase";
@@ -63,7 +63,7 @@ const TextInput: ParentComponent<TextInputProps> = (props) => {
                 parentChildren={props.children}
                 hasBefore={!!BeforeToken()}
                 hasAfter={!!AfterToken()}
-                />
+            />
 
             <AddonSlot token={AfterToken} className={styles.After} />
 

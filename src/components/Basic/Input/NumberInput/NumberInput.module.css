@@ -1,0 +1,22 @@
+.ButtonContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 2vmax;
+}
+
+.Button {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    height: 50%;
+    padding: 0.2vmax;
+    font-size: 1vmax;
+    width: 2vmax;
+    cursor: pointer;
+}
+
+.Button:hover {
+    background-color: rgb(213, 213, 213);
+}

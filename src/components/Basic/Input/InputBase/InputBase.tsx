@@ -7,7 +7,7 @@ import styles from './InputBase.module.css';
 interface InputComponentProps extends TokenComponentProps {
     value: Accessor<string | number>,
     handleChange: (e: InputEvent) => void,
-    type: 'text' | 'password',
+    type: 'text' | 'password' | 'number',
     ref: HTMLInputElement;
     hasBefore: boolean,
     hasAfter: boolean,
@@ -36,7 +36,7 @@ export const InputBase: Component<InputComponentProps> = (props) => {
                 style={InputToken()?.style}
                 onInput={props.handleChange}
                 value={props.value()} />
-            <Show when={PlaceholderToken() && !props.value()}>
+            <Show when={PlaceholderToken() && props.value() === ''}>
                 <div class={`${styles.Placeholder} ${PlaceholderToken()?.class ?? ''}`} style={PlaceholderToken()?.style}>
                     {PlaceholderToken()?.children || ""}
                 </div>

@@ -29,6 +29,8 @@ export const useTokens = <T extends Record<string, any>>(tokenizer: TokenizerTyp
     });
 };
 
+export type TokenBase = { class?: string; style?: JSX.CSSProperties };
+
 export const createTokenComponent = <T extends Record<string, any>>(name?: string) => {
     return createToken((props: ParentProps<T>) => {
         return { props };

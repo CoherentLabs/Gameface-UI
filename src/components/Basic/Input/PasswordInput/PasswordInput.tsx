@@ -1,11 +1,11 @@
-import { After, Before, Input, VisibilityButton } from "../shared/tokens";
+import { After, Before, Input } from "../shared/tokens";
 import { onMount, createMemo, ParentComponent, createSignal, Switch, Match } from "solid-js";
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { useToken } from '@components/utils/tokenComponents';
 import { InputBase } from "../InputBase/InputBase";
 import useTextInput from "../shared/useTextInput";
 import { TextInputProps, TextInputRef } from "../shared/types";
-import { VisibilityButtonComponent } from "./VisibilityButton";
+import { VisibilityButton, VisibilityButtonComponent } from "./VisibilityButton";
 import styles from '../shared/TextInput.module.css';
 import baseStyles from '../InputBase/InputBase.module.css';
 import AddonSlot from "../shared/AddonSlot";
