@@ -10,7 +10,7 @@ if (!gamefacePath) {
 }
 
 if (!path.isAbsolute(gamefacePath)) {
-    gamefacePath = path.resolve(__dirname, gamefacePath);
+    gamefacePath = path.resolve(__dirname, '..', gamefacePath);
 }
 
 try {
