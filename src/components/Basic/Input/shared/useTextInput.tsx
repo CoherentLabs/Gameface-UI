@@ -5,10 +5,15 @@ function useTextInput (props: TextInputProps) {
     const [value, setValue] = createSignal<string>(props.value ?? '');
 
     const handleChange = (e: InputEvent) => {
-        if (props.readonly || !e.target ) return;
+        if (!e.target ) return;
 
         const input = e.target as HTMLInputElement;
         const newValue = input.value;
+
+        if (props.readonly) {
+            input.value = value();
+            return
+        }
 
         if (props['max-symbols'] && newValue.length > props['max-symbols']) {
             input.value = value();

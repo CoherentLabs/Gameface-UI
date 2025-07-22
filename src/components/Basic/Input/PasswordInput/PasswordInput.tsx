@@ -1,5 +1,5 @@
 import { After, Before, Input } from "../shared/tokens";
-import { onMount, createMemo, ParentComponent, createSignal, Switch, Match } from "solid-js";
+import { onMount, createMemo, ParentComponent, createSignal, Switch, Match, Accessor } from "solid-js";
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { useToken } from '@components/utils/tokenComponents';
 import { InputBase } from "../InputBase/InputBase";
@@ -13,6 +13,7 @@ import AddonSlot from "../shared/AddonSlot";
 export interface PasswordInputRef extends TextInputRef {
     show: () => void,
     hide: () => void,
+    visible: Accessor<boolean>,
 }
 
 const PasswordInput: ParentComponent<TextInputProps> = (props) => {
@@ -25,6 +26,7 @@ const PasswordInput: ParentComponent<TextInputProps> = (props) => {
 
     const {value, handleChange, changeValue, clear } = useTextInput(props);
     const [type, setType] = createSignal<'text' | 'password'>('password');
+    const [visible, setVisible] = createSignal(false);
 
     const toggleVisibility = () => {
         const current = type();
@@ -32,8 +34,15 @@ const PasswordInput: ParentComponent<TextInputProps> = (props) => {
         else hide();
     }
 
-    const show = () => setType('text');
-    const hide = () => setType('password');
+    const show = () => {
+        setType('text');
+        setVisible(true);
+    }
+    
+    const hide = () => {
+        setType('password');
+        setVisible(false);
+    }
 
     const hasBefore = createMemo(() => !!BeforeToken() || VisibilityButtonToken()?.position === 'before')
     const hasAfter = createMemo(() => !!AfterToken() || VisibilityButtonToken()?.position === 'after')
@@ -61,6 +70,7 @@ const PasswordInput: ParentComponent<TextInputProps> = (props) => {
             input: inputElement,
             value,
             changeValue,
+            visible,
             clear,
             show,
             hide

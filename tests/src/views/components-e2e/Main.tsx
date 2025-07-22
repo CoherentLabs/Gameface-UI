@@ -22,6 +22,9 @@ import XYSliderTest from '../../components/XYSlider/XYSliderTest';
 import ToggleButtonTest from '../../components/toggleButton/ToggleButton';
 import ColorPickerTest from '../../components/ColorPicker/ColorPickerTest';
 import AccordionTest from '../../components/Accordion/AccordionTest';
+import TextInputTest from '../../components/Input/TextInputTest';
+import PasswordInputTest from '../../components/Input/PasswordInputTest';
+import NumberInputTest from '../../components/Input/NumberInputTest';
 
 const Main = () => {
     const components = [
@@ -40,6 +43,9 @@ const Main = () => {
         // Compex components
         "color-picker",
         "accordion",
+        "text-input",
+        "password-input",
+        "number-input",
 
         // Layout components
         "absolute",
@@ -83,6 +89,9 @@ const Main = () => {
                 <ToggleButtonTest />
                 <ColorPickerTest />
                 <AccordionTest />
+                <TextInputTest />
+                <PasswordInputTest />
+                <NumberInputTest />
             </Tabs>
         </div>
     );

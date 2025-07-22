@@ -5,12 +5,16 @@ import { createTokenComponent, TokenBase, useToken } from '@components/utils/tok
 import { InputBase } from "../InputBase/InputBase";
 import baseStyles from '../InputBase/InputBase.module.css';
 import styles from './NumberInput.module.css';
-import { TextInputProps } from "../shared/types";
+import { TextInputProps, TextInputRef } from "../shared/types";
 import InputControlButton from "./InputControlButton";
 
-
 type valueType = number | string;
-
+export interface NumberInputRef extends Omit<TextInputRef, "value" | "changeValue"> {
+    value: valueType,
+    changeValue: (newValue: number) => void,
+    increaseValue: () => void,
+    decreaseValue: () => void,
+}
 interface NumberInputProps extends Omit<TextInputProps, 'max-symbols' | 'value' | 'onChange'> {
     value?: valueType
     min?: number,
@@ -18,7 +22,6 @@ interface NumberInputProps extends Omit<TextInputProps, 'max-symbols' | 'value' 
     step?: number,
     onChange?: (value: valueType) => void;
 }
-
 interface InputControlTokenProps extends TokenBase {
     position?: 'before' | 'after'
 }
@@ -41,11 +44,16 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
     }
  
     const handleChange = (e: InputEvent) => {
-        if (props.readonly || !e.target ) return;
+        if (!e.target ) return;
 
         const input = e.target as HTMLInputElement;
         const newValue = transformValue(input.value);
 
+        if (props.readonly) {
+            input.value = value() as any as string;
+            return
+        }
+        
         if (newValue === '') return clear()
 
         if (newValue === '-' || newValue.endsWith('.')) {
@@ -88,6 +96,11 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
     const clear = () => applyValue('');
 
     const increaseValue = () => {
+        if (props.readonly) {
+            inputElement.value = value() as any as string;
+            return
+        }
+
         const currValue = Number(inputElement.value);
         const step = props.step || 1;
         let newValue;
@@ -102,6 +115,11 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
     }
 
     const decreaseValue = () => {
+        if (props.readonly) {
+            inputElement.value = value() as any as string;
+            return
+        }
+        
         const currValue = Number(inputElement.value);
         const step = props.step || 1;
         let newValue;
@@ -147,6 +165,8 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
             input: inputElement,
             value,
             changeValue,
+            increaseValue,
+            decreaseValue,
             clear
         });
     });

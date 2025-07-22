@@ -48,4 +48,5 @@
   position: absolute;
   left: 0;
   padding-left: 0.25vmax;
+  pointer-events: none;
 }
