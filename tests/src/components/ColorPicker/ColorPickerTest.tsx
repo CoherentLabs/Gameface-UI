@@ -2,7 +2,7 @@ import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
 import selectors from "../../../shared/color-picker-selectors.json";
 import ColorPicker, { ColorPickerRef } from "@components/Complex/ColorPicker/ColorPicker";
-import { parseHSVAColor, RGBAToHSVA } from "@components/Complex/ColorPicker/colorPickerUtils";
+import { parseHSVAColor } from "@components/Complex/ColorPicker/colorPickerUtils";
 
 const initialValue = 'rgba(255, 0, 0, 1)';
 const ColorPickerTest = () => {
@@ -11,14 +11,14 @@ const ColorPickerTest = () => {
     const [test, setTest] = createSignal('red');
 
     const scenarios = [
-        { label: "Change value with ref", action: () => { colorPickerRef.changeColor({ h: 50, s: 50, v: 50, a: 1 }) } },
+        { label: "Change value with ref", action: () => { colorPickerRef.changeColor('rgba(128, 117, 64, 1)') } },
         { label: "Change styles", action: () => { setTest('blue') } },
     ];
 
     const reset = () => {
         setValue(initialValue);
         setTest('red');
-        colorPickerRef?.changeColor(RGBAToHSVA(initialValue));
+        colorPickerRef?.changeColor(initialValue);
     };
 
     const isReactive = createMemo(() => test() === 'blue');
