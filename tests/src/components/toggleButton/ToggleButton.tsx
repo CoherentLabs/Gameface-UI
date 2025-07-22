@@ -11,7 +11,7 @@ const ToggleButtonTest = () => {
     const [reactive, setReactive] = createSignal(false);
 
     const scenarios = [
-        { label: "Check programatically", action: () => toggleRef.setChecked(true) },
+        { label: "Check programatically", action: () => toggleRef?.setChecked(true) },
         { label: "Disable toggle button", action: () => setDisabled(true) },
         { label: "Enable reactive styles", action: () => setReactive(true) },
     ];
@@ -20,7 +20,7 @@ const ToggleButtonTest = () => {
         setDisabled(false);
         setChecked(false);
         setReactive(false);
-        toggleRef.setChecked(false);
+        toggleRef?.setChecked(false);
     };
 
     const isReactive = createMemo(() => reactive() === true);

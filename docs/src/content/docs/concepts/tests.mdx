@@ -1,0 +1,115 @@
+---
+title: Gameface UI tests
+sidebar:
+  order: 9
+---
+
+import { FileTree } from '@astrojs/starlight/components';
+
+The GamefaceUI template provides a comprehensive testing setup using the [gameface-e2e](http://frontend-tools.coherent-labs.com/e2e/getting-started) testing framework made for Gameface.
+
+The tests are added to the project to ensure that the components and views function correctly and to catch any regressions during development. The tests cover various aspects of the UI, including interactions, state management, and visual consistency.
+
+However, this setup can be followed or extended to include additional tests for new components or features as needed for your game UI. The existing structure allows for easy addition of new test specifications and shared utilities, making it straightforward to maintain and expand the test suite.
+
+All the tests are located inside the `/tests` directory, which is structured as follows:
+
+<FileTree>
+
+- tests
+  - gameface-e2e-config.js
+  - shared
+    - accordion-selectors.json
+    - ...
+  - specs
+    - accordion.spec.js
+    - ...
+  - src
+    - views
+      - components-e2e
+        - index.tsx
+        - Main.tsx
+        - index.html
+        - index.css
+        - Main.module.css
+    - components
+      - Accordion
+        - AccordionTest.tsx
+      - ...
+    - ...
+  - ...
+
+</FileTree>
+
+Here is a brief overview of the key directories:
+
+- **`/tests/shared`**: Contains shared selectors and utilities used across multiple tests.
+- **`/tests/specs`**: Contains individual test specifications, each typically corresponding to a specific component or feature.
+- **`/tests/src`**: Contains the source code for the components and views that are being tested. This includes both the component implementations and their corresponding test files.
+- **`/tests/src/views/components-e2e`**: Contains the main entry point for the e2e tests, including the HTML and CSS files that set up the test environment.
+- **`/tests/gameface-e2e-config.js`**: The configuration file for the gameface-e2e testing framework, which sets up the environment and specifies how tests should be run.
+
+## Running the tests
+
+To run the tests you need first to have the Gameface's `Player.exe` somewhere on your machine. After that you have two ways to run the tests from the command line:
+
+### Inlining the gameface path to the command
+
+You can run the tests by specifying the path to the `Player.exe` directly in the command line. Executing the following command in the Gameface UI root directory will run the tests:
+
+```bash
+npx cross-env GAMEFACE_PATH=${path to the Player.exe} npm run test
+```
+
+Here we set an environment variable `GAMEFACE_PATH` to the path of the `Player.exe` file, which is required for the tests to run. Also we suggest to pass an absolute path to the Player.exe to avoid any issues with relative paths. However, the `GAMEFACE_PATH` variable accepts relative pats as well but they should be relative to the root directory of the Gameface UI.
+
+### Using `.env` file :badge[recommended]{variant="note"}
+
+This setup might be more convenient if you run the tests frequently. You can create a `.env` file in the root directory of your Gameface UI project and add the following line:
+
+```bash title=".env"
+GAMEFACE_PATH=${path to the Player.exe}
+```
+
+After creating the `.env` file, you can run the tests without specifying the `GAMEFACE_PATH` in the command line:
+
+```bash
+npm run tests
+```
+
+:::caution
+Make sure you have ran `npm i` command before running the tests to install all the required dependencies.
+:::
+
+## Running a single test `.spec`
+
+To run a single test specification, you can change the `gamefaece-e2e-config.js` file to include the specific test you want to run. You can do this by modifying the `tests` property in the configuration file to point to the specific test file you want to execute. For example:
+
+```javascript title="tests/gameface-e2e-config.js"
+module.exports = {
+  tests: "tests/specs/my-tests.spec.js",
+};
+```
+
+## Adding new tests
+
+To add new tests to the Gameface UI project, follow these steps:
+
+1. **Create a new test specification**: Inside the `/tests/specs` directory, create a new file for your test. The file should follow the naming convention of `<component-name>.spec.js` or `<feature-name>.spec.js`.
+2. **Write the test**: In the newly created file, write your test using the gameface-e2e framework. You can use existing tests as a reference for structure and syntax.
+3. **Add shared utilities**: If your test requires shared selectors or utilities, you can create or update files in the `/tests/shared` directory. This allows you to reuse code across multiple tests.
+4. **Update the component source**: If you are testing a new or modified component, ensure that the component's source code is located in the `/tests/src/components` directory. You can create a new directory for your component if it doesn't already exist.
+5. **Add a tab for the component**: If your test is for a new component, you may need to add a new tab in the `/tests/src/views/components-e2e/Main.tsx` file. This will ensure that your component is included in the test environment and can be tested properly.
+5. **Run the tests**: After adding your test, you can run the entire test suite to ensure everything works correctly. Refer to the section below on how to run the tests.
+
+## Developing & Debugging the test view
+
+The test view will be used for testing the components and features of your Gameface UI. It is located in the `/tests/src/views/components-e2e` directory and serves as a playground for testing various components interactively.
+
+If you want to develop or debug the test view inside `/tests/src/views/components-e2e`, you can run the following command in the root directory of your Gameface UI project:
+
+```bash
+npm run dev:host
+```
+
+This command will start a development server that serves the test view at `http://localhost:3000/components-e2e`. You can then open this URL in your `Player.exe` to see the test view and interact with it by opening the `Player.exe` with the `url=http://localhost:3000/components-e2e` argument.
