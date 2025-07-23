@@ -8,6 +8,7 @@
   color: #323232;
   background-color: #ebebeb;
   overflow: hidden;
+  height: 2vmax;
 }
 
 .InputWrapper:hover {

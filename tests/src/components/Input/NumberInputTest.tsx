@@ -29,7 +29,7 @@ const NumberInputTest = () => {
         setReadonly(false);
         setCustomBtn(null);
 
-        inputRef.clear();
+        inputRef?.clear();
     };
 
     const isReactive = createMemo(() => test() === true);

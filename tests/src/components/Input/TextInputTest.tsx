@@ -24,7 +24,7 @@ const TextInputTest = () => {
         setDisabled(false);
         setTest(false);
         setReadonly(false);
-        inputRef.clear();
+        inputRef?.clear();
     };
 
     const isReactive = createMemo(() => test() === true);

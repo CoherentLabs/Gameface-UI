@@ -44,8 +44,9 @@ const PasswordInput: ParentComponent<TextInputProps> = (props) => {
         setVisible(false);
     }
 
-    const hasBefore = createMemo(() => !!BeforeToken() || VisibilityButtonToken()?.position === 'before')
-    const hasAfter = createMemo(() => !!AfterToken() || VisibilityButtonToken()?.position === 'after')
+    const visibilityPosition = createMemo(() => VisibilityButtonToken()?.position ?? 'after');
+    const isBefore = createMemo(() => !!VisibilityButtonToken() && visibilityPosition() === 'before');
+    const isAfter = createMemo(() => !!VisibilityButtonToken() && visibilityPosition() === 'after');
     
     const passwordInputClasses = createMemo(() => {
         const classes = [baseStyles.InputWrapper];
@@ -86,13 +87,13 @@ const PasswordInput: ParentComponent<TextInputProps> = (props) => {
             use:forwardAttrs={props}>
 
             <Switch>
-                <Match when={VisibilityButtonToken()?.position === 'before'}>
+                <Match when={isBefore()}>
                     <VisibilityButtonComponent 
                         type={type()} 
                         toggle={toggleVisibility}
                         parentChildren={props.children} />
                 </Match>
-                <Match when={VisibilityButtonToken()?.position !== 'before'}>
+                <Match when={!isBefore()}>
                     <AddonSlot token={BeforeToken} className={styles.Before} />
                 </Match>
             </Switch>
@@ -103,18 +104,18 @@ const PasswordInput: ParentComponent<TextInputProps> = (props) => {
                 ref={inputElement!}
                 handleChange={handleChange} 
                 parentChildren={props.children}
-                hasBefore={hasBefore()}
-                hasAfter={hasAfter()}
+                hasBefore={isBefore() || !!BeforeToken()}
+                hasAfter={isAfter() || !!AfterToken()}
             />
 
             <Switch>
-                <Match when={VisibilityButtonToken()?.position === 'after'}>
+                <Match when={isAfter()}>
                     <VisibilityButtonComponent 
                         type={type()} 
                         toggle={toggleVisibility}
                         parentChildren={props.children} />
                 </Match>
-                <Match when={VisibilityButtonToken()?.position !== 'after'}>
+                <Match when={!isAfter()}>
                     <AddonSlot token={AfterToken} className={styles.After} />
                 </Match>
             </Switch>

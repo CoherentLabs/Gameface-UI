@@ -12,8 +12,6 @@ interface InputControlButtonProps {
 }
 
 const InputControlButton: ParentComponent<InputControlButtonProps> = (props) => {
-    if (!props.token() || props.token().position !== props.position) return null;
-    
     const InputControlButtonClasses = createMemo(() => {
         const classes = [styles.Button];
 

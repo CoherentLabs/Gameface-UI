@@ -139,8 +139,13 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
         setValue(newValue)
     }
 
-    const hasBefore = () => IncreaseControlToken()?.position === 'before' || DecreaseControlToken()?.position === 'before';
-    const hasAfter = () => IncreaseControlToken()?.position === 'after' || DecreaseControlToken()?.position === 'after';
+    const increaseBtnPosition = createMemo(() => IncreaseControlToken()?.position ?? 'after');
+    const decreaseBtnPosition = createMemo(() => DecreaseControlToken()?.position ?? 'after');
+    const showIncreaseBefore = createMemo(() => !!IncreaseControlToken() && increaseBtnPosition() === 'before');
+    const showIncreaseAfter  = createMemo(() => !!IncreaseControlToken() && increaseBtnPosition() === 'after');
+    const showDecreaseBefore = createMemo(() => !!DecreaseControlToken() && decreaseBtnPosition() === 'before');
+    const showDecreaseAfter  = createMemo(() => !!DecreaseControlToken() && decreaseBtnPosition() === 'after');
+
     
     const numberInputClasses = createMemo(() => {
         const classes = [baseStyles.InputWrapper];
@@ -179,10 +184,14 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
             use:forwardEvents={props}
             use:forwardAttrs={props}>
 
-            <Show when={hasBefore()}>
+            <Show when={showIncreaseBefore() || showDecreaseBefore()}>
                 <div class={styles.ButtonContainer}>
-                    <InputControlButton orientation="up" click={increaseValue} token={IncreaseControlToken} position="before"/>
-                    <InputControlButton orientation="down" click={decreaseValue} token={DecreaseControlToken} position="before"/>
+                    <Show when={showIncreaseBefore()}>
+                        <InputControlButton orientation="up" click={increaseValue} token={IncreaseControlToken} position="before"/>
+                    </Show>
+                    <Show when={showDecreaseBefore()}>
+                        <InputControlButton orientation="down" click={decreaseValue} token={DecreaseControlToken} position="before"/>
+                    </Show>
                 </div>
             </Show>
 
@@ -192,14 +201,18 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
                 ref={inputElement!}
                 handleChange={handleChange} 
                 parentChildren={props.children}
-                hasBefore={hasBefore()}
-                hasAfter={hasAfter()}
-                />
+                hasBefore={showIncreaseBefore() || showDecreaseBefore()}
+                hasAfter={showIncreaseAfter() || showDecreaseAfter()}
+            />
 
-            <Show when={hasAfter()}>
+            <Show when={showIncreaseAfter() || showDecreaseAfter()}>
                 <div class={styles.ButtonContainer}>
-                    <InputControlButton orientation="up" click={increaseValue} token={IncreaseControlToken} position="after"/>
-                    <InputControlButton orientation="down" click={decreaseValue} token={DecreaseControlToken} position="after"/>
+                    <Show when={showIncreaseAfter()}>
+                        <InputControlButton orientation="up" click={increaseValue} token={IncreaseControlToken} position="after"/>
+                    </Show>
+                    <Show when={showDecreaseAfter()}>
+                        <InputControlButton orientation="down" click={decreaseValue} token={DecreaseControlToken} position="after"/>
+                    </Show>
                 </div>
             </Show>
 

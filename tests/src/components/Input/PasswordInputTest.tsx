@@ -28,8 +28,8 @@ const PasswordInputTest = () => {
         setTest(false);
         setReadonly(false);
         setPosition('after')
-        inputRef.clear();
-        inputRef.hide();
+        inputRef?.clear();
+        inputRef?.hide();
     };
 
     const isReactive = createMemo(() => test() === true);
