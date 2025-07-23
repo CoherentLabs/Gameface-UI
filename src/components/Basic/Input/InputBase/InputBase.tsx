@@ -18,17 +18,17 @@ export const InputBase: Component<InputComponentProps> = (props) => {
     const PlaceholderToken = useToken(Placeholder, props.parentChildren);
 
     const InputClasses = createMemo(() => {
-        const classes = [styles.Input];
+        const classes = [styles.input];
 
-        if (props.hasBefore) classes.push(styles.hasBefore)
-        if (props.hasAfter) classes.push(styles.hasAfter)
+        if (props.hasBefore) classes.push(styles['has-before'])
+        if (props.hasAfter) classes.push(styles['has-after'])
                 
         classes.push(InputToken()?.class ?? '');
         return classes.join(' ');
     });
 
     return (
-        <div class={styles.InputElementWrapper}>
+        <div class={styles['input-element-wrapper']}>
             <input 
                 type={props.type}
                 ref={props.ref}
@@ -37,7 +37,7 @@ export const InputBase: Component<InputComponentProps> = (props) => {
                 onInput={props.handleChange}
                 value={props.value()} />
             <Show when={PlaceholderToken() && props.value() === ''}>
-                <div class={`${styles.Placeholder} ${PlaceholderToken()?.class ?? ''}`} style={PlaceholderToken()?.style}>
+                <div class={`${styles.placeholder} ${PlaceholderToken()?.class ?? ''}`} style={PlaceholderToken()?.style}>
                     {PlaceholderToken()?.children || ""}
                 </div>
             </Show>

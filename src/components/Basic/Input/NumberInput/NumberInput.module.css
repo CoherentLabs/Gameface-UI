@@ -1,4 +1,4 @@
-.ButtonContainer {
+.button-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -6,7 +6,7 @@
     height: 100%;
 }
 
-.Button {
+.button {
     display: flex;
     align-items: center;
     flex: 1;
@@ -17,6 +17,6 @@
     cursor: pointer;
 }
 
-.Button:hover {
+.button:hover {
     background-color: rgb(213, 213, 213);
 }

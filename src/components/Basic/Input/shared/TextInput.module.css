@@ -1,4 +1,4 @@
-.Before, .After {
+.before, .after {
     display: flex;
     align-items: center;
     padding: 0.35vmax;
@@ -6,12 +6,12 @@
     height: 100%;
 }
 
-.Before {
+.before {
     border-top-left-radius: 0.4vmax;
     border-bottom-left-radius: 0.4vmax;
 }
 
-.After {
+.after {
     border-top-right-radius: 0.4vmax;
     border-bottom-right-radius: 0.4vmax;
 }

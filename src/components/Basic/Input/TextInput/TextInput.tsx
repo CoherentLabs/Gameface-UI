@@ -4,10 +4,10 @@ import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { useToken } from '@components/utils/tokenComponents';
 import { InputBase } from "../InputBase/InputBase";
 import useTextInput from "../shared/useTextInput";
-import baseStyles from '../InputBase/InputBase.module.css';
-import styles from '../shared/TextInput.module.css';
 import { TextInputProps } from "../shared/types";
 import AddonSlot from "../shared/AddonSlot";
+import baseStyles from '../InputBase/InputBase.module.css';
+import styles from '../shared/TextInput.module.css';
 
 const TextInput: ParentComponent<TextInputProps> = (props) => {
     const BeforeToken = useToken(Before, props.children);
@@ -19,10 +19,10 @@ const TextInput: ParentComponent<TextInputProps> = (props) => {
     const {value, handleChange, changeValue, clear } = useTextInput(props);
     
     const textInputClasses = createMemo(() => {
-        const classes = [baseStyles.InputWrapper];
+        const classes = [baseStyles['input-wrapper']];
         
         if (props.disabled) {
-            classes.push(baseStyles.Disabled);
+            classes.push(baseStyles.disabled);
             
             if (props['class-disabled']) classes.push(`${props['class-disabled']}`);
         }
@@ -53,7 +53,7 @@ const TextInput: ParentComponent<TextInputProps> = (props) => {
             use:forwardEvents={props}
             use:forwardAttrs={props}>
             
-            <AddonSlot token={BeforeToken} className={styles.Before} />
+            <AddonSlot token={BeforeToken} className={styles.before} />
 
             <InputBase 
                 type={'text'}
@@ -65,7 +65,7 @@ const TextInput: ParentComponent<TextInputProps> = (props) => {
                 hasAfter={!!AfterToken()}
             />
 
-            <AddonSlot token={AfterToken} className={styles.After} />
+            <AddonSlot token={AfterToken} className={styles.after} />
 
         </div>
     )

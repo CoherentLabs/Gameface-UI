@@ -1,4 +1,4 @@
-.InputWrapper {
+.input-wrapper {
   display: flex;
   align-items: center;
   margin: 10px;
@@ -8,42 +8,43 @@
   color: #323232;
   background-color: #ebebeb;
   overflow: hidden;
-  height: 2vmax;
+  height: 2.2vmax;
 }
 
-.InputWrapper:hover {
+.input-wrapper:hover {
   border-color: #00da9a;
 }
 
-.InputElementWrapper {
+.input-element-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.Input {
+.input {
   border: none;
   border-radius: 0.6vmax;
   padding: 0.35vmax;
   font-size: 1vmax;
+  height: 100%;
 }
 
-.hasBefore {
+.has-before {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
 
-.hasAfter {
+.has-after {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
 
-.Disabled {
+.disabled {
   opacity: 0.5;
   pointer-events: none;
 }
 
-.Placeholder {
+.placeholder {
   opacity: 0.8;
   margin: 0;
   position: absolute;

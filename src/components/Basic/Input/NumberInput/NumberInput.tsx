@@ -3,10 +3,10 @@ import { onMount, Show, createMemo, ParentComponent, createSignal } from "solid-
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
 import { InputBase } from "../InputBase/InputBase";
-import baseStyles from '../InputBase/InputBase.module.css';
-import styles from './NumberInput.module.css';
 import { TextInputProps, TextInputRef } from "../shared/types";
 import InputControlButton from "./InputControlButton";
+import styles from './NumberInput.module.css';
+import baseStyles from '../InputBase/InputBase.module.css';
 
 type valueType = number | string;
 export interface NumberInputRef extends Omit<TextInputRef, "value" | "changeValue"> {
@@ -148,10 +148,10 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
 
     
     const numberInputClasses = createMemo(() => {
-        const classes = [baseStyles.InputWrapper];
+        const classes = [baseStyles['input-wrapper']];
         
         if (props.disabled) {
-            classes.push(baseStyles.Disabled);
+            classes.push(baseStyles.disabled);
             
             if (props['class-disabled']) classes.push(`${props['class-disabled']}`);
         }
@@ -185,7 +185,7 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
             use:forwardAttrs={props}>
 
             <Show when={showIncreaseBefore() || showDecreaseBefore()}>
-                <div class={styles.ButtonContainer}>
+                <div class={styles['button-container']}>
                     <Show when={showIncreaseBefore()}>
                         <InputControlButton orientation="up" click={increaseValue} token={IncreaseControlToken} position="before"/>
                     </Show>
@@ -206,7 +206,7 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
             />
 
             <Show when={showIncreaseAfter() || showDecreaseAfter()}>
-                <div class={styles.ButtonContainer}>
+                <div class={styles['button-container']}>
                     <Show when={showIncreaseAfter()}>
                         <InputControlButton orientation="up" click={increaseValue} token={IncreaseControlToken} position="after"/>
                     </Show>

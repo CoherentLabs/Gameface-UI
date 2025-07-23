@@ -4,7 +4,7 @@ import { createTokenComponent, TokenBase, useToken } from "@components/utils/tok
 import EyeIcon from './eye.svg?component-solid'
 import EyeOffIcon from './eye-off.svg?component-solid'
 import styles from './PasswordInput.module.css';
-import baseStyles from '../InputBase/InputBase.module.css';
+import sharedStyles from '../shared/TextInput.module.css';
 
 interface VisibilityButtonComponentProps extends TokenComponentProps {
     type: 'text' | 'password';
@@ -21,9 +21,9 @@ export const VisibilityButtonComponent: ParentComponent<VisibilityButtonComponen
     const VisibilityButtonToken = useToken(VisibilityButton, props.parentChildren);
 
     const VisibilityButtonClasses = createMemo(() => {
-        const classes = [styles.VisibilityButton];
+        const classes = [styles['visibility-button']];
 
-        classes.push(VisibilityButtonToken()?.position === 'before' ? baseStyles.Before : baseStyles.After);
+        classes.push(VisibilityButtonToken()?.position === 'before' ? sharedStyles.before : sharedStyles.after);
         classes.push(VisibilityButtonToken()?.class ?? '');
 
         return classes.join(' ');
