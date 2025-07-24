@@ -1,7 +1,7 @@
 import { Accessor, createEffect, createMemo, JSX, onCleanup, onMount, ParentComponent, ParentProps, useContext } from "solid-js";
 import { SegmentContext } from "./Segment";
 import { ComponentProps } from "@components/types/ComponentProps";
-import styles from './SegmentButton.module.css';
+import styles from './Segment.module.scss';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { createTokenComponent } from "@components/utils/tokenComponents";
 
@@ -23,16 +23,21 @@ export const SegmentButton: ParentComponent<{ button: SegmentButtonProps }> = (p
     const isSelected = () => segment?.selected() === props.button.value;
 
     const buttonClasses = createMemo(() => {
-        const classes = [styles.SegmentButton];
+        const classes = [styles['segment-button']];
 
         if (props.button.disabled) {
-            if (props.button['class-disabled']) classes.push(`${styles.Disabled} ${props.button['class-disabled']}`);
-            else classes.push(styles.Disabled);
+            if (props.button['class-disabled']) classes.push(`${styles.disabled} ${props.button['class-disabled']}`);
+            else classes.push(styles.disabled);
         }
 
         if (isSelected()) {
-            classes.push(styles.Selected);
+            classes.push(styles.selected);
+            
+            if (segment?.firstRender()) {
+                classes.push(styles['first-render']);
+            }
         }
+
 
         return classes.join(' ');
     });
@@ -66,7 +71,7 @@ export const SegmentButton: ParentComponent<{ button: SegmentButtonProps }> = (p
             use:forwardEvents={props}
             use:forwardAttrs={props}
             onclick={handleClick}>
-            <div class={styles.Content}>
+            <div class={styles.content}>
                 {props.button.children}
             </div>
         </div>

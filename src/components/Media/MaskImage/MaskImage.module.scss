@@ -1,0 +1,72 @@
+.mask-image {
+    mask-repeat: no-repeat;
+
+    &-size {
+        &-contain {
+            mask-size: contain;
+        }
+        &-cover {
+            mask-size: cover;
+        }
+    }
+
+    &-repeat {
+        mask-repeat: repeat;
+
+        &-x {
+            mask-repeat: repeat-x;
+        }
+        &-y {
+            mask-repeat: repeat-y;
+        }
+    }
+
+    &-position {
+        &-top {
+            mask-position: top;
+
+            &-left {
+                mask-position: top left;
+            }
+            &-center {
+                mask-position: top center;
+            }
+            &-right {
+                mask-position: top right;
+            }
+        }
+
+        &-center {
+            mask-position: center;
+
+            &-left {
+                mask-position: center left;
+            }
+            &-right {
+                mask-position: center right;
+            }
+        }
+
+        &-bottom {
+            mask-position: bottom;
+
+            &-left {
+                mask-position: bottom left;
+            }
+            &-center {
+                mask-position: bottom center;
+            }
+            &-right {
+                mask-position: bottom right;
+            }
+        }
+
+        &-left {
+            mask-position: left;
+        }
+
+        &-right {
+            mask-position: right;
+        }
+    }
+}

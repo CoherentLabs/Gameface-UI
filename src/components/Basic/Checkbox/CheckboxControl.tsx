@@ -1,5 +1,5 @@
 import { JSX, ParentComponent } from "solid-js";
-import styles from './Checkbox.module.css';
+import styles from './Checkbox.module.scss';
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
 import { CheckboxIndicator } from "./CheckboxIndicator";
@@ -20,7 +20,7 @@ export const CheckboxControl: ParentComponent<CheckboxControlProps> = (props) =>
 
     return (
         <div
-            class={`${styles.Control} ${props.before ? styles.Before : ''} ${ControlToken()?.class || ''}`}
+            class={`${styles.control} ${props.before ? styles.before : ''} ${ControlToken()?.class || ''}`}
             style={ControlToken()?.style || {}}>
             {ControlToken()?.children}
             <CheckboxIndicator parentChildren={ControlToken()?.children}></CheckboxIndicator>

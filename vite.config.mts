@@ -55,5 +55,14 @@ export default defineConfig({
       '@custom-components': path.resolve(__dirname, "./src/custom-components"),
       '@assets': path.resolve(__dirname, "./src/assets"),
     }
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `
+          @use '@assets/scss/variables' as *;
+        `
+      }
+    }
   }
 });

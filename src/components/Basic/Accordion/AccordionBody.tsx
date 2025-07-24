@@ -1,6 +1,6 @@
 import { createEffect, createMemo, createSignal, JSX, onMount, ParentComponent } from "solid-js";
 import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
-import styles from './Accordion.module.css';
+import styles from './Accordion.module.scss';
 import { waitForFrames } from "@components/utils/waitForFrames";
 import { CommonAccordionSlotProps, PanelChildrenComponentProps } from "./AccordionPanel";
 
@@ -34,10 +34,10 @@ export const AccordionBody: ParentComponent<PanelChildrenComponentProps> = (prop
     return (
         <div
             ref={element}
-            class={`${styles.Body}`}
+            class={`${styles.body}`}
             style={bodyStyles()}>
             <div
-                class={`${styles.Content} ${BodyToken()?.class || ''}`}
+                class={`${styles.content} ${BodyToken()?.class || ''}`}
                 style={BodyToken()?.style}>
                 {BodyToken()?.children}
             </div>

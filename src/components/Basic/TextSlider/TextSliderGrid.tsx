@@ -1,5 +1,5 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
-import styles from '@components/Basic/Slider/SliderGrid.module.css';
+import styles from '@components/Basic/Slider/Slider.module.scss';
 import { For, useContext } from 'solid-js';
 import { useToken } from '@components/utils/tokenComponents';
 import { TextSliderContext } from './TextSlider';
@@ -10,7 +10,7 @@ export const TextSliderGrid = (props: TokenComponentProps) => {
     const PolToken = useToken(Pol, props.parentChildren);
 
     return (
-        <div class={styles.Grid}>
+        <div class={styles.grid}>
             <For each={sliderContext?.values()}>
                 {(pol) => (
                     <TextSliderPol

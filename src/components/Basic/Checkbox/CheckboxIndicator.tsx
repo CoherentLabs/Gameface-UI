@@ -1,5 +1,5 @@
 import { JSX, ParentComponent, useContext } from "solid-js";
-import styles from './Checkbox.module.css';
+import styles from './Checkbox.module.scss';
 
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
@@ -18,7 +18,7 @@ export const CheckboxIndicator: ParentComponent<TokenComponentProps> = (props) =
 
     return (
         <div
-            class={`${styles.Indicator} ${checkboxContext?.checked() ? styles.Checked : ''} ${IndicatorToken()?.class || ''}`}
+            class={`${styles.indicator} ${checkboxContext?.checked() ? styles.checked : ''} ${IndicatorToken()?.class || ''}`}
             style={IndicatorToken()?.style || {}}>
             {IndicatorToken()?.children}
         </div>

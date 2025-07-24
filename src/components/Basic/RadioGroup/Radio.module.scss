@@ -1,0 +1,62 @@
+.radio {
+    display: flex;
+
+    &-button {
+        display: flex;
+        align-items: center;
+        margin-right: 0.75vmax;
+        cursor: pointer;
+    }
+}
+
+.disabled {
+    opacity: 0.8;
+    pointer-events: none;
+
+    .control {
+        border-color: $disabledColor;
+        background-color: $disabledTextColor;
+    }
+
+    .indicator {
+        background-color: $disabledColor;
+    }
+}
+
+.control {
+    width: 1.25vmax;
+    height: 1.25vmax;
+    position: relative;
+    margin-right: 0.35vmax;
+    border-radius: 50%;
+    border: 0.1vmax solid $secondaryColor;
+    background-color: $primaryColor;
+}
+
+.before {
+    margin-right: 0;
+    margin-left: 0.35vmax;
+}
+
+.disabled {
+    opacity: 0.8;
+    pointer-events: none;
+}
+
+.indicator {
+    position: absolute;
+    width: 60%;
+    height: 60%;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    background-color: $secondaryColor;
+    opacity: 0;
+    transition: opacity ease-in-out 0.2s;
+}
+
+.selected {
+    opacity: 1;
+}

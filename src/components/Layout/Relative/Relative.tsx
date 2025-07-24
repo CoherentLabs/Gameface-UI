@@ -1,5 +1,5 @@
 import { createMemo, ParentComponent } from "solid-js";
-import styles from './Relative.module.css';
+import styles from './Relative.module.scss';
 import { ComponentBaseProps } from "../../types/ComponentProps";
 import LayoutBase from "../LayoutBase";
 
@@ -20,7 +20,7 @@ const Relative: ParentComponent<RelativeProps> = (props) => {
         }
     });
 
-    return <LayoutBase {...props} componentClasses={styles.Relative} componentStyles={positionStyle} />
+    return <LayoutBase {...props} componentClasses={styles.relative} componentStyles={positionStyle} />
 }
 
 export default Relative;

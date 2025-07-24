@@ -31,7 +31,7 @@ type ImagePositions = (typeof imagePosition)[number] | (string & {});
 const imagePositionSet = new Set(imagePosition);
 
 type StylePrefixType = 'background' | 'mask';
-type ClassPrefixType = 'BackgroundImage' | 'MaskImage';
+type ClassPrefixType = 'background-image' | 'mask-image';
 
 interface GetImageBaseClassesArgs {
     props: ImageBaseProps;

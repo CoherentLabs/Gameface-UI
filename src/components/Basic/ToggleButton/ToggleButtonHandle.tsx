@@ -1,5 +1,5 @@
 import { createMemo, JSX, ParentComponent, useContext } from "solid-js";
-import styles from './ToggleButton.module.css';
+import styles from './ToggleButton.module.scss';
 
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
@@ -19,12 +19,12 @@ export const ToggleButtonHandle: ParentComponent<TokenComponentProps> = (props) 
     const HandleToken = useToken(Handle, props.parentChildren);
 
     const handleClasses = createMemo(() => {
-        const classes = [styles.Handle];
+        const classes = [styles.handle];
 
         if (HandleToken()?.class) classes.push(HandleToken()?.class ?? '');
 
         if (toggleButtonContext?.checked()) {
-            classes.push(styles.HandleChecked);
+            classes.push(styles['handle-checked']);
             if (HandleToken()?.['class-checked']) classes.push(`${HandleToken()?.['class-checked']}`);
         }
 

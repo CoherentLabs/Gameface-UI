@@ -8,7 +8,7 @@ const MaskImage: ParentComponent<MaskImageProps> = (props) => (
     <ImageBase
       {...props}
       styles={styles}
-      classPrefix="MaskImage"
+      classPrefix="mask-image"
       stylePrefix="mask"
     />
 )

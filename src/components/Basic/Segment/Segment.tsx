@@ -1,7 +1,7 @@
 import { BaseComponentRef, ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, createMemo, DEV, onCleanup, onMount, ParentComponent } from "solid-js";
+import { Accessor, createMemo, DEV, onCleanup, onMount, ParentComponent, Show } from "solid-js";
 import { createContext, createSignal } from "solid-js";
-import styles from './Segment.module.css';
+import styles from './Segment.module.scss';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { SegmentButtons } from "./SegmentButtons";
 import { Button } from "./SegmentButton";
@@ -25,7 +25,8 @@ interface SegmentContextValue {
     selected: Accessor<string>,
     selectOption: selectOptionMethod,
     registerOption: (value: string, element: HTMLDivElement, selected?: boolean) => void
-    unregisterOption: (value: string) => void
+    unregisterOption: (value: string) => void,
+    firstRender: Accessor<boolean>,
 }
 
 interface SegmentProps extends ComponentProps {
@@ -36,6 +37,7 @@ interface SegmentProps extends ComponentProps {
 
 const Segment: ParentComponent<SegmentProps> = (props) => {
     const [selected, setSelected] = createSignal('');
+    const [firstRender, setFirstRender] = createSignal(true);
     const [indicator, setIndicator] = createSignal<SegmentIndicatorData>({
         width: 0,
         left: 0,
@@ -72,6 +74,8 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
                 left: oldLeft,
                 width: oldWidth
             });
+
+            firstRender() && setFirstRender(false);
         }
 
         const newLeft  = options.get(newOption)!.offsetLeft;
@@ -91,11 +95,11 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
     }
 
     const segmentClasses = createMemo(() => {
-        const classes = [styles.Segment];
+        const classes = [styles.segment];
 
         if (props.disabled) {
-            if (props['class-disabled']) classes.push(`${styles.Disabled} ${props['class-disabled']}`);
-            else classes.push(styles.Disabled);
+            if (props['class-disabled']) classes.push(`${styles.disabled} ${props['class-disabled']}`);
+            else classes.push(styles.disabled);
         }
 
         return classes.join(' ');
@@ -119,15 +123,17 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
     })
 
     return (
-        <SegmentContext.Provider value={{ selected, selectOption, registerOption, unregisterOption }}>
-            <div class={styles['Segment-Wrapper']}>
+        <SegmentContext.Provider value={{ selected, selectOption, registerOption, unregisterOption, firstRender }}>
+            <div class={styles['segment-wrapper']}>
                 <div ref={element}
                     class={className()}
                     style={inlineStyles()}
                     use:forwardEvents={props}
                     use:forwardAttrs={props}>
                     <SegmentButtons parentChildren={props.children} />
-                    <SegmentIndicator data={indicator} parentChildren={props.children} />
+                    <Show when={!firstRender()}>
+                        <SegmentIndicator data={indicator} parentChildren={props.children} />
+                    </Show>
                 </div>
             </div>
         </SegmentContext.Provider>

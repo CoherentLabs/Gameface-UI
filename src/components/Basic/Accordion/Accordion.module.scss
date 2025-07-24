@@ -1,50 +1,58 @@
-.Accordion {
+.accordion {
     width: 20vmax;
     background-color: white;
-    border: 0.1vmax solid #bbbbbb;
+    border: 0.1vmax solid $disabledColor;
     border-bottom: 0;
+    border-radius: 0.1vmax;
 }
 
-.Panel {
+.panel {
     width: 100%;
     color: black;
-    border-bottom: 0.1vmax solid #bbbbbb;
+    border-bottom: 0.1vmax solid $disabledColor;
     overflow: hidden;
 }
 
-.Disabled {
-    opacity: 0.4;
+.disabled {
+    opacity: 0.7;
     pointer-events: none;
+
+    &.panel {
+        background-color: $disabledTextColor;
+        color: $disabledColor;
+    }
 }
 
-.Heading {
+.heading {
     width: 100%;
     padding: 0.75vmax;
     display: flex;
     align-items: center;
     cursor: pointer;
+
+    &-content {
+        flex: 1;
+    }
 }
 
-.Heading-content {
-    flex: 1;
-}
 
-.Icon {
+.icon {
     width: 1vmax;
     height: 1vmax;
     transform-origin: center center;
     transition: transform 0.2s ease-in-out;
+
+    &-expanded {
+        transform: rotate(180deg);
+    }
 }
 
-.Icon-expanded {
-    transform: rotate(180deg);
-}
 
-.Body {
+.body {
     width: 100%;
     transition: height 0.2s ease-in-out;
 }
 
-.Content {
+.content {
     padding: 0.5vmax 0.75vmax;
 }

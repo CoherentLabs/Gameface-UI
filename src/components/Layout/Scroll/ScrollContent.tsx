@@ -1,6 +1,6 @@
 
 import { createMemo, JSX, onCleanup, onMount, ParentComponent, useContext } from 'solid-js';
-import styles from './Scroll.module.css';
+import styles from './Scroll.module.scss';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { ScrollContext } from './Scroll';
@@ -31,8 +31,8 @@ export const ScrollContent: ParentComponent<ScrollContentProps> = (props) => {
     });
 
     const contentClasses = createMemo(() => {
-        const classes = [styles['Content-Wrapper']];
-        if (scrollContext?.overflow()) classes.push(styles['Content-Wrapper-Overflow']);
+        const classes = [styles['content-wrapper']];
+        if (scrollContext?.overflow()) classes.push(styles['content-wrapper-overflow']);
         if (ContentToken()?.class) classes.push(ContentToken()?.class as string);
 
         return classes.join(' ');

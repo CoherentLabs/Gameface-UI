@@ -1,5 +1,5 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
-import styles from './Slider.module.css';
+import styles from './Slider.module.scss';
 import { createMemo, JSX, ParentComponent } from 'solid-js';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 
@@ -18,7 +18,7 @@ export const SliderFill:ParentComponent<SliderFillComponentProps> = (props) => {
     const FillToken = useToken(Fill, props.parentChildren);
 
     const fillClasses = createMemo(() => {
-        const classes = [styles.Fill];
+        const classes = [styles.fill];
 
         if (FillToken?.()?.class) classes.push(FillToken?.()?.class as string);
 

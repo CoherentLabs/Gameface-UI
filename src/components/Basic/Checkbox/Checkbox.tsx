@@ -1,6 +1,6 @@
 import { ComponentProps } from "@components/types/ComponentProps";
 import { Accessor, Setter, createSignal, onMount, ParentComponent, Show, createContext, createMemo, createEffect } from "solid-js";
-import styles from './Checkbox.module.css';
+import styles from './Checkbox.module.scss';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { Control, CheckboxControl } from "./CheckboxControl";
 import { Indicator } from "./CheckboxIndicator";
@@ -35,11 +35,11 @@ const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
     let element!: HTMLDivElement;
 
     const checkboxClasses = createMemo(() => {
-        const classes = [styles.Checkbox];
+        const classes = [styles.checkbox];
 
         if (props.disabled) {
-            if (props['class-disabled']) classes.push(`${styles.Disabled} ${props['class-disabled']}`);
-            else classes.push(styles.Disabled);
+            if (props['class-disabled']) classes.push(`${styles.disabled} ${props['class-disabled']}`);
+            else classes.push(styles.disabled);
         }
 
         if (checked() && props['class-checked']) {

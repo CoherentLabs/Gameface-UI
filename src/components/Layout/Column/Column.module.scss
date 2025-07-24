@@ -1,0 +1,10 @@
+.column {
+    @for $i from 1 through 12 {
+        &-#{$i} {
+            flex: 1 1 (100% / 12 * $i);
+            max-width: (100% / 12 * $i);
+            
+        }
+    }
+
+}

@@ -1,5 +1,5 @@
 import { Accessor, createMemo, JSX, ParentComponent, ParentProps, Show, useContext } from "solid-js";
-import styles from './Stepper.module.css';
+import styles from './Stepper.module.scss';
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
 import StepperArrow from './StepperArrow.svg?component-solid';
@@ -26,7 +26,7 @@ const ControlComponent = ({ ControlToken }: { ControlToken: Accessor<ParentProps
             {ControlToken()?.children}
         </Show>
         <Show when={!ControlToken()?.children}>
-            <StepperArrow class={styles.StepperArrow} />
+            <StepperArrow class={styles['stepper-arrow']} />
         </Show>
     </>
 }
@@ -36,14 +36,14 @@ export const StepperControl: ParentComponent<StepperControlProps> = (props) => {
     const ControlToken = useToken(Control, props.parentChildren);
 
     const controlContainerClasses = createMemo(() => {
-        const classes = [styles.StepperControl];
+        const classes = [styles['stepper-control']];
 
         if (ControlToken()?.class) classes.push(ControlToken()?.class ?? '');
         if (!props.visible) {
             if (ControlToken?.()?.["hidden-class"]) {
                 classes.push(ControlToken?.()?.["hidden-class"] ?? '');
             } else {
-                classes.push(styles.StepperControlHidden);
+                classes.push(styles['stepper-control-hidden']);
             }
         }
 

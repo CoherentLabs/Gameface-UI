@@ -1,5 +1,5 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
-import styles from './Slider.module.css';
+import styles from './Slider.module.scss';
 import { createMemo, JSX, ParentComponent, Show } from 'solid-js';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 
@@ -19,7 +19,7 @@ export const SliderThumb: ParentComponent<SliderThumbComponentProps> = (props) =
     const ThumbToken = useToken(Thumb, props.parentChildren);
 
     const thumbClasses = createMemo(() => {
-        const classes = [styles.Thumb];
+        const classes = [styles.thumb];
 
         if (ThumbToken?.()?.class) classes.push(ThumbToken?.()?.class as string);
 

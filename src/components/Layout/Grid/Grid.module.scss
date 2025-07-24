@@ -1,0 +1,16 @@
+.grid {
+    &-row {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    &-col {
+        flex: 1;
+    }
+
+    &-empty-cell {
+        height: 50px;
+        user-select: none;
+    }
+}

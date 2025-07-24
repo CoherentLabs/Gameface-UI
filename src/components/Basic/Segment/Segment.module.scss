@@ -1,0 +1,137 @@
+.segment {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #D9D9D9;
+    border-radius: 10px;
+    position: relative;
+
+    &-wrapper {
+        display: flex;
+    }
+
+    &-button {
+        display: flex;
+        align-items: center;
+        border-radius: 10px;
+        cursor: pointer;
+        color: #3f3f46;
+        position: relative;
+        transition: color 0.35s ease-in-out;
+
+        &:after {
+            content: '';
+            position: absolute;
+            width: 0.1vmax;
+            left: -0.15vmax;
+            height: 65%;
+            z-index: 1;
+            border-radius: 10px;
+            background-color: #bbbbbb;
+            transition: visibility 0.35s ease-in-out;
+        }
+
+        &:first-child::after {
+            display: none;
+        }
+
+        &.first-render:before {
+            content: "";
+            width: 100%;
+            height: 100%;
+            display: flex;
+            padding: 0 0.2vmax;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            background-color: $secondaryColor;
+            box-shadow: 0px 0px 5px 2px rgb(0 0 0 / 20%);
+            border-radius: 10px;
+        }
+
+        &.disabled.first-render:before {
+            content: "";
+            width: 100%;
+            height: 100%;
+            display: flex;
+            padding: 0 0.2vmax;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            background-color: $disabledColor;
+            box-shadow: 0px 0px 5px 2px rgb(0 0 0 / 20%);
+            border-radius: 10px;
+        }
+        
+    }
+}
+
+.indicator {
+    background-color: $secondaryColor;
+    height: 100%;
+    border-radius: 10px;
+    padding: 0 0.2vmax;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+
+    &.show-transition {
+        transition: 
+            transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
+            width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+}
+
+.disabled {
+    opacity: 0.8;
+    pointer-events: none;
+
+    .indicator {
+        display: none;
+    }
+
+    .content {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+}
+
+.selected {
+    color: #f2f2f2;
+
+    &:after {
+        visibility: hidden;
+    }
+    
+    .content {
+        opacity: 1;
+    }
+
+    &.disabled {
+        color: $disabledTextColor
+    }
+}
+
+
+
+.content {
+    padding: 0.5vmax 0.75vmax;
+    position: relative;
+    z-index: 3;
+    transition: opacity ease-in-out 0.35s;
+
+    &:hover{
+        opacity: 0.9;
+    }
+
+    &:focus {
+        opacity: 0.9;
+    }
+
+    &:active {
+        opacity: 0.7;
+    }
+}

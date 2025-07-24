@@ -1,6 +1,6 @@
 import { ParentComponent } from "solid-js";
 import LayoutBase from "../LayoutBase";
-import styles from './Flex.module.css'
+import styles from './Flex.module.scss'
 import { ComponentBaseProps } from "../../types/ComponentProps";
 
 interface FlexProps extends ComponentBaseProps {
@@ -14,11 +14,11 @@ interface FlexProps extends ComponentBaseProps {
 const getFlexProperties = (props: FlexProps) => {
     let flexClasses = [styles.Flex];
 
-    if (props.direction) flexClasses.push(styles[`Flex-${props.direction}`]);
-    if (props.wrap) flexClasses.push(styles[`Flex-${props.wrap}`]);
-    if (props['justify-content']) flexClasses.push(styles[`Flex-justify-${props['justify-content']}`]);
-    if (props['align-items']) flexClasses.push(styles[`Flex-align-${props['align-items']}`]);
-    if (props['align-content']) flexClasses.push(styles[`Flex-content-${props['align-content']}`]);
+    if (props.direction) flexClasses.push(styles[`flex-${props.direction}`]);
+    if (props.wrap) flexClasses.push(styles[`flex-${props.wrap}`]);
+    if (props['justify-content']) flexClasses.push(styles[`flex-justify-${props['justify-content']}`]);
+    if (props['align-items']) flexClasses.push(styles[`flex-align-${props['align-items']}`]);
+    if (props['align-content']) flexClasses.push(styles[`flex-content-${props['align-content']}`]);
 
     return flexClasses
 }
