@@ -22,6 +22,7 @@ const componentsWithSlotTokens = {
   TextInput: 'TextInput',
   PasswordInput: 'PasswordInput',
   NumberInput: 'NumberInput',
+  MODAL: 'Modal'
 }
 
 const tokenComponetsParents = {
@@ -92,6 +93,8 @@ const tokenComponetsParents = {
   'NumberInput.DecreaseControl': componentsWithSlotTokens.NumberInput,
   'NumberInput.Input': componentsWithSlotTokens.NumberInput,
   'NumberInput.Placeholder': componentsWithSlotTokens.NumberInput,
+  'Modal.Overlay': componentsWithSlotTokens.MODAL,
+  'Modal.Window': componentsWithSlotTokens.MODAL,
 }
 
 const availbleForedTokenComponets = new Set(['Radio.Button', 'Dropdown.Option', 'Segment.Button', 'Stepper.Item', 'Accordion.Panel'])
