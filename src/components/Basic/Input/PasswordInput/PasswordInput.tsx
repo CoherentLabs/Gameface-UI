@@ -26,22 +26,19 @@ const PasswordInput: ParentComponent<TextInputProps> = (props) => {
 
     const {value, handleChange, changeValue, clear } = useTextInput(props);
     const [type, setType] = createSignal<'text' | 'password'>('password');
-    const [visible, setVisible] = createSignal(false);
+    const visible = createMemo(() => type() !== 'password')
 
     const toggleVisibility = () => {
-        const current = type();
-        if (current === 'password') show();
+        if (type() === 'password') show();
         else hide();
     }
 
     const show = () => {
         setType('text');
-        setVisible(true);
     }
     
     const hide = () => {
         setType('password');
-        setVisible(false);
     }
 
     const visibilityPosition = createMemo(() => VisibilityButtonToken()?.position ?? 'after');
@@ -89,7 +86,7 @@ const PasswordInput: ParentComponent<TextInputProps> = (props) => {
             <Switch>
                 <Match when={isBefore()}>
                     <VisibilityButtonComponent 
-                        type={type()} 
+                        visible={visible}
                         toggle={toggleVisibility}
                         parentChildren={props.children} />
                 </Match>
@@ -111,7 +108,7 @@ const PasswordInput: ParentComponent<TextInputProps> = (props) => {
             <Switch>
                 <Match when={isAfter()}>
                     <VisibilityButtonComponent 
-                        type={type()} 
+                        visible={visible}
                         toggle={toggleVisibility}
                         parentChildren={props.children} />
                 </Match>

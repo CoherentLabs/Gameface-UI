@@ -5,8 +5,8 @@ import { createTokenComponent, TokenBase, useToken } from '@components/utils/tok
 import { InputBase } from "../InputBase/InputBase";
 import { TextInputProps, TextInputRef } from "../shared/types";
 import InputControlButton from "./InputControlButton";
-import styles from './NumberInput.module.css';
 import baseStyles from '../InputBase/InputBase.module.css';
+import styles from './NumberInput.module.css';
 
 type valueType = number | string;
 export interface NumberInputRef extends Omit<TextInputRef, "value" | "changeValue"> {
@@ -47,49 +47,30 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
         if (!e.target ) return;
 
         const input = e.target as HTMLInputElement;
-        const newValue = transformValue(input.value);
+        const inputValue = transformValue(input.value);
 
         if (props.readonly) {
             input.value = value() as any as string;
             return
         }
         
-        if (newValue === '') return clear()
+        if (inputValue === '') return clear()
 
-        if (newValue === '-' || newValue.endsWith('.')) {
-            input.value = newValue;
-            setValue(newValue)
-            return;
-        }
+        const parsed = Number(inputValue);
+        const { newValue, hasClamped } = clampValue(parsed);
 
-        let numberValue = Number(newValue);
-        // if not clamped to min/max, we show the original string input to preserve trailing 0s
-        let hasClamped = false;  
-
-        if (props.max !== undefined && props.max < numberValue) {
-             numberValue = props.max;
-             hasClamped = true;
-            }
-
-        if (props.min !== undefined && props.min > numberValue) {
-            numberValue = props.min;
-            hasClamped = true;
-        }
-
-        props.onChange?.(numberValue)
-        setValue(numberValue)
+        props.onChange?.(newValue)
+        setValue(newValue)
         //@ts-ignore
-        input.value = hasClamped ? numberValue : newValue;
+        input.value = hasClamped ? newValue : inputValue;
     }
 
-    const changeValue = (newValue: number) => {
-        if (isNaN(newValue)) {
-            return console.error(`${newValue} is not a valid value! Please provide a number.`)
+    const changeValue = (value: number) => {
+        if (isNaN(value)) {
+            return console.error(`${value} is not a valid value! Please provide a number.`)
         }
 
-        if (props.max !== undefined && props.max < newValue) newValue = props.max;
-        if (props.min !== undefined && props.min > newValue) newValue = props.min;
-
+        const {newValue} = clampValue(value);
         applyValue(newValue);
     }
 
@@ -103,13 +84,7 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
 
         const currValue = Number(inputElement.value);
         const step = props.step || 1;
-        let newValue;
-
-        if (props.max) {
-            newValue = Math.min(currValue + step, props.max);
-        } else {
-            newValue = currValue + step;
-        }
+        const { newValue } = clampValue(currValue + step);
 
         applyValue(newValue);
     }
@@ -122,13 +97,7 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
         
         const currValue = Number(inputElement.value);
         const step = props.step || 1;
-        let newValue;
-
-        if (props.min) {
-            newValue = Math.max(currValue - step, props.min);
-        } else {
-            newValue = currValue - step;
-        }
+        const { newValue } = clampValue(currValue - step);
 
         applyValue(newValue);
     }
@@ -137,6 +106,22 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
         inputElement.value = newValue as any as string;
         props.onChange?.(newValue);
         setValue(newValue)
+    }
+
+    function clampValue(value: number) {
+        let newValue = value, hasClamped = false;
+
+        if (props.max !== undefined && props.max < value) {
+                newValue = props.max;
+                hasClamped = true;
+        }
+
+        if (props.min !== undefined && props.min > value) {
+                newValue = props.min;
+                hasClamped = true;
+        }
+
+        return { newValue, hasClamped };
     }
 
     const increaseBtnPosition = createMemo(() => IncreaseControlToken()?.position ?? 'after');

@@ -14,7 +14,7 @@ describe('NumberInput', function () {
     it('Should render itself and it\'s children correctly', async () => {
         const input = await gf.get(`.${selectors.root}`);
         const increaseControl = await gf.get(`.${selectors.inputIncreaseControl}`);
-        const decreaseControl = await gf.get(`.${selectors.inputIncreaseControl}`);
+        const decreaseControl = await gf.get(`.${selectors.inputDecreaseControl}`);
         const inputElement = await gf.get(`.${selectors.input}`)
         const placeholder = await gf.get(`.${selectors.inputPlaceholder}`)
 
@@ -89,7 +89,7 @@ describe('NumberInput', function () {
         assert.equal(await assertionElement.text(), '', 'Input\'s value should remain empty');
     })
 
-    it('Should not allow allow values below the set min', async () => {
+    it('Should not allow values below the set min', async () => {
         const input = await gf.get(`.${selectors.input}`);
         const assertionElement = await gf.get(`.${selectors.assertionElement}`);
 
@@ -97,7 +97,7 @@ describe('NumberInput', function () {
         assert.equal(await assertionElement.text(), '-100', 'Input\'s value should be equal to the specified min value');
     })
 
-    it('Should not allow allow values above the set max', async () => {
+    it('Should not allow values above the set max', async () => {
         const input = await gf.get(`.${selectors.input}`);
         const assertionElement = await gf.get(`.${selectors.assertionElement}`);
 

@@ -195,6 +195,7 @@ const App = () => {
     return (
         <>
             <TextInput onChange={(value) => setInputValue(value)} />
+            <div>{inputValue()}</div>
         </>
     );
 };
@@ -242,6 +243,7 @@ The `TextInput` component allows you to set the value programmatically through i
 
 1. Declare a `ref` variable with type `TextInputRef` and pass it to the `TextInput` component.
 2. Call `ref.changeValue()` from anywhere (e.g., a keyboard event or external button) to set the value programmatically.
+3. Optionally, you can clear the value of the input by calling `ref.clear()`. 
 
 ```tsx
 import TextInput from '@components/Basic/TextInput/TextInput';
@@ -249,16 +251,21 @@ import { TextInputRef } from '@components/Basic/Input/shared/types';
 import { createSignal } from 'solid-js';
 
 const App = () => {
-    let inputRef: TextInputRef;
+    let inputRef!: TextInputRef;
 
     const fillInput = (value: string) => {
         sliderRef.changeValue(value);
+    }
+
+    const clearInput = () => {
+        sliderRef.clear();
     }
 
     return (
         <>
             <TextInput ref={inputRef!} />
             <button onclick={() => fillInput('Test')}>Fill input</button>
+            <button onclick={clearInput}>Clear input</button>
         </>
     );
 };

@@ -35,6 +35,7 @@ export const InputBase: Component<InputComponentProps> = (props) => {
                 class={InputClasses()}
                 style={InputToken()?.style}
                 onInput={props.handleChange}
+                ondblclick={(e) => e.currentTarget.select()}
                 value={props.value()} />
             <Show when={PlaceholderToken() && props.value() === ''}>
                 <div class={`${styles.placeholder} ${PlaceholderToken()?.class ?? ''}`} style={PlaceholderToken()?.style}>

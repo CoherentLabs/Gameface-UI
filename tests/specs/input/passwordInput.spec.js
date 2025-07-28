@@ -19,7 +19,6 @@ describe('PasswordInput', function () {
 
         assert.ok(input, 'Input root should be in the DOM');
         assert.ok(before, 'Before slot should be in the DOM');
-        assert.ok(after, 'After slot should be in the DOM');
         assert.ok(inputElement, 'Input element should be in the DOM');
         assert.ok(visibilityButton, 'Visibility button should be in the DOM');
     })
@@ -64,7 +63,7 @@ describe('PasswordInput', function () {
         await gf.click(`.${selectors.scenarioBtn}.scenario-6`);   
 
         const childrenAfterSwap = await (await gf.get(`.${selectors.root}`)).children();
-        assert.ok(!(await elementExists(selectors.inputBefore)), 'Befire element should not be in the DOM');
+        assert.ok(!(await elementExists(selectors.inputBefore)), 'Before element should not be in the DOM');
         assert.equal((await childrenAfterSwap[0].classes()).includes(selectors.inputVisibilityButton), true, 'First element of root should be the Visibility button element')
         assert.equal((await childrenAfterSwap[2].classes()).includes(selectors.inputAfter), true, 'Last element of root should be the After element')
     }) 

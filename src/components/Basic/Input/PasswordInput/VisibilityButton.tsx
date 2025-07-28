@@ -7,7 +7,7 @@ import styles from './PasswordInput.module.css';
 import sharedStyles from '../shared/TextInput.module.css';
 
 interface VisibilityButtonComponentProps extends TokenComponentProps {
-    type: 'text' | 'password';
+    visible: () => boolean,
     toggle: () => void;
 }
 
@@ -34,7 +34,7 @@ export const VisibilityButtonComponent: ParentComponent<VisibilityButtonComponen
             class={VisibilityButtonClasses()} 
             style={VisibilityButtonToken()?.style} 
             onclick={props.toggle}>
-            {VisibilityButtonToken()?.children || (props.type === 'password' ? <EyeIcon /> : <EyeOffIcon /> )}
+            {VisibilityButtonToken()?.children || (props.visible() ? <EyeIcon /> : <EyeOffIcon /> )}
         </div>
     )
 }
