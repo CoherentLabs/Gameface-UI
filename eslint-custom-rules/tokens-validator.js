@@ -19,6 +19,9 @@ const componentsWithSlotTokens = {
   ACCORDION: 'Accordion',
   ACCORDION_PANEL: 'Accordion.Panel',
   ACCORDION_HEADING: 'Accordion.Heading',
+  TextInput: 'TextInput',
+  PasswordInput: 'PasswordInput',
+  NumberInput: 'NumberInput',
 }
 
 const tokenComponetsParents = {
@@ -73,6 +76,22 @@ const tokenComponetsParents = {
   'Accordion.Heading': componentsWithSlotTokens.ACCORDION_PANEL,
   'Accordion.Icon': componentsWithSlotTokens.ACCORDION_HEADING,
   'Accordion.Body': componentsWithSlotTokens.ACCORDION_PANEL,
+
+  // Before, After, Input, Placeholder
+  'TextInput.Before': componentsWithSlotTokens.TextInput,
+  'TextInput.After': componentsWithSlotTokens.TextInput,
+  'TextInput.Input': componentsWithSlotTokens.TextInput,
+  'TextInput.Placeholder': componentsWithSlotTokens.TextInput,
+
+  'PasswordInput.Before': componentsWithSlotTokens.PasswordInput,
+  'PasswordInput.After': componentsWithSlotTokens.PasswordInput,
+  'PasswordInput.Input': componentsWithSlotTokens.PasswordInput,
+  'PasswordInput.VisibilityButton': componentsWithSlotTokens.PasswordInput,
+
+  'NumberInput.IncreaseControl': componentsWithSlotTokens.NumberInput,
+  'NumberInput.DecreaseControl': componentsWithSlotTokens.NumberInput,
+  'NumberInput.Input': componentsWithSlotTokens.NumberInput,
+  'NumberInput.Placeholder': componentsWithSlotTokens.NumberInput,
 }
 
 const availbleForedTokenComponets = new Set(['Radio.Button', 'Dropdown.Option', 'Segment.Button', 'Stepper.Item', 'Accordion.Panel'])
