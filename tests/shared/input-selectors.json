@@ -1,0 +1,14 @@
+{
+  "assertionElement": "assertion-element",
+  "scenarioBtn": "scenario-btn",
+  "root": "root",
+  "input": "input",
+  "inputBefore": "input-before",
+  "inputAfter": "input-after",
+  "inputDisabled": "input-disabled",
+  "inputPlaceholder": "input-placeholder",
+  "inputVisibilityButton": "input-visibility-button",
+  "inputIncreaseControl": "input-increase-control",
+  "inputDecreaseControl": "input-decrease-control",
+  "reactive": "reactive"
+}

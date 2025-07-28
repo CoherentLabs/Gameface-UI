@@ -1,0 +1,219 @@
+---
+title: NumberInput
+---
+
+The NumberInput component is similar to [TextInput](/components/basic/text-input/) but is specifically designed for numeric input.
+It ensures that only valid numbers can be entered and includes optional increment and decrement controls for adjusting the value.
+
+The component ensures numeric safety (preserving formatting, clamping min/max), and exposes utility methods via `ref` for programmatic changes.
+
+## Usage
+
+To use the `NumberInput` component, simply import it and pass any required props.
+
+```tsx
+import NumberInput from '@components/Basic/NumberInput/NumberInput';
+
+const App = () => {
+    return (
+        <NumberInput />
+    );
+};
+
+export default App;
+```
+
+## API
+
+### Props
+
+| Prop Name  | Type                                      | Default     | Description                                                                                                                                                                                  |
+| ---------- | ----------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `style`    | `JSX.CSSProperties`                       | `{}`        | Inline styles to apply directly to the component's root element.                                                                                                                             |
+| `class`    | `string`                                  | `""`        | Additional CSS classes to apply to the component.                                                                                                                                             |
+| `ref`      | `NumberInputRef  \| undefined`            | `undefined` | A reference to the component that gives you access to its methods and the underlying HTML element. Useful if you need to set the value of the input programmatically.                                                             |
+| `value`       | `string \| number`                      | `""`   | The initial value of the input. Use this to set the initial value displayed on the input. |
+| `min`       | `number`                                 | `undefined`   | Minimum value that can be entered or selected. |
+| `max`       | `number`                                 | `undefined`   | Maximum  value that can be entered or selected. |
+| `step`       | `number`                                | `1`   | 	Increment/decrement step for buttons. |
+| `disabled`         | `boolean`                         | `false`   | Disables the input if set to true. |
+| `class-disabled`         | `string`                    | `undefined`   | Optional class to apply when the input is disabled. |
+| `readonly`         | `boolean`                         | `false`   | Specifies if the input is only able to be read. If set to true, the input will not accept values. |
+| `onChange` | `(value: string \| number) => void`  | `undefined` | A function that is called every time the input's value has changed. It can be used to retrieve the up to date value of the input. |
+
+### Methods
+
+|Method |Parameters |Return Value |Description |
+|---|---|---|---|
+| `changeValue ` | `newValue: number`  | `void` | 	Programmatically sets a new value in the input field. |
+| `clear ` | None  | `void` | 	Clears the current value of the input. |
+| `increaseValue ` | None  | `void` | 	Increases value by the specified step (default is 1). |
+| `decreaseValue ` | None  | `void` | 	Decreases value by the specified step (default is 1). |
+
+### Accessors
+
+|Accessor |Return Value|Description |
+|---|---|---|
+| `value ` | `string \| number` | 	Returns the current value of the input reactively. Use `value()`to read the latest input. |
+
+## Slots
+
+### `NumberInput.IncreaseControl`
+
+Defines a button that increases the input's value. Can be positioned either before or after the input field.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `position`   | `before` \| `after` | `"after"` | Determines whether the button appears before or after the input field. |
+| `style`   | `JSX.CSSProperties` | `{}` | 	Inline styles applied directly to the visibility button container. |
+| `class`   | `string` | `""` | Additional CSS classes for styling the button. |
+| `children`   | `JSX.Element` | `""` | Custom content to override the default icons. |
+
+#### Usage
+
+```diff lang="tsx"
+import NumberInput from '@components/Basic/NumberInput/NumberInput';
+
+const App = () => {
+    return (
+        <NumberInput >
++           <NumberInput.IncreaseControl>+</NumberInput.IncreaseControl>
+        </NumberInput>
+    );
+};
+
+export default App;
+```
+
+### `NumberInput.DecreaseControl`
+
+Defines a button that decreases the input's value. Can be positioned either before or after the input field.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `position`   | `before` \| `after` | `"after"` | Determines whether the button appears before or after the input field. |
+| `style`   | `JSX.CSSProperties` | `{}` | 	Inline styles applied directly to the visibility button container. |
+| `class`   | `string` | `""` | Additional CSS classes for styling the button. |
+| `children`   | `JSX.Element` | `""` | Custom content to override the default icons. |
+
+#### Usage
+
+```diff lang="tsx"
+import NumberInput from '@components/Basic/NumberInput/NumberInput';
+
+const App = () => {
+    return (
+        <NumberInput >
++           <NumberInput.DecreaseControl position="before">-</NumberInput.DecreaseControl>
+        </NumberInput>
+    );
+};
+
+export default App;
+```
+
+### `NumberInput.Input`
+
+Used to override or extend the internal input element. This gives you full control over the input's look and behavior.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the input element. |
+| `class`   | `string` | `""` | Additional CSS classes to style the input element. |
+
+#### Usage
+
+```diff lang="tsx"
+import NumberInput from '@components/Basic/NumberInput/NumberInput';
+
+const App = () => {
+    return (
+        <NumberInput >
++            <NumberInput.Input style={{ padding: '2vmax', color: 'white', background: 'black' }} />
+        </NumberInput>
+    );
+};
+
+export default App;
+```
+
+### `TextInput.Placeholder`
+
+Use this to define a placeholder content which will be displayed when the input has no value.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the input element. |
+| `class`   | `string` | `""` | Additional CSS classes to style the input element. |
+| `children`   | `JSX.Element` | `""` | Content to be rendered inside the placeholder slot. This can be used to add content as the input's placeholder. |
+
+#### Usage
+
+```diff lang="tsx"
+import NumberInput from '@components/Basic/NumberInput/NumberInput';
+
+const App = () => {
+    return (
+        <NumberInput >
++            <NumberInput.Placeholder>Enter nickname</NumberInput.Placeholder>
+        </NumberInput>
+    );
+};
+
+export default App;
+```
+
+## Guide
+
+### Increase or decrease value programmatically
+
+You can programmatically control the `NumberInput` value using its `ref`, making it easy to respond to keyboard events like arrow key presses.
+
+#### Steps
+
+1. Declare a `ref` variable with type `NumberInputRef ` and pass it to the `NumberInput` component.
+2. Call `ref.increaseValue()` or `ref.decreaseValue()` directly as needed.
+
+```tsx
+import NumberInput, { NumberInputRef } from '@components/Basic/NumberInput/NumberInput';
+
+const App = () => {
+    let inputRef!: NumberInputRef;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if (!inputRef) return;
+
+        if (e.keyCode === 38) {
+            inputRef.increaseValue();
+        } else if (e.keyCode === 40) {
+            inputRef.decreaseValue();
+        }
+    };
+
+    return (
+        <div onKeyDown={handleKeyDown} tabindex={0}>
+            <NumberInput ref={inputRef!} max={10} min={0} step={2} />
+        </div>
+    );
+};
+
+export default App;
+```
+
+### Other Guides
+
+All other usage patterns — like retrieving and setting values, or clearing the input — are identical to the `TextInput` component and can be seen 
+[here](/components/basic/text-input/#guide)
+
+:::caution
+When following those examples, make sure to use `NumberInputRef` instead of `TextInputRef` when working with the ref. 
+This ensures access to the correct methods.
+:::
