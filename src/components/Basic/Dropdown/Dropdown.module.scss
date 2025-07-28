@@ -34,7 +34,7 @@
         max-height: 23vmax;
         position: absolute;
         border-radius: 0.3vmax;
-        border: 0.5vh solid transparent;
+        border: 0.2vmax solid transparent;
         overflow: hidden;
         background-color: white;
         top: 6vh;
@@ -49,7 +49,7 @@
 
     &-trigger {
         padding: 0.8vmax;
-        border: 0.2vh solid $primaryColor;
+        border: 0.1vmax solid $primaryColor;
         border-radius: 0.3vmax;
         background-color: white;
         width: 35vh;

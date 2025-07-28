@@ -9,7 +9,7 @@
     height: 1.5vmax;
     position: relative;
     margin-right: 0.35vmax;
-    border-radius: 0.2vmax;
+    border-radius: $borderRadius;
     border: 0.1vmax solid $secondaryColor;
     background-color: $primaryColor;
     display: flex;
@@ -39,7 +39,7 @@
     position: absolute;
     width: 90%;
     height: 92%;
-    border-radius: 0.2vmax;
+    border-radius: $borderRadius;
     z-index: 1;
     background-color: $secondaryColor;
     opacity: 0;

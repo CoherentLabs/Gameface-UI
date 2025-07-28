@@ -12,7 +12,7 @@ interface FlexProps extends ComponentBaseProps {
 }
 
 const getFlexProperties = (props: FlexProps) => {
-    let flexClasses = [styles.Flex];
+    let flexClasses = [styles.flex];
 
     if (props.direction) flexClasses.push(styles[`flex-${props.direction}`]);
     if (props.wrap) flexClasses.push(styles[`flex-${props.wrap}`]);

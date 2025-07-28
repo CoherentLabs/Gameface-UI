@@ -2,22 +2,26 @@
     background-color: $primaryColor;
     color: $textColor;
     border: 0;
-    font-size: 10vmax;
+    font-size: 1vmax;
+    padding: 1vmax 1.5vmax;
 
     &-text-fit {
         coh-font-fit: fit 1.5rem;
     }
 
     &-small {
-        padding: $btnSmall;
+        width: 10vmax;
+        height: 4vmax;
     }
 
     &-middle {
-        padding: $btnMid;
+        width: 13vmax;
+        height: 5vmax;
     }
 
     &-large {
-        padding: $btnLarge;
+        width: 15vmax;
+        height: 6vmax;
     }
 
     &-disabled {
