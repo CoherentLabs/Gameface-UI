@@ -6,5 +6,6 @@
   "paginationControl": "pagination-control",
   "paginationCustomControl": "pagination-custom-control",
   "controlHidden": "control-hidden",
+  "selected": "item-selected",
   "reactive": "reactive"
 }

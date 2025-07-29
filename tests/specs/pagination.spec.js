@@ -38,6 +38,15 @@ describe('Pagination', function () {
         assert.equal(await assertionEl.text(), "3", 'The third item should be selected');
     })
 
+    it('Should apply custom selected class to selected item', async () => {
+        const paginationItems = await gf.getAll(`.${selectors.paginationItem}`);
+
+        const styles = await paginationItems[0].styles();
+        const classes = await paginationItems[0].classes();
+        assert.equal(styles['background-color'], 'rgba(255, 0, 0, 1)', 'styles update');
+        assert.ok(classes.includes(selectors.selected), 'selected class applied');
+    })
+
     it('Should cycle through pages with ref', async () => {
         const assertionEl = await gf.get(`.${selectors.assertionElement}`);
         

@@ -63,7 +63,8 @@ const PaginationTest = () => {
                 class={`${selectors.pagination} ${reactiveClass()}`}>
                 <Pagination.Item 
                     class={`${selectors.paginationItem} ${reactiveClass()}`}
-                    style={reactiveStyle()} />
+                    style={reactiveStyle()}
+                    selected-class={`${selectors.selected}`} />
                 <Show when={!customBtn()}>
                     <Pagination.Control style={reactiveStyle()} class={`${selectors.paginationControl} ${reactiveClass()}`} />
                 </Show>

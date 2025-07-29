@@ -1,7 +1,7 @@
 import { ComponentProps } from "@components/types/ComponentProps";
 import { Accessor, createContext, createMemo, createSignal, For, onMount, ParentComponent } from "solid-js";
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
-import { createTokenComponent, TokenBase, useTokens } from "@components/utils/tokenComponents";
+import { createTokenComponent, TokenBase } from "@components/utils/tokenComponents";
 import PaginationItem from "./PaginationItem";
 import { Control, PaginationControl } from "./PaginationControl";
 import styles from './Pagination.module.css';
@@ -30,8 +30,12 @@ interface PaginationContext {
     previousPage: () => void,
 }
 
+interface PaginationItemToken extends Omit<TokenBase, "children"> {
+    "selected-class"?: string
+}
+
 export const PaginationContext = createContext<PaginationContext>();
-export const Item = createTokenComponent<TokenBase>();
+export const Item = createTokenComponent<PaginationItemToken>();
 
 const Pagination: ParentComponent<PaginationProps> = (props) => {
     const items = createMemo(() => Array.from({ length: props.pageSize }, (_, i) => i + 1));

@@ -1,0 +1,233 @@
+---
+title: Pagination
+---
+The `Pagination` component provides a UI control for navigating between multiple pages. 
+It supports optional numbered indicators, looping behavior, and customizable navigation controls.
+
+It's ideal for interfaces such as menus, level selectors, or any UI where page-based navigation is required.
+
+## Usage
+
+To use `Pagination`, specify the total number of pages with `pageSize` and the current page index with `pageIndex`.
+
+```tsx
+import Pagination from '@components/Basic/Pagination/Pagination';
+
+const App = () => {
+    return (
+        <Pagination pageSize={10} pageIndex={3} />
+    )
+};
+
+export default App;
+```
+
+## API
+
+### Props
+
+| Prop Name        | Type                         | Default      | Description                                                            |
+| ---------------- | ---------------------------- | ------------ | ---------------------------------------------------------------------- |
+| `style`          | `JSX.CSSProperties`          | `{}`         | Inline styles to apply directly to the component's root element.       |
+| `class`          | `string`                     | `""`         | Additional CSS classes to apply to the component.                      |
+| `pageSize`       | `number`                     | **required** | Total number of pages.                                                 |
+| `pageIndex`      | `number`                     | **required** | The currently selected page index (1-based).                           |
+| `loop`           | `boolean`                    | `false`      | Enables wrap-around navigation from last to first page and vice versa. |
+| `hasNumbers`     | `boolean`                    | `false`      | If true, displays page numbers inside each page indicator.             |
+| `ref`            | `PaginationRef \| undefined` | `undefined`  | Provides access to the pagination element and control methods.         |
+| `onChange`       | `(index: number) => void`    | `undefined`  | Called whenever the selected page changes, providing the new index.    |
+
+### PaginationRef
+
+| Prop Name      | Type                      | Description                                       |
+| -------------- | ------------------------- | ------------------------------------------------- |
+| `element`      | `HTMLDivElement`          | The root DOM element of the pagination component. |
+| `pageIndex`    | `Accessor<number>`        | The current page index.                           |
+| `pageSize`     | `Accessor<number>`        | The total number of pages.                        |
+| `changeIndex`  | `(index: number) => void` | Programmatically change to a specific page.       |
+| `nextPage`     | `() => void`              | Navigate to the next page.                        |
+| `previousPage` | `() => void`              | Navigate to the previous page.                    |
+
+## Slots
+
+### `Pagination.Control`
+
+Use `Pagination.Control` to customize the visual appearance of the left/right arrow buttons.
+
+By default, the control consists of two arrow buttons for navigating to the previous or next page.
+
+:::note
+The right arrow is a rotated version of the left arrow (rotated 180 degrees). Keep this in mind when implementing a custom control. You only need to define the left arrow in the slot, as the right arrow will automatically be a rotated duplicate.
+:::
+
+You can apply additional CSS classes and styles to modify the appearance of the default arrows.
+
+If you want to replace the default arrows with a custom control, you can provide `children` using any valid JSX syntax.
+
+:::note
+If the `loop` option is not enabled on the `Pagination` component, the controls will be hidden/disabled when the first or last page is selected.
+:::
+
+#### Properties
+
+| Prop Name      | Type                  | Default | Description                                                                 |
+|----------------|-----------------------|---------|-----------------------------------------------------------------------------|
+| `style`        | `JSX.CSSProperties`  | `{}`    | Inline styles to apply to the default arrow elements.                       |
+| `class`        | `string`             | `""`    | Additional CSS classes for the default arrow elements.                      |
+| `children`     | `JSX.Element`        | `""`    | Custom content to replace the default arrow controls.                       |
+| `hidden-class` | `string`             | `""`    | CSS class to override the default behavior when the control is hidden. If `loop` is not enabled, the left control will be hidden/disabled when the first option is selected, and the right control will behave similarly for the last option. |
+
+#### Usage
+
+```css
+.control-hidden {
+    pointer-events: none;
+    opacity: 0.1;
+}
+```
+
+:::tip
+To completely hide the control when no other options are available, you can use `display: none`:
+
+```css
+.control-hidden {
+    display: none;
+}
+```
+
+:::
+
+```diff lang="tsx"
+import Pagination from '@components/Basic/Pagination/Pagination';
+
+const App = () => {
+    return (
+        <Pagination pageSize={4} pageIndex={1}>
++            <Pagination.Control style={{"background-color": "white"}} />
+        </Pagination>
+    );
+};
+```
+
+#### Usage with custom control
+
+```diff lang="tsx"
+import Pagination from '@components/Basic/Pagination/Pagination';
++import MyArrow from '@assets/icons/my-arrow.svg?component-solid';
+
+const App = () => {
+    return (
+        <Pagination pageSize={4} pageIndex={1}>
++            <Pagination.Control hidden-class="control-hidden">
++                <MyArrow style={{ stroke: 'white' }} />
++            </Pagination.Control>
+        </Pagination>
+    );
+};
+```
+
+### `Pagination.Item`
+
+The `Pagination.Item` slot allows you to customize the appearance of each individual page indicator (dot, number, etc.).
+
+By default, each item is rendered as a simple clickable circle. You can use this slot to style them with custom colors, shapes, and sizes.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | 	Inline styles applied to every item. |
+| `class`   | `string` | `""` | Additional CSS classes for styling the pagination items. |
+| `selected-class`   | `string` | `""` | Additional CSS classes for styling the active pagination item. |
+
+#### Usage
+
+```diff lang="tsx"
+import Pagination from '@components/Basic/Pagination/Pagination';
+
+const App = () => {
+    return (
+        <Pagination pageSize={15} pageIndex={1} hasNumbers>
++            <Pagination.Item 
++               class="custom-item" 
++               style={{'background-color': 'green'}} 
++               selected-class="custom-selected" />
+        </Pagination>
+    );
+};
+
+export default App;
+```
+
+:::note
+This slot customizes all items.
+:::
+
+## Guide
+
+### Handle page changes
+
+Use the `onChange` prop to react to user navigation. This callback is triggered whenever the active page changes, and it receives the updated page index as a parameter.
+
+#### Steps
+
+1. Pass a callback function to the `onChange` prop.
+2. Use the page index in the callback to trigger data fetching or other logic.
+
+```tsx
+import Pagination from '@components/Basic/Pagination/Pagination';
+
+const App = () => {
+    const fetchPageData = (page: number) => {
+        // dynamically fetch the data
+        console.log('Page changed to:', page);
+    }
+
+    return (
+        <Pagination onChange={fetchPageData} pageSize={10} pageIndex={3} />
+    )
+};
+
+export default App;
+```
+
+### Programmatically change the page
+
+You can also control the pagination programmatically using a component `ref`. This is useful when integrating keyboard, gamepad, or other custom navigation systems.
+
+1. Declare a ref of type `PaginationRef` and pass it to the Pagination component.
+2. Call `ref.nextPage()` or `ref.previousPage()` in response to keyboard events.
+
+```tsx
+import { onMount } from 'solid-js';
+import Pagination, { PaginationRef } from '@components/Basic/Pagination/Pagination';
+
+const App = () => {
+    let ref!: PaginationRef;
+
+    const handleKeydown = (e: KeyboardEvent) => {
+        if (e.keyCode === 37) { // Left arrow
+            ref.previousPage();
+        } else if (e.keyCode === 39) { // Right arrow
+            ref.nextPage();
+        }
+    };
+
+    onMount(() => {
+        window.addEventListener('keydown', handleKeydown);
+        // Cleanup on unmount
+        return () => window.removeEventListener('keydown', handleKeydown);
+    });
+
+    return (
+        <Pagination
+            ref={ref}
+            pageSize={6}
+            pageIndex={1}
+            onChange={(page) => console.log('Page:', page)}
+        />
+    );
+};
+
+export default App;
+```

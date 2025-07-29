@@ -30,14 +30,12 @@
     background-color: #868599;
 }
 
-.dot-item.selected {
+.selected {
     background-color: #3E3D5D;
     color: white;
 }
 
 .control {
-    width: 1.5vmax;
-    height: 1.5vmax;
     display: flex;
     cursor: pointer;
     align-items: center;
@@ -64,7 +62,9 @@
 }
 
 .arrow {
-    padding: 0.25vmax;
+    padding: 0.3vmax;
+    width: 3vh;
+    height: 2.75vh;
 }
 
 .arrow > path {
@@ -73,6 +73,4 @@
 
 .rotate {
     transform: rotate(180deg);
-    width: 100%;
-    height: 100%;
 }

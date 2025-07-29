@@ -1,4 +1,4 @@
-import { Accessor, createMemo, JSX, ParentComponent, ParentProps, Show, useContext } from "solid-js";
+import { Accessor, createMemo, ParentComponent, ParentProps, Show, useContext } from "solid-js";
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
 import Arrow from './Arrow.svg?component-solid';
