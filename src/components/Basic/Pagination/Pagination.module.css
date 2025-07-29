@@ -38,7 +38,6 @@
 .control {
     width: 1.5vmax;
     height: 1.5vmax;
-    padding: 0.25vmax;
     display: flex;
     cursor: pointer;
     align-items: center;
@@ -62,6 +61,10 @@
 
 .control:hover {
     background-color: #3E3D5D;
+}
+
+.arrow {
+    padding: 0.25vmax;
 }
 
 .arrow > path {

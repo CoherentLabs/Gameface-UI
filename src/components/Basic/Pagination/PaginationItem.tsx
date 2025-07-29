@@ -1,8 +1,8 @@
 import { Component, createMemo, ParentComponent, Show, useContext } from "solid-js"
-import styles from './Pagination.module.css';
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
 import { TokenComponentProps } from "@components/types/ComponentProps";
 import { Item, PaginationContext } from "./Pagination";
+import styles from './Pagination.module.css';
 
 interface PaginationItemComponentProps extends TokenComponentProps {
     index: number,
@@ -30,7 +30,7 @@ const PaginationItem: Component<PaginationItemComponentProps> = (props) => {
     return (
         <div
             onclick={() => pagination!.changePage(props.index)}
-            style={itemToken()?.class}
+            style={itemToken()?.style}
             class={paginationItemClasses()}>
                 <Show when={props.hasNumbers}>{props.index}</Show>
         </div>

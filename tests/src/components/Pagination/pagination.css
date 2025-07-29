@@ -1,0 +1,9 @@
+.pagination-custom-control {
+    width: 1vmax;
+    height: 1vmax;
+    border: 1px solid yellow;
+}
+
+.control-hidden {
+    background-color: rgba(255,0,0,1);
+}

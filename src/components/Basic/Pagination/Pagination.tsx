@@ -1,15 +1,18 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, createContext, createMemo, createSignal, createUniqueId, For, onMount, ParentComponent, Setter } from "solid-js";
+import { Accessor, createContext, createMemo, createSignal, For, onMount, ParentComponent } from "solid-js";
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { createTokenComponent, TokenBase, useTokens } from "@components/utils/tokenComponents";
-import Arrow from './Arrow.svg?component-solid';
-import styles from './Pagination.module.css';
 import PaginationItem from "./PaginationItem";
 import { Control, PaginationControl } from "./PaginationControl";
-import { clamp } from "@components/utils/clamp";
+import styles from './Pagination.module.css';
 
 export interface PaginationRef {
     element: HTMLDivElement,
+    pageIndex: Accessor<number>,
+    pageSize: Accessor<number>,
+    changeIndex: (index: number) => void,
+    nextPage: () => void,
+    previousPage: () => void
 }
 
 interface PaginationProps extends ComponentProps {
@@ -17,8 +20,6 @@ interface PaginationProps extends ComponentProps {
     pageIndex: number,
     loop?: boolean,
     hasNumbers?: boolean,
-    disabled?: boolean;
-    'class-disabled'?: string;
     onChange?: (index: number) => void;
 }
 
@@ -48,22 +49,25 @@ const Pagination: ParentComponent<PaginationProps> = (props) => {
 
     const nextPage = () => {
         const current = index();
-        const newIndex = current === length() ? 1 : current + 1;
-
-        changeIndex(newIndex)
+        const isLastIndex = current === length();
+        
+        if (isLastIndex && !props.loop) return;
+        
+        changeIndex(isLastIndex ? 1 : current + 1)
     }
 
     const previousPage = () => {
         const current = index();
-        const newIndex = current === 1 ? length() : current - 1;
+        const isFirstIndex = current === 1;
 
-        changeIndex(newIndex)
+        if (isFirstIndex && !props.loop) return;
+        
+        changeIndex(isFirstIndex ? length() : current - 1)
     }
 
     const changeIndex = (newIndex: number) => {
-        const clamped = props.loop ? newIndex : clamp(newIndex, 1, length());
-        setIndex(clamped);
-        props.onChange?.(clamped);
+        setIndex(newIndex);
+        props.onChange?.(newIndex);
     }
 
     const showLeftArrow = createMemo(() => {
@@ -78,20 +82,7 @@ const Pagination: ParentComponent<PaginationProps> = (props) => {
         return index() !== length();
     })
 
-    const paginationClasses = createMemo(() => {
-        const classes = [styles.pagination];
-
-        classes.push(props.class ?? '');
-
-        if (props.disabled) {
-            classes.push(styles.disabled);
-            classes.push(props["class-disabled"] ?? '');
-        }
-
-        return classes.join(' ');
-    });
-
-    props.componentClasses = () => paginationClasses();
+    props.componentClasses = styles.pagination;
     const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     onMount(() => {

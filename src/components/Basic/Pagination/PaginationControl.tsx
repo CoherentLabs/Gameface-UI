@@ -2,8 +2,8 @@ import { Accessor, createMemo, JSX, ParentComponent, ParentProps, Show, useConte
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
 import Arrow from './Arrow.svg?component-solid';
-import styles from './Pagination.module.css';
 import { PaginationContext } from "./Pagination";
+import styles from './Pagination.module.css';
 
 interface ControlTokenProps extends TokenBase {
     'hidden-class'?: string
