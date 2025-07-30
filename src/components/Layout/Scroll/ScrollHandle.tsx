@@ -1,5 +1,5 @@
 import { createMemo, JSX, ParentComponent, useContext } from "solid-js";
-import styles from './ScrollHandle.module.css';
+import styles from './Scroll.module.scss';
 import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
 import { ScrollContext } from "./Scroll";
 import { TokenComponentProps } from "@components/types/ComponentProps";
@@ -24,9 +24,9 @@ export const ScrollHandle: ParentComponent<TokenComponentProps> = (props) => {
     });
 
     const scrollHandleClasses = createMemo(() => {
-        if (HandleToken()?.class) return styles.Handle + ' ' + HandleToken()?.class;
+        if (HandleToken()?.class) return styles.handle + ' ' + HandleToken()?.class;
 
-        return styles.Handle;
+        return styles.handle;
     });
 
     return (

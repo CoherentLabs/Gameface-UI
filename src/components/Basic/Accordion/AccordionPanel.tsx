@@ -1,7 +1,7 @@
 import { createMemo, JSX, ParentComponent, ParentProps, useContext } from "solid-js";
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent } from "@components/utils/tokenComponents";
-import styles from './Accordion.module.css';
+import styles from './Accordion.module.scss';
 import { AccordionBody } from "./AccordionBody";
 import { AccordionHeading } from "./AccordionHeading";
 import { AccordionContext, PanelData } from "./Accordion";
@@ -32,12 +32,12 @@ export const AccordionPanel: ParentComponent<PanelData> = (props) => {
     const isExpanded = createMemo(() => accordion!.expandedPanels().includes(props.id));
 
     const panelClasses = createMemo(() => {
-        const classes = [styles.Panel];
+        const classes = [styles.panel];
 
         classes.push(props.panel.class ?? '');
 
         if (props.panel.disabled) {
-            classes.push(styles.Disabled);
+            classes.push(styles.disabled);
             classes.push(props.panel["class-disabled"] ?? '');
         }
         

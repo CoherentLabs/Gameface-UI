@@ -1,0 +1,51 @@
+.checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.control {
+    width: 1.5vmax;
+    height: 1.5vmax;
+    position: relative;
+    margin-right: 0.35vmax;
+    border-radius: $borderRadius;
+    border: 0.1vmax solid $secondaryColor;
+    background-color: $primaryColor;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.before {
+    margin-right: 0;
+    margin-left: 0.35vmax;
+}
+
+.disabled {
+    pointer-events: none;
+
+    .control {
+        background-color: $disabledTextColor;
+        border-color: $disabledColor;
+    }
+
+    .indicator {
+        background-color: $disabledColor;
+    }
+}
+
+.indicator {
+    position: absolute;
+    width: 90%;
+    height: 92%;
+    border-radius: $borderRadius;
+    z-index: 1;
+    background-color: $secondaryColor;
+    opacity: 0;
+    transition: opacity ease-in-out 0.2s;
+}
+
+.checked {
+    opacity: 1;
+}

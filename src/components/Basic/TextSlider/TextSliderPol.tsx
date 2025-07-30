@@ -1,5 +1,5 @@
 import { createMemo, JSX } from 'solid-js';
-import styles from '@components/Basic/Slider/SliderGrid.module.css';
+import styles from '@components/Basic/Slider/Slider.module.scss';
 import { createTokenComponent } from '@components/utils/tokenComponents';
 
 interface PolProps {
@@ -14,7 +14,7 @@ export const Pol = createTokenComponent<PolProps>();
 
 const TextSliderPol = (props: PolProps) => {
     const polClasses = createMemo(() => {
-        const classes = [styles['Grid-Pol-Container']];
+        const classes = [styles['grid-pol-container']];
 
         if (props.class) classes.push(props.class);
 
@@ -22,7 +22,7 @@ const TextSliderPol = (props: PolProps) => {
     })
 
     const polValueClasses = createMemo(() => {
-        const classes = [styles['Grid-Pol-Value']];
+        const classes = [styles['grid-pol-value']];
 
         if (props['text-class']) classes.push(props['text-class']);
 
@@ -31,7 +31,7 @@ const TextSliderPol = (props: PolProps) => {
 
     return (
         <div style={props.style} class={polClasses()}>
-            <div class={styles['Grid-Pol']}></div>
+            <div class={styles['grid-pol']}></div>
             <div style={props['text-style']} class={polValueClasses()}>{props.value}</div>
         </div>
     )

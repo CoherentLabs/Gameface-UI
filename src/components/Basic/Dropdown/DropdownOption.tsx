@@ -1,6 +1,6 @@
 import { ParentComponent, useContext, ParentProps, onCleanup, onMount, Show } from 'solid-js';
 import { CommonDropdownSlotProps, DropdownContext } from './Dropdown';
-import style from './DropdownOption.module.css';
+import style from './Dropdown.module.scss';
 import { createTokenComponent } from '@components/utils/tokenComponents';
 
 export interface OptionTokenProps extends CommonDropdownSlotProps {

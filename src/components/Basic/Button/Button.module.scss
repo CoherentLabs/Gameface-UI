@@ -1,0 +1,36 @@
+.button {
+    background-color: $primaryColor;
+    color: $textColor;
+    border: 0;
+    font-size: 1vmax;
+    padding: 1vmax 1.5vmax;
+
+    &-text-fit {
+        coh-font-fit: fit 1.5rem;
+    }
+
+    &-small {
+        width: 10vmax;
+        height: 4vmax;
+    }
+
+    &-middle {
+        width: 13vmax;
+        height: 5vmax;
+    }
+
+    &-large {
+        width: 15vmax;
+        height: 6vmax;
+    }
+
+    &-disabled {
+        background-color: $disabledColor;
+        color: $disabledTextColor;
+        pointer-events: none;
+    }
+
+    &:hover,:active {
+        background-color: $secondaryColor;
+    }
+}

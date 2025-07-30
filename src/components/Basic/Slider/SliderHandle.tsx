@@ -1,5 +1,5 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
-import styles from './Slider.module.css';
+import styles from './Slider.module.scss';
 import { createMemo, JSX } from 'solid-js';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 
@@ -19,7 +19,7 @@ export const SliderHandle = (props: SliderHandleComponentProps) => {
     const HandleToken = useToken(Handle, props.parentChildren);
 
     const handleClasses = createMemo(() => {
-        const classes = [styles.Handle];
+        const classes = [styles.handle];
 
         if (HandleToken?.()?.class) classes.push(HandleToken?.()?.class as string);
 

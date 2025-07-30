@@ -2,7 +2,7 @@ import { Accessor, Component, createMemo, Show } from "solid-js";
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { useToken } from "@components/utils/tokenComponents";
 import { Input, Placeholder } from "../shared/tokens";
-import styles from './InputBase.module.css';
+import styles from './InputBase.module.scss';
 
 interface InputComponentProps extends TokenComponentProps {
     value: Accessor<string | number>,

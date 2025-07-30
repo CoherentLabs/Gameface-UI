@@ -1,5 +1,5 @@
 import { Accessor, createContext, createSignal, onCleanup, onMount, ParentComponent } from 'solid-js';
-import styles from './Scroll.module.css';
+import styles from './Scroll.module.scss';
 import LayoutBase from '../LayoutBase';
 import { clamp } from '@components/utils/clamp';
 import { Content, ScrollContent } from './ScrollContent';
@@ -256,7 +256,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     return (
         <ScrollContext.Provider value={{ scrollToMouseHandler, stopScrollingToMouse, updateMeasurements, onHandleMouseDown, handleHeight, handleTop, overflow }}>
             <LayoutBase {...props} refObject={scrollObjectRef}>
-                <div ref={containerRef!} class={styles.Scroll}>
+                <div ref={containerRef!} class={styles.scroll}>
                     <ScrollContent ref={contentWrapperRef!} parentChildren={props.children} />
                     <ScrollBar parentChildren={props.children} />
                 </div>

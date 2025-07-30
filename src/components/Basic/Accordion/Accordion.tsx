@@ -1,6 +1,6 @@
 import { ComponentProps } from "@components/types/ComponentProps";
 import { Accessor, createContext, createMemo, createSignal, createUniqueId, For, onMount, ParentComponent, Setter } from "solid-js";
-import styles from './Accordion.module.css';
+import styles from './Accordion.module.scss';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { AccordionPanel, Panel, PanelTokenProps } from "./AccordionPanel";
 import { Heading, Icon } from "./AccordionHeading";
@@ -135,12 +135,12 @@ const Accordion: ParentComponent<AccordionProps> = (props) => {
     }
 
     const accordionClasses = createMemo(() => {
-        const classes = [styles.Accordion];
+        const classes = [styles.accordion];
 
         classes.push(props.class ?? '');
 
         if (props.disabled) {
-            classes.push(styles.Disabled);
+            classes.push(styles.disabled);
             classes.push(props["class-disabled"] ?? '');
         }
 

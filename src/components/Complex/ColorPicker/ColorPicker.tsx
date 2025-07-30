@@ -2,7 +2,7 @@ import { createMemo, createSignal, onMount, ParentComponent } from "solid-js";
 import XYSlider, { XYSliderRef, XYSliderValue } from "@components/Basic/XYSlider/XYSlider";
 import Slider, { SliderRef } from "@components/Basic/Slider/Slider";
 import Segment from "@components/Basic/Segment/Segment";
-import styles from './ColorPicker.module.css';
+import styles from './ColorPicker.module.scss';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { ComponentProps } from "@components/types/ComponentProps";
 import { parseHSVAColor, RGBAOrHEXToHSVA } from "./colorPickerUtils";
@@ -79,7 +79,7 @@ const ColorPicker: ParentComponent<ColorPickerProps> = (props) => {
     });
 
     const colorPickerClasses = createMemo(() => {
-        const classes = [styles.ColorPicker];
+        const classes = [styles['color-picker']];
         if (props.class) classes.push(props.class);
         return classes.join(' ');
     });
@@ -122,43 +122,43 @@ const ColorPicker: ParentComponent<ColorPickerProps> = (props) => {
              */}
             <XYSlider ref={xySliderRef} value={{ x: initialValue.s, y: 100 - initialValue.v }} class={styles.XYSlider} onChange={handleXYChange}>
                 <XYSlider.Background style={XYSliderBackground()} />
-                <XYSlider.Handle class={styles.XYSliderHandle} style={{ "background-color": selectedColorNonTransparent() }}></XYSlider.Handle>
+                <XYSlider.Handle class={styles['XYSlider-handle']} style={{ "background-color": selectedColorNonTransparent() }}></XYSlider.Handle>
             </XYSlider>
             {/**
              * Here the slider component is used for selecting hue and alpha values.
              * If you need to customize this slider, you can pass additional styles or use its slots.
              * For more information about how you can customize it you can check the Slider documentation - https://gameface-ui.coherent-labs.com/components/basic/slider/.
              */}
-            <Slider ref={hueSliderRef} min={0} max={360} value={initialValue.h} onChange={handleHueChange} class={styles.HueSlider}>
-                <Slider.Track class={styles.HueSliderTrack} />
-                <Slider.Fill class={styles.SliderFill}></Slider.Fill>
-                <Slider.Handle class={styles.SliderHandle} style={{ background: selectedColorHue() }} />
+            <Slider ref={hueSliderRef} min={0} max={360} value={initialValue.h} onChange={handleHueChange} class={styles['hue-slider']}>
+                <Slider.Track class={styles['hue-slider-track']} />
+                <Slider.Fill class={styles['slider-fill']}></Slider.Fill>
+                <Slider.Handle class={styles['slider-handle']} style={{ background: selectedColorHue() }} />
             </Slider>
             {/**
              * Here the slider component is used for selecting the alpha value.
              * If you need to customize this slider, you can pass additional styles or use its slots.
              * For more information about how you can customize it you can check the Slider documentation - https://gameface-ui.coherent-labs.com/components/basic/slider/.
              */}
-            <Slider ref={alphaSliderRef} value={initialValue.a * 100} onChange={handleAlphaChange} class={styles.AlphaSlider}>
-                <Slider.Track class={styles.AlphaSliderTrack} style={{ 'background-image': `linear-gradient(to right,transparent 0% , ${selectedColorNonTransparent()} 100% )` }} />
-                <Slider.Fill class={styles.SliderFill}></Slider.Fill>
-                <Slider.Handle class={styles.SliderHandle} style={{ background: selectedColor() }} />
+            <Slider ref={alphaSliderRef} value={initialValue.a * 100} onChange={handleAlphaChange} class={styles['alpha-slider']}>
+                <Slider.Track class={styles['alpha-slider-track']} style={{ 'background-image': `linear-gradient(to right,transparent 0% , ${selectedColorNonTransparent()} 100% )` }} />
+                <Slider.Fill class={styles['slider-fill']}></Slider.Fill>
+                <Slider.Handle class={styles['slider-handle']} style={{ background: selectedColor() }} />
             </Slider>
             {/**
              * The Segment component is used for changing the color preview format between HEX and RGBA.
              * If you need to customize this segment component, you can pass additional styles or use its slots.
              * For more information about how you can customize it you can check the Segment documentation - https://gameface-ui.coherent-labs.com/components/basic/segment/.
              */}
-            <Segment class={styles.Segment} onChange={(value) => setSelectedFormat(value)}>
-                <Segment.Indicator class={styles.SegmentIndicator}></Segment.Indicator>
-                <Segment.Button class={styles.SegmentButton} selected value="hex">HEX</Segment.Button>
-                <Segment.Button class={styles.SegmentButton} value="rgba">RGBA</Segment.Button>
+            <Segment class={styles.segment} onChange={(value) => setSelectedFormat(value)}>
+                <Segment.Indicator class={styles['segment-indicator']}></Segment.Indicator>
+                <Segment.Button class={styles['segment-button']} selected value="hex">HEX</Segment.Button>
+                <Segment.Button class={styles['segment-button']} value="rgba">RGBA</Segment.Button>
             </Segment>
-            <div class={styles.ColorPreviewWrapper}>
-                <div class={styles.ColorPreview}>
-                    <div class={styles.ColorPreviewBox} style={{ 'background-color': selectedColor() }}></div>
+            <div class={styles['color-preview-wrapper']}>
+                <div class={styles['color-preview']}>
+                    <div class={styles['color-preview-box']} style={{ 'background-color': selectedColor() }}></div>
                 </div>
-                <input readOnly class={styles.ColorPreviewText} value={colorTextValue()} />
+                <input readOnly class={styles['color-preview-text']} value={colorTextValue()} />
             </div>
         </div >
     );

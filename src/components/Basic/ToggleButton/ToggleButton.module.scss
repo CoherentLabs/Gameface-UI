@@ -1,0 +1,73 @@
+.toggle-button {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.control {
+    width: 3.5vmax;
+    height: 2vmax;
+    position: relative;
+    border-radius: 1vmax;
+    border: 0.1vmax solid $secondaryColor;
+}
+
+.label {
+    &-left-enabled {
+        margin-right: 0.3vmax;
+    }
+
+    &-right-enabled {
+        margin-left: 0.3vmax;
+    }
+}
+
+.disabled {
+    opacity: 0.8;
+    pointer-events: none;
+
+    .control {
+        border-color: $disabledTextColor;
+    }
+
+    .handle {
+        background-color: $disabledColor;
+    }
+
+    .indicator-checked {
+        background-color: $disabledTextColor;
+    }
+}
+
+.indicator {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 0.9vmax;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    background-color: $secondaryColor;
+    opacity: 0;
+    transition: opacity ease-in-out 0.2s;
+
+    &-checked {
+        opacity: 1;
+    }
+}
+
+.handle {
+    position: absolute;
+    width: 1.4vmax;
+    height: 1.4vmax;
+    border-radius: 50%;
+    top: 0.2vmax;
+    z-index: 2;
+    left: 0.2vmax;
+    background-color: #ffffff;
+    transition: transform ease-in-out 0.2s, background-color ease-in-out 0.2s;
+
+    &-checked {
+        transform: translateX(110%);
+    }
+}

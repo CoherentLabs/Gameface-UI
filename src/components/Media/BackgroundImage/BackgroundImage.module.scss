@@ -1,0 +1,81 @@
+.background-image {
+    background-repeat: no-repeat;
+
+    &-size {
+        &-contain {
+            background-size: contain;
+        }
+
+        &-cover {
+            background-size: cover;
+        }
+    }
+
+    &-repeat {
+        &-both {
+            background-repeat: repeat;
+        }
+
+        &-x {
+            background-repeat: repeat-x;
+        }
+
+        &-y {
+            background-repeat: repeat-y;
+        }
+    }
+
+    &-position {
+        &-top {
+            background-position: top;
+
+            &-left {
+                background-position: top left;
+            }
+
+            &-center {
+                background-position: top center;
+            }
+
+            &-right {
+                background-position: top right;
+            }
+        }
+
+        &-center {
+            background-position: center;
+
+            &-left {
+                background-position: center left;
+            }
+
+            &-right {
+                background-position: center right;
+            }
+        }
+
+        &-bottom {
+            background-position: bottom;
+
+            &-left {
+                background-position: bottom left;
+            }
+
+            &-center {
+                background-position: bottom center;
+            }
+
+            &-right {
+                background-position: bottom right;
+            }
+        }
+
+        &-left {
+            background-position: left;
+        }
+
+        &-right {
+            background-position: right;
+        }
+    }
+}

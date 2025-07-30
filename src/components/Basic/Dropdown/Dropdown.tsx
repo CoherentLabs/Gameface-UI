@@ -1,5 +1,5 @@
 import { Accessor, createContext, createMemo, createSignal, DEV, JSX, onMount, ParentComponent } from 'solid-js';
-import style from './Dropdown.module.css';
+import style from './Dropdown.module.scss';
 import { DropdownOptions, Handle, Options, Track } from './DropdownOptions';
 import { Option } from './DropdownOption';
 import { DropdownTrigger, Icon, Placeholder, Trigger } from './DropdownTrigger';

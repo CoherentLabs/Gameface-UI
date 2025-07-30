@@ -1,0 +1,26 @@
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 50%;
+    padding: 0.2vmax;
+    font-size: 1vmax;
+    width: 2vmax;
+    cursor: pointer;
+    background-color: $primaryColor;
+    color: white;
+    border-radius: 0;
+
+    &-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+
+    &:hover {
+        background-color: $secondaryColor;
+    }
+}

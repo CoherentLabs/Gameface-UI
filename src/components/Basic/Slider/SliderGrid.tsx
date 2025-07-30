@@ -1,5 +1,5 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
-import styles from './SliderGrid.module.css';
+import styles from './Slider.module.scss';
 import { createMemo, For, JSX, Show } from 'solid-js';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 import SliderPol from './SliderPol';
@@ -53,7 +53,7 @@ export const SliderGrid = (props: SliderGridComponentProps) => {
     const polsArr = createPolsArray();
 
     const gridClasses = createMemo(() => {
-        const classes = [styles.Grid];
+        const classes = [styles.grid];
 
         if (GridToken?.()?.class) classes.push(GridToken?.()?.class as string);
 

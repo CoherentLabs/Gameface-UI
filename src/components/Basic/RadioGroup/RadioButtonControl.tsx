@@ -1,5 +1,5 @@
 import { ParentComponent } from "solid-js";
-import styles from './RadioButton.module.css';
+import styles from './Radio.module.scss';
 import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
 import { TokenComponentProps } from "@components/types/ComponentProps";
 import { CommonRadioButtonSlotProps } from "./RadioButton";
@@ -17,7 +17,7 @@ export const RadioButtonControl: ParentComponent<RadioButtonControlProps> = (pro
 
     return (
         <div
-            class={`${styles.Control} ${props.before ? styles.Before : ''} ${ControlSlot?.()?.class || ''}`}
+            class={`${styles.control} ${props.before ? styles.before : ''} ${ControlSlot?.()?.class || ''}`}
             style={ControlSlot?.()?.style || {}}>
             {ControlSlot?.()?.children}
             <RadioButtonIndicator parentChildren={ControlSlot?.()?.children} selected={props.selected} />

@@ -1,5 +1,5 @@
 import { JSX, onCleanup, onMount, ParentComponent, ParentProps, Show, useContext } from "solid-js";
-import styles from './Stepper.module.css';
+import styles from './Stepper.module.scss';
 
 import { createTokenComponent } from "@components/utils/tokenComponents";
 import { StepperContext } from "./Stepper";
@@ -31,7 +31,7 @@ export const StepperItem: ParentComponent<StepperItempProps> = (props) => {
     return (
         <Show when={stepperContext?.selected() === props.item.value}>
             <div
-                class={`${styles.StepperItem} ${props.item.class || ''}`}
+                class={`${styles['stepper-item']} ${props.item.class || ''}`}
                 style={props.item.style || {}}>
                 {props.item.children}
             </div>

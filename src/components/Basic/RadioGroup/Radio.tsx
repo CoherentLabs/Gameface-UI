@@ -1,7 +1,7 @@
 import { BaseComponentRef, ComponentProps } from "@components/types/ComponentProps";
 import { Accessor, createMemo, onMount, ParentComponent } from "solid-js";
 import { createContext, createSignal } from "solid-js";
-import styles from './Radio.module.css';
+import styles from './Radio.module.scss';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { RadioButtons } from "./RadioButtons";
 import { Button, ButtonLabel } from "./RadioButton";
@@ -33,11 +33,11 @@ const Radio: ParentComponent<RadioProps> = (props) => {
     let element!: HTMLDivElement;
 
     const checkboxClasses = createMemo(() => {
-        const classes = [styles.Radio];
+        const classes = [styles.radio];
 
         if (props.disabled) {
-            if (props['class-disabled']) classes.push(`${styles.Disabled} ${props['class-disabled']}`);
-            else classes.push(styles.Disabled);
+            if (props['class-disabled']) classes.push(`${styles.disabled} ${props['class-disabled']}`);
+            else classes.push(styles.disabled);
         }
 
         return classes.join(' ');

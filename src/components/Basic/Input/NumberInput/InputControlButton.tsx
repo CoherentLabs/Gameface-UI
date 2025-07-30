@@ -1,8 +1,8 @@
 import { createMemo, ParentComponent } from "solid-js";
 import ArrowDownIcon from './arrow-down.svg?component-solid'
 import ArrowUpIcon from './arrow-up.svg?component-solid'
-import sharedStyles from '../shared/TextInput.module.css';
-import styles from './NumberInput.module.css';
+import sharedStyles from '../shared/TextInput.module.scss';
+import styles from './NumberInput.module.scss';
 
 interface InputControlButtonProps {
     token: () => any,

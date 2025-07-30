@@ -1,0 +1,50 @@
+.input {
+    border: none;
+    border-radius: 0.6vmax;
+    padding: 0.35vmax;
+    font-size: 1vmax;
+    height: 100%;
+
+    &-wrapper {
+        display: flex;
+        align-items: center;
+        border: 0.15vmax solid $primaryColor;
+        border-radius: 0.6vmax;
+        font-size: 1vmax;
+        color: black;
+        background-color: white;
+        overflow: hidden;
+        height: 2.2vmax;
+    }
+
+    &-element-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+}
+
+.has {
+    &-before {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+    &-after {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+}
+
+.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.placeholder {
+    opacity: 0.8;
+    margin: 0;
+    position: absolute;
+    left: 0;
+    padding-left: 0.25vmax;
+    pointer-events: none;
+}

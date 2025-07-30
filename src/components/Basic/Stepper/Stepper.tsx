@@ -1,6 +1,6 @@
 import { ComponentProps } from "@components/types/ComponentProps";
 import { Accessor, createSignal, onMount, ParentComponent, Show, createContext, createMemo, For, DEV, JSX } from "solid-js";
-import styles from './Stepper.module.css';
+import styles from './Stepper.module.scss';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { Control, StepperControl } from "./StepperControl";
 import { Item, StepperItem } from "./StepperItem";
@@ -68,11 +68,11 @@ const Stepper: ParentComponent<StepperProps> = (props) => {
     }
 
     const stepperClasses = createMemo(() => {
-        const classes = [styles.Stepper];
+        const classes = [styles.stepper];
 
         if (props.disabled) {
-            if (props['class-disabled']) classes.push(`${styles.Disabled} ${props['class-disabled']}`);
-            else classes.push(styles.Disabled);
+            if (props['class-disabled']) classes.push(`${styles.disabled} ${props['class-disabled']}`);
+            else classes.push(styles.disabled);
         }
 
         return classes.join(' ');
@@ -163,7 +163,7 @@ const Stepper: ParentComponent<StepperProps> = (props) => {
                     <StepperControl direction='next' visible={showNextControl()} parentChildren={props.children} />
                 </Show>
 
-                <div class={styles.StepperItems + ' ' + (StepperItemsToken?.()?.class || '')} style={StepperItemsToken?.()?.style}>
+                <div class={styles['stepper-items'] + ' ' + (StepperItemsToken?.()?.class || '')} style={StepperItemsToken?.()?.style}>
                     <For each={StepperItems()}>
                         {(item) => <StepperItem item={item} />}
                     </For>

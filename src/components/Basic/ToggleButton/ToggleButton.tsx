@@ -1,6 +1,6 @@
 import { ComponentProps } from "@components/types/ComponentProps";
 import { Accessor, Setter, createSignal, onMount, ParentComponent, Show, createContext, createMemo, createEffect } from "solid-js";
-import styles from './ToggleButton.module.css';
+import styles from './ToggleButton.module.scss';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { Control, ToggleButtonControl } from "./ToggleButtonControl";
 import { Indicator } from "./ToggleButtonIndicator";
@@ -35,11 +35,11 @@ const ToggleButton: ParentComponent<ToggleButtonProps> = (props) => {
     let element!: HTMLDivElement;
 
     const toggleButtonClasses = createMemo(() => {
-        const classes = [styles.ToggleButton];
+        const classes = [styles['toggle-button']];
 
         if (props.disabled) {
-            if (props['class-disabled']) classes.push(`${styles.Disabled} ${props['class-disabled']}`);
-            else classes.push(styles.Disabled);
+            if (props['class-disabled']) classes.push(`${styles.disabled} ${props['class-disabled']}`);
+            else classes.push(styles.disabled);
         }
 
         if (checked() && props['class-checked']) {

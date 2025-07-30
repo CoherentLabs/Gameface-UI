@@ -1,5 +1,5 @@
 import { createMemo, ParentComponent, Show, useContext } from 'solid-js';
-import style from './DropdownTrigger.module.css';
+import style from './Dropdown.module.scss';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 import DropdownIcon from './DropdownIcon.svg?component-solid';
 import InlineTextBlock from '../InlineTextBlock/InlineTextBlock';

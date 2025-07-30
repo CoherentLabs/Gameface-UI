@@ -1,5 +1,5 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
-import styles from './XYSlider.module.css';
+import styles from './XYSlider.module.scss';
 import { createMemo, JSX, useContext } from 'solid-js';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 import { XYSliderContext } from './XYSlider';
@@ -16,7 +16,7 @@ export const XYSliderHandle = (props: TokenComponentProps) => {
     const HandleToken = useToken(Handle, props.parentChildren);
 
     const handleClasses = createMemo(() => {
-        const classes = [styles.Handle];
+        const classes = [styles.handle];
 
         if (HandleToken?.()?.class) classes.push(HandleToken?.()?.class as string);
 

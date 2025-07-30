@@ -1,5 +1,5 @@
 import { ParentComponent, JSX, For, createContext, createSignal } from "solid-js";
-import styles from './Grid.module.css';
+import styles from './Grid.module.scss';
 import LayoutBase from "../LayoutBase";
 import { BaseComponentRef, ComponentBaseProps } from "../../types/ComponentProps";
 
@@ -57,10 +57,10 @@ const Grid: ParentComponent<GridProps> = (props) => {
                 {props.children}
                 <For each={gridTiles()}>
                     {(row) => (
-                        <div class={styles['Grid-Row']}>
+                        <div class={styles['grid-row']}>
                             <For each={row}>{(cell) =>
-                                <div class={styles['Grid-Col']}>
-                                    {cell || <div class={styles['Grid-Empty-Cell']}></div>}
+                                <div class={styles['grid-col']}>
+                                    {cell || <div class={styles['grid-empty-cell']}></div>}
                                 </div>
                             }</For>
                         </div>

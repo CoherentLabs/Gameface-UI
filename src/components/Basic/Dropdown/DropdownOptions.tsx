@@ -1,6 +1,6 @@
 import { ParentComponent, useContext, For, createMemo } from 'solid-js';
 import { CommonDropdownSlotProps, DropdownContext } from './Dropdown';
-import style from './DropdownOptions.module.css';
+import style from './Dropdown.module.scss';
 import { createTokenComponent, useToken, useTokens } from '@components/utils/tokenComponents';
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import Scroll from '@components/Layout/Scroll/Scroll';

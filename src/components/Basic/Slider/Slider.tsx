@@ -1,6 +1,6 @@
 import { ComponentProps } from "@components/types/ComponentProps";
 import { Accessor, createSignal, onMount, ParentComponent, createMemo } from "solid-js";
-import styles from './Slider.module.css';
+import styles from './Slider.module.scss';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { clamp } from "@components/utils/clamp";
 import { Grid, SliderGrid } from "./SliderGrid";
@@ -92,10 +92,10 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     }
 
     const SliderClasses = createMemo(() => {
-        const classes = [styles.Slider];
+        const classes = [styles.slider];
 
-        if (ThumbSlot()) classes.push(styles['With-Thumb'])
-        if (GridSlot()) classes.push(styles['With-Grid'])
+        if (ThumbSlot()) classes.push(styles['with-thumb'])
+        if (GridSlot()) classes.push(styles['with-grid'])
 
         return classes.join(' ');
     });

@@ -1,0 +1,86 @@
+.dropdown {
+    position: relative;
+
+    &-disabled {
+        opacity: 0.8;
+        pointer-events: none;
+    }
+
+    &-option {
+        padding: 0.8vmax;
+        width: 100%;
+        display: flex;
+        color: black;
+        border-radius: 0.3vmax;
+
+        &:hover {
+            background-color: $primaryColor;
+            color: $textColor;
+        }
+
+        &-selected {
+            background-color: $primaryColor;
+            color: $textColor;
+        }
+
+        &-disabled {
+            pointer-events: none;
+            background-color: $disabledTextColor;
+            color: $disabledColor;
+        }
+    }
+
+    &-options {
+        max-height: 23vmax;
+        position: absolute;
+        border-radius: 0.3vmax;
+        border: 0.2vmax solid transparent;
+        overflow: hidden;
+        background-color: white;
+        top: 6vh;
+        width: 100%;
+        z-index: 100;
+        visibility: hidden;
+
+        &-visible {
+            visibility: visible;
+        }
+    }
+
+    &-trigger {
+        padding: 0.8vmax;
+        border: 0.1vmax solid $primaryColor;
+        border-radius: 0.3vmax;
+        background-color: white;
+        width: 35vh;
+        display: flex;
+        color: black;
+
+        &:hover {
+            border-color: $secondaryColor;
+        }
+
+        &-selected {
+            width: 90%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+    }
+
+    &-placeholder {
+        opacity: 0.8;
+        margin: 0;
+        width: 90%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    &-icon {
+        width: 10%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}

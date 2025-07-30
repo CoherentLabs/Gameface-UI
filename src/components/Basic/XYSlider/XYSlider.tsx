@@ -1,6 +1,6 @@
 import { clamp } from "@components/utils/clamp";
 import { Accessor, createContext, createEffect, createMemo, createSignal, onMount, ParentComponent } from "solid-js";
-import styles from './XYSlider.module.css';
+import styles from './XYSlider.module.scss';
 import { Handle, XYSliderHandle } from "./XYSliderHandle";
 import { Background, XYSliderBackground } from "./XYSliderBackground";
 import { ComponentProps } from "@components/types/ComponentProps";

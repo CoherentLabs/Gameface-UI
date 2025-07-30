@@ -1,5 +1,5 @@
 import { JSX } from "solid-js";
-import styles from './Column.module.css';
+import styles from './Column.module.scss';
 import { ComponentBaseProps } from "../../types/ComponentProps";
 import LayoutBase from "../LayoutBase";
 
@@ -9,7 +9,7 @@ for (let i = 1; i <= 12; i++) {
   const componentName = `Column${i}`;
 
   Columns[componentName] = (props: ComponentBaseProps) => {
-    return <LayoutBase {...props} componentClasses={styles[`Column-${i}`]} />
+    return <LayoutBase {...props} componentClasses={styles[`column-${i}`]} />
   };
 }
 

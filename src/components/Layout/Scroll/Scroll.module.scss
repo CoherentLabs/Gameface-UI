@@ -1,0 +1,34 @@
+.scroll {
+    overflow: hidden;
+    position: relative;
+
+    &-bar {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 0.9vmax;
+        height: 100%;
+        background-color: $disabledTextColor;
+        cursor: pointer;
+        border-radius: 0.3vmax;
+    }
+}
+
+.content-wrapper {
+    overflow: scroll;
+    max-height: 100%;
+
+    &-overflow {
+        padding-right: 0.9vmax;
+    }
+}
+
+.handle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    background-color: $secondaryColor;
+    border-radius: 0.3vmax;
+    cursor: pointer;
+}

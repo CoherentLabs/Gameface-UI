@@ -1,7 +1,7 @@
 import { Accessor, createEffect, createMemo, JSX, ParentComponent, ParentProps, useContext } from "solid-js";
 import { RadioContext } from "./Radio";
 import { ComponentProps } from "@components/types/ComponentProps";
-import styles from './RadioButton.module.css';
+import styles from './Radio.module.scss';
 import { RadioButtonControl } from "./RadioButtonControl";
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { Show } from "solid-js";
@@ -36,11 +36,11 @@ export const RadioButton: ParentComponent<{ button: RadioButtonProps }> = (props
     const isSelected = () => radio?.selected() === props.button.value;
 
     const buttonClasses = createMemo(() => {
-        const classes = [styles.RadioButton];
+        const classes = [styles['radio-button']];
 
         if (props.button.disabled) {
-            if (props.button['class-disabled']) classes.push(`${styles.Disabled} ${props.button['class-disabled']}`);
-            else classes.push(styles.Disabled);
+            if (props.button['class-disabled']) classes.push(`${styles.disabled} ${props.button['class-disabled']}`);
+            else classes.push(styles.disabled);
         }
 
         if (isSelected() && props.button['class-selected']) classes.push(props.button['class-selected'] ?? '');

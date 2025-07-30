@@ -1,0 +1,91 @@
+.slider {
+    display: flex;
+    flex-direction: column;
+    width: 15vmax;
+    height: 0.35vmax;
+    margin: 0 1.5vmax;
+}
+
+.with-thumb {
+    margin-top: 3vmax;
+}
+
+.with-grid {
+    margin-bottom: 2vmax;
+}
+
+.track {
+    width: 100%;
+    height: 100%;
+    background-color: $disabledColor;
+    border-radius: $borderRadius;
+    cursor: pointer;
+    position: relative;
+}
+
+.fill {
+    background-color: $secondaryColor;
+    border-radius: $borderRadius;
+    width: 50%;
+    height: 100%;
+    position: relative;
+}
+
+.handle {
+    width: 1vmax;
+    height: 1vmax;
+    border-radius: 50%;
+    background-color: $secondaryColor;
+    position: absolute;
+    top: -100%;
+    right: 0;
+    z-index: 10;
+    transform: translateX(-50%);
+}
+
+.thumb {
+    padding: 0.25vmax 0.75vmax;
+    border-radius: $borderRadius;
+    background-color: $secondaryColor;
+    color: white;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    transform: translate(-50%, -125%);
+}
+
+.grid {
+    width: 100%;
+    height: 0.75vmax;
+    display: flex;
+    justify-content: space-between;
+    font-size: 1vmax;
+    transform: translateY(20%);
+
+    &-pol {
+        width: 100%;
+        height: 100%;
+
+        &-container {
+            width: 0.1vmax;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: $secondaryColor;
+        }
+
+        &-small {
+            height: 40%;
+            background-color: $primaryColor;
+        }
+
+        &-value {
+            width: 4vmax;
+            display: flex;
+            justify-content: center;
+            overflow-wrap: break-word;
+        }
+    }
+}
