@@ -4,7 +4,7 @@ import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { createTokenComponent, TokenBase } from "@components/utils/tokenComponents";
 import PaginationItem from "./PaginationItem";
 import { Control, PaginationControl } from "./PaginationControl";
-import styles from './Pagination.module.css';
+import styles from './Pagination.module.scss';
 
 export interface PaginationRef {
     element: HTMLDivElement,

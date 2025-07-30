@@ -164,7 +164,7 @@ describe('Pagination', function () {
     });
 });
 
-describe('Stepper Control', function () {
+describe('Pagination Control', function () {
     this.beforeEach(async () => {
         await gf.click(`.${selectors.scenarioBtn}.scenario-6`);
     })

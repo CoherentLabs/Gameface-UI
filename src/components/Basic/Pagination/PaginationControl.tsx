@@ -3,7 +3,7 @@ import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
 import Arrow from './Arrow.svg?component-solid';
 import { PaginationContext } from "./Pagination";
-import styles from './Pagination.module.css';
+import styles from './Pagination.module.scss';
 
 interface ControlTokenProps extends TokenBase {
     'hidden-class'?: string
