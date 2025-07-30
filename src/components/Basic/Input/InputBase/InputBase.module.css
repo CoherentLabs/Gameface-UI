@@ -1,0 +1,54 @@
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  margin: 10px;
+  border: 0.15vmax solid #7d7d7d;
+  border-radius: 0.6vmax;
+  font-size: 1vmax;
+  color: #323232;
+  background-color: #ebebeb;
+  overflow: hidden;
+  height: 2.2vmax;
+}
+
+.input-wrapper:hover {
+  border-color: #00da9a;
+}
+
+.input-element-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  border: none;
+  border-radius: 0.6vmax;
+  padding: 0.35vmax;
+  font-size: 1vmax;
+  height: 100%;
+}
+
+.has-before {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.has-after {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.placeholder {
+  opacity: 0.8;
+  margin: 0;
+  position: absolute;
+  left: 0;
+  padding-left: 0.25vmax;
+  pointer-events: none;
+}
