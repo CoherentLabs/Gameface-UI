@@ -7,8 +7,8 @@ import useTextInput from "../shared/useTextInput";
 import { TextInputProps, TextInputRef } from "../shared/types";
 import { VisibilityButton, VisibilityButtonComponent } from "./VisibilityButton";
 import AddonSlot from "../shared/AddonSlot";
-import styles from '../shared/TextInput.module.css';
-import baseStyles from '../InputBase/InputBase.module.css';
+import styles from '../shared/TextInput.module.scss';
+import baseStyles from '../InputBase/InputBase.module.scss';
 
 export interface PasswordInputRef extends TextInputRef {
     show: () => void,

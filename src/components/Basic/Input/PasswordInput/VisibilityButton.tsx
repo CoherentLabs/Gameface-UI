@@ -3,8 +3,8 @@ import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
 import EyeIcon from './eye.svg?component-solid'
 import EyeOffIcon from './eye-off.svg?component-solid'
-import styles from './PasswordInput.module.css';
-import sharedStyles from '../shared/TextInput.module.css';
+import styles from './PasswordInput.module.scss';
+import sharedStyles from '../shared/TextInput.module.scss';
 
 interface VisibilityButtonComponentProps extends TokenComponentProps {
     visible: () => boolean,

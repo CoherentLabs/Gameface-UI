@@ -5,8 +5,8 @@ import { createTokenComponent, TokenBase, useToken } from '@components/utils/tok
 import { InputBase } from "../InputBase/InputBase";
 import { TextInputProps, TextInputRef } from "../shared/types";
 import InputControlButton from "./InputControlButton";
-import baseStyles from '../InputBase/InputBase.module.css';
-import styles from './NumberInput.module.css';
+import baseStyles from '../InputBase/InputBase.module.scss';
+import styles from './NumberInput.module.scss';
 
 type valueType = number | string;
 export interface NumberInputRef extends Omit<TextInputRef, "value" | "changeValue"> {

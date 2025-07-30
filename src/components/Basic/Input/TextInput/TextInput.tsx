@@ -6,8 +6,8 @@ import { InputBase } from "../InputBase/InputBase";
 import useTextInput from "../shared/useTextInput";
 import { TextInputProps } from "../shared/types";
 import AddonSlot from "../shared/AddonSlot";
-import baseStyles from '../InputBase/InputBase.module.css';
-import styles from '../shared/TextInput.module.css';
+import baseStyles from '../InputBase/InputBase.module.scss';
+import styles from '../shared/TextInput.module.scss';
 
 const TextInput: ParentComponent<TextInputProps> = (props) => {
     const BeforeToken = useToken(Before, props.children);
