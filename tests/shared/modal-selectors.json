@@ -1,0 +1,10 @@
+{
+  "scenarioBtn": "scenario-btn",
+  "modal": "modal",
+  "modalOverlay": "modal-overlay",
+  "modalWindow": "modal-window",
+  "closeButton": "close-button",
+  "acceptButton": "accept-button",
+  "rejectButton": "reject-button",
+  "reactive": "reactive"
+}
