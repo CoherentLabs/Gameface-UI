@@ -52,21 +52,18 @@ export const PaginationControl: ParentComponent<PaginationControlProps> = (props
     });
 
     return (
-        <>
-            <div 
-                class={controlContainerClasses()}
-                style={ControlToken()?.style || {}}
-                onClick={handleClick}>
-                <Show when={props.direction === 'prev'}>
+        <div 
+            class={controlContainerClasses()}
+            style={ControlToken()?.style || {}}
+            onClick={handleClick}>
+            <Show when={props.direction === 'prev'}>
+                <ControlComponent ControlToken={ControlToken} />
+            </Show>
+            <Show when={props.direction === 'next'}>
+                <div class={styles.rotate}>
                     <ControlComponent ControlToken={ControlToken} />
-                </Show>
-                <Show when={props.direction === 'next'}>
-                    <div class={styles.rotate}>
-                        <ControlComponent ControlToken={ControlToken} />
-                    </div>
-                </Show>
-            </div>
-        </>
-
+                </div>
+            </Show>
+        </div>
     )
 }

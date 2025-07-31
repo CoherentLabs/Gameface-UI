@@ -94,8 +94,8 @@ const Pagination: ParentComponent<PaginationProps> = (props) => {
 
         (props.ref as unknown as (ref: any) => void)({
             element,
-            pageIndex: index(),
-            pageSize: length(),
+            pageIndex: index,
+            pageSize: length,
             changeIndex,
             nextPage,
             previousPage

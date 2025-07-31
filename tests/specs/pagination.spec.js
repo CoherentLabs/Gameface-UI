@@ -91,10 +91,10 @@ describe('Pagination', function () {
         const assertionEl = await gf.get(`.${selectors.assertionElement}`);
         const paginationControls = await gf.getAll(`.${selectors.paginationControl}`);
         const paginationItems = await gf.getAll(`.${selectors.paginationItem}`)
-        const leftCotnrol = await paginationControls.first();
+        const leftControl = await paginationControls.first();
         const rightControl = await paginationControls.last();
 
-        await leftCotnrol.click();
+        await leftControl.click();
         assert.equal(await assertionEl.text(), "1", 'The first item should remain selected');
         
         await paginationItems[paginationItems.length - 1].click();
@@ -106,12 +106,12 @@ describe('Pagination', function () {
     it('Should enable loop and loop through items', async () => {
         const assertionEl = await gf.get(`.${selectors.assertionElement}`);
         const paginationControls = await gf.getAll(`.${selectors.paginationControl}`);
-        const leftCotnrol = await paginationControls.first();
+        const leftControl = await paginationControls.first();
         const rightControl = await paginationControls.last();
 
         await gf.click(`.${selectors.scenarioBtn}.scenario-5`);
         
-        await leftCotnrol.click();
+        await leftControl.click();
         assert.equal(await assertionEl.text(), "5", 'The last item should be selected after looping through the items');
         
         await rightControl.click();
