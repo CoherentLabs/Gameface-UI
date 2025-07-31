@@ -1,5 +1,5 @@
 import { JSX, ParentComponent, Show, createMemo, useContext } from "solid-js";
-import styles from './Modal.module.css';
+import styles from './Modal.module.scss';
 import { ModalContext } from "./Modal";
 
 interface ModalCloseButtonProps {

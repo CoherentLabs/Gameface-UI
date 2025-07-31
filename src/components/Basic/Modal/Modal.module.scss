@@ -1,0 +1,60 @@
+.modal {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+
+    &-open {
+        pointer-events: auto;
+    }
+
+    &-overlay {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.3);
+        animation: fadeIn 0.3s forwards;
+    }
+
+    &-window {
+        display: flex;
+        padding: 1vmax;
+        flex-direction: column;
+        position: absolute;
+        width: 40vmax;
+        height: 20vmax;
+        background-color: white;
+        animation: moveWindow 0.3s forwards;
+    }
+
+    &-close-button {
+        cursor: pointer;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+
+@keyframes moveWindow {
+    from {
+        transform: translateY(30%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
