@@ -1,0 +1,26 @@
+.list {
+    &-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.2vmax;
+        
+        &-nested {
+            padding-left: 0.75vmax;
+        }
+    }
+}
+
+.icon {
+    margin-right: 0.35vmax;
+
+    &-dot {
+        width: 0.35vmax;
+        height: 0.35vmax;
+        border-radius: 50%;
+        background-color: white;
+    }
+
+    &-number {
+        display: flex;
+    }
+}
