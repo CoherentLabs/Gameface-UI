@@ -61,6 +61,10 @@ You can run the tests by directly passing the path to `Player.exe` as an environ
 npx cross-env GAMEFACE_PATH={absolute_or_relative_path_to_Player.exe} npm run test
 ```
 
+:::note
+The {absolute_or_relative_path_to_Player.exe} should be replaced with the actual path to the `Player.exe` file on your system without the curly braces. For example - `GAMEFACE_PATH=C:/Gameface/Player/Player.exe`.
+:::
+
 This command sets the `GAMEFACE_PATH` environment variable, which tells the test runner where to find the `Player.exe`. While both absolute and relative paths are accepted, using an absolute path is recommended to prevent issues related to incorrect path resolution. If you use a relative path, it should be relative to the root of the Gameface UI project.
 
 ### Using `.env` file :badge[recommended]{variant="note"}
@@ -74,11 +78,11 @@ GAMEFACE_PATH={absolute_or_relative_path_to_Player.exe}
 Once this file is in place, you can simply run:
 
 ```bash
-npm run tests
+npm run test
 ```
 
 :::caution
-Make sure you have ran `npm i` command before running the tests to install all the required dependencies.
+Make sure you have run `npm i` in the root of the project before running the tests to install all required dependencies.
 :::
 
 ## Running single test `.spec` file
