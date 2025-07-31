@@ -73,7 +73,6 @@ const StepperTest = () => {
                             <Stepper.Item 
                                 selected={option.selected}
                                 value={option.value}
-                                class-selected={selectors.customSelected}
                                 class={`${selectors.stepperItem} ${selectors.stepperItem}${index()} ${reactiveClass()}`}
                                 style={reactiveStyle()}>
                                 {option.value}

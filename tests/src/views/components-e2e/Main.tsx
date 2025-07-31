@@ -25,6 +25,7 @@ import AccordionTest from '../../components/Accordion/AccordionTest';
 import TextInputTest from '../../components/Input/TextInputTest';
 import PasswordInputTest from '../../components/Input/PasswordInputTest';
 import NumberInputTest from '../../components/Input/NumberInputTest';
+import PaginationTest from '../../components/Pagination/PaginationTest';
 
 const Main = () => {
     const components = [
@@ -39,6 +40,7 @@ const Main = () => {
         "text-slider",
         "xy-slider",
         "toggle",
+        "pagination",
 
         // Compex components
         "color-picker",
@@ -92,6 +94,7 @@ const Main = () => {
                 <TextInputTest />
                 <PasswordInputTest />
                 <NumberInputTest />
+                <PaginationTest />
             </Tabs>
         </div>
     );

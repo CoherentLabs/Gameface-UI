@@ -1,0 +1,82 @@
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.dot-item {
+    border-radius: 50%;
+    width: 1vmax;
+    height: 1vmax;
+    font-size: 0.75vmax;
+    background-color: $disabledColor;
+    color: $secondaryColor;
+    cursor: pointer;
+    margin-right: 0.5vmax;
+
+    &.last {
+        margin-right: 0;
+    }
+
+    &.has-numbers {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    &:hover {
+        background-color: $primaryColor;
+        color: $textColor;
+    }
+
+    &.selected {
+        background-color: $secondaryColor;
+        color: $textColor;
+    }
+}
+
+.control {
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border-radius: $borderRadius;
+    background-color: $primaryColor;
+
+    &.hidden {
+        opacity: 0.3;
+        background-color: $disabledTextColor;
+        pointer-events: none;
+
+        path {
+            stroke: $disabledColor !important;
+        }
+    }
+
+    &.prev {
+        margin-right: 0.5vmax;
+    }
+
+    &.next {
+        margin-left: 0.5vmax;
+    }
+
+    &:hover {
+        background-color: $secondaryColor;
+    }
+}
+
+.arrow {
+    padding: 0.3vmax;
+    width: 3vh;
+    height: 2.75vh;
+
+    path {
+        stroke: $textColor;
+    }
+}
+
+.rotate {
+    transform: rotate(180deg);
+}

@@ -7,7 +7,6 @@
   "stepperItem": "stepper-item",
   "stepperControl": "stepper-control",
   "stepperCustomControl": "stepper-custom-control",
-  "customSelected": "custom-selected",
   "controlHidden": "control-hidden",
   "reactive": "reactive"
 }
