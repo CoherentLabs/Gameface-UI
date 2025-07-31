@@ -24,10 +24,10 @@ const AccordionTest = () => {
         { label: "Disable accordion", action: () => setDisabled(true) },
         { label: "Disable accordion panel", action: () => setPanelDisabled(true) },
         { label: "Enable reactive styles", action: () => setReactive(true) },
-        { label: "Expand a panel programatically", action: () => accordionRef.expand('test1') },
-        { label: "Expand all panels programatically", action: () => accordionRef.expandAll() },
-        { label: "Collapse a panel programatically", action: () => accordionRef.collapse('test1') },
-        { label: "Collapse all panels programatically", action: () => accordionRef.collapseAll() },
+        { label: "Expand a panel programatically", action: () => accordionRef?.expand('test1') },
+        { label: "Expand all panels programatically", action: () => accordionRef?.expandAll() },
+        { label: "Collapse a panel programatically", action: () => accordionRef?.collapse('test1') },
+        { label: "Collapse all panels programatically", action: () => accordionRef?.collapseAll() },
         { label: "Render custom icon", action: () => setCustomIcon(true) },
     ];
 
@@ -37,7 +37,7 @@ const AccordionTest = () => {
         setPanelDisabled(false);
         setReactive(false);
         setCustomIcon(false);
-        accordionRef.collapseAll();
+        accordionRef?.collapseAll();
     };
 
     const isReactive = createMemo(() => reactive() === true);
