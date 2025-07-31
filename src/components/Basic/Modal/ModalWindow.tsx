@@ -1,6 +1,6 @@
 import { ParentComponent, createMemo } from "solid-js";
 import { TokenComponentProps } from "../../types/ComponentProps";
-import styles from './Modal.module.css';
+import styles from './Modal.module.scss';
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
 import Layout from "@components/Layout/Layout/Layout";
 
