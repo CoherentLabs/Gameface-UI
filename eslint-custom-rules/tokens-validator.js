@@ -19,11 +19,12 @@ const componentsWithSlotTokens = {
   ACCORDION: 'Accordion',
   ACCORDION_PANEL: 'Accordion.Panel',
   ACCORDION_HEADING: 'Accordion.Heading',
-  TextInput: 'TextInput',
-  PasswordInput: 'PasswordInput',
-  NumberInput: 'NumberInput',
-  Pagination: 'Pagination',
+  TEXTINPUT: 'TextInput',
+  PASSWORDINPUT: 'PasswordInput',
+  NUMBERINPUT: 'NumberInput',
+  PAGINATION: 'Pagination',
   MODAL: 'Modal'
+  LIST: 'List',
 }
 
 const tokenComponetsParents = {
@@ -80,29 +81,32 @@ const tokenComponetsParents = {
   'Accordion.Body': componentsWithSlotTokens.ACCORDION_PANEL,
 
   // Before, After, Input, Placeholder
-  'TextInput.Before': componentsWithSlotTokens.TextInput,
-  'TextInput.After': componentsWithSlotTokens.TextInput,
-  'TextInput.Input': componentsWithSlotTokens.TextInput,
-  'TextInput.Placeholder': componentsWithSlotTokens.TextInput,
+  'TextInput.Before': componentsWithSlotTokens.TEXTINPUT,
+  'TextInput.After': componentsWithSlotTokens.TEXTINPUT,
+  'TextInput.Input': componentsWithSlotTokens.TEXTINPUT,
+  'TextInput.Placeholder': componentsWithSlotTokens.TEXTINPUT,
 
-  'PasswordInput.Before': componentsWithSlotTokens.PasswordInput,
-  'PasswordInput.After': componentsWithSlotTokens.PasswordInput,
-  'PasswordInput.Input': componentsWithSlotTokens.PasswordInput,
-  'PasswordInput.VisibilityButton': componentsWithSlotTokens.PasswordInput,
+  'PasswordInput.Before': componentsWithSlotTokens.PASSWORDINPUT,
+  'PasswordInput.After': componentsWithSlotTokens.PASSWORDINPUT,
+  'PasswordInput.Input': componentsWithSlotTokens.PASSWORDINPUT,
+  'PasswordInput.VisibilityButton': componentsWithSlotTokens.PASSWORDINPUT,
 
-  'NumberInput.IncreaseControl': componentsWithSlotTokens.NumberInput,
-  'NumberInput.DecreaseControl': componentsWithSlotTokens.NumberInput,
-  'NumberInput.Input': componentsWithSlotTokens.NumberInput,
-  'NumberInput.Placeholder': componentsWithSlotTokens.NumberInput,
+  'NumberInput.IncreaseControl': componentsWithSlotTokens.NUMBERINPUT,
+  'NumberInput.DecreaseControl': componentsWithSlotTokens.NUMBERINPUT,
+  'NumberInput.Input': componentsWithSlotTokens.NUMBERINPUT,
+  'NumberInput.Placeholder': componentsWithSlotTokens.NUMBERINPUT,
 
-  'Pagination.Control': componentsWithSlotTokens.Pagination,
-  'Pagination.Item': componentsWithSlotTokens.Pagination,
+  'Pagination.Control': componentsWithSlotTokens.PAGINATION,
+  'Pagination.Item': componentsWithSlotTokens.PAGINATION,
+  
+  'List.Item': componentsWithSlotTokens.LIST,
+  'List.Icon': componentsWithSlotTokens.LIST,
 
   'Modal.Overlay': componentsWithSlotTokens.MODAL,
   'Modal.Window': componentsWithSlotTokens.MODAL,
 }
 
-const availbleForedTokenComponets = new Set(['Radio.Button', 'Dropdown.Option', 'Segment.Button', 'Stepper.Item', 'Accordion.Panel'])
+const availbleForedTokenComponets = new Set(['Radio.Button', 'Dropdown.Option', 'Segment.Button', 'Stepper.Item', 'Accordion.Panel', 'List.Item'])
 
 function isParentMatchingPath(node, path, wrapperName) {
   let currentNode = node.parent;

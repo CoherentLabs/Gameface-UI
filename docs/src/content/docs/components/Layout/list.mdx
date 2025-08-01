@@ -1,0 +1,220 @@
+---
+title: List
+---
+The `List` component displays structured content as a vertical stack of items. It supports unordered and ordered formats, automatic nesting, and a customizable icon that applies to all list items.
+
+It's ideal for UI elements like settings menus, objectives, inventories, or any structured group of interactive or static content.
+
+## Usage
+
+To use `List`, wrap `List.Item` components inside the `List`. You can optionally specify the list type (unordered or ordered)
+and apply icon customization by using the `List.Icon` slot inside the `List`.
+
+```tsx
+import List from '@components/Layout/List/List';
+
+const App = () => {
+    return (
+        <List type="ordered">
+            <List.Item>Step one</List.Item>
+            <List.Item>Step two</List.Item>
+            <List.Item>
+                <List>
+                    <List.Item>Step 2.1</List.Item>
+                    <List.Item>Step 2.2</List.Item>
+                </List>
+            </List.Item>
+            <List.Icon class="icon-class" />
+        </List>
+    );
+};
+
+export default App;
+```
+
+## API
+
+### Props
+
+| Prop Name  | Type                       | Default       | Description                                                              |
+| ---------- | -------------------------- | ------------- | ------------------------------------------------------------------------ |
+| `type`     | `'ordered' \| 'unordered'` | `'unordered'` | Controls whether the list is ordered (numbered) or unordered (bulleted). |
+| `style`    | `JSX.CSSProperties`        | `{}`          | Inline styles to apply to the root element.                              |
+| `class`    | `string`                   | `""`          | Additional CSS classes to apply to the root element.                     |
+| `children` | `JSX.Element`              | `""`          | List items to render. Use `List.Item` components for each entry.         |
+
+## Slots
+
+### `List.Item`
+
+Use `List.Item` to define an item in the list. Items can contain any valid JSX content, including nested `List` components.
+
+#### Properties
+
+| Prop Name  | Type                | Default | Description                                               |
+| ---------- | ------------------- | ------- | --------------------------------------------------------- |
+| `style`    | `JSX.CSSProperties` | `{}`    | Inline styles for the individual list item.               |
+| `class`    | `string`            | `""`    | Additional CSS classes for the item.                      |
+| `children` | `JSX.Element`       | `""`    | Content of the list item. Supports nested `List` components and any other valid JSX content. |
+
+#### Usage
+
+```tsx
+import List from '@components/Layout/List/List';
+
+const App = () => {
+    return (
+        <List>
+            <List.Item>Start the game</List.Item>
+            <List.Item>Adjust settings</List.Item>
+            <List.Item>
+                <List>
+                    <List.Item>Graphics</List.Item>
+                    <List.Item>Sound</List.Item>
+                </List>
+            </List.Item>
+            <List.Item>Exit</List.Item>
+        </List>
+    );
+};
+
+```
+
+### `List.Icon`
+
+You can override the default bullet or number by providing a custom icon using the `List.Icon` slot. 
+This gives full control over visuals for each item (especially useful for UI menus or stylized lists).
+
+The slot is used directly inside the `List` component and applies to all the items in the list when used.
+
+#### Usage
+
+```diff lang="tsx"
+import List from '@components/Layout/List/List';
+import SwordIcon from '@assets/icons/sword.svg?component-solid';
+
+const App = () => {
+    return (
+        <List>
++           <List.Icon><SwordIcon /></List.Icon>
+            <List.Item>
+                Equip weapon
+            </List.Item>
+        </List>
+    );
+};
+```
+
+:::note
+If you want to use the default icon but customize its appearance, you can pass a `class` or `style` prop to the `List.Icon` slot without rendering custom content inside it.
+```tsx
+<List.Icon style={{'margin-right': '0.5vmax'}} class="custom-icon" />
+```
+:::
+
+## Guide
+
+### Nesting list items
+
+The `List` component supports automatic styling for nested items. When you nest one `List` inside a `List.Item`, indentation adjust accordingly.
+
+```tsx
+import List from '@components/Layout/List/List';
+
+const App = () => {
+    return (
+        <List>
+            <List.Item>Main Quest</List.Item>
+            <List.Item>Side Quests</List.Item>
+            <List.Item>
+                <List type="ordered">
+                    <List.Icon style={{"font-weight": 'bold'}}/>
+                    <List.Item>Rescue the merchant</List.Item>
+                    <List.Item>Find the lost ring</List.Item>
+                </List>
+            </List.Item>
+        </List>
+    );
+};
+```
+
+### Rendering list items dynamically
+
+To dynamically render list items in the `List` component, you can use an array and map over it:
+
+```tsx
+import List from '@components/Layout/List/List';
+
+const items = [
+    { id: 1, text: 'Start mission' },
+    { id: 2, text: 'Collect 5 herbs' },
+    { id: 3, text: 'Return to base' }
+];
+
+const App = () => {
+    return (
+        <List>
+            {items.map((item) => (
+                <List.Item >
+                    {item.text}
+                </List.Item>
+            ))}
+        </List>
+    );
+};
+```
+
+Alternatively, you can use the SolidJS `<For>` component:
+
+```tsx
+import List from '@components/Layout/List/List';
+import { For } from 'solid-js';
+
+const items = [
+    { id: 1, text: 'Start mission' },
+    { id: 2, text: 'Collect 5 herbs' },
+    { id: 3, text: 'Return to base' }
+];
+
+const App = () => {
+    return (
+        <List>
+            <For each={items}>
+                {(item) => (
+                    <List.Item>
+                        {item.text}
+                    </List.Item>
+                )}
+            </For>
+        </List>
+    );
+};
+```
+
+### Accessing the HTML element
+
+To access the HTML DOM element of the `List` component.
+
+1. Declare a variable to hold the ref but don't initialize it with a value
+2. The declared value should have a type of `BaseComponentRef`, which you need to import
+3. Set the declared variable as the value of the `ref` prop of the `List` component
+
+#### Example
+
+```tsx
+import List from '@components/Layout/List/List';
+import { BaseComponentRef } from '@components/types/ComponentProps';
+
+const App = () => {
+    let listRef!: BaseComponentRef
+
+    return (
+        <List ref={listRef}>
+            <List.Item>Main Quest</List.Item>
+            <List.Item>Side Quest</List.Item>
+        </List>
+    );
+};
+```
+
+Now you can access the HTML element of `List` with `listRef.element` and make modifications to it if needed. 
