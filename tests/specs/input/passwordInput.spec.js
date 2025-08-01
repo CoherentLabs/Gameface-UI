@@ -4,6 +4,7 @@ const selectors = require('../../shared/input-selectors.json');
 describe('PasswordInput', function () {
     this.beforeAll(async () => {
         await gf.navigate(`http://localhost:3000/components-e2e/`);
+        await gf.sleep(1000);
         await gf.click('.password-input-link');
     })
 

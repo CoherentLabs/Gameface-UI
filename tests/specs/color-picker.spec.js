@@ -4,6 +4,7 @@ const selectors = require('../shared/color-picker-selectors.json');
 describe('Color Picker', function () {
     this.beforeAll(async () => {
         await gf.navigate(`http://localhost:3000/components-e2e/`);
+        await gf.sleep(1000);
         await gf.click('.color-picker-link');
     })
 
@@ -21,9 +22,9 @@ describe('Color Picker', function () {
 
         const assertionEl = await colorPickerElements.last().find('input');
         const xySliderHandle = (await (await colorPickerElements.first()).children()).last();
-        await xySliderHandle.drag(25, 250);
+        await xySliderHandle.drag(25, 0);
 
-        assert.equal(await assertionEl.getValue(), '#786C6CFF', 'Color picker\'s value should change to \'#786C6CFF\'');
+        assert.equal(await assertionEl.getValue(), '#FFE6E6FF', 'Color picker\'s value should change to \'#FFE6E6FF\'');
     })
 
     it('Should change color with dragging the hue slider', async () => {

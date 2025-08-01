@@ -22,7 +22,7 @@ const DropdownTest = () => {
         { label: "Select option with ref", action: () => dropdownRef?.selectOption("test1") },
         { label: "Disable dropdown", action: () => setDisabled(true) },
         { label: "Disable option", action: () => setBtnDisabled(true) },
-        { label: "Enable Overflow", action: () => setOptions([...dropdownOptions, ...dropdownOptions]) },
+        { label: "Enable Overflow", action: () => setOptions([...dropdownOptions, ...dropdownOptions, ...dropdownOptions, ...dropdownOptions]) },
         { label: "Enable custom icon", action: () => setCustomIcon(true) },
     ];
 
