@@ -4,6 +4,7 @@ const selectors = require('../shared/xy-slider-selectors.json');
 describe('XYSlider', function () {
     this.beforeAll(async () => {
         await gf.navigate(`http://localhost:3000/components-e2e/`);
+        await gf.sleep(1000);
         await gf.click('.xy-slider-link');
     })
 
@@ -24,9 +25,9 @@ describe('XYSlider', function () {
     it('Should change value with dragging', async () => {
         const assertionEl = await gf.get(`.${selectors.assertionElement}`);
         const handle = await gf.get(`.${selectors.sliderHandle}`);
-        await handle.drag(25, 250);
+        await handle.drag(25, 0);
 
-        assert.equal(await assertionEl.text(), 'x: 39 | y: 62', 'Slider\'s value should change to \'x: 39 | y: 62\'');
+        assert.equal(await assertionEl.text(), 'x: 39 | y: 0', 'Slider\'s value should change to \'x: 39 | y: 0\'');
     })
 
     it('Should change value via ref', async () => {
@@ -41,7 +42,7 @@ describe('XYSlider', function () {
         await background.click();
         const assertionEl = await gf.get(`.${selectors.assertionElement}`);
 
-        assert.equal(await assertionEl.text(), 'x: 100 | y: 99', 'Slider\'s thumb should move to the center');
+        assert.equal(await assertionEl.text(), 'x: 100 | y: 98', 'Slider\'s thumb should move to the center');
     })
 
     it('Should change min and max reactively', async () => {

@@ -4,6 +4,7 @@ const selectors = require('../shared/accordion-selectors.json');
 describe('ToggleButton', function () {
     this.beforeAll(async () => {
         await gf.navigate(`http://localhost:3000/components-e2e/`);
+        await gf.sleep(1000);
         await gf.click('.accordion-link');
     });
 
@@ -28,7 +29,7 @@ describe('ToggleButton', function () {
     it('Should expand and collapse accordion panel', async () => {
         const accordion = await gf.get(`.${selectors.base}`);
         const panels = await accordion.findAll(`.${selectors.accordionPanel}`);
-        const body0 = await (await panels[0].children()).last(); 
+        const body0 = await (await panels[0].children()).last();
 
         await panels[0].click();
         await gf.retryIfFails(async () => {
@@ -44,8 +45,8 @@ describe('ToggleButton', function () {
     it('Should expand only one panel', async () => {
         const accordion = await gf.get(`.${selectors.base}`);
         const panels = await accordion.findAll(`.${selectors.accordionPanel}`);
-        const body0 = await (await panels[0].children()).last(); 
-        const body1 = await (await panels[1].children()).last(); 
+        const body0 = await (await panels[0].children()).last();
+        const body1 = await (await panels[1].children()).last();
 
         await panels[0].click();
         await panels[1].click();
@@ -58,9 +59,9 @@ describe('ToggleButton', function () {
     it('Should expand multiple panels', async () => {
         const accordion = await gf.get(`.${selectors.base}`);
         const panels = await accordion.findAll(`.${selectors.accordionPanel}`);
-        const body0 = await (await panels[0].children()).last(); 
-        const body1 = await (await panels[1].children()).last(); 
-        
+        const body0 = await (await panels[0].children()).last();
+        const body1 = await (await panels[1].children()).last();
+
         await gf.click(`.${selectors.scenarioBtn}.scenario-0`)
         await panels[0].click();
         await panels[1].click();
@@ -86,7 +87,7 @@ describe('ToggleButton', function () {
 
     it('Should toggle a panel programmatically', async () => {
         const panel = await gf.get(`.${selectors.accordionPanel}`);
-        const body = await (await panel.children()).last(); 
+        const body = await (await panel.children()).last();
 
         await gf.click(`.${selectors.scenarioBtn}.scenario-4`)
         await gf.retryIfFails(async () => {
@@ -105,7 +106,7 @@ describe('ToggleButton', function () {
 
         await gf.click(`.${selectors.scenarioBtn}.scenario-5`)
         for (const panel of panels) {
-            const body = await (await panel.children()).last(); 
+            const body = await (await panel.children()).last();
 
             await gf.retryIfFails(async () => {
                 assert.equal(await body.isVisible(), true, 'Accordion panel should have expanded');
@@ -151,7 +152,7 @@ describe('ToggleButton', function () {
     it('Render custom icon', async () => {
         const icon = await gf.get(`.${selectors.accordionIcon}`);
         assert.equal(await (await icon.children()).first().node.nodeName, "SVG", 'Default icon should be of type SVG');
-        
+
         await gf.click(`.${selectors.scenarioBtn}.scenario-8`)
         assert.equal(await icon.text(), "Custom icon", 'New icon should have text - Custom Icon');
     })
