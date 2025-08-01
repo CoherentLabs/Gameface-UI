@@ -23,7 +23,10 @@ export const ListItem: ParentComponent<ListItemComponentProps> = (props) => {
     const [isNested, setIsNested] = createSignal(false);
     return (
         <NestedListContext.Provider value={() => setIsNested(true)}>
-            <LayoutBase class={`${styles['list-item']} ${isNested() ? styles['list-item-nested'] : ''}`} {...props}>
+            <LayoutBase 
+                class={`${styles['list-item']} ${isNested() ? styles['list-item-nested'] : ''} ${props.item.class ?? ''}`}
+                style={props.item.style}
+                {...props}>
                 <ListIcon 
                     parentChildren={props.parentChildren} 
                     isNested={isNested}

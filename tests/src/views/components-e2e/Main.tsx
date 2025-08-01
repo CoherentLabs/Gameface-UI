@@ -27,6 +27,7 @@ import PasswordInputTest from '../../components/Input/PasswordInputTest';
 import NumberInputTest from '../../components/Input/NumberInputTest';
 import PaginationTest from '../../components/Pagination/PaginationTest';
 import ModalTest from '../../components/Modal/ModalTest';
+import ListTest from '../../components/List/ListTest';
 
 const Main = () => {
     const components = [
@@ -56,6 +57,7 @@ const Main = () => {
         "relative",
         "transform",
         "scroll",
+        "list",
 
         // Media
         'media',
@@ -98,6 +100,7 @@ const Main = () => {
                 <NumberInputTest />
                 <PaginationTest />
                 <ModalTest />
+                <ListTest />
             </Tabs>
         </div>
     );

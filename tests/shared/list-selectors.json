@@ -1,0 +1,9 @@
+{
+    "base": "list",
+    "listItem": "list-item",
+    "listIcon": "list-icon",
+    "customIcon": "custom-icon",
+    "assertionElement": "assertion-element",
+    "scenarioBtn": "scenario-btn",
+    "reactive": "reactive"
+}
