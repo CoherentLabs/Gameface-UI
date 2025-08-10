@@ -82,9 +82,9 @@ const Modal: ParentComponent<ModalProps> = (props) => {
                     use:forwardEvents={props}
                     use:forwardAttrs={props}>
                     <Show when={isOpen()}>
-                        <Show when={OverlayToken?.()}>
+                        {OverlayToken?.() && (
                             <div onClick={close} class={modalOverlayClasses()} style={OverlayToken?.()?.style}></div>
-                        </Show>
+                        )}
                         <ModalWindow parentChildren={props.children}></ModalWindow>
                     </Show>
                 </div>

@@ -6,6 +6,7 @@
     justify-content: center;
     align-items: center;
     pointer-events: none;
+    z-index: 1000;
 
     &-open {
         pointer-events: auto;
@@ -25,7 +26,7 @@
         flex-direction: column;
         position: absolute;
         width: 40vmax;
-        height: 20vmax;
+        min-height: 20vmax;
         background-color: white;
         animation: moveWindow 0.3s forwards;
     }
