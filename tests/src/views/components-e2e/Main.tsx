@@ -26,6 +26,7 @@ import TextInputTest from '../../components/Input/TextInputTest';
 import PasswordInputTest from '../../components/Input/PasswordInputTest';
 import NumberInputTest from '../../components/Input/NumberInputTest';
 import PaginationTest from '../../components/Pagination/PaginationTest';
+import ModalTest from '../../components/Modal/ModalTest';
 
 const Main = () => {
     const components = [
@@ -41,6 +42,7 @@ const Main = () => {
         "xy-slider",
         "toggle",
         "pagination",
+        'modal',
 
         // Compex components
         "color-picker",
@@ -95,6 +97,7 @@ const Main = () => {
                 <PasswordInputTest />
                 <NumberInputTest />
                 <PaginationTest />
+                <ModalTest />
             </Tabs>
         </div>
     );

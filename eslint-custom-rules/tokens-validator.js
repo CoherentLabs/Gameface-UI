@@ -23,6 +23,7 @@ const componentsWithSlotTokens = {
   PasswordInput: 'PasswordInput',
   NumberInput: 'NumberInput',
   Pagination: 'Pagination',
+  MODAL: 'Modal'
 }
 
 const tokenComponetsParents = {
@@ -96,6 +97,9 @@ const tokenComponetsParents = {
 
   'Pagination.Control': componentsWithSlotTokens.Pagination,
   'Pagination.Item': componentsWithSlotTokens.Pagination,
+
+  'Modal.Overlay': componentsWithSlotTokens.MODAL,
+  'Modal.Window': componentsWithSlotTokens.MODAL,
 }
 
 const availbleForedTokenComponets = new Set(['Radio.Button', 'Dropdown.Option', 'Segment.Button', 'Stepper.Item', 'Accordion.Panel'])
