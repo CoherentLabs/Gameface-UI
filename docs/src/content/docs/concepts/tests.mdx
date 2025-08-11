@@ -62,7 +62,7 @@ npx cross-env GAMEFACE_PATH={absolute_or_relative_path_to_Player.exe} npm run te
 ```
 
 :::note
-The {absolute_or_relative_path_to_Player.exe} should be replaced with the actual path to the `Player.exe` file on your system without the curly braces. For example - `GAMEFACE_PATH=C:/Gameface/Player/Player.exe`.
+The `{absolute_or_relative_path_to_Player.exe}` should be replaced with the actual path to the `Player.exe` file on your system without the curly braces. For example - `GAMEFACE_PATH=C:/Gameface/Player/Player.exe`.
 :::
 
 This command sets the `GAMEFACE_PATH` environment variable, which tells the test runner where to find the `Player.exe`. While both absolute and relative paths are accepted, using an absolute path is recommended to prevent issues related to incorrect path resolution. If you use a relative path, it should be relative to the root of the Gameface UI project.

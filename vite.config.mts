@@ -61,7 +61,8 @@ export default defineConfig({
       scss: {
         additionalData: `
           @use '@assets/scss/variables' as *;
-        `
+        `,
+        api: 'modern',
       }
     }
   }
