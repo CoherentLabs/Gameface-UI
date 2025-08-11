@@ -9,7 +9,7 @@ const colorDragPositions = {
 
 async function testColorPickerDrag(color, sliderEl, assertionEl, dragging2D = false) {
     const { x, y } = colorDragPositions[color];
-    if (!x || !y) throw new Error(`No drag position defined for color ${color}`);
+    if (x === undefined || y === undefined) throw new Error(`No drag position defined for color ${color}`);
     await sliderEl.drag(x, y);
 
     assert.equal(await assertionEl.getValue(), color, `${dragging2D ? 'Color picker' : 'Slider'}\'s value should change to '${color}'`);
