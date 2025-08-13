@@ -1,37 +1,53 @@
-import { Accessor, createMemo, ParentComponent, Show } from "solid-js";
+import { createMemo, JSX, ParentComponent, Show, useContext } from "solid-js";
 import { TokenComponentProps } from "../../types/ComponentProps";
 import styles from './List.module.scss';
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
+import { ListContext } from "./List";
 
 interface ListIconComponent extends TokenComponentProps, TokenBase {
+    isNested: boolean,
     index: number,
-    isNested: Accessor<boolean>,
 }
 
 export const Icon = createTokenComponent<TokenBase>()
-
 const ListIcon: ParentComponent<ListIconComponent> = (props) => {
     const IconToken = useToken(Icon, props.parentChildren)
-    const isOrdered = createMemo(() => props.index > 0);
+    const listContext = useContext(ListContext);
 
     const IconClasses = createMemo(() => {
-        const classes = [styles.icon, isOrdered() ? styles['icon-number'] : styles['icon-dot']];
+        const classes = [styles.icon];
 
+        classes.push(listContext?.bulletBgUrl() 
+            ? styles[`icon-custom`] 
+            : styles[`icon-${listContext?.bulletType()}`])
+
+        classes.push(listContext?.["bullet-class"] ?? '');
         classes.push(IconToken()?.class ?? "");
 
         return classes.join(' ');
     })
 
+    const IconStyle = createMemo(() => {
+        const base = IconToken()?.style ?? {};
+        const url = listContext?.bulletBgUrl();
+        if (!url || IconToken()?.children) return base;
+
+        return {
+            ...base,
+            'background-image': `url("${url}")`,
+        } as JSX.CSSProperties;
+    });
+
     return (
         <>
-            <Show when={IconToken()?.children && !props.isNested()}>
-                <div style={IconToken()?.style} class={`${IconToken()?.class} ${styles.icon}`}>
+            <Show when={IconToken()?.children}>
+                <div style={IconStyle()} class={`${IconToken()?.class ?? ""} ${styles.icon} ${listContext?.["bullet-class"] ?? ''}`}>
                     {IconToken()?.children}
                 </div>
             </Show>
-            <Show when={!IconToken()?.children && !props.isNested()}>
-                <div style={IconToken()?.style} class={IconClasses()}>
-                    {isOrdered() && (props.index + '.')}
+            <Show when={!IconToken()?.children}>
+                <div style={IconStyle()} class={IconClasses()}>
+                    {listContext?.isOrdered() && ((props.index + 1) + '.')}
                 </div>
             </Show>
         </>

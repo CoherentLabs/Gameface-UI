@@ -23,8 +23,9 @@ const componentsWithSlotTokens = {
   PASSWORDINPUT: 'PasswordInput',
   NUMBERINPUT: 'NumberInput',
   PAGINATION: 'Pagination',
-  MODAL: 'Modal'
+  MODAL: 'Modal',
   LIST: 'List',
+  LIST_ITEM: 'List.Item',
 }
 
 const tokenComponetsParents = {
@@ -100,10 +101,10 @@ const tokenComponetsParents = {
   'Pagination.Item': componentsWithSlotTokens.PAGINATION,
   
   'List.Item': componentsWithSlotTokens.LIST,
-  'List.Icon': componentsWithSlotTokens.LIST,
 
   'Modal.Overlay': componentsWithSlotTokens.MODAL,
   'Modal.Window': componentsWithSlotTokens.MODAL,
+  'List.Icon': componentsWithSlotTokens.LIST_ITEM,
 }
 
 const availbleForedTokenComponets = new Set(['Radio.Button', 'Dropdown.Option', 'Segment.Button', 'Stepper.Item', 'Accordion.Panel', 'List.Item'])
