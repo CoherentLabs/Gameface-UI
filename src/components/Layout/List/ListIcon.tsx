@@ -21,7 +21,7 @@ const ListIcon: ParentComponent<ListIconComponent> = (props) => {
             ? styles[`icon-custom`] 
             : styles[`icon-${listContext?.bulletType()}`])
 
-        classes.push(listContext?.["bullet-class"] ?? '');
+        classes.push(listContext?.bulletClass() ?? "")
         classes.push(IconToken()?.class ?? "");
 
         return classes.join(' ');
@@ -41,7 +41,7 @@ const ListIcon: ParentComponent<ListIconComponent> = (props) => {
     return (
         <>
             <Show when={IconToken()?.children}>
-                <div style={IconStyle()} class={`${IconToken()?.class ?? ""} ${styles.icon} ${listContext?.["bullet-class"] ?? ''}`}>
+                <div style={IconStyle()} class={`${IconToken()?.class ?? ""} ${styles.icon} ${listContext?.bulletClass() ?? ''}`}>
                     {IconToken()?.children}
                 </div>
             </Show>

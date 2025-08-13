@@ -3,6 +3,7 @@
     "listItem": "list-item",
     "listIcon": "list-icon",
     "customIcon": "custom-icon",
+    "bulletClass": "bullet-yellow",
     "assertionElement": "assertion-element",
     "scenarioBtn": "scenario-btn",
     "reactive": "reactive"

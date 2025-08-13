@@ -21,7 +21,7 @@ interface ListContext {
     isOrdered: Accessor<boolean>,
     bulletType: Accessor<bulletType>,
     bulletBgUrl: Accessor<bulletType | undefined>,
-    'bullet-class'?: string,
+    bulletClass: Accessor<string>;
 }
 
 const isPredefined = (t: bulletType) => (PREDEFINED_TYPES as readonly string[]).includes(t as string);
@@ -36,25 +36,30 @@ const List: ParentComponent<ListProps> = (props) => {
     const bulletType = createMemo(() => {
         const type = props["bullet-type"];
 
-        if (!type) return isOrdered() ? 'number' : 'disc'
+        const listIsOrdered = isOrdered();
+
+        if (!type && !listIsOrdered) return 'disc'
+        else if(!type || listIsOrdered) return 'number'
+
         if (isPredefined(type)) return type;
         
         return type;
     })
 
     const bulletBgUrl = createMemo(() => !isPredefined(bulletType()) ? props["bullet-type"] : undefined)
+    const bulletClass = createMemo(() => props["bullet-class"] ?? "");
 
     const contextValue = {
         type: props.type || 'unordered',
         isOrdered,
         bulletType,
         bulletBgUrl,
-        'bullet-class': props["bullet-class"] ?? undefined
+        bulletClass,
     }
 
     const vnode = (
         <ListContext.Provider value={contextValue}>
-            <LayoutBase class={`${styles.list}`} {...props}>
+            <LayoutBase componentClasses={`${styles.list}`} {...props}>
                 <For each={itemTokens()}>
                     {(item, index) => (
                         <ListItem 

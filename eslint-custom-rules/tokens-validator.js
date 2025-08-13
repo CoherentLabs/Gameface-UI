@@ -100,10 +100,10 @@ const tokenComponetsParents = {
   'Pagination.Control': componentsWithSlotTokens.PAGINATION,
   'Pagination.Item': componentsWithSlotTokens.PAGINATION,
   
-  'List.Item': componentsWithSlotTokens.LIST,
-
   'Modal.Overlay': componentsWithSlotTokens.MODAL,
   'Modal.Window': componentsWithSlotTokens.MODAL,
+  
+  'List.Item': componentsWithSlotTokens.LIST,
   'List.Icon': componentsWithSlotTokens.LIST_ITEM,
 }
 

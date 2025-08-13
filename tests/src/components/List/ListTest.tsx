@@ -3,12 +3,16 @@ import { createSignal, createMemo, onMount, onCleanup, For, Accessor } from "sol
 import selectors from "../../../shared/list-selectors.json";
 import List from "@components/Layout/List/List";
 import PlusIcon from './plusIcon.svg?component-solid';
+import BulletImage from './plusIcon.svg';
 import './list.css'
 
 type NestedListData = Array<string | NestedListData>;
 
 const ListTest = () => {
     const [test, setTest] = createSignal("red");
+    const [bulletType, setBulletType] = createSignal<'disc'|'circle'|'square'|'number'|'none'|any>('disc');
+    const [bulletClass, setBulletClass] = createSignal('');
+    const [useImageBullet, setUseImageBullet] = createSignal(false);
     const [ordered, setOrdered] = createSignal(false)
     const [hasCustomIcon, setHasCustomIcon] = createSignal(false);
     const data: NestedListData = [
@@ -22,11 +26,20 @@ const ListTest = () => {
         setOrdered(false);
         setHasCustomIcon(false);
         setTest("red");
+        setBulletType('disc');
+        setBulletClass('');
+        setUseImageBullet(false)
     };
 
     const scenarios = [
         { label: "Change list type", action: () => setOrdered(true)},
         { label: "Set custom icon", action: () => setHasCustomIcon(true)},
+        { label: "bullet: square", action: () => setBulletType('square') },
+        { label: "bullet: circle", action: () => setBulletType('circle') },
+        { label: "bullet: number", action: () => setBulletType('number') },
+        { label: "bullet: none", action: () => setBulletType('none') },
+        { label: "bullet: image", action: () => { setUseImageBullet(true) } },
+        { label: "apply bullet-class", action: () => setBulletClass(selectors.bulletClass) },
     ];
 
     const isReactive = createMemo(() => test() === "blue");
@@ -40,20 +53,28 @@ const ListTest = () => {
         return (
             <List
                 type={ordered() ? 'ordered' : 'unordered'}
+                bullet-type={useImageBullet() ? BulletImage : bulletType()}
+                bullet-class={bulletClass()}
                 style={reactiveStyle()}
                 click={() => setTest("blue")}
                 class={`${selectors.base} ${reactiveClass()}`}
                 >
-                <List.Icon class={`${selectors.listIcon} ${reactiveClass()}`} style={reactiveStyle()}>
-                    {hasCustomIcon() && <PlusIcon class="custom-icon" />}
-                </List.Icon>
                 <For each={items}>
-                    {(item) => 
-                        <List.Item 
-                            class={`${selectors.listItem} ${reactiveClass()}`}
-                            style={reactiveStyle()}>
-                                {Array.isArray(item) ? renderList(item) : item}
-                        </List.Item>    
+                    {(item) => {
+                        const isNested = Array.isArray(item);
+                        return (
+                            <List.Item 
+                                class={`${selectors.listItem} ${reactiveClass()}`}
+                                style={reactiveStyle()}>
+                                    <List.Icon 
+                                        class={`${selectors.listIcon} ${reactiveClass()}`} 
+                                        style={{...reactiveStyle(), display: `${isNested ? 'none' : ''}`}}>
+                                        {hasCustomIcon() && <PlusIcon class="custom-icon" />}
+                                    </List.Icon>
+                                    {isNested ? renderList(item) : item}
+                            </List.Item>    
+                            )
+                        }
                     }
                 </For>
             </List>
