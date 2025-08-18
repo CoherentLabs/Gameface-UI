@@ -1,0 +1,322 @@
+---
+title: List
+---
+The `List` component displays structured content as a vertical stack of items. 
+It supports unordered and ordered formats, automatic nesting, and configurable bullets. 
+Each item also exposes an inline Icon slot so you can override the bullet/icon for that specific item.
+
+It's ideal for UI elements like settings menus, objectives, inventories, or any structured group of interactive or static content.
+
+## Usage
+
+To use `List`, wrap `List.Item` components inside the `List`. You can optionally specify the list type (unordered or ordered)
+and set the bullet style for the list with the `bullet-type` prop, or override it per item by placing `List.Icon` inside that item.
+
+
+```tsx
+import List from '@components/Layout/List/List';
+import starIcon from '@assets/starIcon.svg'
+
+const App = () => {
+    return (
+        <List bullet-type="disc">
+            <List.Item>Step one</List.Item>
+            <List.Item>
+                Step two
+                <List bullet-type={starIcon}>
+                    <List.Item>Step 2.1</List.Item>
+                    <List.Item>Step 2.2</List.Item>
+                </List>
+            </List.Item>
+            <List.Item>
+                Special step
+                <List.Icon class="custom-icon" />
+            </List.Item>
+        </List>
+    );
+};
+
+export default App;
+```
+
+## API
+
+### Props
+
+| Prop Name       | Type                                                                                     | Default       | Description                                                                                                       |
+| --------------- | ---------------------------------------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `ref`           | `BaseComponentRef`                                                                       | `undefined`   | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
+| `type`          | `'ordered' \| 'unordered'`                                                               | `'unordered'` | Controls whether the list is ordered (numbered) or unordered (bulleted). Automatically set to `'ordered'` when `bullet-type` is `"number"`. |
+| `bullet-type`   | `'disc' \| 'circle' \| 'square' \| 'number' \| 'none' \| string \| ImageMetadata`        | `'disc'` (unordered) / `'number'` (ordered) | Sets the bullet style for all items in the list. Can be a predefined style, or an image. |
+| `bullet-class`  | `string`                                                                                 | `""`          | Additional CSS classes to apply to all bullet elements.                                                        |
+| `style`         | `JSX.CSSProperties`                                                                      | `{}`          | Inline styles to apply to the root element.                                                                      |
+| `class`         | `string`                                                                                 | `""`          | Additional CSS classes to apply to the root element.                                                             |
+| `children`      | `JSX.Element`                                                                            | `""`          | List items to render. It renders only `List.Item` components. |
+
+
+## Slots
+
+### `List.Item`
+
+Use `List.Item` to define an item in the list. Items can contain any valid JSX content, including nested `List` components.
+
+#### Properties
+
+| Prop Name  | Type                | Default | Description                                               |
+| ---------- | ------------------- | ------- | --------------------------------------------------------- |
+| `style`    | `JSX.CSSProperties` | `{}`    | Inline styles for the individual list item.               |
+| `class`    | `string`            | `""`    | Additional CSS classes for the item.                      |
+| `children` | `JSX.Element`       | `""`    | Content of the list item. Supports nested `List` components and any other valid JSX content. |
+
+#### Usage
+
+```tsx
+import List from '@components/Layout/List/List';
+
+const App = () => {
+    return (
+        <List>
+            <List.Item>Start the game</List.Item>
+            <List.Item>
+                <div>Adjust settings</div>
+                <List>
+                    <List.Item>Graphics</List.Item>
+                    <List.Item>Sound</List.Item>
+                </List>
+            </List.Item>
+            <List.Item>Exit</List.Item>
+        </List>
+    );
+};
+
+```
+
+:::caution
+You can only nest a `List` inside a `List.Item`.  
+Placing a `List` directly inside another `List` without wrapping it in a `List.Item` is not supported.
+:::
+
+:::caution
+If a `List.Item` contains **only** a nested `List` (no other text or content),  
+its bullet will still be rendered.  
+To remove it, hide the `List.Icon` manually:
+```diff lang="tsx"
+<List.Item>
++   <List.Icon style={{ display: 'none' }} />
+    <List>
+        <List.Item>Graphics</List.Item>
+    </List>
+</List.Item>
+```
+:::
+
+### `List.Icon`
+
+The `List.Icon` slot lets you override the bullet for **one specific item**.  
+It does **not** affect other items in the list.
+
+- **`bullet-type`** and **`bullet-class`** (props on `List`) set the default bullet for **all items**.
+- If you add `class` or `style` directly to `List.Icon`, those styles override the defaults for **that item only**.
+- If you provide children inside `List.Icon`, they replace the bullet entirely for that item (text, SVG, custom JSX, etc.).
+
+#### Usage
+
+```diff lang="tsx"
+import List from '@components/Layout/List/List';
+import SwordIcon from '@assets/icons/sword.svg?component-solid';
+
+const App = () => {
+    return (
+        <List bullet-type="disc">
+            <List.Item>
+                Default bullet
+            </List.Item>
+
+            <List.Item>
+                Custom styled bullet
+                <List.Icon class="highlighted" style={{ 'background-color': 'red' }} />
+            </List.Item>
+
+            <List.Item>
+                Fully custom icon
+                <List.Icon>
+                    <SwordIcon style={{width: '100%', height: '100%'}} />
+                </List.Icon>
+            </List.Item>
+        </List>
+    );
+};
+```
+
+| Prop Name  | Type                | Default | Description                                                                                                        |
+| ---------- | ------------------- | ------- | ------------------------------------------------------------------------------------------------------------------ |
+| `ref`      | `BaseComponentRef`  | `undefined`   | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
+| `class`    | `string`            | `""`    | Additional CSS classes for **this icon only**. Overrides `bullet-class` from `List` for this item.                 |
+| `style`    | `JSX.CSSProperties` | `{}`    | Inline styles for **this icon only**. Overrides styles from `List` for this item.                                  |
+| `children` | `JSX.Element`       | `""`    | Custom content to replace the bullet entirely for this item. If set, `bullet-type` and `bullet-class` are ignored. |
+
+## Guide
+
+### Nesting list items
+
+The `List` component supports automatic styling for nested items. When you nest one `List` inside a `List.Item`, indentation adjust accordingly.
+
+```tsx
+import List from '@components/Layout/List/List';
+
+const App = () => {
+    return (
+        <List>
+            <List.Item>Main Quest</List.Item>
+            <List.Item>
+                Side Quests
+                <List type="ordered" list-class="bolded-icons">
+                    <List.Item>Rescue the merchant</List.Item>
+                    <List.Item>Find the lost ring</List.Item>
+                </List>
+            </List.Item>
+        </List>
+    );
+};
+```
+
+### Rendering list items dynamically
+
+To dynamically render list items in the `List` component, you can use an array and map over it:
+
+```tsx
+import List from '@components/Layout/List/List';
+
+const items = [
+    { id: 1, text: 'Start mission' },
+    { id: 2, text: 'Collect 5 herbs' },
+    { id: 3, text: 'Return to base' }
+];
+
+const App = () => {
+    return (
+        <List>
+            {items.map((item) => (
+                <List.Item >
+                    {item.text}
+                </List.Item>
+            ))}
+        </List>
+    );
+};
+```
+
+Alternatively, you can use the SolidJS `<For>` component:
+
+```tsx
+import List from '@components/Layout/List/List';
+import { For } from 'solid-js';
+
+const items = [
+    { id: 1, text: 'Start mission' },
+    { id: 2, text: 'Collect 5 herbs' },
+    { id: 3, text: 'Return to base' }
+];
+
+const App = () => {
+    return (
+        <List>
+            <For each={items}>
+                {(item) => (
+                    <List.Item>
+                        {item.text}
+                    </List.Item>
+                )}
+            </For>
+        </List>
+    );
+};
+```
+
+### Setting custom image for list bullets
+
+To change all bullets of the `List` with a custom image, import the image and pass it to the `bullet-type` prop:
+
+```tsx
+import List from '@components/Layout/List/List';
+import QuestArrow from 'assets@/quest-arrow.svg';
+import 'index.css'
+
+const App = () => {
+    return (
+        <List bullet-type={QuestArrow} bullet-class="custom-bullet-icon">
+            <List.Item>Capture 3 fish</List.Item>
+            <List.Item>Cook fish</List.Item>
+            <List.Item>Eat fish</List.Item>
+        </List>
+    );
+};
+```
+
+:::note
+When using a custom image, it will be applied as a `background-image` to every bullet in the list.
+:::
+
+To apply additional styles to all bullets at once,
+use the `bullet-class` prop and define your styles in CSS:
+
+```css title="index.css"
+.custom-bullet-icon {
+    background-color: yellow;
+}
+```
+
+Additionally, if you wish to change one of the icons in a list item, just provide it as a child in the `List.icon` slot. 
+
+```diff lang="tsx"
+import List from '@components/Layout/List/List';
+import QuestArrow from 'assets@/quest-arrow.svg';
++import QuestArrow2 from 'assets@/quest-arrow2.svg?component-svg';
+import 'index.css'
+
+const App = () => {
+    return (
+        <List bullet-type={QuestArrow} bullet-class="custom-bullet-icon">
+            <List.Item>Capture 3 fish</List.Item>
+            <List.Item>Cook fish</List.Item>
+            <List.Item>
++                <List.Icon>
++                   <QuestArrow2 style={{width: '100%', height: '100%'}} />
++                </List.Icon>
+            </List.Item>
+        </List>
+    );
+};
+```
+
+### Accessing the HTML element
+
+To access the HTML DOM element of the `List` component.
+
+1. Declare a variable to hold the ref but don't initialize it with a value
+2. The declared value should have a type of `BaseComponentRef`, which you need to import
+3. Set the declared variable as the value of the `ref` prop of the `List` component
+
+#### Example
+
+```tsx
+import List from '@components/Layout/List/List';
+import { BaseComponentRef } from '@components/types/ComponentProps';
+
+const App = () => {
+    let listRef!: BaseComponentRef
+
+    return (
+        <List ref={listRef}>
+            <List.Item>Main Quest</List.Item>
+            <List.Item>Side Quest</List.Item>
+        </List>
+    );
+};
+```
+
+:::note
+You can access the element of every `List.Item` component in the same way.
+:::
+
+Now you can access the HTML element of `List` with `listRef.element` and make modifications to it if needed. 

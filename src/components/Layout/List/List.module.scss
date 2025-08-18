@@ -1,0 +1,65 @@
+$icon-offset: 2vmax;
+
+.list {
+    padding-left: $icon-offset;
+
+    &-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.2vmax;
+        position: relative;
+
+        &-nested {
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+        }
+    }
+}
+
+.icon {
+    position: absolute;
+    text-align: right;
+    left: -$icon-offset;
+    width: 1.5vmax;
+    height: 1.5vmax;
+
+    &-disc,
+    &-circle,
+    &-square {
+        width: 0.35vmax;
+        height: 0.35vmax;
+        left: -$icon-offset + 1vmax;
+    }
+
+    &-disc,
+    &-circle {
+        border-radius: 50%;
+    }
+
+    &-disc,
+    &-square {
+        background-color: white;
+    }
+
+    &-circle {
+        border: 0.1vmax solid white;
+    }
+
+    &-number {
+        width: 1.5vmax;
+        height: initial;
+    }
+
+    &-custom {
+        background: {
+            repeat: no-repeat;
+            position: center;
+            size: contain;
+        }
+    }
+
+    &-none{
+        display: none;
+    }
+}
