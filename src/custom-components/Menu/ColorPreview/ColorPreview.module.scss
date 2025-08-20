@@ -1,0 +1,17 @@
+.color-block {
+    width: $component-width;
+    height: 100%;
+    height: 4vh;
+    border: 0.2vmax solid $background-soft;
+    background-color: rgb(0, 0, 0);
+    cursor: pointer;
+
+    &:hover {
+        border-color: $background-soft-hover;
+    }
+}
+
+.color-picker {
+    padding-bottom: 1vmax;
+    background-color: black;
+}
