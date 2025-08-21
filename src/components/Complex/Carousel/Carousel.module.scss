@@ -1,0 +1,52 @@
+.carousel {
+    height: 15vmax;
+    position: relative;
+
+    &-items {
+        flex: 1 0 0;
+        height: 100%;
+        overflow-x: hidden;
+
+        &-container {
+            height: 10vmax;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+    }
+
+    &-item {
+        padding: 0.3vmax;
+        height: 80%;
+    }
+
+    &-arrow {
+        &-disabled {
+            opacity: 0.5;
+            cursor: auto;
+            pointer-events: none;
+        }
+
+        &-next,
+        &-prev {
+            cursor: pointer;
+            width: 5vh;
+            height: 5vh;
+            padding-right: 1vmax;
+            transition: transform 0.2s;
+        }
+
+        &-next:hover {
+            transform: rotate(180deg) scale(1.1);
+        }
+
+        &-prev:hover {
+            transform: scale(1.1);
+        }
+
+        &-next {
+            transform: rotate(180deg) scale(1.0);
+        }
+    }
+}
