@@ -10,7 +10,6 @@
         padding: 0.8vmax;
         width: 100%;
         display: flex;
-        color: black;
         border-radius: 0.3vmax;
 
         &:hover {
@@ -37,6 +36,7 @@
         border: 0.2vmax solid transparent;
         overflow: hidden;
         background-color: white;
+        color: black;
         top: 6vh;
         width: 100%;
         z-index: 100;

@@ -1,0 +1,33 @@
+.segment {
+    background-color: $background-soft;
+    width: 20vmax;
+
+    &-button {
+        flex: 1;
+        justify-content: center;
+        background-color: transparent;
+        color: $disabledColor;
+        text-transform: capitalize;
+
+        &:hover {
+            color: $textColor;
+            background-color: $background-soft-hover;
+        }
+
+        &-selected {
+            color: $textColor;
+
+            &:hover {
+                background-color: transparent;
+            }
+        }
+    }
+
+    &-button::before {
+        box-shadow: none !important;
+    }
+
+    &-button::after {
+        background-color: $background-soft;
+    }
+}

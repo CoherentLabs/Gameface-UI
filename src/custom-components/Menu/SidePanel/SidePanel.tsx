@@ -3,6 +3,7 @@ import { createMemo, ParentComponent, useContext } from "solid-js";
 import style from './SidePanel.module.scss'
 import { MenuContext, OPTIONS } from "../../../views/menu/Menu";
 import { gameplayPanelContent } from "./gameplayPanelContent";
+import { graphicsPanelContent } from "./graphicsPanelContent";
 
 interface SidePanelProps {
     option: string,
@@ -13,7 +14,7 @@ const getContent = (active: string) => {
         case OPTIONS[0]:
             return gameplayPanelContent;
         case OPTIONS[1]:
-            return gameplayPanelContent;
+            return graphicsPanelContent;
         default:
             return {};
     }

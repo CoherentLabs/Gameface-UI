@@ -4,10 +4,12 @@
     padding: 0.35vmax;
     font-size: 1vmax;
     height: 100%;
+    width: 100%;
 
     &-wrapper {
         display: flex;
         align-items: center;
+        width: 15vmax;
         border: 0.15vmax solid $primaryColor;
         border-radius: 0.6vmax;
         font-size: 1vmax;
@@ -19,8 +21,7 @@
 
     &-element-wrapper {
         position: relative;
-        display: flex;
-        align-items: center;
+        flex: 1;
     }
 }
 

@@ -10,11 +10,13 @@ import Content from '@components/Layout/Content/Content';
 import Bottom from '@components/Layout/Bottom/Bottom';
 import Scroll from '@components/Layout/Scroll/Scroll';
 import MenuItems from '@custom-components/Menu/MenuItem/MenuItem';
-import { Accessor, createContext, createSignal, For, Setter, Show } from 'solid-js';
+import { Accessor, batch, createContext, createSignal, For, Setter, Show } from 'solid-js';
 import Gameplay from '@custom-components/Menu/Options/Gameplay/Gameplay';
 import styles from './Menu.module.scss';
 import { Column, Column4, Column6, Column8 } from '@components/Layout/Column/Column';
 import SidePanel from '@custom-components/Menu/SidePanel/SidePanel';
+import Graphics from '@custom-components/Menu/Options/Graphics/Graphics';
+import { getFirstOptionOfTab } from './util';
 
 interface MenuContextValue {
     currentOption: Accessor<string>,
@@ -34,10 +36,17 @@ const Menu = () => {
         activeTab
     }
 
+    const handleTabChange = (newTab: string) => {
+        batch(() => {
+            setActiveTab(newTab as typeof OPTIONS[number]);
+            setCurrentOption(getFirstOptionOfTab(newTab))
+        });
+    }
+
     return (
         <MenuContext.Provider value={MenuContextValue}>
             <div class={styles.Menu}>
-                <Tabs onTabChanged={(newTab) => setActiveTab(newTab as any)} default={OPTIONS[0]}>
+                <Tabs onTabChanged={handleTabChange} default={OPTIONS[0]}>
                     <Layout>
                         <Top class={styles.top}>
                             <Flex>
@@ -62,6 +71,7 @@ const Menu = () => {
                                                 <Gameplay />
                                             </Tab>
                                             <Tab location={OPTIONS[1]}>
+                                                <Graphics />
                                             </Tab>
                                             <Tab location={OPTIONS[2]}>
                                             </Tab>

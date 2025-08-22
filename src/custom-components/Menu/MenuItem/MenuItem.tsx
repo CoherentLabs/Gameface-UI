@@ -9,7 +9,7 @@ interface MenuItemsProps {
     name: string
 }
 
-const MenuItems: ParentComponent<MenuItemsProps> = (props) => {
+const MenuItem: ParentComponent<MenuItemsProps> = (props) => {
     const menuContext = useContext(MenuContext)
 
     const isActive = createMemo(() => menuContext?.currentOption() === props.id); 
@@ -29,4 +29,4 @@ const MenuItems: ParentComponent<MenuItemsProps> = (props) => {
     );
 }
 
-export default MenuItems;
+export default MenuItem;

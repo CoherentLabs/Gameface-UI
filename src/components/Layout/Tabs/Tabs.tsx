@@ -17,8 +17,8 @@ interface TabsContextValue {
 interface TabsProps {
     default?: string;
     ref?: unknown | ((ref: TabsComponentRef) => void);
-    onBeforeTabChange?: (currentLocation?: string) => Promise<void> | void;
-    onTabChanged?: (newLocation?: string) => Promise<void> | void;
+    onBeforeTabChange?: (currentLocation: string) => Promise<void> | void;
+    onTabChanged?: (newLocation: string) => Promise<void> | void;
 }
 
 const Tabs: ParentComponent<TabsProps> = (props) => {

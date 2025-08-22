@@ -1,0 +1,45 @@
+@use "../../../assets/scss/variables" as *;
+/// Usage: @include dropdown-theme(".item-container");
+@mixin dropdown-theme($selector) {
+  // base
+    .dropdown {
+        &-trigger {
+            width: 20vmax;
+            color: $disabledTextColor;
+            background-color: $background-soft;
+            border-color: $secondaryColor;
+            border-radius: 0;
+            cursor: pointer;
+            transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+
+            &:hover {
+            background-color: $background-soft-hover;
+            }
+        }
+
+        &-options {
+            color: $disabledColor;
+            background-color: #383940;
+        }
+
+        &-option {
+            border-radius: 0;
+            transition: background-color .15s ease, color .15s ease;
+        }
+
+        &-icon path {
+            stroke: $disabledTextColor;
+            transition: stroke .15s ease;
+        }
+
+        &-scroll {
+            &-bar   { background-color: rgba(0,0,0,.05); border-radius: 0; }
+            &-handle{ border-radius: 0; }
+        }
+    }
+
+    #{$selector}.active {
+        .dropdown-trigger { color: $textColor; }
+        .dropdown-icon path { stroke: $textColor; }
+    }
+}

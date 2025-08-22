@@ -40,6 +40,7 @@ export default App;
 | `class`    | `string`                               | `""`        | Additional CSS classes to apply to the component.                                                                                                                                            |
 | `ref`      | `SegmentRef \| undefined`           | `undefined` | A reference to the component that gives you access to its methods and the underlying HTML element. Useful if you need to set the selected option programmatically.                                                             |
 | `disabled` | `boolean`                              | `false`     | Specify if the Segment is disabled.                                                                                                                                                            |
+| `class-selected` | `string`            | `""`        | Additional CSS classes applied when the button option is selected.                          |
 | `class-disabled` | `string`                         | `""`        | Additional CSS classes to apply to the component when disabled.                                                                                                                              |
 | `onChange` | `(selected: string) => void            | `undefined` | A function that is called every time the selected option changes. It can be used to retrieve the selected option's value. |
 
@@ -62,6 +63,22 @@ This slot can be used to customize the element's appereance.
 |-----------|------|---------|-------------|
 | `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the segment indicator. |
 | `class`   | `string` | `""` | Additional CSS classes to style the segment indicator. |
+
+:::caution
+When you customize the styles of `Segment.Indicator`, you must also apply the same styles to the `::before` pseudo-element of `Segment.Button`.  
+This is because, on initial render, the indicator is visually represented by the button's `::before` element.  
+If you only style the indicator, you may see inconsistent appearance until the first selection change.
+
+You can customize it like:
+```css
+.indicator {
+    background-color: green;
+}
+.segment-button::before {
+    background-color: green !important;
+}
+```
+:::
 
 #### Usage
 

@@ -1,8 +1,10 @@
+@use "../CustomDropdown/menu-theme" as dd;
+
 .item {
     height: 100%;
     padding-left: 1vmax;
     font-size: 1em;
-
+    
     &-container {
         background-color: $background-neutral;
         width: 100%;
@@ -11,6 +13,8 @@
         border: 0.15vmax solid transparent;
         color: $disabledTextColor;
         transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+        
+        @include dd.dropdown-theme("&");
     
         &.active {
             background-color: $background-soft;
