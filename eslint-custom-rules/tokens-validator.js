@@ -26,6 +26,8 @@ const componentsWithSlotTokens = {
   MODAL: 'Modal',
   LIST: 'List',
   LIST_ITEM: 'List.Item',
+  CAROUSEL_PAGINATION: 'Carousel.Pagination',
+  CAROUSEL_ITEMS: 'Carousel.Items'
 }
 
 const tokenComponetsParents = {
@@ -99,15 +101,19 @@ const tokenComponetsParents = {
 
   'Pagination.Control': componentsWithSlotTokens.PAGINATION,
   'Pagination.Item': componentsWithSlotTokens.PAGINATION,
-  
+
   'Modal.Overlay': componentsWithSlotTokens.MODAL,
   'Modal.Window': componentsWithSlotTokens.MODAL,
-  
+
   'List.Item': componentsWithSlotTokens.LIST,
   'List.Icon': componentsWithSlotTokens.LIST_ITEM,
+
+  'Carousel.Item': componentsWithSlotTokens.CAROUSEL_ITEMS,
+  'Carousel.Pagination.Control': componentsWithSlotTokens.CAROUSEL_PAGINATION,
+  'Carousel.Pagination.Item': componentsWithSlotTokens.CAROUSEL_PAGINATION,
 }
 
-const availbleForedTokenComponets = new Set(['Radio.Button', 'Dropdown.Option', 'Segment.Button', 'Stepper.Item', 'Accordion.Panel', 'List.Item'])
+const availbleForedTokenComponets = new Set(['Radio.Button', 'Dropdown.Option', 'Segment.Button', 'Stepper.Item', 'Accordion.Panel', 'List.Item', 'Carousel.Item'])
 
 function isParentMatchingPath(node, path, wrapperName) {
   let currentNode = node.parent;

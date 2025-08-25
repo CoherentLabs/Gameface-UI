@@ -12,15 +12,18 @@ import useBaseComponent from "@components/BaseComponent/BaseComponent";
 
 export interface CarouselRef {
     element: HTMLDivElement;
+    itemsContainer: HTMLDivElement;
     next: () => void;
     prev: () => void;
     scrollTo: (page: number) => void;
     activePage: () => number;
     pagesCount: () => number;
+    translateItemsContainer: () => void;
 }
 
 interface CarouselProps extends ComponentProps {
     itemWidth?: number
+    itemGap?: number
     itemsAlignment?: 'start' | 'center' | 'end';
     groupItems?: boolean;
     leadingAndTrailingSpaces?: boolean;
@@ -29,6 +32,7 @@ interface CarouselProps extends ComponentProps {
 
 interface CarouselContextType {
     itemWidth: () => number;
+    itemGap: () => number;
     registerItem: (value: number, selected?: boolean) => void;
     unregisterItem: (value: number) => void;
     setItemsWrapper: (el: HTMLDivElement) => void
@@ -55,6 +59,7 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
     const [pagesCount, setPagesCount] = createSignal(0);
     const [activePage, setActivePage] = createSignal(props.groupItems ? 0 : 0);
     const itemWidth = createMemo(() => props.itemWidth || 100);
+    const itemGap = createMemo(() => props.itemGap || 0);
     const itemsAlignment = createMemo(() => props.itemsAlignment || 'start');
     const groupItems = createMemo(() => !!props.groupItems);
     const leadingAndTrailingSpaces = createMemo(() => props.leadingAndTrailingSpaces === false ? false : true);
@@ -84,11 +89,13 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
 
         (props.ref as unknown as (ref: any) => void)({
             element: carouselRef,
+            itemsContainer: itemsContainer,
             next,
             prev,
             scrollTo,
             activePage,
             pagesCount,
+            translateItemsContainer
         });
     });
 
@@ -103,7 +110,8 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
             const { width } = itemsWrapper.getBoundingClientRect();
             const itemWidthPx = width * itemWidth() / 100;
             const totalItems = itemsContainer.children.length;
-            const itemsPerPage = Math.floor(width / itemWidthPx);
+            const itemGapPx = (itemGap() / 100) * width;
+            const itemsPerPage = Math.floor(width / (itemWidthPx + itemGapPx));
             const pages = Math.ceil(totalItems / itemsPerPage);
 
             setPagesCount(pages);
@@ -159,8 +167,10 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
 
     const translateItemsContainer = () => {
         const { width } = itemsWrapper.getBoundingClientRect();
-        const itemWidth = (itemsContainer.scrollWidth / items.size);
-        const scrollOffset = getScrollOffset(activePage(), itemWidth, width);
+        const { width: containerWidth } = itemsContainer.getBoundingClientRect();
+        const itemWidthPx = (itemWidth() / 100) * containerWidth;
+        const itemGapPx = (itemGap() / 100) * width;
+        const scrollOffset = getScrollOffset(activePage(), itemWidthPx + itemGapPx, width);
         itemsContainer.style.transform = `translateX(${scrollOffset}px)`;
     }
 
@@ -212,6 +222,7 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
         registerItem,
         unregisterItem,
         itemWidth,
+        itemGap,
         setItemsContainer,
         setPaginationRef,
         activePage,

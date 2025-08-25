@@ -4,10 +4,15 @@ import starlightThemeRapide from 'starlight-theme-rapide'
 import starlightLinksValidator from 'starlight-links-validator';
 import starlightHeadingBadges from 'starlight-heading-badges'
 import changelogSidebar from './src/changelogSideBar';
+import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-sections';
 
+/** @type {import('@astrojs/starlight/expressive-code').StarlightExpressiveCodeOptions} */
 export default defineConfig({
   integrations: [
     starlight({
+      expressiveCode: {
+        plugins: [pluginCollapsibleSections()],
+      },
       favicon: '/favicon-32x32.png',
       logo: {
         dark: './src/assets/gameface-ui-header-dark.svg',

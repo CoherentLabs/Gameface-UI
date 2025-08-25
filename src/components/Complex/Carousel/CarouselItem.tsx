@@ -28,6 +28,10 @@ const CarouselItem: ParentComponent<CarouselItemProps> = (props) => {
         return carouselContext?.itemWidth();
     });
 
+    const gap = createMemo(() => {
+        return carouselContext?.itemGap() / 2;
+    });
+
     const itemSelected = createMemo(() => {
         if (carouselContext.groupItems()) return false;
         return carouselContext.activePage() === props.index()
@@ -44,7 +48,11 @@ const CarouselItem: ParentComponent<CarouselItemProps> = (props) => {
     });
 
     const itemStyles = createMemo(() => {
-        const styles: JSX.CSSProperties = { width: width() + '%' };
+        const styles: JSX.CSSProperties = {
+            width: width() + '%',
+            "margin-right": gap() + '%',
+            "margin-left": gap() + '%'
+        };
         if (props.item.style) {
             Object.assign(styles, props.item.style);
         }
