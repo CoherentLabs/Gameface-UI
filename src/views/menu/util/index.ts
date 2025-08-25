@@ -6,6 +6,8 @@ export const getFirstOptionOfTab = (tab: string) => {
             return 'difficulty';
         case OPTIONS[1] :
             return 'resolution'
+        case OPTIONS[2] :
+            return 'keybindPreset'
         default :
             return ''
     }

@@ -166,9 +166,9 @@ export const graphicsPanelContent: Record<string, { title: string; content: stri
 };
 
 export const graphicPresetContent = [
-    "Low - maximizes FPS: low textures/shadows, short view distance, AO/SSR off, minimal post-processing.",
-    "Medium - balanced defaults: medium textures/shadows, moderate view distance, light AO, basic post-FX.",
-    "High - sharp visuals: high textures/shadows, long view distance, AO/SSR on, full post-FX.",
-    "Ultra - max fidelity: everything cranked; highest VRAM/CPU/GPU cost.",
-    "Custom - pick your own mix. Changing any individual option switches the preset label to Custom. Switching back to a preset overwrites Custom tweaks.",
-]
+  { heading: "Low", content: "maximizes FPS: low textures/shadows, short view distance, AO/SSR off, minimal post-processing." },
+  { heading: "Medium", content: "balanced defaults: medium textures/shadows, moderate view distance, light AO, basic post-FX." },
+  { heading: "High", content: "sharp visuals: high textures/shadows, long view distance, AO/SSR on, full post-FX." },
+  { heading: "Ultra", content: "max fidelity: everything cranked; highest VRAM/CPU/GPU cost." },
+  { heading: "Custom", content: "pick your own mix. Changing any individual option switches the preset label to Custom. Switching back to a preset overwrites Custom tweaks." }
+];

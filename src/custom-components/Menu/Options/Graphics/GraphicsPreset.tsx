@@ -8,6 +8,7 @@ import style from './GraphicsPreset.module.scss';
 import CustomSlider from "@custom-components/Menu/CustomSlider/CustomSlider";
 import Checkbox from "@components/Basic/Checkbox/Checkbox";
 import ExtraContent from "@custom-components/Menu/SidePanel/ExtraContent";
+import CustomList from "@custom-components/Menu/CustomList/CustomList";
 
 const GraphicsPreset = () => {
     const [value, setValue] = createSignal('medium');
@@ -130,11 +131,7 @@ const GraphicsPreset = () => {
             </Show>
 
             <ExtraContent id="graphicsPreset">
-                <List class={style.list} bullet-class={style['list-icon']}>
-                        <For each={graphicPresetContent}>{(c) => (
-                            <List.Item class={style['list-item']}>{c}</List.Item>
-                        )}</For>
-                    </List>
+                <CustomList values={graphicPresetContent} />
             </ExtraContent>
         </>
     )

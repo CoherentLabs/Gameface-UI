@@ -4,6 +4,7 @@ import style from './SidePanel.module.scss'
 import { MenuContext, OPTIONS } from "../../../views/menu/Menu";
 import { gameplayPanelContent } from "./gameplayPanelContent";
 import { graphicsPanelContent } from "./graphicsPanelContent";
+import { keybindsPanelContent } from "./keybindsPanelContent";
 
 interface SidePanelProps {
     option: string,
@@ -15,6 +16,8 @@ const getContent = (active: string) => {
             return gameplayPanelContent;
         case OPTIONS[1]:
             return graphicsPanelContent;
+        case OPTIONS[2]:
+            return keybindsPanelContent;
         default:
             return {};
     }

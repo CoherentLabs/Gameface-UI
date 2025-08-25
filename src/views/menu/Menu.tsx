@@ -17,6 +17,7 @@ import { Column, Column4, Column6, Column8 } from '@components/Layout/Column/Col
 import SidePanel from '@custom-components/Menu/SidePanel/SidePanel';
 import Graphics from '@custom-components/Menu/Options/Graphics/Graphics';
 import { getFirstOptionOfTab } from './util';
+import KeyBinds from '@custom-components/Menu/Options/KeyBinds/KeyBinds';
 
 interface MenuContextValue {
     currentOption: Accessor<string>,
@@ -74,6 +75,7 @@ const Menu = () => {
                                                 <Graphics />
                                             </Tab>
                                             <Tab location={OPTIONS[2]}>
+                                                <KeyBinds />
                                             </Tab>
                                             <Tab location={OPTIONS[3]}>
                                             </Tab>

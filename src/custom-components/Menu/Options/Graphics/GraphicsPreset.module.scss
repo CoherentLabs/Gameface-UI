@@ -2,20 +2,6 @@
     padding-left: 2vmax;
 }
 
-.list {
-    font-size: 0.85em;
-    color: $disabledTextColor;
-    padding-right: 0.5vmax;
-    line-height: 1.25;
-
-    &-item {
-        margin-bottom: 1vmax;
-    }
-    &-icon {
-        top: 0.5vmax;
-    }
-}
-
 .segment {
     &-small {
         width: 15vmax;
