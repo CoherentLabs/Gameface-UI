@@ -20,7 +20,7 @@ const Gameplay: ParentComponent = () => {
                         <Stepper.Item value='Easy'>Easy</Stepper.Item>
                         <Stepper.Item value='Normal' selected>Normal</Stepper.Item>
                         <Stepper.Item value='Hard'>Hard</Stepper.Item>
-                        <Stepper.Item value='Nightmere'>Nightmere</Stepper.Item>
+                        <Stepper.Item value='Nightmare'>Nightmare</Stepper.Item>
                     </Stepper.Items>
                     <Stepper.Control style={{"border-radius": 0}} />
                 </Stepper>

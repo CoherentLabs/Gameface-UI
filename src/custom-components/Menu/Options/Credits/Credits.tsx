@@ -12,7 +12,18 @@ const Credits = () => {
 
     const scrollCredits = () => {
         scrollRef.scrollDown();
+
+        const contentWrapper = scrollRef.element?.firstChild as HTMLDivElement;
+        const scrollWrapper = contentWrapper?.firstChild as HTMLDivElement;
+        const maxScroll = scrollWrapper?.scrollHeight;
+        const scrollTop = contentWrapper.scrollHeight + scrollWrapper?.scrollTop;
+
+        if (scrollTop >= maxScroll) clearInterval(interval);
     }
+
+    const handleOnScroll = (direction: string) => {
+        if (direction === 'up') clearInterval(interval)
+    } 
     
     onMount(() => {
         interval = setInterval(scrollCredits, 500)
@@ -21,7 +32,7 @@ const Credits = () => {
     onCleanup(() => clearInterval(interval))
 
     return (
-        <Scroll ref={scrollRef}>
+        <Scroll onScroll={(arg) => handleOnScroll(arg.scrollDirection)} ref={scrollRef}>
             <Scroll.Content class={menuStyles['scroll-content']}>
                 <List bullet-type="none" class={style['credits-list']}>
                     <For each={CREDITS}>

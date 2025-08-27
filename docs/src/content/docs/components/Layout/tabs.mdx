@@ -50,7 +50,7 @@ export default App;
 |---|---|---|---|
 | `default` | `string` | `undefined` | Specifies the default active tab. The value must match the location of one of the `Tab` components. |
 | `ref` | `TabsComponentRef` | `undefined` | A reference to the component that gives you access to its methods (e.g., to switch tabs from your code). |
-| `onBeforeTabChange` | `async (currentLocation?: string) => void` | `undefined` | Callback invoked right before the Tab changes. It receives the current location before the change. |
+| `onBeforeTabChange` | `async (currentLocation: string, newLocation: string) => Promise<void \| boolean> \| void \| boolean \| undefined` | `undefined \| boolean` | Callback invoked right before the Tab changes. It receives the current and next location before the change. Return `false` in the callback to prevent the tab from changing |
 | `onTabChanged` | `async (newLocation?: string) => void` | `undefined` | Callback invoked right after the Tab changes. It receives the new location after the change. |
 
 ### Methods
@@ -69,7 +69,6 @@ You can change tabs via code by using the `changeTab` method exposed through a c
 3. Set the declared variable as the value of the `ref` prop of the `Tabs` component.
 4. Call the `changeTab` method from the `ref`.
 
-#### Example
 ```tsx
 import Tabs, { TabsComponentRef } from '@components/Layout/Tabs/Tabs'
 import Button from '@components/Layout/Button/Button';
@@ -109,11 +108,11 @@ const App = () => {
 export default App;
 ```
 
-## Nested Tabs
+### Nested Tabs
 
 You can nest `Tabs` inside a `Tab` component to create sub-tabs for more complex UIs.
 
-### Example
+#### Example
 
 ```tsx
 import Tabs from '@components/Layout/Tabs/Tabs'
@@ -159,11 +158,11 @@ export default App;
 
 In this example the content inside the 'Online Multiplayer' `Tab` has a subsection which can lead the user in either casual or competetive multiplayer.  
 
-## Dynamic Tabs
+### Dynamic Tabs
 
 You can dynamically generate tabs by mapping over an array for example and rendering `TabLink` and `Tab` components with matching location props.
 
-### Example
+#### Example
 
 ```tsx
 import Tabs from '@components/Layout/Tabs/Tabs'
@@ -195,7 +194,7 @@ export default App;
 
 In this example we are dynamically generating 10 different `TabLink` and `Tab` components with the `location` prop being generated dynamically as well!
 
-## Executing logic before or after tab change
+### Executing logic before or after tab change
 
 You can run custom logic just before or after a tab change by supplying callbacks via the `onBeforeTabChange` and `onTabChanged` props.
 
@@ -204,7 +203,7 @@ You can run custom logic just before or after a tab change by supplying callback
 
 These functions can be both synchronous or asynchronous.
 
-### Example (Synchronous)
+#### Example (Synchronous)
 ```tsx
 import Tabs from '@components/Layout/Tabs/Tabs'
 import Tabs from '@components/Layout/Tab/Tab'
@@ -250,7 +249,7 @@ Location before change: Online
 Location after change: Local
 ```
 
-### Example (Asynchronous)
+#### Example (Asynchronous)
 
 With the `onBeforeTabChange` and `onTabChanged` props you can run asynchronous logic such as fetching data from the server before or after a tab has changed. To do so, you need to provide an async function as callback.
 
@@ -263,7 +262,7 @@ import Flex from '@components/Layout/Flex/Flex';
 
 const App = () => {
 
-    const beforeTabChanged = async (currentLocation?: string) => {
+    const beforeTabChanged = async (currentLocation: string, newLocation: string) => {
         console.log(`Location before change: ${currentLocation}`)
         // Simulate fetching data or another async operation
         await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -302,4 +301,40 @@ Location after change: Online
 Location before change: Online
 Data fatched!
 Location after change: Local
+```
+
+### Preventing a tab change
+
+Use onBeforeTabChange to prevent a switch. If the callback returns false, the change is canceled. The handler receives the current and the next tab locations.
+
+#### Example: block switching to the “Online” tab.
+```tsx
+import Tabs from '@components/Layout/Tabs/Tabs'
+import Tabs from '@components/Layout/Tab/Tab'
+import TabLink from '@components/Layout/TabLink/TabLink'
+import Flex from '@components/Layout/Flex/Flex';
+
+const App = () => {
+
+    const beforeTabChanged = (currentLocation: string, newLocation: string) => {
+        if (newLocation === "Online") return false
+    }
+
+    return (
+        <Tabs onBeforeTabChange={beforeTabChanged} default='Local'>
+            <Flex >
+                <TabLink class={styles.link} location='Local'>Local</TabLink>
+                <TabLink class={styles.link} location='Online'>Online</TabLink>
+            </Flex>
+            <Tab location='Local'>
+                <Block>Local Multiplayer</Block>
+            </Tab>
+            <Tab location='Online'>
+                <Block>Online Multiplayer</Block>
+            </Tab>    
+        </Tabs>
+    );
+};
+
+export default App;
 ```

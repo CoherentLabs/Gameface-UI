@@ -9,12 +9,8 @@ interface CustomDropdownProps {
 }
 
 const CustomDropdown = (props: CustomDropdownProps) => {
-    const test = () => {
-        console.log('hey droppy')
-        emitChange()
-    }
     return (
-        <Dropdown onChange={test} class={style.dropdown}>
+        <Dropdown onChange={emitChange} class={style.dropdown}>
             <Dropdown.Options class={style["dropdown-options"]}>
                 <For each={props.values}>
                 {(opt) => (
