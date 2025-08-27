@@ -1,6 +1,6 @@
 import { PaginationRef } from "@components/Basic/Pagination/Pagination";
-import { createContext, createMemo, createSignal, onCleanup, onMount, ParentComponent } from "solid-js";
-import CarouselItems, { Item } from "./CarouselItems";
+import { createContext, createEffect, createMemo, createSignal, on, onCleanup, onMount, ParentComponent, ParentProps, Setter } from "solid-js";
+import CarouselItems, { CarouselItemTokenProps, Item } from "./CarouselItems";
 import CarouselPagination from "./CarouselPagination";
 import { CarouselNext } from "./CarouselNext";
 import { CarouselPrev } from "./CarouselPrev";
@@ -33,8 +33,7 @@ interface CarouselProps extends ComponentProps {
 interface CarouselContextType {
     itemWidth: () => number;
     itemGap: () => number;
-    registerItem: (value: number, selected?: boolean) => void;
-    unregisterItem: (value: number) => void;
+    setActivePage: Setter<number>;
     setItemsWrapper: (el: HTMLDivElement) => void
     setItemsContainer: (el: HTMLDivElement) => void
     setPaginationRef: (el: PaginationRef) => void
@@ -44,6 +43,7 @@ interface CarouselContextType {
     next: () => void;
     prev: () => void;
     groupItems: () => boolean;
+    setItems: Setter<any[]>;
 }
 
 export const CarouselContext = createContext<CarouselContextType>();
@@ -54,8 +54,8 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
     let itemsContainer!: HTMLDivElement;
     let paginationRef!: PaginationRef;
     let carouselRef!: HTMLDivElement;
-    const items = new Set();
 
+    const [items, setItems] = createSignal<ParentProps<CarouselItemTokenProps>[]>([]);
     const [pagesCount, setPagesCount] = createSignal(0);
     const [activePage, setActivePage] = createSignal(props.groupItems ? 0 : 0);
     const itemWidth = createMemo(() => props.itemWidth || 100);
@@ -64,19 +64,22 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
     const groupItems = createMemo(() => !!props.groupItems);
     const leadingAndTrailingSpaces = createMemo(() => props.leadingAndTrailingSpaces === false ? false : true);
 
-    const registerItem = (itemIndex: number, selected?: boolean) => {
-        items.add(itemIndex);
-        updatePagesCount();
+    createEffect(
+        on([itemWidth, itemGap, groupItems], () => {
+            updatePagesCount();
+        }, { defer: true })
+    );
 
-        if (!groupItems() && selected) waitForFrames(() => scrollTo(itemIndex));
-    };
+    createEffect(
+        on(items, () => {
+            updatePagesCount();
+            scrollTo(activePage(), true);
+        }, { defer: true })
+    );
 
-    const unregisterItem = (itemIndex: number) => {
-        items.delete(itemIndex);
-        updatePagesCount();
-
-        if (!groupItems() && itemIndex !== activePage()) waitForFrames(() => scrollTo(itemIndex - 1));
-    }
+    createEffect(
+        on([itemsAlignment, leadingAndTrailingSpaces], () => waitForFrames(translateItemsContainer), { defer: true })
+    );
 
     onMount(() => {
         waitForFrames(translateItemsContainer);
@@ -103,8 +106,20 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
         if (resizeObserver) resizeObserver.disconnect();
     });
 
+    const fixLastItemSelection = () => {
+        if (activePage() > pagesCount() - 1) {
+            scrollTo(pagesCount() - 1);
+        } else {
+            translateItemsContainer();
+        }
+    }
+
     const updatePagesCount = () => {
-        if (!groupItems()) return setPagesCount(items.size);
+        if (!groupItems()) {
+            setPagesCount(items().length);
+            fixLastItemSelection();
+            return;
+        }
 
         waitForFrames(() => {
             const { width } = itemsWrapper.getBoundingClientRect();
@@ -115,8 +130,9 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
             const pages = Math.ceil(totalItems / itemsPerPage);
 
             setPagesCount(pages);
+            fixLastItemSelection();
         });
-    };
+    }
 
     const calculateOffset = (maxScrollOffset: number, baseOffset: number, adjustment: number = 0) => {
         const offset = baseOffset + adjustment;
@@ -124,7 +140,7 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
     };
 
     const getScrollOffset = (page: number, itemWidth: number, containerWidth: number) => {
-        const totalItemsWidth = itemWidth * items.size;
+        const totalItemsWidth = itemWidth * items().length;
         const maxScrollOffset = totalItemsWidth - containerWidth;
 
         if (groupItems()) {
@@ -174,8 +190,8 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
         itemsContainer.style.transform = `translateX(${scrollOffset}px)`;
     }
 
-    const scrollTo = (page: number) => {
-        if (!itemsContainer || page < 0 || page >= pagesCount() || activePage() === page) return;
+    const scrollTo = (page: number, force = false) => {
+        if (!itemsContainer || page < 0 || page >= pagesCount() || (!force && activePage() === page)) return;
 
         setActivePage(page);
         translateItemsContainer();
@@ -219,10 +235,10 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
     const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     return <CarouselContext.Provider value={{
-        registerItem,
-        unregisterItem,
+        setActivePage,
         itemWidth,
         itemGap,
+        setItems,
         setItemsContainer,
         setPaginationRef,
         activePage,

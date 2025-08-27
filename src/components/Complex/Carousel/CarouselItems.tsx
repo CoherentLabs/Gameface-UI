@@ -1,4 +1,4 @@
-import { For, JSX, ParentComponent, Show, createEffect, createMemo, onMount, useContext } from "solid-js";
+import { For, JSX, ParentComponent, Show, createEffect, createMemo, on, onMount, useContext } from "solid-js";
 import styles from './Carousel.module.scss';
 import { CarouselContext } from "./Carousel";
 import { createTokenComponent, useTokens } from "@components/utils/tokenComponents";
@@ -43,6 +43,10 @@ const CarouselItems: ParentComponent<CarouselItemsProps> = (props) => {
     const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     const ItemsTokens = useTokens(Item, props.children);
+
+    createEffect(() => {
+        carouselContext.setItems(ItemsTokens() || []);
+    });
 
     return (
         <div ref={carouselContext.setItemsWrapper}

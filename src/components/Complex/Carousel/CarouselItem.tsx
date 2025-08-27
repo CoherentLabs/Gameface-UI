@@ -12,16 +12,12 @@ const CarouselItem: ParentComponent<CarouselItemProps> = (props) => {
     const carouselContext = useContext(CarouselContext);
 
     if (!carouselContext) {
-        console.error('Carousel.Item must be used inside a Modal component');
+        console.error('Carousel.Item must be used inside a Carousel component');
         return null;
     }
 
     onMount(() => {
-        carouselContext?.registerItem(props.index(), props.item.selected);
-    })
-
-    onCleanup(() => {
-        carouselContext?.unregisterItem(props.index());
+        if (!carouselContext.groupItems() && props.item.selected) carouselContext?.setActivePage(props.index());
     })
 
     const width = createMemo(() => {
