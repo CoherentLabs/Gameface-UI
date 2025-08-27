@@ -127,7 +127,7 @@ Internally, `Carousel.Items` renders two nested containers:
 
 This design gives you flexibility: you can apply custom styles or classes to either container, while the carousel logic is preserved.
 
-### Carousel.Items Props
+#### Carousel.Items Props
 
 | Prop Name  | Type                                   | Default     | Description                                                                                                                                                                                  |
 | ---------- | -------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -138,9 +138,9 @@ This design gives you flexibility: you can apply custom styles or classes to eit
 
 ### Carousel.Item
 
-The `Carousel.Item` component defines a single item inside the `Carousel.Items` container. Each `Carousel.Item` represents one element in the carousel - this could be an image, a card, or any other type of content you’d like to showcase.
+The `Carousel.Item` component defines a single item inside the `Carousel.Items` container. Each `Carousel.Item` represents one element in the carousel - this could be an image, a card, or any other type of content you'd like to showcase.
 
-### Carousel.Item Props
+#### Carousel.Item Props
 
 | Prop Name  | Type                                   | Default     | Description                                                                                                                                                                                  |
 | ---------- | -------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -170,13 +170,95 @@ The `style-selected`, `class-selected`, and `selected` props only take effect wh
 
 In this example, the second item is automatically positioned in the center of the carousel, marked as selected, and scaled up by `1.1` of its original size.
 
+#### How the `selected` prop works :badge[Important]{variant="caution"}
+
+The `selected` prop on a `Carousel.Item` only determines the initially active item when the carousel first loads. After initialization, the carousel manages its own selection state as you navigate forward or backward.
+
+When adding or removing items dynamically, the carousel will not automatically update its selection. Instead, the behavior depends on where the new item is inserted:
+
+- **Adding before the selected item**
+
+If you insert a new item before the currently selected one, all items will shift to the right, but the carousel will still consider the same position as selected.
+For example, if the carousel has `['Item 1', 'Item 2']` and `Item 2` is selected, inserting a new item at the start will produce `['New Item', 'Item 1', 'Item 2']`, and the carousel will now mark `Item 1` as selected (since it occupies the same index as before).
+
+<video src="/video/carousel/add-item-at-start.webm" autoplay loop muted></video>
+
+- **Adding after the selected item**
+
+If the new item is appended after the current selection, nothing changes - the same item remains selected.
+
+<video src="/video/carousel/add-item-at-end.webm" autoplay loop muted></video>
+
+- **Adding item and mark it as selected**
+
+If you want to dynamically insert an item and immediately make it the selected one, you must assign it the `selected` prop before rendering it.
+
+<video src="/video/carousel/add-selected-item.webm" autoplay loop muted></video>
+
+The following example demonstrates all of these scenarios by adding new items through different buttons:
+
+```tsx
+import { For, createSignal } from 'solid-js';
+import Flex from '@components/Layout/Flex/Flex';
+import Carousel, { CarouselRef } from '@components/Complex/Carousel/Carousel';
+
+const App = () => {
+    let ref!: CarouselRef;
+    const [items, setItems] = createSignal([
+        { name: 'Item 1', selected: false },
+        { name: 'Item 2', selected: false },
+        { name: 'Item 3', selected: true },
+        { name: 'Item 4', selected: false },
+        { name: 'Item 5', selected: false }
+    ]);
+
+    const btnStyles = {
+        width: '20vmax',
+        height: '10vmax',
+        background: '#3e3d5d',
+        color: 'white',
+        cursor: 'pointer'
+    }
+
+    return (
+        <>
+            <Flex direction='row'>
+                <button style={btnStyles} onClick={() => setItems((prev) => [{ name: 'First', selected: false }, ...prev])}>Add non selected item at start</button>
+                <button style={btnStyles} onClick={() => setItems((prev) => [...prev, { name: 'Last', selected: false }])}>Add non selected item at end</button>
+                <button style={btnStyles} onClick={() => setItems((prev) => [{ name: 'Selected', selected: true }, ...prev])}>Add selected item</button>
+            </Flex>
+
+            <Carousel ref={ref} style={{ width: '30vmax' }} itemWidth={40} itemGap={5} itemsAlignment='center'>
+                <Carousel.Items style={{ height: '80%' }}>
+                    <For each={items()}>
+                        {(item) =>
+                            <Carousel.Item
+                                selected={item.selected}
+                                style-selected={{ transform: 'scale(1.1)', border: '0.2vmax solid #868599' }}
+                                style={{ color: 'white', overflow: 'hidden', transition: 'transform 300ms', 'border-radius': '1vmax' }}
+                            >
+                                <Flex align-items='center' justify-content='center' style={{ background: '#3e3d5d', height: '100%' }}>
+                                    {item.name}
+                                </Flex>
+                            </Carousel.Item>}
+                    </For>
+                </Carousel.Items>
+                <Carousel.Pagination />
+            </Carousel>
+        </>
+    );
+};
+
+export default App;
+```
+
 ### Carousel.Pagination
 
 ![](./images/carousel-pagination.png)
 
 The `Carousel.Pagination` component renders pagination controls, allowing users to navigate through carousel items via buttons or indicators. Under the hood, it uses the [Pagination](/components/basic/pagination) component, so you can leverage the same props and slots to fully customize its behavior and appearance.
 
-You can place `Carousel.Pagination` anywhere inside the `Carousel`. It automatically syncs with the carousel’s active page and items. Styling and additional classes can be applied via the `style` and `class` props.
+You can place `Carousel.Pagination` anywhere inside the `Carousel`. It automatically syncs with the carousel's active page and items. Styling and additional classes can be applied via the `style` and `class` props.
 
 To customize the behavior of pagination items or controls, you can use the `Carousel.Pagination.Item` and `Carousel.Pagination.Controls` slots. For instance, you can design your own buttons, indicators, or even disable them entirely.
 
@@ -210,7 +292,7 @@ This approach is handy when you want to hide the built-in controls and instead u
 
 The `Carousel.Next` and `Carousel.Prev` components provide custom navigation controls for the carousel. They let users move forward or backward through the carousel items with a simple click.
 
-These components can be placed anywhere inside the `Carousel` and will automatically sync with the carousel’s active page and items. You can also customize their appearance by adding text, icons, or any other elements inside them.
+These components can be placed anywhere inside the `Carousel` and will automatically sync with the carousel's active page and items. You can also customize their appearance by adding text, icons, or any other elements inside them.
 
 #### Props
 
@@ -334,7 +416,7 @@ export default App;
 
 <video src="/video/carousel/items-center-no-spaces.webm" autoplay loop muted></video>
 
-By default, the `Carousel` component adds extra spacing before the first item and after the last one. This helps create a more open layout with padding on the sides. If you’d rather have a compact layout without these side gaps, you can disable this behavior by setting the `leadingAndTrailingSpaces` prop to `false`.
+By default, the `Carousel` component adds extra spacing before the first item and after the last one. This helps create a more open layout with padding on the sides. If you'd rather have a compact layout without these side gaps, you can disable this behavior by setting the `leadingAndTrailingSpaces` prop to `false`.
 
 ```tsx ins="leadingAndTrailingSpaces={false}" collapse={1-8, 10-28}
 import { For } from 'solid-js';
