@@ -6,6 +6,8 @@ import SubtitleSize from "@custom-components/Menu/SubtitleSize/SubtitleSize";
 import CustomSlider from "@custom-components/Menu/CustomSlider/CustomSlider";
 import CustomToggle from "@custom-components/Menu/CustomToggle/CustomToggle";
 import Block from "@components/Layout/Block/Block";
+import CustomDropdown from "@custom-components/Menu/CustomDropdown/CustomDropdown";
+import { emitChange } from "../../../../views/menu/util";
 
 const Gameplay: ParentComponent = () => {
     const [showSubtitleOptions, setShowSubtitleOptions] = createSignal(true);
@@ -13,7 +15,7 @@ const Gameplay: ParentComponent = () => {
     return (
         <>
             <MenuItem id="difficulty" name='Difficulty'>
-                <Stepper style={{width: '15vmax'}}>
+                <Stepper onChange={emitChange} style={{width: '15vmax'}}>
                     <Stepper.Items>
                         <Stepper.Item value='Easy'>Easy</Stepper.Item>
                         <Stepper.Item value='Normal' selected>Normal</Stepper.Item>
@@ -34,6 +36,17 @@ const Gameplay: ParentComponent = () => {
                     <MenuItem id="subtitleColor" name='Subtitle Color'>
                         <ColorPreview id="subtitleColor" />
                     </MenuItem>
+                    <MenuItem id="subtitleLanguage" name="Subtitle Language">
+                        <CustomDropdown
+                            values={[
+                                { value: "en", label: "English" },
+                                { value: "de", label: "Deutsch" },
+                                { value: "es", label: "Español" },
+                                { value: "fr", label: "Français" },
+                            ]}
+                            default="en"
+                        />
+                </MenuItem>
                 </Block>
             </Show>
             <MenuItem id="fov" name='Field of view'>

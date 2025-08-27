@@ -3,6 +3,7 @@ import Block from "@components/Layout/Block/Block";
 import style from './CustomSlider.module.scss';
 import { createSignal } from "solid-js";
 import Flex from "@components/Layout/Flex/Flex";
+import { emitChange } from "../../../views/menu/util";
 
 interface CustomSliderProps {
     step: number;
@@ -14,11 +15,16 @@ interface CustomSliderProps {
 
 const CustomSlider = (props: CustomSliderProps) => {
     const [value, setValue] = createSignal(props.value);
+    const handleChange = (newValue: number) => {
+        setValue(newValue)
+        emitChange()
+    }
+
     return (
         <Flex align-items="center" class={style.wrapper}>
             <Block class={style['value-preview']}>{value()}</Block>
             <Slider 
-                onChange={(newValue) => setValue(newValue)} 
+                onChange={handleChange} 
                 step={props.step} 
                 min={props.min} 
                 max={props.max} 

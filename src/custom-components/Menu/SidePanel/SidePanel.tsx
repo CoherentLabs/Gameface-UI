@@ -5,6 +5,7 @@ import { MenuContext, OPTIONS } from "../../../views/menu/Menu";
 import { gameplayPanelContent } from "./gameplayPanelContent";
 import { graphicsPanelContent } from "./graphicsPanelContent";
 import { keybindsPanelContent } from "./keybindsPanelContent";
+import { audioPanelContent } from "./audioPanelContent";
 
 interface SidePanelProps {
     option: string,
@@ -18,6 +19,8 @@ const getContent = (active: string) => {
             return graphicsPanelContent;
         case OPTIONS[2]:
             return keybindsPanelContent;
+        case OPTIONS[3]:
+            return audioPanelContent;
         default:
             return {};
     }

@@ -1,6 +1,7 @@
 import Segment from "@components/Basic/Segment/Segment"
 import { For } from "solid-js";
 import style from './CustomSegment.module.scss';
+import { emitChange } from "../../../views/menu/util";
 
 type CustomSegmentProps<V extends readonly string[]> = {
   values: V;
@@ -11,8 +12,13 @@ type CustomSegmentProps<V extends readonly string[]> = {
 };
 
 export function CustomSegment<V extends readonly string[]>(props: CustomSegmentProps<V>) {
+    const handleChange = (val: V[number]) => {
+        emitChange()
+        props.onChange?.(val);
+    };
+
     return (
-        <Segment ref={props.ref} onChange={props.onChange} class={`${style.segment} ${props["custom-class"] ?? null}`} >
+        <Segment ref={props.ref} onChange={handleChange} class={`${style.segment} ${props["custom-class"] ?? null}`} >
             <For each={props.values}>
                 {(v) => <Segment.Button 
                     class={style['segment-button']}

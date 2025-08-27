@@ -1,4 +1,4 @@
-import { Accessor, createContext, createSignal, onCleanup, onMount, ParentComponent } from 'solid-js';
+import { Accessor, createContext, createMemo, createSignal, onCleanup, onMount, ParentComponent } from 'solid-js';
 import styles from './Scroll.module.scss';
 import LayoutBase from '../LayoutBase';
 import { clamp } from '@components/utils/clamp';
@@ -208,7 +208,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
         scrollUp,
         scrollDown,
         begin,
-        end
+        end,
     };
 
     const scrollToMousePositionWithStep = (clickPosition: number) => {

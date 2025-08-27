@@ -1,5 +1,6 @@
 import NumberInput from "@components/Basic/Input/NumberInput/NumberInput"
 import style from './CustomNumberInput.module.scss'
+import { emitChange } from "../../../views/menu/util";
 
 interface CustonInputProps {
     min: number,
@@ -9,7 +10,7 @@ interface CustonInputProps {
 
 const CustomNumberInput = (props: CustonInputProps) => {
     return (
-        <NumberInput class={style.input} min={props.min} max={props.max} value={props.value} >
+        <NumberInput onChange={emitChange} class={style.input} min={props.min} max={props.max} value={props.value} >
             <NumberInput.IncreaseControl class={style['input-button']}></NumberInput.IncreaseControl>
             <NumberInput.DecreaseControl class={style['input-button']}></NumberInput.DecreaseControl>
             <NumberInput.Input class={style['input-element']} />

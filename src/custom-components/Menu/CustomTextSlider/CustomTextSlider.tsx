@@ -1,6 +1,7 @@
 import { createSignal } from "solid-js";
 import TextSlider from "@components/Basic/TextSlider/TextSlider";
 import style from './CustomTextSlider.module.scss';
+import { emitChange } from "../../../views/menu/util";
 
 interface CustomSliderProps {
     value: string;
@@ -9,9 +10,13 @@ interface CustomSliderProps {
 }
 
 const CustomTextSlider = (props: CustomSliderProps) => {
+    const handleChange = (value: string) => {
+        props.onChange?.(value);
+        emitChange();
+    }
     return (
         <TextSlider 
-            onChange={props.onChange}
+            onChange={handleChange}
             class={style.slider}
             values={props.values} 
             value={props.value}>

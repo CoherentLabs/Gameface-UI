@@ -19,6 +19,11 @@ export const gameplayPanelContent: Record<string, { title: string; content: stri
     content:
       "Customize the color of the subtitle text for readability or accessibility. Use the color picker to select your desired color: ",
   },
+  subtitleLanguage: {
+    title: "Subtitle Language",
+    content:
+      "Select the language used for subtitle text. Some languages may require a font reload.",
+  },
   fov: {
     title: "Field of View",
     content:

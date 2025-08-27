@@ -1,0 +1,33 @@
+.credits {
+    &-list {
+        align-items: center;
+        text-align: center;
+        width: 100%;
+        padding: 0;
+    }
+
+    &-item {
+        align-items: center;
+
+        &-heading {
+            width: 100%;
+            font-size: 1.75em;
+        }
+    }
+
+    &-entry {
+        margin-bottom: 2vmax;
+        flex-direction: column;
+
+        &-heading {
+            font-size: 1.25em;
+            margin: 0;
+            margin-bottom: 1vmax;
+            color: #cac8e6;
+        }
+
+        &-name {
+            margin: 0;
+        }
+    }
+}

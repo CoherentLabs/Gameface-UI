@@ -1,10 +1,11 @@
-import { Accessor, createContext, createMemo, createSignal, DEV, JSX, onMount, ParentComponent } from 'solid-js';
+import { Accessor, createContext, createEffect, createMemo, createSignal, DEV, JSX, onMount, ParentComponent } from 'solid-js';
 import style from './Dropdown.module.scss';
 import { DropdownOptions, Handle, Options, Track } from './DropdownOptions';
 import { Option } from './DropdownOption';
 import { DropdownTrigger, Icon, Placeholder, Trigger } from './DropdownTrigger';
 import { BaseComponentRef, ComponentProps } from '@components/types/ComponentProps';
 import useBaseComponent from '@components/BaseComponent/BaseComponent';
+import { on } from 'solid-js';
 
 export interface CommonDropdownSlotProps {
     style?: JSX.CSSProperties,
@@ -50,8 +51,8 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
             return;
         }
 
+        if (selected() !== "") props.onChange?.(value);
         setSelected(value);
-        props.onChange?.(selected());
     }
 
     const dropdownClasses = createMemo(() => {

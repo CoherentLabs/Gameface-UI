@@ -1,6 +1,7 @@
 import Dropdown from "@components/Basic/Dropdown/Dropdown"
 import style from '../MenuItem/MenuItem.module.scss';
 import { For } from "solid-js";
+import { emitChange } from "../../../views/menu/util";
 
 interface CustomDropdownProps {
     values: { value: string, label: string }[],
@@ -8,8 +9,12 @@ interface CustomDropdownProps {
 }
 
 const CustomDropdown = (props: CustomDropdownProps) => {
+    const test = () => {
+        console.log('hey droppy')
+        emitChange()
+    }
     return (
-        <Dropdown class={style.dropdown}>
+        <Dropdown onChange={test} class={style.dropdown}>
             <Dropdown.Options class={style["dropdown-options"]}>
                 <For each={props.values}>
                 {(opt) => (

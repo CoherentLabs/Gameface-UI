@@ -1,5 +1,5 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, Setter, createSignal, onMount, ParentComponent, Show, createContext, createMemo, createEffect } from "solid-js";
+import { Accessor, Setter, createSignal, onMount, ParentComponent, Show, createContext, createMemo, createEffect, on } from "solid-js";
 import styles from './ToggleButton.module.scss';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { Control, ToggleButtonControl } from "./ToggleButtonControl";
@@ -32,6 +32,7 @@ const ToggleButton: ParentComponent<ToggleButtonProps> = (props) => {
     const LabelRightToken = useToken(LabelRight, props.children);
 
     const [checked, setChecked] = createSignal(props.checked ?? false);
+    const [checkedd, setCheckedd] = createSignal(props.checked ?? false);
     let element!: HTMLDivElement;
 
     const toggleButtonClasses = createMemo(() => {
@@ -57,12 +58,13 @@ const ToggleButton: ParentComponent<ToggleButtonProps> = (props) => {
         if (props.disabled) return;
 
         setChecked(prev => !prev);
-        props.onChange?.(checked())
     }
 
-    createEffect(() => {
-        props.onChange?.(checked());
-    })
+    createEffect(
+        on(checked, (v) => {
+            props.onChange?.(v);
+        }, {defer: true})
+    );
 
     onMount(() => {
         if (!props.ref || !element) return;
