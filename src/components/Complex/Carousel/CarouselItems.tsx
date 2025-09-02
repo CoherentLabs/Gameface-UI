@@ -13,7 +13,8 @@ export interface CarouselItemTokenProps {
     'style-selected'?: JSX.CSSProperties;
     'class-selected'?: string;
 }
-export const Item = createTokenComponent<CarouselItemTokenProps>();
+
+export const Item = createTokenComponent<CarouselItemTokenProps>(true);
 
 interface CarouselItemsProps extends ComponentProps {
     itemsContainerStyle?: JSX.CSSProperties;

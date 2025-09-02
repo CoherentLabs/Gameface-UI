@@ -16,10 +16,6 @@ const CarouselItem: ParentComponent<CarouselItemProps> = (props) => {
         return null;
     }
 
-    onMount(() => {
-        if (!carouselContext.groupItems() && props.item.selected) carouselContext?.setActivePage(props.index());
-    })
-
     const width = createMemo(() => {
         return carouselContext?.itemWidth();
     });

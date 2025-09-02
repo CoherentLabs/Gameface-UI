@@ -55,7 +55,7 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
     let paginationRef!: PaginationRef;
     let carouselRef!: HTMLDivElement;
 
-    const [items, setItems] = createSignal<ParentProps<CarouselItemTokenProps>[]>([]);
+    const [items, setItems] = createSignal<ParentProps<CarouselItemTokenProps & { _id: string }>[]>([]);
     const [pagesCount, setPagesCount] = createSignal(0);
     const [activePage, setActivePage] = createSignal(props.groupItems ? 0 : 0);
     const itemWidth = createMemo(() => props.itemWidth || 100);
@@ -70,11 +70,55 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
         }, { defer: true })
     );
 
+    const resolveActivePageIndex = (
+        currentItems: ParentProps<CarouselItemTokenProps & { _id: string }>[],
+        previousItems: ParentProps<CarouselItemTokenProps & { _id: string }>[] | undefined,
+        previousActivePage: number
+    ): number => {
+        if (!previousItems) return previousActivePage;
+
+        const previouslyActiveItem = previousItems[previousActivePage];
+        if (!previouslyActiveItem?._id) return previousActivePage;
+
+        // Find the new index of the previously active item in the current list
+        const newIndex = currentItems.findIndex(
+            (item) => item._id === previouslyActiveItem._id
+        );
+
+        // If the item still exists, return its new index, otherwise keep the old page
+        return newIndex >= 0 ? newIndex : previousActivePage;
+    };
+
     createEffect(
-        on(items, () => {
-            updatePagesCount();
-            scrollTo(activePage(), true);
-        }, { defer: true })
+        on(
+            items,
+            (currentItems, previousItems) => {
+                // Check if a new item was just added with `selected`
+                const newlySelectedIndex = currentItems.findIndex((item) => {
+                    const existedBefore = previousItems?.some(
+                        (prevItem) => prevItem._id === item._id
+                    );
+                    return item.selected && !existedBefore;
+                });
+
+                let nextActivePage: number;
+
+                if (newlySelectedIndex >= 0) {
+                    // Prioritize explicitly selected new items
+                    nextActivePage = newlySelectedIndex;
+                    setActivePage(nextActivePage);
+                } else {
+                    // Otherwise, keep the previous active item if it still exists
+                    nextActivePage = groupItems()
+                        ? activePage()
+                        : resolveActivePageIndex(currentItems, previousItems, activePage());
+                }
+
+                updatePagesCount();
+                scrollTo(nextActivePage, true);
+            },
+            { defer: true }
+        )
     );
 
     createEffect(
