@@ -28,6 +28,7 @@ import NumberInputTest from '../../components/Input/NumberInputTest';
 import PaginationTest from '../../components/Pagination/PaginationTest';
 import ModalTest from '../../components/Modal/ModalTest';
 import ListTest from '../../components/List/ListTest';
+import CarouselTest from '../../components/Carousel/CarouselTest';
 
 const Main = () => {
     const components = [
@@ -47,6 +48,7 @@ const Main = () => {
 
         // Compex components
         "color-picker",
+        "carousel",
         "accordion",
         "text-input",
         "password-input",
@@ -101,6 +103,7 @@ const Main = () => {
                 <PaginationTest />
                 <ModalTest />
                 <ListTest />
+                <CarouselTest />
             </Tabs>
         </div>
     );

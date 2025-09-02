@@ -1,0 +1,4 @@
+.carousel-item {
+    color: black;
+    background-image: linear-gradient(to right bottom, #ffffff, #b9b9b9, #777777, #3b3b3b, #000000);
+}

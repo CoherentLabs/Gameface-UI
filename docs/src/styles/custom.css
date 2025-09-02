@@ -1,3 +1,7 @@
+:root {
+  --sl-content-width: 60rem;
+}
+
 .language-jsx,
 #code-block {
   width: 100% !important;

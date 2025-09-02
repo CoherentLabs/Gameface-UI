@@ -1,0 +1,14 @@
+{
+  "assertionElement": "assertion-element",
+  "scenarioBtn": "scenario-btn",
+  "carousel": "carousel",
+  "carouselBackground": "carousel-background",
+  "carouselItem": "carousel-item",
+  "carouselItemSelected": "carousel-item-selected",
+  "carouselItems": "carousel-items",
+  "carouselControl": "carousel-control",
+  "carouselPages": "carousel-pages",
+  "carouselCustomPrev":"carousel-custom-prev-btn",
+  "carouselCustomNext":"carousel-custom-next-btn",
+  "reactive": "reactive"
+}

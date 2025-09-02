@@ -1,5 +1,5 @@
 import { createToken, isToken, JSXTokenizer, resolveTokens } from '@solid-primitives/jsx-tokenizer';
-import { ParentProps, JSX, createMemo } from 'solid-js';
+import { ParentProps, JSX, createMemo, createUniqueId, mergeProps } from 'solid-js';
 
 type TokenizerType<T extends Record<string, any>> = JSXTokenizer<{ props: ParentProps<T> }>;
 
@@ -31,8 +31,8 @@ export const useTokens = <T extends Record<string, any>>(tokenizer: TokenizerTyp
 
 export type TokenBase = { class?: string; style?: JSX.CSSProperties };
 
-export const createTokenComponent = <T extends Record<string, any>>(name?: string) => {
+export const createTokenComponent = <T extends Record<string, any>>(withId = false) => {
     return createToken((props: ParentProps<T>) => {
-        return { props };
+        return { props: mergeProps(props, { _id: withId ? createUniqueId() : undefined }) as ParentProps<T> & { _id?: string } };
     }, () => null);
 };

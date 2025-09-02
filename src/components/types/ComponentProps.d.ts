@@ -12,8 +12,7 @@ type ExcludedEvents =
     | "readystatechange"
     | "timeout"
     | "transitionend"
-    | "volumechange"
-    | "wheel";
+    | "volumechange";
 
 export type refElementType = HTMLParagraphElement | HTMLDivElement | HTMLButtonElement | undefined;
 
