@@ -75,8 +75,8 @@ export default App;
 
 | Method Name               | Parameters       | Return Value | Description                                                                                                                                                                                                 |
 |---------------------------|------------------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `next`                   | None             | `void`       | Moves the carousel to the next item. If at the last item, it wraps around to the last item. If `groupItems` is enabled, it moves to the next group of items.                                               |
-| `prev`                   | None             | `void`       | Moves the carousel to the previous item. If at the first item, it wraps around to the first item. If `groupItems` is enabled, it moves to the previous group of items.                                      |
+| `next`                   | None             | `void`       | Moves the carousel to the next item. If `groupItems` is enabled, it moves to the next group of items.                                               |
+| `prev`                   | None             | `void`       | Moves the carousel to the previous item. If `groupItems` is enabled, it moves to the previous group of items.                                      |
 | `scrollTo`               | `page: number`   | `void`       | Scrolls the carousel to a specific page or item. The `page` parameter is zero-based, with `0` referring to the first page. If `groupItems` is enabled, it scrolls to the specified group of items.          |
 | `activePage`             | None             | `number`     | Returns the index of the currently active page or item. If `groupItems` is enabled, it returns the index of the active group of items.                                                                     |
 | `pagesCount`             | None             | `number`     | Returns the total number of pages or items in the carousel. If `groupItems` is enabled, it returns the total number of groups of items.                                                                    |
@@ -136,6 +136,22 @@ This design gives you flexibility: you can apply custom styles or classes to eit
 | `class`    | `string`                               | `""`        | CSS classes applied to the wrapper container.                                                                                                                                             |
 | `itemsContainerClass`    | `string`                               | `""`        | CSS classes applied to the inner items container.                                                                                                                                             |
 
+##### Container animation
+
+The items container uses a transform transition with a default duration of 0.2s. You can override this behavior by providing your own transition or disabling it entirely.
+
+This can be done by applying a custom class or inline style through the `itemsContainerStyle` or `itemsContainerClass` props.
+
+For example:
+
+```tsx
+// Increase the transition duration when switching items
+<Carousel.Items itemsContainerStyle={{ transition: 'transform 0.5s' }} />
+
+// Completely disable the transition
+<Carousel.Items itemsContainerStyle={{ transition: 'none' }} />
+```
+
 ### Carousel.Item
 
 The `Carousel.Item` component defines a single item inside the `Carousel.Items` container. Each `Carousel.Item` represents one element in the carousel - this could be an image, a card, or any other type of content you'd like to showcase.
@@ -169,88 +185,6 @@ The `style-selected`, `class-selected`, and `selected` props only take effect wh
 ```
 
 In this example, the second item is automatically positioned in the center of the carousel, marked as selected, and scaled up by `1.1` of its original size.
-
-#### How the `selected` prop works :badge[Important]{variant="caution"}
-
-The `selected` prop on a `Carousel.Item` only determines the initially active item when the carousel first loads. After initialization, the carousel manages its own selection state as you navigate forward or backward.
-
-When adding or removing items dynamically, the carousel will not automatically update its selection. Instead, the behavior depends on where the new item is inserted:
-
-- **Adding before the selected item**
-
-If you insert a new item before the currently selected one, all items will shift to the right, but the carousel will still consider the same position as selected.
-For example, if the carousel has `['Item 1', 'Item 2']` and `Item 2` is selected, inserting a new item at the start will produce `['New Item', 'Item 1', 'Item 2']`, and the carousel will now mark `Item 1` as selected (since it occupies the same index as before).
-
-<video src="/video/carousel/add-item-at-start.webm" autoplay loop muted></video>
-
-- **Adding after the selected item**
-
-If the new item is appended after the current selection, nothing changes - the same item remains selected.
-
-<video src="/video/carousel/add-item-at-end.webm" autoplay loop muted></video>
-
-- **Adding item and mark it as selected**
-
-If you want to dynamically insert an item and immediately make it the selected one, you must assign it the `selected` prop before rendering it.
-
-<video src="/video/carousel/add-selected-item.webm" autoplay loop muted></video>
-
-The following example demonstrates all of these scenarios by adding new items through different buttons:
-
-```tsx
-import { For, createSignal } from 'solid-js';
-import Flex from '@components/Layout/Flex/Flex';
-import Carousel, { CarouselRef } from '@components/Complex/Carousel/Carousel';
-
-const App = () => {
-    let ref!: CarouselRef;
-    const [items, setItems] = createSignal([
-        { name: 'Item 1', selected: false },
-        { name: 'Item 2', selected: false },
-        { name: 'Item 3', selected: true },
-        { name: 'Item 4', selected: false },
-        { name: 'Item 5', selected: false }
-    ]);
-
-    const btnStyles = {
-        width: '20vmax',
-        height: '10vmax',
-        background: '#3e3d5d',
-        color: 'white',
-        cursor: 'pointer'
-    }
-
-    return (
-        <>
-            <Flex direction='row'>
-                <button style={btnStyles} onClick={() => setItems((prev) => [{ name: 'First', selected: false }, ...prev])}>Add non selected item at start</button>
-                <button style={btnStyles} onClick={() => setItems((prev) => [...prev, { name: 'Last', selected: false }])}>Add non selected item at end</button>
-                <button style={btnStyles} onClick={() => setItems((prev) => [{ name: 'Selected', selected: true }, ...prev])}>Add selected item</button>
-            </Flex>
-
-            <Carousel ref={ref} style={{ width: '30vmax' }} itemWidth={40} itemGap={5} itemsAlignment='center'>
-                <Carousel.Items style={{ height: '80%' }}>
-                    <For each={items()}>
-                        {(item) =>
-                            <Carousel.Item
-                                selected={item.selected}
-                                style-selected={{ transform: 'scale(1.1)', border: '0.2vmax solid #868599' }}
-                                style={{ color: 'white', overflow: 'hidden', transition: 'transform 300ms', 'border-radius': '1vmax' }}
-                            >
-                                <Flex align-items='center' justify-content='center' style={{ background: '#3e3d5d', height: '100%' }}>
-                                    {item.name}
-                                </Flex>
-                            </Carousel.Item>}
-                    </For>
-                </Carousel.Items>
-                <Carousel.Pagination />
-            </Carousel>
-        </>
-    );
-};
-
-export default App;
-```
 
 ### Carousel.Pagination
 
@@ -612,6 +546,8 @@ const App = () => {
         </Carousel>
     );
 };
+
+export default App;
 ```
 
 #### Continuous scrolling while holding down
@@ -689,4 +625,6 @@ const App = () => {
         </Carousel>
     );
 };
+
+export default App;
 ```
