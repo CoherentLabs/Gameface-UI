@@ -117,7 +117,7 @@ describe('Carousel', function () {
         assert(await selectedItem.waitForText('Front'));
     });
 
-    it('Should add item between fist and selected element', async () => {
+    it('Should add item between first and selected element', async () => {
         const pages = await gf.getAll(`.${selectors.carouselPages}`);
         await pages.nth(1).click();
         let selectedItem = await gf.get(`.${selectors.carouselItemSelected}`);
@@ -129,7 +129,7 @@ describe('Carousel', function () {
         assert(await selectedItem.waitForText('Item 2'));
     });
 
-    it('Should add item between fist and selected element and select it', async () => {
+    it('Should add item between first and selected element and select it', async () => {
         const pages = await gf.getAll(`.${selectors.carouselPages}`);
         await pages.nth(2).click();
         let selectedItem = await gf.get(`.${selectors.carouselItemSelected}`);
