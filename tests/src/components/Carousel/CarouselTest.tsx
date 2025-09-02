@@ -31,19 +31,22 @@ const CarouselTest = () => {
         { label: "Add item to back", action: () => { setItems((prev) => [...prev, { name: 'Back', selected: false }]) } },
         { label: "Add item to back and select", action: () => { setItems((prev) => [...prev, { name: 'Back selected', selected: true }]) } },
         { label: "Remove last item", action: () => { setItems((prev) => [...prev.slice(0, prev.length - 1)]) } },
-        { label: "Remove first item", action: () => { setItems((prev) => [...prev.slice(0, 0), ...prev.slice(1)]) } },
+        { label: "Remove first item", action: () => { setItems((prev) => prev.slice(1)) } },
         { label: "Move to next element", action: () => { carouselRef.next() } },
         { label: "Move to prev element", action: () => { carouselRef.prev() } },
         { label: "Move to third element", action: () => { carouselRef.scrollTo(2); } },
         { label: "Remove leading and trailing spaces", action: () => { setCarouselOptions('leadingAndTrailingSpaces', false); setCarouselOptions('itemGap', 0) } },
         { label: "Enable custom pagination controls", action: () => { setCarouselOptions('paginationControlsDisabled', true) } },
+        { label: "Add item at middle between first and selected", action: () => { setItems((prev) => [...prev.slice(0, 1), { name: 'Mid', selected: false }, ...prev.slice(1)]) } },
+        { label: "Add item at middle between first and selected and select it", action: () => { setItems((prev) => [...prev.slice(0, 1), { name: 'Mid selected', selected: true }, ...prev.slice(1)]) } },
+        { label: "Remove second item", action: () => { setItems((prev) => [...prev.slice(0, 1), ...prev.slice(2)]) } },
         { label: "Change styles", action: () => { setTest('blue') } },
     ];
 
     const reset = () => {
         setCarouselOptions(JSON.parse(JSON.stringify(initialOptions)));
         setItems(initialItems);
-        carouselRef.scrollTo(0);
+        carouselRef?.scrollTo(0);
         setTest('red');
     };
 

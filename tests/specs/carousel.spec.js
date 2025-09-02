@@ -101,7 +101,7 @@ describe('Carousel', function () {
         const firstItem = await gf.get(`.${selectors.carouselItem}`);
         const selectedItem = await gf.get(`.${selectors.carouselItemSelected}`);
         assert(await firstItem.waitForText('Front'));
-        assert(await selectedItem.waitForText('Item 1'));
+        assert(await selectedItem.waitForText('Item 2'));
     });
 
     it('Should add item at the front and select it', async () => {
@@ -115,6 +115,48 @@ describe('Carousel', function () {
         selectedItem = await gf.get(`.${selectors.carouselItemSelected}`);
         assert(await firstItem.waitForText('Front'));
         assert(await selectedItem.waitForText('Front'));
+    });
+
+    it('Should add item between fist and selected element', async () => {
+        const pages = await gf.getAll(`.${selectors.carouselPages}`);
+        await pages.nth(1).click();
+        let selectedItem = await gf.get(`.${selectors.carouselItemSelected}`);
+        assert(await selectedItem.waitForText('Item 2'));
+        await gf.click(`.${selectors.scenarioBtn}.scenario-15`);
+        const addedItem = (await gf.getAll(`.${selectors.carouselItem}`)).nth(1);
+        selectedItem = await gf.get(`.${selectors.carouselItemSelected}`);
+        assert(await addedItem.waitForText('Mid'));
+        assert(await selectedItem.waitForText('Item 2'));
+    });
+
+    it('Should add item between fist and selected element and select it', async () => {
+        const pages = await gf.getAll(`.${selectors.carouselPages}`);
+        await pages.nth(2).click();
+        let selectedItem = await gf.get(`.${selectors.carouselItemSelected}`);
+        assert(await selectedItem.waitForText('Item 3'));
+        await gf.click(`.${selectors.scenarioBtn}.scenario-16`);
+        selectedItem = await gf.get(`.${selectors.carouselItemSelected}`);
+        assert(await selectedItem.waitForText('Mid selected'));
+    });
+
+    it('Should remove second item and preserve selection', async () => {
+        const pages = await gf.getAll(`.${selectors.carouselPages}`);
+        await pages.nth(2).click();
+        let selectedItem = await gf.get(`.${selectors.carouselItemSelected}`);
+        assert(await selectedItem.waitForText('Item 3'));
+        await gf.click(`.${selectors.scenarioBtn}.scenario-17`);
+        selectedItem = await gf.get(`.${selectors.carouselItemSelected}`);
+        assert(await selectedItem.waitForText('Item 3'));
+    });
+
+    it('Should remove second item and preserve selection while the last item is seleted', async () => {
+        const pages = await gf.getAll(`.${selectors.carouselPages}`);
+        await pages.last().click();
+        let selectedItem = await gf.get(`.${selectors.carouselItemSelected}`);
+        assert(await selectedItem.waitForText('Item 10'));
+        await gf.click(`.${selectors.scenarioBtn}.scenario-17`);
+        selectedItem = await gf.get(`.${selectors.carouselItemSelected}`);
+        assert(await selectedItem.waitForText('Item 10'));
     });
 
     it('Should add item at the back and preserve the current selection items', async () => {
@@ -264,7 +306,7 @@ describe('Carousel', function () {
 
         for (const { selector, desc } of scenarios) {
             it(`should update styles & classes reactively on props change — ${desc}`, async () => {
-                await gf.click(`.${selectors.scenarioBtn}.scenario-15`);
+                await gf.click(`.${selectors.scenarioBtn}.scenario-18`);
                 const el = await gf.get(selector);
                 const styles = await el.styles();
                 const classes = await el.classes();
