@@ -91,7 +91,7 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
             });
         }, 50);
 
-        props.onChange?.(newOption);
+        if (!firstRender()) props.onChange?.(newOption);
     }
 
     const segmentClasses = createMemo(() => {

@@ -1,4 +1,4 @@
-import { Accessor, createContext, createSignal, onCleanup, onMount, ParentComponent } from 'solid-js';
+import { Accessor, createContext, createEffect, createMemo, createSignal, onCleanup, onMount, ParentComponent, on } from 'solid-js';
 import styles from './Scroll.module.scss';
 import LayoutBase from '../LayoutBase';
 import { clamp } from '@components/utils/clamp';
@@ -117,7 +117,6 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     function updateHandlePosition() {
         const newHandleTop = maxScroll > 0 ? (contentWrapperRef!.scrollTop / maxScroll) * maxHandleMovement : 0;
         setHandleTop(clamp(newHandleTop, 0, maxHandleMovement));
-        handleOnScroll();
     }
 
     function scrollToElement(element: HTMLElement | string) {
@@ -208,7 +207,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
         scrollUp,
         scrollDown,
         begin,
-        end
+        end,
     };
 
     const scrollToMousePositionWithStep = (clickPosition: number) => {
@@ -240,9 +239,11 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     };
 
     const stopScrollingToMouse = () => {
-        if (scrollToMouseTimeout) clearInterval(scrollToMouseTimeout);
+        if (scrollToMouseTimeout) clearTimeout(scrollToMouseTimeout);
         if (scrollToMouseInterval) clearInterval(scrollToMouseInterval);
     }
+
+    createEffect(on(handleTop, handleOnScroll, {defer: true}))
 
     onMount(() => {
         contentWrapperRef!?.addEventListener('scroll', updateHandlePosition);

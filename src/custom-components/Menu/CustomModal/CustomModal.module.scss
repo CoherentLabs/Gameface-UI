@@ -1,0 +1,25 @@
+.modal {
+    background-color: #383940;
+    border: 0.1vmax solid $primaryColor;
+    color: $textColor;
+    font-size: 1vmax;
+
+    &-heading {
+        text-align: center;
+        flex-grow: 1;
+        font-size: 1.75em;
+        margin-bottom: 0;
+    }
+
+    &-content {
+        font-size: 1.15em;
+        line-height: 1.5;
+        padding: 0 2vmax;
+        margin: 0;
+    }
+
+    &-button-container {
+        height: 100%;
+        padding-right: 2vmax;
+    }
+}

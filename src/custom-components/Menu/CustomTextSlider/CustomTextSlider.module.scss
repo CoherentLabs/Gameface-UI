@@ -1,0 +1,30 @@
+.slider {
+    margin: 0;
+    margin-bottom: 1vmax;
+    width: 15vmax;
+    height: 0.75vmax;
+
+    &-handle {
+        opacity: 0;
+        padding: 1vmax;
+    }
+
+    &-pol {
+        margin-top: 0.5vmax;
+        height: 0;
+        font-size: 0.8em;
+    }
+
+    &-track,
+    &-fill {
+        border-radius: 0;
+    }
+
+    &-track {
+        background-color: $background-soft;
+
+        &:hover {
+            background-color: $background-soft-hover;
+        }
+    }
+}

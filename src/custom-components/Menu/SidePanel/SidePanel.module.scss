@@ -1,0 +1,13 @@
+.side-panel {
+    margin-left: 1vmax;
+    padding-left: 1vmax;
+    border: 1px solid $primaryColor;
+    height: 100%;
+    background-color: $background-neutral;
+
+    &-content {
+        color: $disabledTextColor;
+        margin-bottom: 1vmax;
+        padding-right: 1vmax;
+    }
+}

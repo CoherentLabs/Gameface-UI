@@ -17,21 +17,22 @@ interface TabsContextValue {
 interface TabsProps {
     default?: string;
     ref?: unknown | ((ref: TabsComponentRef) => void);
-    onBeforeTabChange?: (currentLocation?: string) => Promise<void> | void;
-    onTabChanged?: (newLocation?: string) => Promise<void> | void;
+    onBeforeTabChange?: (currentLocation: string, newLocation: string) =>  Promise<void | boolean> | void | boolean;
+    onTabChanged?: (newLocation: string) => Promise<void> | void;
 }
 
 const Tabs: ParentComponent<TabsProps> = (props) => {
     const [current, setCurrent] = createSignal(props.default ?? '');
 
     const changeTab = async (newLocation: string) => {
-        await onBeforeTabChangeHandler()
+        const response = await onBeforeTabChangeHandler(current(), newLocation)
+        if (response === false) return;
         setCurrent(newLocation)
         await onTabChangedHandler()
     }
 
-    const onBeforeTabChangeHandler = async () => {
-        if (props.onBeforeTabChange) await props.onBeforeTabChange(current());
+    const onBeforeTabChangeHandler = async (from: string, to: string): Promise<void | boolean> => {
+        if (props.onBeforeTabChange) return await props.onBeforeTabChange(from, to);
     }
 
     const onTabChangedHandler = async () => {

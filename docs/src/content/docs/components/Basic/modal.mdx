@@ -64,6 +64,8 @@ export default App;
 | `class` | `string`                | `""`        | Additional CSS classes to customize the modal's appearance.                                                  |
 | `ref`   | `ModalRef \| undefined` | `undefined` | Reference to the modal instance. You can use it to call methods like `open()` or `close()` programmatically. |
 | `open`  | `boolean`               | `false`     | Determines whether the modal is initially visible.                                                           |
+| `onOpen`  | `() => void`               | `undefined`     | Callback invoked when the modal is opened.                                                           |
+| `onClose` | `() => void`               | `undefined`     | Callback invoked when the modal is closed.                                                           |
 
 
 ### Methods

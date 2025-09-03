@@ -9,6 +9,8 @@ import { createTokenComponent, TokenBase, useToken } from "@components/utils/tok
 
 export interface ModalProps extends ComponentProps {
     open?: boolean;
+    onOpen?: () => void,
+    onClose?: () => void,
 }
 
 interface ModalContextProps {
@@ -55,10 +57,12 @@ const Modal: ParentComponent<ModalProps> = (props) => {
 
     const open = () => {
         setIsOpen(true);
+        props.onOpen?.();
     }
 
     const close = () => {
         setIsOpen(false);
+        props.onClose?.();
     }
 
     onMount(() => {

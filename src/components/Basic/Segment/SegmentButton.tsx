@@ -12,6 +12,7 @@ interface SegmentButtonProps extends ParentProps, ComponentProps {
     disabled?: boolean,
     selected?: boolean,
     'class-disabled'?: string,
+    'class-selected'?: string,
 }
 
 export const Button = createTokenComponent<SegmentButtonProps>();
@@ -32,6 +33,7 @@ export const SegmentButton: ParentComponent<{ button: SegmentButtonProps }> = (p
 
         if (isSelected()) {
             classes.push(styles.selected);
+            classes.push(props.button['class-selected'] ?? '');
             
             if (segment?.firstRender()) {
                 classes.push(styles['first-render']);

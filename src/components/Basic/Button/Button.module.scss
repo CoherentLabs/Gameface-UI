@@ -3,25 +3,28 @@
     color: $textColor;
     border: 0;
     font-size: 1vmax;
-    padding: 1vmax 1.5vmax;
+    padding: 0.25vmax 1vmax;
 
     &-text-fit {
-        coh-font-fit: fit 1.5rem;
+        coh-font-fit: fit;
     }
 
     &-small {
-        width: 10vmax;
-        height: 4vmax;
+        width: 6vmax;
+        height: 2vmax;
+        padding: 0.20vmax 0.60vmax;
     }
 
     &-middle {
-        width: 13vmax;
-        height: 5vmax;
+        width: 8vmax;
+        height: 2.5vmax;
+        padding: 0.30vmax 0.80vmax;
     }
 
     &-large {
-        width: 15vmax;
-        height: 6vmax;
+        width: 10vmax;
+        height: 3vmax;
+        padding: 0.40vmax 1vmax;
     }
 
     &-disabled {

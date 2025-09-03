@@ -1,0 +1,68 @@
+.Menu {
+    background-image: linear-gradient(to right, black, rgb(59, 59, 59), black);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 100%;
+    color: white;
+    font-size: 1vmax;
+}
+
+.top {
+    padding: 0 $horizontal-spacing;
+    margin-top: 2.5vmax;
+    margin-bottom: 0.5vmax;
+}
+
+.content {
+    margin: 0 $horizontal-spacing;
+    flex-basis: 70%;
+}
+
+.link {
+    flex: 1;
+    padding: 1vmax 0;
+    font-size: 1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-right: 0.1vmax;
+    color: $disabledTextColor;
+    background-color: $background-soft;
+
+    &:hover {
+        background-color: $primaryColor;
+        color: $textColor;
+    }
+
+    &.active {
+        background-color: $secondaryColor;
+        color: $textColor;
+    }
+}
+
+.scroll {
+    &-bar {
+        background-color: rgba(0, 0, 0, 5);
+        border-radius: 0;
+    }
+
+    &-handle {
+        border-radius: 0;
+    }
+
+    &-content {
+        padding-right: 1.25vmax;
+    }
+}
+
+.button {
+    border: 0.2vh solid $primaryColor;
+    padding: 0.5vmax 0.75vmax;
+    margin: 0 0.5vmax 0 1.5vmax;
+
+    &-wrapper {
+        padding-left: 2.5vmax;
+        height: 100%;
+        text-transform: uppercase;
+    }
+}

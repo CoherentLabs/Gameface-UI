@@ -1,0 +1,19 @@
+.subtitle {
+    padding-left: 1vmax;
+    
+    &-small {
+        font-size: 0.75em;
+    }
+
+    &-medium {
+        font-size: 1em;
+    }
+
+    &-large {
+        font-size: 1.25em;
+    }
+
+    &-max {
+        font-size: 1.5em;
+    }
+}

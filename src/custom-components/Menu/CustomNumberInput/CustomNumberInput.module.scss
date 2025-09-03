@@ -1,0 +1,27 @@
+.input {
+    background-color: $background-soft;
+    width: 15vmax;
+    border-radius: 0;
+
+    &:hover {
+        background-color: $background-soft-hover;
+        border-color: $secondaryColor;
+
+
+        .input-element {
+            color: $textColor;
+            background-color: $background-soft-hover;
+            
+        }
+    }
+
+    &-element {
+        border-radius: 0;
+        color: $disabledColor;
+        background-color: $background-soft;
+    }
+
+    &-button {
+        background-color: $background-soft-hover;
+    }
+}

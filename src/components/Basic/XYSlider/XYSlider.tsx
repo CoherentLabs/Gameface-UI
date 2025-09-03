@@ -1,5 +1,5 @@
 import { clamp } from "@components/utils/clamp";
-import { Accessor, createContext, createEffect, createMemo, createSignal, onMount, ParentComponent } from "solid-js";
+import { Accessor, createContext, createEffect, createMemo, createSignal, on, onMount, ParentComponent } from "solid-js";
 import styles from './XYSlider.module.scss';
 import { Handle, XYSliderHandle } from "./XYSliderHandle";
 import { Background, XYSliderBackground } from "./XYSliderBackground";
@@ -54,12 +54,18 @@ const XYSlider: ParentComponent<XYSliderProps> = (props) => {
         y: ((pos.y - minY()) / (maxY() - minY())) * 100,
     });
 
-    createEffect(() => {
-        const x = clamp(props.value?.x ?? (minX() + maxX()) / 2, minX(), maxX());
-        const y = clamp(props.value?.y ?? (minY() + maxY()) / 2, minY(), maxY());
-        setPosition(calculatePercentPosition({ x, y }));
-        props.onChange?.({ x, y });
-    });
+    createEffect(
+        on(
+            () => [props.value?.x, props.value?.y, minX(), maxX(), minY(), maxY()],
+            () => {
+                const x = clamp(props.value?.x ?? (minX() + maxX()) / 2, minX(), maxX());
+                const y = clamp(props.value?.y ?? (minY() + maxY()) / 2, minY(), maxY());
+                setPosition(calculatePercentPosition({ x, y }));
+                props.onChange?.({ x, y });
+            },
+            { defer: true }
+        )
+    );
 
     const calculatePositionFromMouse = (e: MouseEvent) => {
         const x = clamp(e.clientX - rect.left, 0, rect.width);

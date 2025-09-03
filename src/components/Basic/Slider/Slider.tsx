@@ -48,7 +48,8 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         const valueRange = max() - min();
         const delta = start - minValue;
         const newValue = min() + (delta / pixelRange) * valueRange;
-        const result = Math.round(clamp(Math.round(newValue / step()) * step(), min(), max()));
+
+        const result = snapToStep(Math.round(newValue / step()) * step())
 
         setValue(result);
         props.onChange?.(result);
@@ -70,7 +71,7 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     const handleMouseMove = (e: MouseEvent) => {
         if (!sliding) return;
 
-        const result = Math.round(calculateResult(e));
+        const result = calculateResult(e)
         setValue(result);
         props.onChange?.(result);
     }
@@ -88,8 +89,13 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         const valueRange = max() - min();
         const deltaValue = (delta / pixelRange) * valueRange
         const newValue = startValue + deltaValue;
-        return clamp(Math.round(newValue / step()) * step(), min(), max());
+
+        return snapToStep(Math.round(newValue / step()) * step())
     }
+
+    const snapToStep  = (value: number) => {
+        return clamp(Number(value.toFixed(5)), min(), max());
+    } 
 
     const SliderClasses = createMemo(() => {
         const classes = [styles.slider];

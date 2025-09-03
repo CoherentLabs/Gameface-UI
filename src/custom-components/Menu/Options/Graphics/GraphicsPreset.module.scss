@@ -1,0 +1,15 @@
+.nested {
+    padding-left: 2vmax;
+}
+
+.segment {
+    &-small {
+        width: 15vmax;
+    }
+
+    &-uppercase {
+        > * {
+            text-transform: uppercase;
+        }
+    }
+}
