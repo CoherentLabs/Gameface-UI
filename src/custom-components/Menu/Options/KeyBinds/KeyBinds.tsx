@@ -17,9 +17,9 @@ const KeyBinds: ParentComponent = () => {
 
     onMount(() => {
         eventBus.on('button-changed', (data: {id: string, value: string}) => {
-            segmentRef.selectOption("Custom")
-            // @ts-ignore
-            PRESETS.Custom[data.id] = data.value;
+            segmentRef.selectOption("Custom");
+            
+            (PRESETS.Custom as any)[data.id] = data.value;
             setPreset({ ...PRESETS.Custom });
         })
     })

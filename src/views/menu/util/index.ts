@@ -1,7 +1,5 @@
 import eventBus from "@components/tools/EventBus";
 import { OPTIONS } from "../Menu";
-import { Accessor, createEffect, createRoot } from "solid-js";
-import { on } from "events";
 
 export const getFirstOptionOfTab = (tab: string) => {
     switch (tab) {

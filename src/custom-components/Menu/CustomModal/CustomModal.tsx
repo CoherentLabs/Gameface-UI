@@ -18,7 +18,7 @@ const CustomModal = (props: {ref: any, onClose: () => void}) => {
                         <h2 class={style['modal-heading']}>Save changes?</h2>
                     </Flex>
                 </Top>
-                <Content >
+                <Content>
                     <TextBlock class={style['modal-content']}>
                         You have unsaved changes in your current settings. If you switch tabs now, your changes will be lost. Would you like to save before leaving this menu?
                     </TextBlock>

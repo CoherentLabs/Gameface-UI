@@ -32,7 +32,6 @@ const ToggleButton: ParentComponent<ToggleButtonProps> = (props) => {
     const LabelRightToken = useToken(LabelRight, props.children);
 
     const [checked, setChecked] = createSignal(props.checked ?? false);
-    const [checkedd, setCheckedd] = createSignal(props.checked ?? false);
     let element!: HTMLDivElement;
 
     const toggleButtonClasses = createMemo(() => {

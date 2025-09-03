@@ -7,7 +7,6 @@ interface KeyBindProps {
     default?: string,
 }
 
-
 const KeyBind = (props: KeyBindProps) => {
     const [label, setLabel] = createSignal(props.default ?? "Unbound");
     const [listening, setListening] = createSignal(false);
@@ -49,8 +48,6 @@ const KeyBind = (props: KeyBindProps) => {
         stopListening();
         eventBus.emit('button-changed', {id: props.id, value: text});
     };
-
-    onCleanup(stopListening);
 
     return (
         <div ref={el} onClick={startListening} class={style.keybind}>

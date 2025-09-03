@@ -101,7 +101,7 @@ const GraphicsPreset = () => {
                     </MenuItem>
 
                     <MenuItem id="depthOfField" name="Depth of Field">
-                        <CustomSegment custom-class={style['segment-small']}values={['off','low','medium','high']} default="low" />
+                        <CustomSegment custom-class={style['segment-small']} values={['off','low','medium','high']} default="low" />
                     </MenuItem>
 
                     <MenuItem id="filmGrain" name="Film Grain">
