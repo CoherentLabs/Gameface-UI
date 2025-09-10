@@ -4,14 +4,15 @@ import CustomSegment from "@custom-components/Menu/CustomSegment/CustomSegment";
 import ExtraContent from "@custom-components/Menu/SidePanel/ExtraContent";
 import CustomList from "@custom-components/Menu/CustomList/CustomList";
 import { keybindPresetContent } from "@custom-components/Menu/SidePanel/keybindsPanelContent";
-import KeyBind from "@custom-components/Menu/KeyBind/KeyBind";
 import eventBus from "@components/tools/EventBus";
 import { SegmentRef } from "@components/Basic/Segment/Segment";
 import { PRESETS, ROWS } from "./keybindPresets";
+import Keybinds from "@components/Basic/Keybinds/Keybinds";
+import KeyBind from "@components/Basic/Keybinds/Keybind";
 
 const OPTIONS = ['PC', 'Tactical', 'Left-Handed', 'Custom'] as const;
 
-const KeyBinds: ParentComponent = () => {
+const KeyBindsTab: ParentComponent = () => {
     const [preset, setPreset] = createSignal(PRESETS.PC);
     let segmentRef!: SegmentRef;
 
@@ -38,15 +39,20 @@ const KeyBinds: ParentComponent = () => {
                 </ExtraContent>
             </MenuItem>
 
-            <For each={ROWS}>
-                {(row) => (
-                    <MenuItem id={row.id} name={row.name}>
-                        <KeyBind id={row.id} default={preset()[row.id]} />
-                    </MenuItem>
-                )}
-            </For>
+            <Keybinds 
+                onChange={(action, key) => eventBus.emit('button-changed', {id: action, value: key})}
+                conflictPolicy="replace-existing"
+                placeholder="Unbound">
+                <For each={ROWS}>
+                    {(row) => (
+                        <MenuItem id={row.id} name={row.name}>
+                            <KeyBind action={row.id} value={preset()[row.id]} />
+                        </MenuItem>
+                    )}
+                </For>
+            </Keybinds>
         </>
     )
 }
 
-export default KeyBinds
+export default KeyBindsTab
