@@ -1,6 +1,5 @@
 import { BaseComponentRef } from "@components/types/ComponentProps";
-import { undefined } from "astro:schema";
-import { batch, createContext, createEffect, createSignal, on, onMount, ParentComponent } from "solid-js";
+import { batch, createContext, onMount, ParentComponent } from "solid-js";
 import { createStore } from "solid-js/store";
 
 export type Action = string;
@@ -12,18 +11,22 @@ interface KeybindsContext {
     bindings: Bindings,
     bind: (action: Action, newKey: KeyCode) => void,
     placeholder?: string,
-    onChange?: (key: KeyCode, action: Action) => void
+    listeningText?: string,
+    useChars?: boolean
+    onChange?:  (action: Action, key: KeyCode) => void,
 }
 
 export const KeybindsContext = createContext<KeybindsContext>();
 
 interface KeybindsProps {
     defaults?: Bindings[], // discuss with misho if I should even have this property, cuz idk how it will work with the usage of the Keybind component?
-    placeholder?: string
+    placeholder?: string,
+    listeningText?: string,
+    useChars?: boolean,
     conflictPolicy?: ConflictPolicy,
     ref?: unknown | ((ref: BaseComponentRef) => void);
-    onConflict?: (key: KeyCode, action: Action, conflictKey: KeyCode, conflictAction: Action) => void,
-    onChange?: (key: KeyCode, action: Action) => void, // where should I trigger that
+    onConflict?: (action: Action, key: KeyCode, conflictAction: Action, conflictKey: KeyCode) => void,
+    onChange?: (action: Action, key: KeyCode) => void,
 }
 
 const Keybinds: ParentComponent<KeybindsProps> = (props) => {
@@ -74,7 +77,7 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
                 break;
         }
 
-        props.onConflict?.(newKey, action, prevKey, conflictAction)
+        props.onConflict?.(action, newKey, conflictAction, prevKey)
     }
 
     const unbindKey = (key: KeyCode) => {
@@ -93,6 +96,8 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
     const contextValue = {
         bindings,
         bind,
+        useChars: props.useChars,
+        listeningText: props.listeningText,
         placeholder: props.placeholder,
         onChange: props.onChange
     }
@@ -107,7 +112,6 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
         }
     });
 
-    // maybe if default keybidns are passed loop and render the KeyBind components
     return (
         <KeybindsContext.Provider value={contextValue} >
             {props.children}
