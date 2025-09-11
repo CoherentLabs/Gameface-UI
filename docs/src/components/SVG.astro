@@ -25,8 +25,8 @@ const linkedSvg = await links[matchedKey]();
 
 const styles = () => {
   const styles = {
-    width: width || "100%",
-    height: height || "100%",
+    width: width || "18vh",
+    height: height || "auto",
     transform: translate ? `translate(${translate})` : undefined,
   };
   return styles;
@@ -34,3 +34,4 @@ const styles = () => {
 ---
 
 <img src={linkedSvg.src} alt={linkedSvg.src} style={styles()} />
+
