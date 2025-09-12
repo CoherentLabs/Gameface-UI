@@ -28,15 +28,6 @@ export const PRESETS = {
     openInventory:"Y", quickSlot1:"9", quickSlot2:"0", quickSlot3:"-", quickSlot4:"=", dropItem:"H",
     pushToTalk:"T", ping:"Mouse3", chat:"Enter", scoreboard:"Tab", map:"M", pauseMenu:"Esc",
   },
-  Custom: {
-    moveForward:"W", moveBackward:"S", moveLeft:"A", moveRight:"D",
-    jump:"Space", crouch:"Ctrl", prone:"Z", sprint:"Shift", walkHold:"Alt",
-    fire:"Mouse1", aimDownSights:"Mouse2", reload:"R", nextWeapon:"WheelDown", prevWeapon:"WheelUp",
-    primaryWeapon:"1", secondaryWeapon:"2", quickMelee:"V", throwGrenade:"G", toggleFireMode:"B", inspectWeapon:"I",
-    interact:"F", ability1:"Q", ability2:"E", ultimateAbility:"X",
-    openInventory:"I", quickSlot1:"3", quickSlot2:"4", quickSlot3:"5", quickSlot4:"6", dropItem:"H",
-    pushToTalk:"T", ping:"Mouse3", chat:"Enter", scoreboard:"Tab", map:"M", pauseMenu:"Esc",
-  },
 };
 
 export const ROWS = [
