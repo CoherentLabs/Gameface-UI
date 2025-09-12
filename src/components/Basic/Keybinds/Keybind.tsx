@@ -1,10 +1,11 @@
-import { createEffect, createSignal, on, onCleanup, onMount, useContext } from "solid-js";
+import { createEffect, createSignal, on, onMount, useContext } from "solid-js";
 import style from './KeyBinds.module.scss'
 import { KeybindsContext } from "./Keybinds";
 import codeToChar from "./util/codeToChar";
 import { ComponentProps } from "@components/types/ComponentProps";
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import buttonToCode from "./util/buttonToCode";
+import { WHEEL_DOWN_CODE, WHEEL_UP_CODE } from "./util/wheelCodes";
 
 interface KeyBindProps extends ComponentProps {
     action: string,
@@ -14,30 +15,32 @@ interface KeyBindProps extends ComponentProps {
 const KeyBind = (props: KeyBindProps) => {
     const context = useContext(KeybindsContext)
     if (!context) {
-        console.warn('Please use Keybind component only inside the Keybinds component')
+        console.warn('Please use the Keybind component only inside the Keybinds component')
         return
     }
 
     const initialValue = props.value ? props.value.toUpperCase() : null;
-    const [label, setLabel] = createSignal(initialValue ?? context.placeholder ?? "");
+    const [label, setLabel] = createSignal(context.placeholder ?? "");
     const [listening, setListening] = createSignal(false);
     let el!: HTMLDivElement;
 
-    createEffect(on(() => context.bindings[props.action], (v) => {
+    createEffect(on(() => context.bindings[props.action], (v, prev) => {
         setLabel(v as string ?? context.placeholder ?? "")
-    }, { defer: true }));
+    }));
 
     const startListening = () => {
         setListening(true);
         el.focus();
         window.addEventListener("keydown", onKeyDown, { capture: true });
         window.addEventListener("mousedown", onMousedown, { capture: true });
+        window.addEventListener("wheel", onWheel, { capture: true });
         window.addEventListener("mouseup", stopListening, { capture: true });
     };
 
     const stopListening = () => {
         window.removeEventListener("keydown", onKeyDown, { capture: true });
         window.removeEventListener("mousedown", onMousedown, { capture: true });
+        window.removeEventListener("wheel", onWheel, { capture: true });
         window.removeEventListener("mouseup", stopListening, { capture: true });
         setListening(false);
     };
@@ -75,6 +78,9 @@ const KeyBind = (props: KeyBindProps) => {
     };
 
     const onMousedown = (e: MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
         const text = buttonToCode(e.button);
         context.bind(props.action, text);
         stopListening();
@@ -82,10 +88,20 @@ const KeyBind = (props: KeyBindProps) => {
         window.addEventListener("mouseup", eatEvent, { capture: true, once: true });
     }
 
+    const onWheel = (e: WheelEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const text = e.deltaY < 0 ? WHEEL_UP_CODE : WHEEL_DOWN_CODE;
+        context.bind(props.action, text);
+        stopListening();
+        context.onChange?.(props.action, text);
+    }
+
     onMount(() => {
         if (props.ref) (props.ref as unknown as (ref: HTMLDivElement) => void) (el);
 
-        context.bind(props.action, initialValue);
+        if (context.bindings[props.action] === undefined) context.bind(props.action, initialValue);
     })
 
     const { forwardEvents, forwardAttrs } = useBaseComponent(props);
