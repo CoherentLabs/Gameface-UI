@@ -19,14 +19,13 @@ const KeyBind = (props: KeyBindProps) => {
         return
     }
 
-    const initialValue = props.value ? props.value.toUpperCase() : null;
-    const [label, setLabel] = createSignal(context.placeholder ?? "");
+    const [label, setLabel] = createSignal(context.bindings[props.action] ?? context.placeholder?.() ?? "");
     const [listening, setListening] = createSignal(false);
     let el!: HTMLDivElement;
 
-    createEffect(on(() => context.bindings[props.action], (v, prev) => {
-        setLabel(v as string ?? context.placeholder ?? "")
-    }));
+    createEffect(on(() => context.bindings[props.action], (v) => {
+        setLabel(v as string ?? context.placeholder?.() ?? "")
+    }, {defer: true}));
 
     const startListening = () => {
         setListening(true);
@@ -34,7 +33,7 @@ const KeyBind = (props: KeyBindProps) => {
         window.addEventListener("keydown", onKeyDown, { capture: true });
         window.addEventListener("mousedown", onMousedown, { capture: true });
         window.addEventListener("wheel", onWheel, { capture: true });
-        window.addEventListener("mouseup", stopListening, { capture: true });
+        window.addEventListener("mouseup", stopListening, { capture: true, passive: false });
     };
 
     const stopListening = () => {
@@ -53,7 +52,7 @@ const KeyBind = (props: KeyBindProps) => {
 
     const formatCode = (code: string) => {
         let formatted;
-        if (context.useChars) formatted = codeToChar[code];
+        if (context.useChars?.()) formatted = codeToChar[code];
 
         if (!formatted) {
             formatted = code
@@ -68,40 +67,31 @@ const KeyBind = (props: KeyBindProps) => {
     }
 
     const onKeyDown = (e: KeyboardEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const text = formatCode(e.code);
-        context.bind(props.action, text);
-        stopListening();
-        context.onChange?.(props.action, text);
+        bindKey(e, formatCode(e.code));
     };
 
     const onMousedown = (e: MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const text = buttonToCode(e.button);
-        context.bind(props.action, text);
-        stopListening();
-        context.onChange?.(props.action, text);
+        bindKey(e, buttonToCode(e.button));
         window.addEventListener("mouseup", eatEvent, { capture: true, once: true });
     }
 
     const onWheel = (e: WheelEvent) => {
+        bindKey(e, e.deltaY < 0 ? WHEEL_UP_CODE : WHEEL_DOWN_CODE);
+    }
+
+    const bindKey = (e: Event, code: string | null) => {
         e.preventDefault();
         e.stopPropagation();
 
-        const text = e.deltaY < 0 ? WHEEL_UP_CODE : WHEEL_DOWN_CODE;
-        context.bind(props.action, text);
+        const success = context.bind(props.action, code);
         stopListening();
-        context.onChange?.(props.action, text);
+        if (success) context.onChange?.(props.action, code);
     }
 
     onMount(() => {
         if (props.ref) (props.ref as unknown as (ref: HTMLDivElement) => void) (el);
 
-        if (context.bindings[props.action] === undefined) context.bind(props.action, initialValue);
+        if (context.bindings[props.action] === undefined) context.bind(props.action, props.value ?? null);
     })
 
     const { forwardEvents, forwardAttrs } = useBaseComponent(props);
@@ -114,7 +104,7 @@ const KeyBind = (props: KeyBindProps) => {
             use:forwardEvents={props}
             use:forwardAttrs={props}
             onmouseup={startListening}>
-            {listening() ? (context.listeningText ?? 'Press any key...') : label()}
+            {listening() ? (context.listeningText?.() ?? 'Press any key...') : label()}
         </div>
     )
 }

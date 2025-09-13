@@ -29,6 +29,7 @@ import PaginationTest from '../../components/Pagination/PaginationTest';
 import ModalTest from '../../components/Modal/ModalTest';
 import ListTest from '../../components/List/ListTest';
 import CarouselTest from '../../components/Carousel/CarouselTest';
+import KeybindsTest from '../../components/Keybinds/KeybindsTest';
 
 const Main = () => {
     const components = [
@@ -45,6 +46,7 @@ const Main = () => {
         "toggle",
         "pagination",
         'modal',
+        'keybinds',
 
         // Compex components
         "color-picker",
@@ -104,6 +106,7 @@ const Main = () => {
                 <ModalTest />
                 <ListTest />
                 <CarouselTest />
+                <KeybindsTest />
             </Tabs>
         </div>
     );
