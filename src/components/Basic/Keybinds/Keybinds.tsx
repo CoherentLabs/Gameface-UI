@@ -1,5 +1,5 @@
 import { BaseComponentRef } from "@components/types/ComponentProps";
-import { batch, createContext, onMount, ParentComponent } from "solid-js";
+import { Accessor, batch, createContext, createEffect, createMemo, on, onMount, ParentComponent } from "solid-js";
 import { createStore, unwrap } from "solid-js/store";
 
 export type Action = string;
@@ -9,6 +9,7 @@ type Bindings = Record<Action, KeyCode>;
 
 export interface KeybindsRef {
     bindings: Bindings,
+    isListening?: boolean,
     bind: (action: Action, newKey: KeyCode) => void,
     unbindKey: (key: KeyCode) => void,
     mapBindings: (bindings: Bindings) => void,
@@ -18,10 +19,10 @@ export interface KeybindsRef {
 
 interface KeybindsContext {
     bindings: Bindings,
-    bind: (action: Action, newKey: KeyCode) => void,
-    placeholder?: string,
-    listeningText?: string,
-    useChars?: boolean
+    bind: (action: Action, newKey: KeyCode) => boolean,
+    placeholder?: Accessor<string | undefined>,
+    listeningText?: Accessor<string | undefined>,
+    useChars?: Accessor<boolean | undefined>
     onChange?:  (action: Action, key: KeyCode) => void,
 }
 
@@ -43,6 +44,14 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
     let defaults = props.defaults ?? undefined;
     const byKey = new Map<KeyCode, Action>(); // reverse index
 
+    const listeningText = createMemo(() => props.listeningText);
+    const useChars = createMemo(() => props.useChars);
+    const placeholder = createMemo(() => props.placeholder);
+
+    createEffect(on(() => props.conflictPolicy, () => {
+        mapBindings({...bindings})
+    }, {defer: true}));
+
     const mapBindings = (next: Bindings) => {
         batch(() => {
             clearAll();
@@ -57,7 +66,7 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
 
     const bind = (action: Action, newKey: KeyCode) => {
         const prevKey = bindings[action];
-        if (prevKey === newKey) return;
+        if (prevKey === newKey) return false;
 
         const conflictAction = byKey.get(newKey);
 
@@ -66,14 +75,14 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
             if (prevKey) byKey.delete(prevKey);
             setBindings(action, newKey);
             if (newKey !== null) byKey.set(newKey, action);
-            return
+            return true
         }
 
         switch (props.conflictPolicy) {
             case "block":
                 console.warn(`${newKey} is already bound to ${conflictAction}, please unbind it first`);
-                if (!prevKey) setBindings(action, null);
-                break;
+                props.onConflict?.(action, newKey, conflictAction)
+                return false;
 
             case "replace-existing":
                 setBindings(action, newKey);
@@ -82,7 +91,8 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
                 // unbind conflict
                 setBindings(conflictAction, null);
                 if (prevKey) byKey.delete(prevKey);
-                break;
+                props.onConflict?.(action, newKey, conflictAction)
+                return true;
 
             case "swap":
                 setBindings(action, newKey);
@@ -90,14 +100,14 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
 
                 byKey.set(newKey, action);
                 if (prevKey) byKey.set(prevKey, conflictAction);
-                break;
+                props.onConflict?.(action, newKey, conflictAction)
+                return true;
 
-            default:
+            default: // allow-duplicates
                 setBindings(action, newKey);
-                break;
+                props.onConflict?.(action, newKey, conflictAction)
+                return true;
         }
-
-        props.onConflict?.(action, newKey, conflictAction)
     }
 
     const unbindKey = (key: KeyCode) => {
@@ -117,6 +127,15 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
 
     const getRawObject = () => unwrap(bindings)
 
+    // initialize with defaults if provided
+    if (defaults) {
+        mapBindings({ ...defaults });
+        defaults = { ...getRawObject() };
+    // else children will init themselves
+    } else { 
+        queueMicrotask(() => defaults = {...getRawObject()});
+    }
+
     onMount(() => {
         if (props.ref) {
             (props.ref as (ref: any) => void)({
@@ -128,17 +147,14 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
                 reset
             });
         }
-        // initialize with defaults if provided
-        if (defaults) mapBindings({...defaults});
-        else queueMicrotask(() => defaults = {...getRawObject()});
     });
 
     const contextValue = {
         bindings,
         bind,
-        useChars: props.useChars,
-        listeningText: props.listeningText,
-        placeholder: props.placeholder,
+        useChars,
+        listeningText,
+        placeholder,
         onChange: props.onChange
     }
 
