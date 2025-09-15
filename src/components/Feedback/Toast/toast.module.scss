@@ -1,0 +1,14 @@
+.toast {
+    &-grid {
+        overflow: hidden;
+        width: 100vw;
+        height: 100vh;
+        position: absolute;
+        z-index: 9999;
+        pointer-events: none;
+    }
+
+    &-item {
+        pointer-events: auto;
+    }
+}
