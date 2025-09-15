@@ -1,10 +1,14 @@
 import { Portal } from 'solid-js/web';
+import { createSignal, createUniqueId, For, JSX, ParentComponent, Signal } from 'solid-js';
 import GridTile from '@components/Layout/GridTile/GridTile';
 import Grid from '@components/Layout/Grid/Grid';
-import { createSignal, For, JSX, ParentComponent } from 'solid-js';
 import Flex from '@components/Layout/Flex/Flex';
 
+import styles from './toast.module.scss';
+
 const INTERVALS = 20;
+
+const GRID_SIZE = 3; // 3x3 grid
 
 const positions = [
     'top-left',
@@ -26,21 +30,27 @@ interface ToastOptions {
     timeout?: number; // in milliseconds, 0 means no timeout
 }
 
+interface ToastItem {
+    id: string;
+    body: (close: (children: JSX.Element) => JSX.Element, progress: () => number) => JSX.Element;
+    progress: number;
+}
+
 const useToast = (): [ParentComponent, (options: ToastOptions) => void] => {
     
-    const grid: Record<Position, ReturnType<typeof createSignal<any[]>>> = Object.fromEntries(
-        positions.map((pos) => [pos, createSignal<any[]>([])])
+    const grid: Record<Position, Signal<ToastItem[]>> = Object.fromEntries(
+        positions.map((pos) => [pos, createSignal<ToastItem[]>([])])
     ) as any;
 
-    const [timers, setTimers] = createSignal<Record<string, any>>({});
+    const [timers, setTimers] = createSignal<Record<string, number>>({});
 
     function createToast(options: ToastOptions) {
         const { position, body, timeout = 0 } = options;
-        const id = Math.random().toString(36).substr(2, 9); // generate unique id
+        const id = createUniqueId(); // generate unique id
     
-        const [_, setter] = grid[position];
-    
-        setter((prev) => {
+        const [_, addToast] = grid[position];
+
+        addToast((prev) => {
             const newGrid = [
                 ...prev,
                 {
@@ -73,15 +83,12 @@ const useToast = (): [ParentComponent, (options: ToastOptions) => void] => {
 
     // Remove item by index
     function removeItem(position: Position, id: string) {
-        const [_, setter] = grid[position];
+        const [_, removeToast] = grid[position];
 
-        setter((prev) => {
-            const newGrid = [...prev];
-            return newGrid.filter((item) => item.id !== id);
-        });
+        removeToast((prev) => prev.filter((item) => item.id !== id));
     }
 
-    const Toast: ParentComponent = () => {
+    const Toaster: ParentComponent = () => {
         const flexItems = (number: number): 'start' | 'center' | 'end' => {
             switch (number) {
                 case 0:
@@ -102,31 +109,25 @@ const useToast = (): [ParentComponent, (options: ToastOptions) => void] => {
         return (
             <Portal mount={document.querySelector('#root')!}>
                 <Grid
-                    style={{
-                        width: '100vw',
-                        height: '100vh',
-                        position: 'absolute',
-                        'z-index': 9999,
-                        'pointer-events': 'none',
-                    }}
-                    cols={3}
-                    rows={3}
+                    class={styles['toast-grid']}
+                    cols={GRID_SIZE}
+                    rows={GRID_SIZE}
                 >
                     <For each={positions}>
                         {(pos, index) => {
                             const [getter] = grid[pos];
                             return (
-                                <GridTile row={Math.floor(index() / 3) + 1} col={(index() % 3) + 1}>
+                                <GridTile row={Math.floor(index() / GRID_SIZE) + 1} col={(index() % GRID_SIZE) + 1}>
                                     <Flex
-                                        justify-content={flexItems(Math.floor(index() / 3))}
-                                        align-items={flexItems(index() % 3)}
-                                        direction={direction(Math.floor(index() / 3))}
+                                        justify-content={flexItems(Math.floor(index() / GRID_SIZE))}
+                                        align-items={flexItems(index() % GRID_SIZE)}
+                                        direction={direction(Math.floor(index() / GRID_SIZE))}
                                         style={{ height: '100%' }}
                                     >
                                         <For each={getter()}>
                                             {(item) => {
                                                 return (
-                                                    <div class="toast-item" style={{ 'pointer-events': 'auto' }}>
+                                                    <div class={styles['toast-item']}>
                                                         {item.body(
                                                             (children: JSX.Element) => (
                                                                 <Close position={pos} id={item.id}>
@@ -163,7 +164,7 @@ const useToast = (): [ParentComponent, (options: ToastOptions) => void] => {
         return <div onClick={handleClose}>{props.children}</div>;
     };
 
-    return [Toast, createToast];
+    return [Toaster, createToast];
 };
 
 export default useToast;
