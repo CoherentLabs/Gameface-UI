@@ -1,13 +1,15 @@
 import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, Match, onCleanup, onMount, Switch } from "solid-js";
-import selectors from "../../../shared/keybinds-selectors.json";
+import selectors from "../../../shared/keybinds/keybinds-selectors.json";
 import Keybinds, { KeybindsRef } from "@components/Basic/Keybinds/Keybinds";
 import KeyBind from "@components/Basic/Keybinds/Keybind";
-import { ALTERNATE_KEYS, TEST_KEYS } from "./testMappings";
+import TEST_KEYS from '../../../shared/keybinds/default-mappings.json';
+import ALTERNATE_KEYS from "../../../shared/keybinds/alternate-mappings.json";
 import Flex from "@components/Layout/Flex/Flex";
 
 const KeybindsTest = () => {
     let keybindsRef!: KeybindsRef;
+    let keybindsRefWithDefault!: KeybindsRef;
     const [test, setTest] = createSignal('red');
     const [lastChanged, setLastChanged] = createSignal({ action: "", key: "" });
     const [hasConflict, setHasConflict] = createSignal(false);
@@ -25,14 +27,22 @@ const KeybindsTest = () => {
         { label: "Clear all bindings", action: () => { keybindsRef.clearAll() } },
         { label: "Reset defaults", action: () => { keybindsRef.reset() } },
         { label: "Apply alternative bindings", action: () => { keybindsRef.mapBindings(ALTERNATE_KEYS) } },
-        { label: "Change listening text", action: () => { setListeningText('Please type') } },
-        { label: "Change placeholder text", action: () => { setPlaceholder('Unassigned') } },
+        { label: "Change listening text", action: () => { setListeningText(selectors["listening-text"]) } },
+        { label: "Change placeholder text", action: () => { setPlaceholder(selectors["placeholder-text"]) } },
         { label: "Use charecters", action: () => { setUseChars(true) } },
         { label: "Change styles", action: () => { setTest('blue') } },
+        { label: "Reset defaults - alternate", action: () => { keybindsRefWithDefault.reset() } },
     ];
 
     const reset = () => {
         setTest('red');
+        setLastChanged({ action: "", key: "" });
+        setHasConflict(false);
+        setPolicy('block');
+        setListeningText(undefined);
+        setPlaceholder('Unbound');
+        setUseChars(false);
+        keybindsRef.reset();
     };
 
     const isReactive = createMemo(() => test() === 'blue');
@@ -52,8 +62,8 @@ const KeybindsTest = () => {
                 )}
             </For>
 
-            <div style={{ background: hasConflict() ? 'red' : 'unset' }}>
-                {[lastChanged().action, lastChanged().key].filter(Boolean).join(' ')}
+            <div class={`${selectors.assertionElement}`} style={{ background: hasConflict() ? 'red' : 'unset' }}>
+                {`${lastChanged().action} ${lastChanged().key}`}
             </div>
 
             <Flex direction="row" wrap="wrap" class={selectors.keybindsContainer}>
@@ -69,7 +79,7 @@ const KeybindsTest = () => {
                         {(entry) => <KeyBind 
                             action={entry.action} 
                             value={entry.key}
-                            class={`${selectors.keybindsContainer} ${reactiveClass()}`}
+                            class={`${selectors.keybind} ${reactiveClass()}`}
                             style={reactiveStyle()} />}
                     </For>
                 </Keybinds>
@@ -77,9 +87,12 @@ const KeybindsTest = () => {
 
             {/* With defaults */}
             <Flex direction="row" wrap="wrap" class={selectors.keybindsContainer}>
-                <Keybinds onChange={(action, key) => setLastChanged({action, key: key as string})} defaults={ALTERNATE_KEYS} conflictPolicy="replace-existing">
+                <Keybinds 
+                    defaults={ALTERNATE_KEYS} 
+                    ref={keybindsRefWithDefault}
+                    conflictPolicy="replace-existing">
                     <For each={Object.keys(ALTERNATE_KEYS)}>
-                        {(action) => <KeyBind action={action} />}
+                        {(action) => <KeyBind action={action} class={`${selectors.keybind}`} />}
                     </For>
                 </Keybinds>
             </Flex>
