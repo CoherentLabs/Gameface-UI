@@ -20,7 +20,7 @@ import KeyBinds from '@custom-components/Menu/Options/KeyBinds/KeyBinds';
 import Audio from '@custom-components/Menu/Options/Audio/Audio';
 import Credits from '@custom-components/Menu/Options/Credits/Credits';
 import CustomModal from '@custom-components/Menu/CustomModal/CustomModal';
-import { ModalRef } from '@components/Basic/Modal/Modal';
+import { ModalRef } from '@components/Feedback/Modal/Modal';
 import eventBus from '@components/tools/EventBus';
 
 interface MenuContextValue {

@@ -11,8 +11,8 @@ To provide greater control, `Modal` supports multiple slots, allowing you to ove
 Using the `Modal` component is simple. You can import it and incorporate it into your app as shown below:
 
 ```tsx
-import Modal from '@components/Basic/Modal/Modal';
-import ModalCloseIcon from '@components/Basic/Modal/ModalCloseIcon.svg?component-solid';
+import Modal from '@components/Feedback/Modal/Modal';
+import ModalCloseIcon from '@components/Feedback/Modal/ModalCloseIcon.svg?component-solid';
 import Block from '@components/Layout/Block/Block';
 import Flex from '@components/Layout/Flex/Flex';
 import Top from '@components/Layout/Top/Top';
@@ -96,7 +96,7 @@ The `Modal` component does not include an overlay by default. To enable it, you 
 #### Usage
 
 ```tsx
-import Modal from '@components/Basic/Modal/Modal';
+import Modal from '@components/Feedback/Modal/Modal';
 
 const App = () => {
     return (
@@ -124,7 +124,7 @@ Use this slot to define and customize the modal window itself. This is where you
 #### Usage
 
 ```tsx
-import Modal from '@components/Basic/Modal/Modal';
+import Modal from '@components/Feedback/Modal/Modal';
 
 const App = () => {
     return (
@@ -154,7 +154,7 @@ The `Modal.Close` slot is used to wrap any element that should trigger the closi
 #### Usage
 
 ```tsx
-import Modal from '@components/Basic/Modal/Modal';
+import Modal from '@components/Feedback/Modal/Modal';
 import Button from '@components/Basic/Button/Button';
 
 const App = () => {
@@ -189,10 +189,9 @@ To add a background specifically behind the content of a modal, you can again us
 To customize the content background, apply a background image or color to the `Content` component. Then, remove the `Modal.Window` background by setting its style to none.
 
 ```tsx
-import Modal from '@components/Basic/Modal/Modal';
 import Button from '@components/Basic/Button/Button';
-import Modal from '@components/Basic/Modal/Modal';
-import ModalCloseIcon from '@components/Basic/Modal/ModalCloseIcon.svg?component-solid';
+import Modal from '@components/Feedback/Modal/Modal';
+import ModalCloseIcon from '@components/Feedback/Modal/ModalCloseIcon.svg?component-solid';
 import Block from '@components/Layout/Block/Block';
 import Flex from '@components/Layout/Flex/Flex';
 import Top from '@components/Layout/Top/Top';
@@ -246,9 +245,9 @@ The result will appear as follows:
 You can enhance the previous example by adding close buttons directly within the modal's content. Since the `Modal.Close` slot can be used multiple times, it's perfectly fine to place close buttons inside the `Content` area.
 
 ```diff lang="tsx"
-import Modal from '@components/Basic/Modal/Modal';
+import Modal from '@components/Feedback/Modal/Modal';
 import Button from '@components/Basic/Button/Button';
-import ModalCloseIcon from '@components/Basic/Modal/ModalCloseIcon.svg?component-solid';
+import ModalCloseIcon from '@components/Feedback/Modal/ModalCloseIcon.svg?component-solid';
 import Block from '@components/Layout/Block/Block';
 import Flex from '@components/Layout/Flex/Flex';
 import Top from '@components/Layout/Top/Top';
@@ -320,8 +319,8 @@ The `Modal` component also allows you to control its state through code.
 2. Use `ref.open()` and `ref.close()` methods to toggle the modal programmatically (e.g., via keyboard or external UI control).
 
 ```tsx
-import Modal, { ModalRef } from '@components/Basic/Modal/Modal';
-import ModalCloseIcon from '@components/Basic/Modal/ModalCloseIcon.svg?component-solid';
+import Modal, { ModalRef } from '@components/Feedback/Modal/Modal';
+import ModalCloseIcon from '@components/Feedback/Modal/ModalCloseIcon.svg?component-solid';
 import Block from '@components/Layout/Block/Block';
 import Flex from '@components/Layout/Flex/Flex';
 import Top from '@components/Layout/Top/Top';

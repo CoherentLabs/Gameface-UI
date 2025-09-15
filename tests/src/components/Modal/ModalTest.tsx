@@ -1,8 +1,8 @@
 import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
 import selectors from "../../../shared/modal-selectors.json";
-import Modal, { ModalRef } from "@components/Basic/Modal/Modal";
-import ModalCloseIcon from "@components/Basic/Modal/ModalCloseIcon.svg?component-solid";
+import Modal, { ModalRef } from "@components/Feedback/Modal/Modal";
+import ModalCloseIcon from "@components/Basic/Feedback/ModalCloseIcon.svg?component-solid";
 import Top from "@components/Layout/Top/Top";
 import Flex from "@components/Layout/Flex/Flex";
 import Block from "@components/Layout/Block/Block";
