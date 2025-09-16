@@ -12,7 +12,7 @@ interface KeyBindProps extends ComponentProps {
     value?: string,
 }
 
-const KeyBind = (props: KeyBindProps) => {
+const Keybind = (props: KeyBindProps) => {
     const context = useContext(KeybindsContext)
     if (!context) {
         console.warn('Please use the Keybind component only inside the Keybinds component')
@@ -109,4 +109,4 @@ const KeyBind = (props: KeyBindProps) => {
     )
 }
 
-export default KeyBind;
+export default Keybind;

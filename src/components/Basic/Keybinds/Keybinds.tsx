@@ -111,16 +111,22 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
     }
 
     const unbindKey = (key: KeyCode) => {
-        if (key == null) return;
+        if (key === null) return;
 
-        byKey.delete(key);
+        let success = byKey.delete(key);
         batch(() => {
             for (const action in bindings) {
                 if (bindings[action] === key) {
                     setBindings(action as Action, null);
+                    if (success) props.onChange?.(action, null);
                 }
             }
         });
+    }
+
+    const userBind = (action: Action, newKey: KeyCode) => {
+        const success = bind(action, newKey);
+        if (success) props.onChange?.(action, newKey);
     }
 
     const reset = () => mapBindings({...defaults});
@@ -141,7 +147,7 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
             (props.ref as (ref: any) => void)({
                 bindings: getRawObject(),
                 mapBindings,
-                bind,
+                bind: userBind,
                 unbindKey,
                 clearAll,
                 reset
