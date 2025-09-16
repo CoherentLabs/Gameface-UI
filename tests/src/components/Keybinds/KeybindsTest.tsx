@@ -2,7 +2,7 @@ import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, Match, onCleanup, onMount, Switch } from "solid-js";
 import selectors from "../../../shared/keybinds/keybinds-selectors.json";
 import Keybinds, { KeybindsRef } from "@components/Basic/Keybinds/Keybinds";
-import KeyBind from "@components/Basic/Keybinds/Keybind";
+import Keybind from "@components/Basic/Keybinds/Keybind";
 import TEST_KEYS from '../../../shared/keybinds/default-mappings.json';
 import ALTERNATE_KEYS from "../../../shared/keybinds/alternate-mappings.json";
 import Flex from "@components/Layout/Flex/Flex";
@@ -76,7 +76,7 @@ const KeybindsTest = () => {
                     placeholder={placeholder()}
                     useChars={useChars()}>
                     <For each={TEST_KEYS}>
-                        {(entry) => <KeyBind 
+                        {(entry) => <Keybind 
                             action={entry.action} 
                             value={entry.key}
                             class={`${selectors.keybind} ${reactiveClass()}`}
@@ -92,7 +92,7 @@ const KeybindsTest = () => {
                     ref={keybindsRefWithDefault}
                     conflictPolicy="replace-existing">
                     <For each={Object.keys(ALTERNATE_KEYS)}>
-                        {(action) => <KeyBind action={action} class={`${selectors.keybind}`} />}
+                        {(action) => <Keybind action={action} class={`${selectors.keybind}`} />}
                     </For>
                 </Keybinds>
             </Flex>

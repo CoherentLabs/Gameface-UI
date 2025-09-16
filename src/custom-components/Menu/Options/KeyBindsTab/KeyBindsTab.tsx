@@ -7,7 +7,7 @@ import { keybindPresetContent } from "@custom-components/Menu/SidePanel/keybinds
 import { SegmentRef } from "@components/Basic/Segment/Segment";
 import { PRESETS, ROWS } from "./keybindPresets";
 import Keybinds, { KeybindsRef } from "@components/Basic/Keybinds/Keybinds";
-import KeyBind from "@components/Basic/Keybinds/Keybind";
+import Keybind from "@components/Basic/Keybinds/Keybind";
 
 const OPTIONS = ['PC', 'Tactical', 'Left-Handed', 'Custom'] as const;
 
@@ -45,7 +45,7 @@ const KeyBindsTab: ParentComponent = () => {
                 <For each={ROWS}>
                     {(row) => (
                         <MenuItem id={row.id} name={row.name}>
-                            <KeyBind action={row.id} />
+                            <Keybind action={row.id} />
                         </MenuItem>
                     )}
                 </For>

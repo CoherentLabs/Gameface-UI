@@ -1,0 +1,375 @@
+---
+title: Keybinds
+---
+The `Keybinds` component is an easy way to set up keyboard + mouse binding logic in your UI.
+It works together with the `Keybind` component, which represents a single action slot. `Keybinds` provides context, conflict handling, and programmatic control.
+
+## Usage
+
+Wrap all your `Keybind` items in a `Keybinds` component. Each `Keybind` needs an `action` and can optionally get an initial `value`.
+
+```tsx
+import Keybinds from '@components/Basic/Keybinds/Keybinds';
+import Keybind from '@components/Basic/Keybinds/Keybind';
+
+const App = () => {
+    return (
+        <Keybinds>
+            <Keybind action="forward" value="W" />
+            <Keybind action="backward" value="A" />
+            <Keybind action="left" value="S" />
+            <Keybind action="right" value="D" />
+            <Keybind action="jump" /> 
+        </Keybinds>
+    );
+};
+
+export default App;
+```
+
+### Dynamic Keybinds
+
+Another way to do it is to map over an array of objects and create a `Keybind` for each one:
+
+```tsx
+const mappings = [
+    { action: "forward", value: "W" },
+    { action: "backward", value: "S" },
+    { action: "left", value: "A" },
+    { action: "right", value: "D" },
+    { action: "jump", value: null }
+];
+
+<Keybinds>
+    <For each={mappings}>
+        {(mapping) => <Keybind action={mapping.action} value={mapping.value} />} 
+    </For>
+</Keybinds>
+```
+
+### With defaults
+
+You can also provide an initial bindings map to the `Keybinds` component via the `defaults` prop. This is useful if you want to load presets.
+
+```tsx
+const mappings = {
+    forward: "W",
+    backward: "S",
+    left: "A",
+    right: "D",
+    jump: null
+};
+
+<Keybinds defaults={mappings}>
+    <For each={Object.keys(mappings)}>
+        {(action) => <Keybind action={action} />} 
+    </For>
+</Keybinds>
+```
+
+:::caution
+When using `defaults`, you still need to explictly declare each `Keybind` child with its corresponding `action`. 
+The `value` prop can be omitted since it will be seeded from `defaults`.
+:::
+
+## API
+
+### Props
+
+| Prop name        | Type                                                                    | Default              | Description                                                                                                           |
+| ---------------- | ----------------------------------------------------------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `defaults`       | `Record<string, string \| null>`                                        | `undefined`          | Initial bindings map: `{ action: key }`. If omitted, children can seed themselves via their `value`.              |
+| `placeholder`    | `string`                                                                | `undefined`          | Text shown in each `Keybind` when no key is bound.                                                                    |
+| `listeningText`  | `string`                                                                | `Press any key...`   | Text to show while waiting for input.                                                         |
+| `useChars`       | `boolean`                                                               | `false`              | If `true`, it renders special characters instead of the word equivalent (e.g., Backquote -> "\`"). You can customize these bindings and add your own by modifying the `codeToChar` object located at "Keybinds/util/codeToChar.ts/" |
+| `conflictPolicy` | `'block' \| 'replace-existing' \| 'swap' \| 'allow-duplicates'`         | `'allow-duplicates'` | How to resolve when a new binding collides with an existing one (see below).                                          |
+| `ref`            | `(ref: KeybindsRef) => void`                                            | `undefined`          | Exposes programmatic methods and the current bindings.                                                                |
+| `onConflict`     | `(action: string, key: string \| null, conflictAction: string) => void` | `undefined`          | Called when a conflict happens under any policy.                                                                      |
+| `onChange`       | `(action: string, key: string \| null) => void`                         | `undefined`          | Called when a bind or unbind operation succeeds.                                                  |
+
+### Conflict policies
+
+When a user tries to bind a key that is already in use, one of the following policies will be applied:
+
+- `block`: The new binding is rejected, and the existing one remains unchanged. It displays a console warn.
+- `replace-existing`: The new binding replaces the existing one, unbinding the previous action.
+- `swap`: The new binding takes the place of the existing one, and the existing action is assigned to the key that was previously bound to the new action.
+- `allow-duplicates`: Both actions are allowed to share the same key.
+
+All policies will trigger the `onConflict` callback if provided to the component.
+
+### Ref
+
+| Property / Method | Type                                                 | Description                                                                                                                                                           |
+| ----------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bindings`        | `Record<string, string \| null>`                     | The current state of the bindings map. It can be used to retrieve the up to date bindings object.                                                                                                            |
+| `bind`            | `(action: string, newKey: string \| null) => void`   | Programmatically bind an action. Applies the current `conflictPolicy`. |
+| `unbindKey`       | `(key: string \| null) => void`                      | Unbinds **all** actions that currently use this key (no-op if `null`).                                                                                                |
+| `mapBindings`     | `(bindings: Record<string, string \| null>) => void` | Bulk-apply bindings (clears existing, then binds each). Conflict policy still applies per entry. It can be used to entirely replace the bindings object.                                                                      |
+| `clearAll`        | `() => void`                                         | Clears all keys by setting **every** action's value to `null`.                                                                                                                              |
+| `reset`           | `() => void`                                         | Restores to the original baseline captured on mount: `defaults` if provided, otherwise whatever the children had seeded initially.                                    |
+
+## Keybind 
+
+The `Keybind` component represents a single action slot. It must be a child of the `Keybinds` component. When clicked, 
+it starts to listen for the user to press a key or mouse button to bind the associated action.
+
+### Props
+
+| Prop name | Type | Default | Description |
+| --------- | ---- | ------- | ----------- |
+| `action`  | `string` | `undefined` | The action that will have a key bound to it. |
+| `value`   | `string \| undefined` | `undefined` | The value associated with the keybind by default. If omitted, it will be null. |
+
+## Guide
+
+### Retrieving current bindings object
+
+When users change keybinds, you will likely want to save the new bindings map somewhere. 
+You can do this by accessing the `bindings` property. 
+When accessed it will return the up to date object with the currently set bindings.
+
+To achieve this, you need to use a ref:
+
+1. Create a ref variable with the type `KeybindsRef`.
+2. Pass the ref variable to the `Keybinds` component via the `ref` prop.
+3. Access the `bindings` property on the ref variable whenever you need to retrieve the current bindings object.
+4. Optionally, you can use the `onChange` callback to be notified whenever a user successfully changes a binding.
+
+```tsx
+import Keybinds, { KeybindsRef } from '@components/Basic/Keybinds/Keybinds';
+import Keybind from '@components/Basic/Keybinds/Keybind';
+
+const App = () => {
+    let keybindsRef!: KeybindsRef;
+
+    const retrieveBindings = () => {
+        console.log(keybindsRef.bindings);
+    }
+
+    return (
+        <Keybinds ref={keybindsRef} onChange={retrieveBindings} conflictPolicy="block">
+            <Keybind action={'forward'} value="W" />
+            <Keybind action={'backward'} value="Arrow Down" />
+        </Keybinds>
+    );
+};
+
+export default App;
+```
+
+### Reset to defaults
+
+You can reset all keybinds to their original state by calling the `reset` method on the ref. 
+This will restore the internal state to the initial `defaults` if provided, otherwise whatever the children had seeded initially when first rendered.
+
+To achieve this, you need to use a ref:
+
+1. Create a ref variable with the type `KeybindsRef`.
+2. Pass the ref variable to the `Keybinds` component via the `ref` prop.
+3. Reset the keybinds by calling the `reset` method on the ref variable whenever needed.
+
+```tsx
+import Keybinds, { KeybindsRef } from '@components/Basic/Keybinds/Keybinds';
+import Keybind from '@components/Basic/Keybinds/Keybind';
+
+const App = () => {
+    let keybindsRef!: KeybindsRef;
+
+    const resetToDefaults = () => keybindsRef.reset();
+
+    return (
+        <Keybinds ref={keybindsRef} >
+            <Keybind action={'forward'} value="W" />
+            <Keybind action={'backward'} value="Arrow Down" />
+        </Keybinds>
+    );
+};
+
+export default App;
+```
+
+:::Note
+In this case because no `defaults` prop was provided, it will reset to the original values seeded by the children: `forward: "W"` and `backward: "Arrow Down"`.
+:::
+
+### Programmatically binding/unbinding keys
+
+You can programmatically bind or unbind keys by using the `bind` and `unbindKey` methods on the ref.
+
+To achieve this, you need to use a ref:
+
+1. Create a ref variable with the type `KeybindsRef`.
+2. Pass the ref variable to the `Keybinds` component via the `ref` prop.
+3. Rebind a key to an action by calling the `bind` method on the ref variable, passing the action and the new key as arguments.
+4. Unbind a key from all actions by calling the `unbindKey` method on the ref variable, passing the key to unbind as an argument.
+
+```tsx
+import Keybinds, { KeybindsRef } from '@components/Basic/Keybinds/Keybinds';
+import Keybind from '@components/Basic/Keybinds/Keybind';
+
+const App = () => {
+    let keybindsRef!: KeybindsRef;
+
+    const rebindForward = () => keybindsRef.bind('forward', 'Arrow Up');
+    const unbindBackward = () => keybindsRef.unbindKey('Arrow Down');
+
+    return (
+        <>
+            <button onClick={rebindForward}>Rebind Forward to Arrow Up</button>
+            <button onClick={unbindBackward}>Unbind backward</button>
+            <Keybinds ref={keybindsRef} conflictPolicy="block" placeholder="Unbound">
+                <Keybind action={'forward'} value="W" />
+                <Keybind action={'backward'} value="Arrow Down" />
+            </Keybinds>
+        </>
+    );
+};
+
+export default App;
+``` 
+
+:::Note
+If operations are successful, the `onChange` callback will be triggered if provided.
+:::
+
+### Triggering a function when conflicts happen
+
+You can be notified when a conflict happens by providing the `onConflict` callback to the `Keybinds` component.
+This can be useful if you want to display a message to the user or prompt them for an action. The `onConflict` callback will return the following parameters:
+- `action`: The action that the user is trying to bind.
+- `key`: The key that the user is trying to bind.
+- `conflictAction`: The action that is currently bound to the key.
+
+To achieve this, you need to provide a function to the `onConflict` prop of the `Keybinds` component.
+
+```tsx
+import Keybinds from '@components/Basic/Keybinds/Keybinds';
+import Keybind from '@components/Basic/Keybinds/Keybind';
+
+const App = () => {
+    let keybindsRef!: KeybindsRef;
+
+    const handleConflict = (action: string, key: string | null, conflictAction: string) => {
+        console.log(`Conflict detected! Tried to bind "${key}" to "${action}", but it's already bound to "${conflictAction}".`);
+    }
+
+    return (
+        <>
+            <Keybinds conflictPolicy="block" onConflict={handleConflict}>
+                <Keybind action={'forward'} value="W" />
+                <Keybind action={'backward'} value="Arrow Down" />
+            </Keybinds>
+        </>
+    );
+};
+
+export default App;
+```
+
+### Applying presets
+
+You can apply a preset bindings map by using the `mapBindings` method on the ref. This is useful if you want to allow users to switch between different keybind presets.
+To achieve this, you need to use a ref:
+
+1. Create a ref variable with the type `KeybindsRef`.
+2. Pass the ref variable to the `Keybinds` component via the `ref` prop.
+3. Apply a new bindings map by calling the `mapBindings` method on the ref variable, passing the new bindings object as an argument.
+
+```tsx
+import Keybinds, { KeybindsRef } from '@components/Basic/Keybinds/Keybinds';
+import Keybind from '@components/Basic/Keybinds/Keybind';
+
+const App = () => {
+    let keybindsRef!: KeybindsRef;
+
+    const preset = {
+        forward: "Arrow Up",
+        backward: "Arrow Down",
+        left: "Arrow Left",
+        right: "Arrow Right",
+        jump: null
+    };
+
+    const changePreset = () => keybindsRef.mapBindings(preset);
+
+    return (
+        <>
+            <button onClick={changePreset}>Change preset</button>
+            <Keybinds ref={keybindsRef} conflictPolicy="block" placeholder="Unbound">
+                <Keybind action={'forward'} value="W" />
+                <Keybind action={'backward'} value="S" />
+                <Keybind action={'left'} value="A" />
+                <Keybind action={'right'} value="D" />
+                <Keybind action={'jump'} value="Space" />
+            </Keybinds>
+        </>
+    );
+};
+
+export default App;
+``` 
+
+:::Tip
+You can see an extended example of presets in the Menu UI view located at `src/views/menu/Menu.tsx`.
+:::
+
+### Modifying key characters 
+
+By default, the `Keybind` component displays special keys (like "Backquote", "BracketLeft", etc.) as their word equivalents.
+If you prefer to show the actual character (like `` ` ``, `[`, etc.), you can enable this behavior by setting the `useChars` prop to `true` on the `Keybinds` component.
+
+```tsx
+import Keybinds, { KeybindsRef } from '@components/Basic/Keybinds/Keybinds';
+import Keybind from '@components/Basic/Keybinds/Keybind';
+
+const App = () => {
+    return (
+        <>
+            <Keybinds useChars={true} conflictPolicy="block" placeholder="Unbound">
+                <Keybind action={'forward'} value="ArrowUp" />
+                <Keybind action={'backward'} value="ArrowDown" />
+                <Keybind action={'special-action-one'} value="Backquote" />
+                <Keybind action={'special-action-two'} value="BracketLeft" />
+                <Keybind action={'special-action-three'} value="BracketRight" />
+            </Keybinds>
+        </>
+    );
+};
+
+export default App;
+```
+
+The code will display the keys as `Up`, `Down`, `` ` ``, `[`, and `]` respectively.
+
+### Customzing key characters
+
+You can control how keys are displayed (not how they're detected) by editing the utility maps in: `src/components/Basic/Keybinds/util/*.ts`.
+
+#### Files and what they do
+
+- `codeToChar.ts`: Maps `KeyboardEvent.code` to their character equivalents (e.g., "Backquote" -> "`").
+- `buttonToCode.ts`: Maps mouse button numbers to key bindings (e.g., `0` -> "Mouse0", `1` → "MouseMiddle").
+- `wheelCodes.ts`: Specifies the how the mouse wheel codes will display (currently -> "Wheel Up" and "Wheel Down").
+
+You can change the `codeToChar` object to add your own custom mappings or modify existing ones.
+
+```diff lang="ts"
+const codeToChar: Record<string, string> = {
++    ArrowUp: "↑",
++    ArrowDown: "↓",
+    ArrowLeft: "Left",
+    ArrowRight: "Right",
++   Space: "␣",           // show a nice visible space symbol
++   NumpadMultiply: "x",  // custom numpad symbol
+    // ...
+}
+```
+
+:::caution
+You must use the exact key code names as defined in the [KeyboardEvent.code](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code/code_values) documentation.
+:::
+
+:::caution
+Make sure to use the `useChars` prop on the `Keybinds` component to be able to see your custom defined character strings.
+:::
