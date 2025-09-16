@@ -1,0 +1,12 @@
+[
+  { "action": "moveForward",  "key": "W" },
+  { "action": "moveBackward", "key": "S" },
+  { "action": "moveLeft",     "key": "A" },
+  { "action": "moveRight",    "key": "D" },
+  { "action": "jump",         "key": "Space" },
+  { "action": "crouch",       "key": "Control Left" },
+  { "action": "sprint",       "key": "Shift Left" },
+  { "action": "fire",         "key": "LMB" },
+  { "action": "aimDownSights","key": "RMB" },
+  { "action": "reload",       "key": "R" }
+]

@@ -1,0 +1,9 @@
+{
+  "assertionElement": "assertion-element",
+  "scenarioBtn": "scenario-btn",
+  "keybindsContainer": "keybinds-container",
+  "keybind": "keybind",
+  "listening-text": "Please type",
+  "placeholder-text": "Unassigned",
+  "reactive": "reactive"
+}
