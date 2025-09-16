@@ -13,16 +13,19 @@ const MediaTest = () => {
     const [reactivity, setReactivity] = createSignal(false);
     const [src, setSrc] = createSignal(grandeImage);
     const [options, setOptions] = createSignal<any>({position: "center", repeat: 'x', size: 'cover'});
+    const [fill, setFill] = createSignal(false);
 
     const scenarios = [
         { label: "Change image", action: () => setSrc(weaponImage)},
         { label: "Change options", action: () => setOptions({position: "right", repeat: 'y', size: 'contain'})},
+        { label: "Enable fill", action: () => setFill(true)},
     ];
 
     const reset = () => {
         setReactivity(false);
         setSrc(grandeImage);
         setOptions({position: "center", repeat: 'x', size: 'cover'});
+        setFill(false);
     };
 
     const isReactive = createMemo(() => reactivity() === true);
@@ -44,10 +47,10 @@ const MediaTest = () => {
                 )}
             </For>
 
-            <Image click={() => setReactivity(true)} src={src()} style={reactiveStyle()} class={`${selectors.image} ${reactiveClass()}`} />
-            <LiveView click={() => setReactivity(true)} src={src()} style={reactiveStyle()} class={`${selectors.liveView} ${reactiveClass()}`} />
+            <Image click={() => setReactivity(true)} src={src()} style={reactiveStyle()} class={`${selectors.image} ${reactiveClass()}`} fill={fill()} />
+            <LiveView click={() => setReactivity(true)} src={src()} style={reactiveStyle()} class={`${selectors.liveView} ${reactiveClass()}`} fill={fill()} />
             <BackgroundImage click={() => setReactivity(true)} options={options()} src={src()} style={reactiveStyle()} class={`${selectors.backgroundImage} ${reactiveClass()}`} />
-            <MaskImage click={() => setReactivity(true)} src={src()} options={options()}  style={reactiveStyle()} class={`${selectors.maskImage} ${reactiveClass()}`}>
+            <MaskImage click={() => setReactivity(true)} src={src()} options={options()}  style={reactiveStyle()} class={`${selectors.maskImage} ${reactiveClass()}`} >
               <div>
                 Masked content
                 Masked content

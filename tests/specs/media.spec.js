@@ -24,6 +24,14 @@ describe('Media component', function () {
 
             assert.notEqual(source, newSource, `${type} source should change`);
         });
+
+        it(`Should fill its container - ${type}`, async () => {
+            const image = await gf.get(`.${type}`);
+            await gf.click(`.${selectors.scenarioBtn}.scenario-2`);
+            const {width, height} = await image.styles();
+            assert.equal(width, '100%', `${type} width should be 100%`);
+            assert.equal(height, '100%', `${type} height should be 100%`);
+        });
     })
 
     withOptions.forEach((type) => {
