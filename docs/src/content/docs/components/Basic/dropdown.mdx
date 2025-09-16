@@ -40,12 +40,22 @@ export default App;
 | `class-disabled`  | `string`             | `""`        | Additional CSS classes to apply when the dropdown is disabled.                                                 |
 | `onChange`        | `(value: string) => void` | `undefined` | Callback function triggered whenever the selected option changes, providing the selected option's value.        |
 
-### DropdownRef Methods
+## Ref API
 
-| Method          | Parameters       | Return Value | Description                                      |
+To interact with the `Dropdown` programmatically, you can use the `DropdownRef` interface. This interface provides properties and methods to access and manipulate the component's state.
+
+### Properties
+
+| Property   | Type                | Description                                                                 |
+|------------|---------------------|-----------------------------------------------------------------------------|
+| `selected` | `Accessor<string>`  | Read the currently selected option: `ref.selected()` returns the value.      |
+| `element`  | `HTMLDivElement`    | A reference to the dropdown's root HTML element, useful for DOM access or styling. |
+
+### Methods
+
+| Method          | Parameters         | Return Value | Description                                      |
 |------------------|------------------|--------------|--------------------------------------------------|
-| `selected`       | None             | `void`       | Retrieves the currently selected option.         |
-| `selectOption`   | `newOption: string` | `void`    | Sets a new selected option programmatically.     |
+| `selectOption`   | `value: string`   | `void`       | Sets a new selected option programmatically.      |
 
 ## Slots
 

@@ -41,20 +41,26 @@ export default App;
 | `readonly`         | `boolean`                         | `false`   | Specifies if the input is only able to be read. If set to true, the input will not accept values. |
 | `onChange` | `(value: string \| number) => void`  | `undefined` | A function that is called every time the input's value has changed. It can be used to retrieve the up to date value of the input. |
 
+## Ref API
+
+To interact with the `NumberInput` programmatically, you can use the `NumberInputRef` interface. This interface provides properties and methods to access and manipulate the component's state.
+
+### Properties
+
+| Property   | Type                | Description                                                                 |
+|------------|---------------------|-----------------------------------------------------------------------------|
+| `element`  | `HTMLDivElement`    | A reference to the input's root HTML element, useful for DOM access or styling. |
+| `input`    | `HTMLInputElement`  | A reference to the internal input element.                                  |
+| `value`    | `Accessor<string>`   | Returns the current value of the input reactively. Use `value()`to read the latest input.                                            |
+
 ### Methods
 
-|Method |Parameters |Return Value |Description |
-|---|---|---|---|
-| `changeValue ` | `newValue: number`  | `void` | 	Programmatically sets a new value in the input field. |
-| `clear ` | None  | `void` | 	Clears the current value of the input. |
-| `increaseValue ` | None  | `void` | 	Increases value by the specified step (default is 1). |
-| `decreaseValue ` | None  | `void` | 	Decreases value by the specified step (default is 1). |
-
-### Accessors
-
-|Accessor |Return Value|Description |
-|---|---|---|
-| `value ` | `string \| number` | 	Returns the current value of the input reactively. Use `value()`to read the latest input. |
+| Method           | Parameters         | Return Value | Description                                      |
+|------------------|-------------------|--------------|--------------------------------------------------|
+| `changeValue`    | `newValue: number`| `void`       | Programmatically sets a new value in the input field. |
+| `clear`          | None              | `void`       | Clears the current value of the input.           |
+| `increaseValue`  | None              | `void`       | Increases value by the specified step (default is 1). |
+| `decreaseValue`  | None              | `void`       | Decreases value by the specified step (default is 1). |
 
 ## Slots
 

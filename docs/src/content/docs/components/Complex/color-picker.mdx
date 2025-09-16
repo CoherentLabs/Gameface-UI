@@ -40,12 +40,22 @@ export default App;
 | `value` | `string`           | `rgba(255, 0, 0, 1)` | Initial value of the color picker. Accepts colors as strings in HEX or RGBA format. |
 | `onChange` | `(value: ColorData) => void`           | `undefined` | A callback function triggered whenever the color changes. It can be used to retrieve the updated color value. |
 
-### ColorPickerRef Methods
+## Ref API
 
-| Method          | Parameters       | Return Value | Description                                      |
-|------------------|------------------|--------------|--------------------------------------------------|
-| `value`         | None             | `{rgba: string, hex: string}`  | Retrieves the currently selected color value from the color picker into rgba and hex format. |
-| `changeColor`   | `newColor: string` | `void`    | Updates the color picker programmatically with a new color. This method accepts color strings in either `RGBA` or `HEX` format, which are automatically converted to `ColorData` internally. |
+To interact with the `ColorPicker` programmatically, you can use the `ColorPickerRef` interface. This interface provides properties and methods to access and manipulate the component's state.
+
+### Properties
+
+| Property   | Type                | Description                                                                 |
+|------------|---------------------|-----------------------------------------------------------------------------|
+| `element`  | `HTMLDivElement`    | A reference to the color picker's root HTML element, useful for DOM access or styling. |
+
+### Methods
+
+| Method         | Parameters         | Return Value | Description                                      |
+|----------------|-------------------|--------------|--------------------------------------------------|
+| `value`        | None               | `{rgba: string, hex: string}` | Retrieves the currently selected color value from the color picker into rgba and hex format. |
+| `changeColor`  | `newColor: string` | `void`       | Updates the color picker programmatically with a new color. This method accepts color strings in either `RGBA` or `HEX` format, which are automatically converted to `ColorData` internally. |
 
 ### ColorData Type
 

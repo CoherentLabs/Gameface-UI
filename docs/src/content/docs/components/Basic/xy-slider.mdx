@@ -38,11 +38,22 @@ export default App;
 | `maxY`         | `number`                            | `100`   | The maximum value that the slider can select on the Y-axis. |
 | `onChange` | `(value: {x:number, y: number}) => void`              | `undefined` | A function that is called every time the slider's value has changed. It can be used to retrieve the up to date value of the slider. |
 
+## Ref API
+
+To interact with the `XYSlider` programmatically, you can use the `XYSliderRef` interface. This interface provides properties and methods to access and manipulate the component's state.
+
+### Properties
+
+| Property   | Type                | Description                                                                 |
+|------------|---------------------|-----------------------------------------------------------------------------|
+| `element`  | `HTMLDivElement`    | A reference to the XYSlider's root HTML element, useful for DOM access or styling. |
+| `value`    | `Accessor<{x: number, y: number}>`  | The current value of the slider. Use `value()` to get the latest value.      |
+
 ### Methods
 
-|Method |Parameters |Return Value |Description |
-|---|---|---|---|
-| `changeValue ` | `newValue: {x:number, y: number}`  | `void` | Sets new value for the slider on the X and Y axes|
+| Method         | Parameters         | Return Value | Description                                      |
+|----------------|-------------------|--------------|--------------------------------------------------|
+| `changeValue`  | `newValue: {x: number, y: number}`| `void`       | Programmatically sets a new value for the XYSlider. |
 
 ## Slots
 

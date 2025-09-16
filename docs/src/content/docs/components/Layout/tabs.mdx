@@ -53,10 +53,15 @@ export default App;
 | `onBeforeTabChange` | `async (currentLocation: string, newLocation: string) => Promise<void \| boolean> \| void \| boolean \| undefined` | `undefined \| boolean` | Callback invoked right before the Tab changes. It receives the current and next location before the change. Return `false` in the callback to prevent the tab from changing |
 | `onTabChanged` | `async (newLocation?: string) => void` | `undefined` | Callback invoked right after the Tab changes. It receives the new location after the change. |
 
+## Ref API
+
+To interact with the `Tabs` programmatically, you can use the `TabsComponentRef` interface. This interface provides properties and methods to access and manipulate the component's state.
+
 ### Methods
-|Method |Parameters |Return Value |Description |
-|---|---|---|---|
-| `changeTab` | `newTab`: string  | `void` | Switches the active tab programmatically. This method is accessed via the component’s `ref`. |
+
+| Method         | Parameters         | Return Value | Description                                      |
+|----------------|-------------------|--------------|--------------------------------------------------|
+| `changeTab`    | `newTab: string`  | `void`       | Switches the active tab programmatically.         |
 
 ## Guide
 

@@ -5,7 +5,6 @@ import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { Control, StepperControl } from "./StepperControl";
 import { Item, StepperItem } from "./StepperItem";
 import { createTokenComponent, useToken, useTokens } from '@components/utils/tokenComponents';
-import Flex from "@components/Layout/Flex/Flex";
 
 export interface StepperRef {
     selected?: Accessor<string>

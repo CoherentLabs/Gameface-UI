@@ -37,16 +37,25 @@ export default App;
 | `ref`            | `PaginationRef \| undefined` | `undefined`  | Provides access to the pagination element and control methods.         |
 | `onChange`       | `(index: number) => void`    | `undefined`  | Called whenever the selected page changes, providing the new index.    |
 
-### PaginationRef
+## Ref API
 
-| Prop Name      | Type                      | Description                                       |
-| -------------- | ------------------------- | ------------------------------------------------- |
-| `element`      | `HTMLDivElement`          | The root DOM element of the pagination component. |
-| `pageIndex`    | `Accessor<number>`        | The current page index.                           |
-| `pageSize`     | `Accessor<number>`        | The total number of pages.                        |
-| `changeIndex`  | `(index: number) => void` | Programmatically change to a specific page.       |
-| `nextPage`     | `() => void`              | Navigate to the next page.                        |
-| `previousPage` | `() => void`              | Navigate to the previous page.                    |
+To interact with the `Pagination` programmatically, you can use the `PaginationRef` interface. This interface provides properties and methods to access and manipulate the component's state.
+
+### Properties
+
+| Property      | Type                | Description                                       |
+|---------------|---------------------|---------------------------------------------------|
+| `element`     | `HTMLDivElement`    | The root DOM element of the pagination component. |
+| `pageIndex`   | `Accessor<number>`  | The current page index.                           |
+| `pageSize`    | `Accessor<number>`  | The total number of pages.                        |
+
+### Methods
+
+| Method         | Parameters         | Return Value | Description                                      |
+|----------------|-------------------|--------------|--------------------------------------------------|
+| `changeIndex`  | `index: number`    | `void`       | Programmatically change to a specific page.       |
+| `nextPage`     | None               | `void`       | Navigate to the next page.                        |
+| `previousPage` | None               | `void`       | Navigate to the previous page.                    |
 
 ## Slots
 

@@ -5,7 +5,6 @@ import { Option } from './DropdownOption';
 import { DropdownTrigger, Icon, Placeholder, Trigger } from './DropdownTrigger';
 import { BaseComponentRef, ComponentProps } from '@components/types/ComponentProps';
 import useBaseComponent from '@components/BaseComponent/BaseComponent';
-import { on } from 'solid-js';
 
 export interface CommonDropdownSlotProps {
     style?: JSX.CSSProperties,

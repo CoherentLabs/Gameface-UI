@@ -64,14 +64,18 @@ export default App;
 | `groupItems`            | `boolean`                    | `false`     | When set to `true`, groups items together based on the `itemWidth` and `itemGap` values, enabling a page-like display where multiple items are shown at once.                                               |
 | `leadingAndTrailingSpaces` | `boolean`                 | `true`      | Determines whether to add leading and trailing spaces to the items. Setting this to `false` creates a more compact layout without extra padding on the sides.                                              |
 
-### CarouselRef Properties
+## Ref API
 
-| Property Name       | Type             | Description                                                                                                                                                     |
-|---------------------|------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `element`           | `HTMLDivElement`| A reference to the carousel's underlying HTML element, useful for accessing DOM properties or applying additional styles.                                       |
-| `itemsContainer`    | `HTMLDivElement`| A reference to the container holding all carousel items, useful for directly manipulating the layout or applying styles to the container.                       |
+To interact with the `Carousel` programmatically, you can use the `CarouselRef` interface. This interface provides properties and methods to access and manipulate the component's state.
 
-### CarouselRef Methods
+### Properties
+
+| Property         | Type             | Description                                                                 |
+|------------------|------------------|-----------------------------------------------------------------------------|
+| `element`        | `HTMLDivElement` | A reference to the carousel's underlying HTML element, useful for accessing DOM properties or applying additional styles. |
+| `itemsContainer` | `HTMLDivElement` | A reference to the container holding all carousel items, useful for directly manipulating the layout or applying styles to the container. |
+
+### Methods
 
 | Method Name               | Parameters       | Return Value | Description                                                                                                                                                                                                 |
 |---------------------------|------------------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|

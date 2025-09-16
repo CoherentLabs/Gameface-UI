@@ -44,6 +44,16 @@ export default App;
 | `class-disabled`  | `string`                  | `""`        | Additional CSS classes to apply when the Accordion is disabled.                                                 |
 | `onChange`        | `(title: string) => void` | `undefined` | Callback triggered whenever the expanded panels change.             |
 
+## Ref API
+
+To interact with the `Accordion` programmatically, you can use the `AccordionRef` interface. This interface provides properties and methods to access and manipulate the component's state.
+
+### Properties
+
+| Property   | Type             | Description                                                                 |
+|------------|------------------|-----------------------------------------------------------------------------|
+| `element`  | `HTMLDivElement` | A reference to the Accordion's root HTML element, useful for DOM access or styling. |
+
 ### Methods
 
 | Method         | Parameters         | Return Value | Description                                                                                   |

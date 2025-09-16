@@ -39,11 +39,23 @@ export default App;
 | `checked`  | `boolean`                              | `false`     | Specify if the checkbox is checked initially. |
 | `onChange` | `(checked: boolean) => void`           | `undefined` | A function that is called every time the checkbox is toggled. It can be used to retrieve whether the checkbox is checked. |
 
+## Ref API
+
+To interact with the `Checkbox` programmatically, you can use the `CheckboxRef` interface. This interface provides properties and methods to access and manipulate the component's state.
+
+### Properties
+
+| Property   | Type                | Description                                                                 |
+|------------|---------------------|-----------------------------------------------------------------------------|
+| `checked`  | `Accessor<boolean>` | Read the current checked state: `ref.checked()` returns `true/false`.        |
+| `value`    | `any`               | The value associated with the checkbox.                                      |
+| `element`  | `HTMLDivElement`    | A reference to the checkbox's root HTML element, useful for DOM access or styling. |
+
 ### Methods
 
-|Method |Parameters |Return Value |Description |
-|---|---|---|---|
-| `setChecked ` | `Setter<boolean>`  | `void` | Sets the value of the checkbox |
+| Method       | Parameters         | Return Value | Description                                                                 |
+|--------------|--------------------|--------------|-----------------------------------------------------------------------------|
+| `setChecked` | `Setter<boolean>`  | `void`       | Programmatically sets the checked state of the checkbox.                    |
 
 ## Slots
 
