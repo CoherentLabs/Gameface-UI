@@ -32,4 +32,9 @@
     background-color: $secondaryColor;
     border-radius: 0.3vmax;
     cursor: pointer;
+
+    &:hover,
+    &:active {
+        background-color: rgba($secondaryColor, 0.75);
+    }
 }
