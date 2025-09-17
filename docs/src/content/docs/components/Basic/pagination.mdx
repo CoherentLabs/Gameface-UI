@@ -37,6 +37,10 @@ export default App;
 | `ref`            | `PaginationRef \| undefined` | `undefined`  | Provides access to the pagination element and control methods.         |
 | `onChange`       | `(index: number) => void`    | `undefined`  | Called whenever the selected page changes, providing the new index.    |
 
+:::caution
+The `pageIndex` prop is 1-based, meaning the first page is represented by `1`, the second by `2`, and so on.
+:::
+
 ## Ref API
 
 To interact with the `Pagination` programmatically, you can use the `PaginationRef` interface. This interface provides properties and methods to access and manipulate the component's state.
