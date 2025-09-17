@@ -27,6 +27,7 @@ import PasswordInputTest from '../../components/Input/PasswordInputTest';
 import NumberInputTest from '../../components/Input/NumberInputTest';
 import PaginationTest from '../../components/Pagination/PaginationTest';
 import ModalTest from '../../components/Modal/ModalTest';
+import ToasterTest from '../../components/Toaster/ToasterTest';
 
 const Main = () => {
     const components = [
@@ -44,7 +45,7 @@ const Main = () => {
         "pagination",
         'modal',
 
-        // Compex components
+        // Complex components
         "color-picker",
         "accordion",
         "text-input",
@@ -61,6 +62,9 @@ const Main = () => {
         'media',
         // base
         'base',
+
+        // Feedback
+        'toaster',
     ]
 
     return (
@@ -98,6 +102,7 @@ const Main = () => {
                 <NumberInputTest />
                 <PaginationTest />
                 <ModalTest />
+                <ToasterTest />
             </Tabs>
         </div>
     );
