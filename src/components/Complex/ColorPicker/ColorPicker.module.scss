@@ -1,18 +1,34 @@
+@use "sass:list";
+@mixin picker-size($w, $fs, $text, $hide: ()) {
+    width: $w;
+    font-size: $fs;
+
+    .segment-button,
+    .color-preview-text { font-size: $text; }
+
+    @if list.index($hide, 'segment') { .segment { display: none; } }
+    @if list.index($hide, 'preview') { .color-preview-wrapper { display: none; } }
+}
+
 .color-picker {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 20vmax;
     z-index: 1000;
     background: #e6e6e6;
+
+    &.size-s  { @include picker-size(10vmax, 0.5vmax, 0.65vmax, $hide: ('segment', 'preview')); padding-bottom: 0.5vmax; }
+    &.size-m  { @include picker-size(15vmax, 0.7vmax, 0.75vmax, $hide: ('segment')); }
+    &.size-l  { @include picker-size(20vmax, 0.85vmax, 0.9vmax); }
+    &.size-xl { @include picker-size(20vmax, 1vmax, 1vmax); }
 }
 
 .slider {
     &-handle {
         top: -55%;
-        border: 0.15vmax solid rgba(255, 255, 255, 0.8);
-        width: 1.5vmax;
-        height: 1.5vmax;
+        border: 0.15em solid rgba(255, 255, 255, 0.8);
+        width: 1.5em;
+        height: 1.5em;
     }
 
     &-fill {
@@ -23,23 +39,24 @@
 .XYSlider {
     width: 100%;
     border: none;
-    margin-bottom: 0.5vmax;
+    margin-bottom: 0.5em;
+    height: 10em;
 
     &-handle {
-        width: 1.5vmax;
-        height: 1.5vmax;
+        width: 1.5em;
+        height: 1.5em;
     }
 }
 
 .hue-slider,
 .alpha-slider {
     width: 85%;
+    height: 0.75em;
     padding: 0;
     margin: 0;
-    margin-top: 0.5vmax;
-    margin-bottom: 0.5vmax;
-    height: 3%;
-    border-radius: 0.5vmax;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    border-radius: 0.5em;
 }
 
 .hue-slider-track {
@@ -61,19 +78,15 @@
 }
 
 .segment {
-    margin-top: 0.5vmax;
-    margin-bottom: 0.5vmax;
-
-    &-button {
-        font-size: 1vmax;
-    }
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
 }
 
 .color-preview {
     position: relative;
-    width: 4vmax;
-    height: 4vmax;
-    margin-right: 0.5vmax;
+    width: 4em;
+    height: 4em;
+    margin-right: 0.5em;
     border-radius: 50%;
     background-image: linear-gradient(45deg, #ccc 25%, transparent 25%),
         linear-gradient(135deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%),
@@ -88,8 +101,8 @@
         align-items: center;
         justify-content: space-between;
         width: 85%;
-        margin-top: 0.5vmax;
-        margin-bottom: 0.5vmax;
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
     }
 
     &-box {
@@ -101,10 +114,9 @@
 
     &-text {
         flex: 1 0 0;
-        font-size: 1vmax;
         background: transparent;
-        padding: 0.8vmax;
-        border: 0.1vmax solid #3f3f46;
+        padding: 0.8em;
+        border: 0.1em solid #3f3f46;
         color: #3f3f46;
         border-radius: 1vmax;
     }
