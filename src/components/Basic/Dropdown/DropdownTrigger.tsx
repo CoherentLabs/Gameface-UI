@@ -35,7 +35,7 @@ export const DropdownTrigger: ParentComponent<TokenComponentProps> = (props) => 
         <div onClick={() => dropdown?.toggle(!dropdown.open())} class={style['dropdown-trigger'] + ` ${TriggerToken?.()?.class || ''}`} style={triggerStyles()}>
             <div class={style['dropdown-trigger-selected']}>
                 <Show when={dropdown?.selected()}>
-                    {dropdown?.selected()}
+                    {dropdown?.options.get(dropdown?.selected())}
                 </Show>
                 <Show when={!dropdown?.selected()}>
                     <InlineTextBlock class={style['dropdown-placeholder'] + ` ${PlaceholderToken?.()?.class || ''}`} style={placeholderStyles()}>

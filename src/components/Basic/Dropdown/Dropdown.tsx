@@ -23,8 +23,9 @@ interface DropdownContextValue {
     selectOption: (value: string) => void
     open: Accessor<boolean>;
     toggle: (isOpened: boolean) => void;
-    registerOption: (value: string, selected?: boolean) => void
-    unregisterOption: (value: string) => void
+    registerOption: (value: string, label: any, selected?: boolean) => void
+    unregisterOption: (value: string) => void,
+    options: Map<string, any>,
 }
 
 interface DropdownProps extends ComponentProps {
@@ -37,9 +38,9 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
     let element!: HTMLDivElement;
     const [selected, setSelected] = createSignal('');
     const [open, setOpen] = createSignal(false);
-    const options = new Set();
-    const registerOption = (value: string, selected?: boolean) => {
-        options.add(value);
+    const options = new Map<string, any>();
+    const registerOption = (value: string, label: any, selected?: boolean) => {
+        options.set(value, label);
         if (selected) selectOption(value);
     };
     const unregisterOption = (value: string) => options.delete(value);
@@ -100,7 +101,7 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
     });
 
     return (
-        <DropdownContext.Provider value={{ selected, selectOption, open, toggle, registerOption, unregisterOption }}>
+        <DropdownContext.Provider value={{ selected, selectOption, open, toggle, registerOption, unregisterOption, options }}>
             <div ref={element}
                 class={className()}
                 style={inlineStyles()}
