@@ -105,7 +105,7 @@ const createTooltip = <T extends Record<string, any> = { message: string }>(opti
 
         return (
             <div class={tooltipWrapperClasses()} style={others.style}>
-                <div tabindex={options.action === 'focus' ? 1 : undefined} ref={tooltipChildrenRef}>
+                <div ref={tooltipChildrenRef}>
                     {props.children}
                 </div>
                 <div ref={tooltipRef} class={tooltipClasses()}>

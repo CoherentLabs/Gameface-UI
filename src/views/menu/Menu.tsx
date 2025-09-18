@@ -22,7 +22,6 @@ import Credits from '@custom-components/Menu/Options/Credits/Credits';
 import CustomModal from '@custom-components/Menu/CustomModal/CustomModal';
 import { ModalRef } from '@components/Feedback/Modal/Modal';
 import eventBus from '@components/tools/EventBus';
-
 interface MenuContextValue {
     currentOption: Accessor<string>,
     setCurrentOption: Setter<string>,
@@ -40,7 +39,7 @@ const Menu = () => {
     let nextTab: string | undefined;
     let tabsRef!: TabsComponentRef;
     const MenuContextValue = {
-        currentOption, 
+        currentOption,
         setCurrentOption,
         activeTab
     }
@@ -51,7 +50,7 @@ const Menu = () => {
             setCurrentOption(getFirstOptionOfTab(newTab))
         });
     }
-            
+
     const handleBeforeTabChange = (currentLocation: string, newLocation: string) => {
         if (hasChanges()) {
             modalRef.open();
@@ -96,7 +95,7 @@ const Menu = () => {
                             <Row>
                                 <Show when={!isCredits()}>
                                     <Column8>
-                                        <Scroll style={{width: '100%'}}>
+                                        <Scroll style={{ width: '100%' }}>
                                             <Scroll.Content class={styles['scroll-content']}>
                                                 <Tab location={OPTIONS[0]}>
                                                     <Gameplay />
