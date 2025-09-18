@@ -33,8 +33,8 @@ const createTooltip = <T extends Record<string, any> = { message: string }>(opti
                 tooltipChildrenRef[method]('mouseleave', hideTooltip);
             }
             if (options.action === 'focus') {
-                tooltipChildrenRef[method]('focus', showTooltip);
-                tooltipChildrenRef[method]('blur', hideTooltip);
+                tooltipChildrenRef[method]('focusin', showTooltip);
+                tooltipChildrenRef[method]('focusout', hideTooltip);
             }
         }
 
