@@ -1,5 +1,6 @@
 const assert = require('assert');
 const selectors = require('../shared/tooltip-selectors.json');
+const { navigateToPage } = require('../shared/utils');
 const positions = [
     'top',
     'right',
@@ -9,9 +10,7 @@ const positions = [
 
 describe('Tooltip', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.sleep(1000);
-        await gf.click('.tooltip-link');
+        await navigateToPage('.tooltip-link');
     });
 
     it('Should render tooltip', async () => {

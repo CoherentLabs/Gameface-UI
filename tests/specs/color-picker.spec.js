@@ -1,5 +1,6 @@
 const assert = require('assert');
 const selectors = require('../shared/color-picker-selectors.json');
+const { navigateToPage } = require('../shared/utils');
 
 const colorDragPositions = {
     '#FFE6E6FF': { x: 25, y: 0 },
@@ -17,9 +18,7 @@ async function testColorPickerDrag(color, sliderEl, assertionEl, dragging2D = fa
 
 describe('Color Picker', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.sleep(1000);
-        await gf.click('.color-picker-link');
+        await navigateToPage('.color-picker-link');
     })
 
     this.afterEach(async () => {

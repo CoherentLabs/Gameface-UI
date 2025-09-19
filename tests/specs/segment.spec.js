@@ -1,11 +1,10 @@
 const assert = require('assert');
 const selectors = require('../shared/segment-selectors.json');
+const { navigateToPage } = require('../shared/utils');
 
 describe('Segment', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.sleep(1000);
-        await gf.click('.segment-link');
+        await navigateToPage('.segment-link');
     })
 
     this.afterEach(async () => {
@@ -19,12 +18,12 @@ describe('Segment', function () {
         assert.ok(segment, 'Checkbox should be in the DOM');
         assert.equal(segmentButtons.length, 4, 'Segment buttons should be in the DOM');
     })
-    
+
     it('Should change selected option', async () => {
         const segment = await gf.get(`.${selectors.segment}`);
         const segmentButtons = await segment.children()
         const assertionEl = await gf.get(`.${selectors.assertionElement}`)
-        
+
         assert.equal(await assertionEl.text(), "test1", 'Initial selected button should be the first one');
         await segmentButtons[2].click();
         assert.equal(await assertionEl.text(), "test3", 4, 'Selected button should be the last one');
@@ -34,7 +33,7 @@ describe('Segment', function () {
         const assertionEl = await gf.get(`.${selectors.assertionElement}`)
 
         assert.equal(await assertionEl.text(), "test1", 'Initial selected button should be the first one');
-        await gf.trigger('selectSegmentOption');        
+        await gf.trigger('selectSegmentOption');
         assert.equal(await assertionEl.text(), "test3", 4, 'Selected button should be the last one');
     })
 

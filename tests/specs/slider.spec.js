@@ -1,11 +1,10 @@
 const assert = require('assert');
 const selectors = require('../shared/slider-selectors.json');
+const { navigateToPage } = require('../shared/utils');
 
 describe('Slider', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.sleep(1000);
-        await gf.click('.slider-link');
+        await navigateToPage('.slider-link');
     })
 
     this.afterEach(async () => {
@@ -29,7 +28,7 @@ describe('Slider', function () {
         assert.ok(grid, 'Slider grid should be in the DOM');
         assert.equal(gridPols.length, 25, 'Slider grid should be in the DOM');
     })
-    
+
     it('Should change value', async () => {
         const handle = await gf.get(`.${selectors.sliderHandle}`);
         const thumb = await gf.get(`.${selectors.sliderThumb}`);

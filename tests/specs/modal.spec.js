@@ -1,10 +1,10 @@
 const assert = require('assert');
 const selectors = require('../shared/modal-selectors.json');
+const { navigateToPage } = require('../shared/utils');
 
 describe('Modal', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.click('.modal-link');
+        await navigateToPage('.modal-link');
     })
 
     this.afterEach(async () => {

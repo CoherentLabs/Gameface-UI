@@ -1,11 +1,10 @@
 const assert = require('assert');
 const selectors = require("../shared/dropdown-selectors.json");
+const { navigateToPage } = require('../shared/utils');
 
 describe('Dropdown', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.sleep(1000);
-        await gf.click('.dropdown-link');
+        await navigateToPage('.dropdown-link');
     })
 
     this.afterEach(async () => {
@@ -27,35 +26,35 @@ describe('Dropdown', function () {
         assert.ok(placeholder, 'Dropdown placeholder should be in the DOM');
         assert.ok(icon, 'Dropdown icon should be in the DOM');
     })
-    
+
     it('Should change selected option', async () => {
         const dropdown = await gf.get(`.${selectors.base}`);
         const trigger = await dropdown.find(`.${selectors.trigger}`);
-        
+
         await trigger.click();
         const options = await gf.get(`.${selectors.options}`);
         assert.equal(await options.isVisible(), true, 'Dropdown options should open');
-        
+
         await gf.click(`.${selectors.option}2`)
         assert.equal(await (await trigger.children())[0].text(), 'test2', 'Trigger should hold the value of the selected option');
         assert.equal(await options.isVisible(), false, 'Dropdown options should close after selecting new option');
     })
 
     it('Should change selected option via ref', async () => {
-        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);        
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
         assert.equal(await (await gf.children(`.${selectors.trigger}`))[0].text(), 'test1', 'Trigger should hold the value of the selected option');
     })
 
     it('Should retrieve value via onChange prop', async () => {
         const assertionEl = await gf.get(`.${selectors.assertionElement}`);
-        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);  
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
         assert.equal(await assertionEl.text(), 'test1', 'Assertion element\'s text should match the value of the dropdown');
     })
 
     it('Should toggle', async () => {
         const trigger = await gf.get(`.${selectors.trigger}`);
         const options = await gf.get(`.${selectors.options}`);
-        
+
         await trigger.click();
         assert.equal(await options.isVisible(), true, 'Dropdown options should open');
 
@@ -66,7 +65,7 @@ describe('Dropdown', function () {
     it('Should close after clicking outside it', async () => {
         const trigger = await gf.get(`.${selectors.trigger}`);
         const options = await gf.get(`.${selectors.options}`);
-        
+
         await trigger.click();
         assert.equal(await options.isVisible(), true, 'Dropdown options should open');
 
@@ -76,7 +75,7 @@ describe('Dropdown', function () {
 
     it('Should toggle disabled state and prevent selection', async () => {
         const options = await gf.get(`.${selectors.options}`);
-        
+
         await gf.click(`.${selectors.scenarioBtn}.scenario-1`);
         await gf.click(`.${selectors.trigger}`);
 
@@ -118,11 +117,11 @@ describe('Dropdown options', function () {
     it('Shound have custom selected class', async () => {
         const dropdown = await gf.get(`.${selectors.base}`);
         const trigger = await dropdown.find(`.${selectors.trigger}`);
-        
+
         await trigger.click();
         const option = await gf.get(`.${selectors.option}2`);
         await option.click();
-        
+
         const optionClasses = await option.classes();
         const optionStyles = await option.styles();
 
@@ -134,15 +133,15 @@ describe('Dropdown options', function () {
         const dropdown = await gf.get(`.${selectors.base}`);
         const options = await gf.get(`.${selectors.options}`);
         const trigger = await dropdown.find(`.${selectors.trigger}`);
-        
+
         await gf.click(`.${selectors.scenarioBtn}.scenario-2`);
         const option = await gf.get(`.${selectors.option}2`);
         await trigger.click();
         await option.click();
-        
+
         const optionClasses = await option.classes();
         const optionStyles = await option.styles();
-        
+
         assert.equal(await options.isVisible(), true, 'Dropdown options should remain opened');
         assert.equal(optionClasses.includes('option-disabled'), true, "Selected option should have the class 'option-disabled'");
         assert.equal(optionStyles['color'], 'rgba(255, 0, 0, 1)', "Custom class should apply different styles");
@@ -157,7 +156,7 @@ describe('Dropdown icon', function () {
     it('Render custom icon', async () => {
         const icon = await gf.get(`.${selectors.icon}`);
         assert.equal(await icon.text(), "", 'Default icon should be an empty string');
-        
+
         await gf.click(`.${selectors.scenarioBtn}.scenario-4`)
         assert.equal(await icon.text(), "Custom Icon", 'New icon should have text - Custom Icon');
     })

@@ -1,12 +1,10 @@
 const assert = require('assert');
-const { sleep } = require('gameface-e2e/core/utils');
 const selectors = require('../shared/scroll-selectors.json');
+const { navigateToPage } = require('../shared/utils');
 
 describe('Scroll', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.sleep(1000);
-        await gf.click('.scroll-link');
+        await navigateToPage('.scroll-link');
     })
 
     this.afterEach(async () => {
@@ -24,7 +22,7 @@ describe('Scroll', function () {
         const assertionEl = await scroll.find(`.${selectors.assertionElement}`);
         const bar = await scroll.find(`.${selectors.bar}`);
         const handle = await scroll.find(`.${selectors.handle}`);
-        
+
         assert.ok(scroll, 'Scroll should be in the DOM');
         assert.ok(content, 'Scroll content should in the DOM');
         assert.ok(contentChild, 'Content should render its children');
@@ -32,7 +30,7 @@ describe('Scroll', function () {
         assert.ok(bar, 'Scroll bar should be in the DOM');
         assert.ok(handle, 'Scroll handle should be in the DOM');
     })
-    
+
     it('Should scroll up and down', async () => {
         const content = await gf.get(`.${selectors.content}`);
         const contentChild = await content.find(`.${selectors.scrollChild}`);
@@ -41,11 +39,11 @@ describe('Scroll', function () {
         await gf.retryIfFails(async () => {
             assert.equal(await contentChild.isVisibleInScrollableArea(content), false, 'Element should not be visible in the area after scrolling down');
         })
-        
+
         await content.scroll(0, -200);
         await gf.retryIfFails(async () => {
             assert.equal(await contentChild.isVisibleInScrollableArea(content), true, 'Element should be visible in the area after scrolling up');
-        })        
+        })
     })
 
     it('Should scroll up and down with scroll handle', async () => {
@@ -57,32 +55,32 @@ describe('Scroll', function () {
         await gf.retryIfFails(async () => {
             assert.equal(await contentChild.isVisibleInScrollableArea(content), false, 'Element should not be visible in the area after scrolling down');
         })
-        
+
         await handle.drag(0, 0);
         await gf.retryIfFails(async () => {
             assert.equal(await contentChild.isVisibleInScrollableArea(content), true, 'Element should be visible in the area after scrolling up');
-        })        
+        })
     })
 
     it('Should scroll up and down with scroll ref', async () => {
         const content = await gf.get(`.${selectors.content}`);
         const contentChild = await content.find(`.${selectors.scrollChild}`);
-        
+
         await gf.click(`.${selectors.scenarioBtn}.scenario-2`)
         await gf.retryIfFails(async () => {
             assert.equal(await contentChild.isVisibleInScrollableArea(content), false, 'Element should not be visible in the area after scrolling down');
         })
-        
+
         await gf.click(`.${selectors.scenarioBtn}.scenario-1`)
         await gf.retryIfFails(async () => {
             assert.equal(await contentChild.isVisibleInScrollableArea(content), true, 'Element should be visible in the area after scrolling up');
-        })        
+        })
     })
 
     it('Should scroll to the end of the content with ref', async () => {
         const content = await gf.get(`.${selectors.content}`);
         const contentChild = await content.find(`.${selectors.scrollChild}`);
-        
+
         await gf.click(`.${selectors.scenarioBtn}.scenario-4`)
         await gf.retryIfFails(async () => {
             assert.equal(await contentChild.isVisibleInScrollableArea(content), false, 'Element should not be visible in the area after scrolling to the end');
@@ -93,7 +91,7 @@ describe('Scroll', function () {
     it('Should scroll to a specified element', async () => {
         const content = await gf.get(`.${selectors.content}`);
         const assertionEl = await gf.get(`.${selectors.assertionElement}`);
-        
+
         await gf.click(`.${selectors.scenarioBtn}.scenario-5`)
         await gf.retryIfFails(async () => {
             assert.equal(await assertionEl.isVisibleInScrollableArea(content), true, 'Element should be scrolled to');
@@ -103,7 +101,7 @@ describe('Scroll', function () {
     it('Should scroll a specified element into view', async () => {
         const content = await gf.get(`.${selectors.content}`);
         const assertionEl = await gf.get(`.${selectors.assertionElement}`);
-        
+
         await gf.click(`.${selectors.scenarioBtn}.scenario-6`)
         await gf.retryIfFails(async () => {
             assert.equal(await assertionEl.isVisibleInScrollableArea(content), true, 'Element should be scrolled into view');
@@ -112,7 +110,7 @@ describe('Scroll', function () {
 
     it('Should execute logic after scrolling', async () => {
         const assertionEl = await gf.get(`.${selectors.assertionElement}`);
-        
+
         await gf.click(`.${selectors.scenarioBtn}.scenario-2`)
         assert.equal(await assertionEl.text(), 'down', 'Element\'s text should correspond with scroll direction');
     })

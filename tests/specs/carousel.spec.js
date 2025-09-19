@@ -1,11 +1,10 @@
 const assert = require('assert');
 const selectors = require('../shared/carousel-selectors.json');
+const { navigateToPage } = require('../shared/utils');
 
 describe('Carousel', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.sleep(1000);
-        await gf.click('.carousel-link');
+        await navigateToPage('.carousel-link');
     })
 
     this.afterEach(async () => {

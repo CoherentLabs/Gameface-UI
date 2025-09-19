@@ -1,10 +1,10 @@
 const assert = require('assert');
 const selectors = require('../shared/list-selectors.json');
+const { navigateToPage } = require('../shared/utils');
 
 describe('List', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.click('.list-link');
+        await navigateToPage('.list-link');
     })
 
     this.afterEach(async () => {
@@ -48,9 +48,9 @@ describe('List', function () {
 
             for (const icon of listIcons) {
                 assert.match(
-                await icon.text(),
-                /^[1-5]\.$/,
-                "Icon's text should start with number 1-5 and end with a dot"
+                    await icon.text(),
+                    /^[1-5]\.$/,
+                    "Icon's text should start with number 1-5 and end with a dot"
                 );
             }
         });
@@ -116,7 +116,7 @@ describe('List', function () {
             assert.ok(classes.includes(selectors.bulletClass), 'bullet class applied');
         });
     });
- 
+
     describe('reactivity', () => {
         const scenarios = [
             { selector: `.${selectors.base}`, desc: 'list' },

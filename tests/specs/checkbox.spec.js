@@ -1,11 +1,10 @@
 const assert = require('assert');
 const selectors = require("../shared/checkbox-selectors.json");
+const { navigateToPage } = require('../shared/utils');
 
 describe('Checkbox', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.sleep(1000);
-        await gf.click('.checkbox-link');
+        await navigateToPage('.checkbox-link');
     })
 
     this.afterEach(async () => {
@@ -29,7 +28,7 @@ describe('Checkbox', function () {
         const indicator = await gf.get(`.${selectors.indicator}`);
 
         assert.equal(await indicator.isVisible(), false, 'Checkbox should be unchecked')
-        
+
         await checkbox.click();
         assert.equal(await indicator.isVisible(), true, 'Checkbox should be checked')
 
