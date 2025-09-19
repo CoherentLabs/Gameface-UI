@@ -1,5 +1,6 @@
 const assert = require('assert');
 const selectors = require('../shared/position-selectors.json');
+const { navigateToPage } = require('../shared/utils');
 
 ['absolute', 'relative'].forEach((type) => {
   describe(type.charAt(0).toUpperCase() + type.slice(1), function () {
@@ -7,9 +8,7 @@ const selectors = require('../shared/position-selectors.json');
     const compSelector = `.${selectors[type]}`;
 
     this.beforeAll(async () => {
-      await gf.navigate(`http://localhost:3000/components-e2e/`);
-      await gf.sleep(1000);
-      await gf.click(linkSelector);
+      await navigateToPage(linkSelector);
     });
 
     this.afterEach(async () => {

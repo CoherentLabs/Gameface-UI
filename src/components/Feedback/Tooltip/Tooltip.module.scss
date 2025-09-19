@@ -1,0 +1,56 @@
+.tooltip {
+    visibility: hidden;
+    pointer-events: none;
+    position: absolute;
+    z-index: 100;
+
+    &-visible {
+        pointer-events: auto;
+        visibility: visible;
+    }
+
+    &-message {
+        background-color: $primaryColor;
+        padding: 1vmax;
+        font-size: 1vmax;
+        color: $textColor;
+        text-transform: none;
+    }
+
+    &-wrapper {
+        position: relative;
+        display: flex;
+    }
+
+    &-bottom,
+    &-top,
+    &-left,
+    &-right {
+        display: flex;
+        align-items: center;
+    }
+
+    &-bottom {
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    &-top {
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    &-left {
+        right: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    &-right {
+        left: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+}

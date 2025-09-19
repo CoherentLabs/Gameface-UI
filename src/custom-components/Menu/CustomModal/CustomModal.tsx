@@ -1,5 +1,5 @@
 import Button from "@components/Basic/Button/Button"
-import Modal, { ModalRef } from "@components/Basic/Modal/Modal"
+import Modal, { ModalRef } from "@components/Feedback/Modal/Modal"
 import Block from "@components/Layout/Block/Block"
 import Bottom from "@components/Layout/Bottom/Bottom"
 import Flex from "@components/Layout/Flex/Flex"

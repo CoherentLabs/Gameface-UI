@@ -1,12 +1,11 @@
 const assert = require('assert');
 const selectors = require('../shared/transform-selectors.json');
+const { navigateToPage } = require('../shared/utils');
 
 const transformProperties = ['transform', 'transform', 'transform-origin']
 describe('Transform', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.sleep(1000);
-        await gf.click('.transform-link');
+        await navigateToPage('.transform-link');
     })
 
     this.afterEach(async () => {
@@ -24,7 +23,7 @@ describe('Transform', function () {
             assert.notEqual(oldStyles[property], newStyles[property], `New ${property} style should be applied`);
         });
     })
- 
+
     it('Should update styles & classes reactively on props change', async () => {
         const transform = await gf.get(`.${selectors.transform}`);
         await transform.click();

@@ -1,11 +1,10 @@
 const assert = require('assert');
 const selectors = require('../shared/stepper-selectors.json');
+const { navigateToPage } = require('../shared/utils');
 
 describe('Stepper', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.sleep(1000);
-        await gf.click('.stepper-link');
+        await navigateToPage('.stepper-link');
     })
 
     this.afterEach(async () => {
@@ -23,7 +22,7 @@ describe('Stepper', function () {
         assert.ok(stepperItems, 'Stepper items should be in the DOM');
         assert.ok(stepperItem, 'Stepper item should be in the DOM');
     })
-    
+
     it('Should change selected option', async () => {
         const stepperControl = await gf.getAll(`.${selectors.stepperControl}`);
 
@@ -38,13 +37,13 @@ describe('Stepper', function () {
     it('Should change selected option via ref', async () => {
         assert.equal(await gf.isVisible(`.${selectors.stepperItem}0`), true, 'The first option should be selected initially');
 
-        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);        
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
         assert.equal(await gf.isVisible(`.${selectors.stepperItem}1`), true, 'The last option should be selected');
     })
 
     it('Should retrieve value via onChange prop', async () => {
         const assertionEl = await gf.get(`.${selectors.assertionElement}`);
-        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);  
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
         assert.equal(await assertionEl.text(), 'test1', 'Assertion element\'s text should match the value of the last stepper item');
     })
 
@@ -66,7 +65,7 @@ describe('Stepper', function () {
         const children = await gf.children(`.${selectors.stepper}`);
         assert.equal((await children[0].classes()).includes(selectors.stepperControl), true, 'First child should be stepper control');
         assert.equal((await children[1].classes()).includes(selectors.stepperControl), true, 'Second child should be stepper control');
-        
+
         await gf.click(`.${selectors.scenarioBtn}.scenario-3`);
 
         const updatedChildren = await gf.children(`.${selectors.stepper}`);
@@ -103,7 +102,7 @@ describe('Stepper', function () {
 
         for (const { selector, desc } of scenarios) {
             it(`should update styles & classes reactively on props change — ${desc}`, async () => {
-                const rightControl = await ( await gf.getAll(`.${selectors.stepperControl}`)).last();
+                const rightControl = await (await gf.getAll(`.${selectors.stepperControl}`)).last();
                 await rightControl.click();
                 const el = await gf.get(selector);
                 const styles = await el.styles();
@@ -132,13 +131,13 @@ describe('Stepper Control', function () {
     })
 
     it('Shound have custom hidden class', async () => {
-        const rightControl = await ( await gf.getAll(`.${selectors.stepperControl}`)).last();
+        const rightControl = await (await gf.getAll(`.${selectors.stepperControl}`)).last();
         await rightControl.click();
 
         for (let i = 0; i < 2; i++) {
             await rightControl.click();
         }
-        
+
         const controlStyles = await rightControl.styles();
         const controlClasses = await rightControl.classes();
 

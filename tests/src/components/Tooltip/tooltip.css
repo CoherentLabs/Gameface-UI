@@ -1,0 +1,9 @@
+.tooltip-wrapper {
+    display: flex;
+    justify-content: center;
+    color: white;
+}
+
+.tooltip-message {
+    background-color: rgb(31, 105, 202);
+}

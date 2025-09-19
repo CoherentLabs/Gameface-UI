@@ -1,11 +1,10 @@
 const assert = require('assert');
 const selectors = require('../shared/toggle-button-selectors.json');
+const { navigateToPage } = require('../shared/utils');
 
 describe('ToggleButton', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.sleep(1000);
-        await gf.click('.toggle-link');
+        await navigateToPage('.toggle-link');
     });
 
     this.afterEach(async () => {
@@ -41,7 +40,7 @@ describe('ToggleButton', function () {
 
     it('Should retrieve checked state via onChange prop', async () => {
         const assertionEl = await gf.get(`.${selectors.assertionElement}`);
-        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);  
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
         assert.equal(await assertionEl.text(), 'true', 'Assertion element\'s text should be set to true');
     })
 
@@ -74,7 +73,7 @@ describe('ToggleButton', function () {
         const toggle = await gf.get(`.${selectors.base}`);
         await gf.click(`.${selectors.scenarioBtn}.scenario-1`);
         await toggle.click();
-        
+
         const toggleClasses = await toggle.classes();
         assert.ok(toggleClasses.includes(selectors['base-disabled']), 'Disabled class should be applied');
         assert.equal(await gf.isVisible(`.${selectors.indicator}`), false, 'Indicator should not be visible after clicking disabled toggle');

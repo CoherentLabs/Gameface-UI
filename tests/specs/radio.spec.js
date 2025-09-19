@@ -1,11 +1,10 @@
 const assert = require('assert');
 const selectors = require('../shared/radio-selectors.json');
+const { navigateToPage } = require('../shared/utils');
 
 describe('Radio', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.sleep(1000);
-        await gf.click('.radio-link');
+        await navigateToPage('.radio-link');
     })
 
     this.afterEach(async () => {
@@ -19,7 +18,7 @@ describe('Radio', function () {
         assert.ok(radio, 'Radio should be in the DOM');
         assert.equal(radioButtons.length, 3, 'Radio buttons should be in the DOM');
     })
-    
+
     it('Should change selected option', async () => {
         const radio = await gf.get(`.${selectors.radio}`);
         const radioButtons = await radio.children()
@@ -36,7 +35,7 @@ describe('Radio', function () {
     it('Should change selected option via ref', async () => {
         assert.equal(await gf.isVisible(`.${selectors.radioIndicator}0`), true, 'The first option indicator should be visible initially');
 
-        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);        
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
         await gf.retryIfFails(async () => {
             assert.equal(await gf.isVisible(`.${selectors.radioIndicator}0`), false, 'The first option indicator should be hidden after selecting the third option');
             assert.equal(await gf.isVisible(`.${selectors.radioIndicator}2`), true, 'The third option indicator should be visible after selection');
