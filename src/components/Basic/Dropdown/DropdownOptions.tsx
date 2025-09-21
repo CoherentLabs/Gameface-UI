@@ -1,4 +1,4 @@
-import { ParentComponent, useContext, For, createMemo } from 'solid-js';
+import { ParentComponent, useContext, For, createMemo, createSignal } from 'solid-js';
 import { CommonDropdownSlotProps, DropdownContext } from './Dropdown';
 import style from './Dropdown.module.scss';
 import { createTokenComponent, useToken, useTokens } from '@components/utils/tokenComponents';
@@ -8,9 +8,13 @@ import { BarTokenProps } from '@components/Layout/Scroll/ScrollBar';
 import { HandleTokenProps } from '@components/Layout/Scroll/ScrollHandle';
 import { DropdownOption, Option } from './DropdownOption';
 
+interface OptionsComponentProps extends CommonDropdownSlotProps {
+    'inverted-class'?: string
+}
+
 export const Track = createTokenComponent<BarTokenProps>();
 export const Handle = createTokenComponent<HandleTokenProps>();
-export const Options = createTokenComponent<CommonDropdownSlotProps>();
+export const Options = createTokenComponent<OptionsComponentProps>();
 
 export const DropdownOptions: ParentComponent<TokenComponentProps> = (props) => {
     const dropdown = useContext(DropdownContext);
@@ -23,7 +27,14 @@ export const DropdownOptions: ParentComponent<TokenComponentProps> = (props) => 
         const classes = [style['dropdown-options']];
 
         if (OptionsToken?.()?.class) classes.push(OptionsToken?.()?.class as string);
-        if (dropdown?.open()) classes.push(style['dropdown-options-visible']);
+        if (dropdown?.open()) {
+            if (dropdown.isInverted()) {
+                classes.push(style['dropdown-options-visible-inverted']);
+                classes.push(OptionsToken()?.['inverted-class'] ?? '')
+            } else {
+                classes.push(style['dropdown-options-visible']);
+            }
+        }
 
         return classes.join(' ');
     })

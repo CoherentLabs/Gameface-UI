@@ -20,6 +20,11 @@
         &-options {
             color: $disabledColor;
             background-color: #383940;
+            top: 110%;
+        }
+
+        &-inverted {
+            bottom: 110%;
         }
 
         &-option {

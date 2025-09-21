@@ -11,7 +11,7 @@ interface CustomDropdownProps {
 const CustomDropdown = (props: CustomDropdownProps) => {
     return (
         <Dropdown onChange={emitChange} class={style.dropdown}>
-            <Dropdown.Options class={style["dropdown-options"]}>
+            <Dropdown.Options class={style["dropdown-options"]} inverted-class={style['dropdown-inverted']}>
                 <For each={props.values}>
                 {(opt) => (
                     <Dropdown.Option class={style['dropdown-option']} value={opt.value} selected={opt.value === props.default}>
