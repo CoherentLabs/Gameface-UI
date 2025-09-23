@@ -39,6 +39,7 @@ interface DropdownProps extends ComponentProps {
 const Dropdown: ParentComponent<DropdownProps> = (props) => {
     let element!: HTMLDivElement;
     const [selected, setSelected] = createSignal('');
+    const [firstRender, setFirstRender] = createSignal(true);
     const [open, setOpen] = createSignal(false);
     const [isInverted, setIsInverted] = createSignal(false);
     const options = new Map<string, any>();
@@ -54,8 +55,10 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
             return;
         }
 
-        if (selected() !== "") props.onChange?.(value);
         setSelected(value);
+
+        if (selected() !== "" && firstRender()) return setFirstRender(false);
+        props.onChange?.(value);
     }
 
     const dropdownClasses = createMemo(() => {
