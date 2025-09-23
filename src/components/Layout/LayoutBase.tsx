@@ -2,11 +2,7 @@ import { onMount, ParentComponent } from 'solid-js';
 import { ComponentProps } from '../types/ComponentProps';
 import useBaseComponent from '@components/BaseComponent/BaseComponent';
 
-interface LayoutBaseProps extends ComponentProps {
-    active?: () => string;
-}
-
-const LayoutBase: ParentComponent<LayoutBaseProps> = (props) => {
+const LayoutBase: ParentComponent<ComponentProps> = (props) => {
     let element: HTMLDivElement | undefined;
     const {className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 

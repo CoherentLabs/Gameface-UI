@@ -269,13 +269,7 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
         paginationRef = el;
     }
 
-    const carouselClasses = createMemo(() => {
-        const classes = [styles['carousel']];
-        if (props.class) classes.push(props.class as string);
-        return classes.join(' ');
-    })
-
-    props.componentClasses = () => carouselClasses();
+    props.componentClasses = () => styles['carousel'];
     const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     return <CarouselContext.Provider value={{

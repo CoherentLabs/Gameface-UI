@@ -18,7 +18,6 @@ export const CarouselNext: ParentComponent<CarouselNextProps> = (props) => {
 
     const nextArrowClasses = createMemo(() => {
         const classes = [styles['carousel-arrow-next']];
-        if (props.class) classes.push(props.class as string);
         if (carouselContext.activePage() === carouselContext.pagesCount() - 1) {
             classes.push(styles['carousel-arrow-disabled']);
             if (props['class-disabled']) classes.push(props['class-disabled']);

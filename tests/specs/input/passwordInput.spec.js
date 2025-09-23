@@ -80,9 +80,9 @@ describe('PasswordInput', function () {
             it(`should update styles & classes reactively on props change — ${desc}`, async () => {
                 await gf.click(`.${selectors.scenarioBtn}.scenario-3`);
                 const el = await gf.get(selector);
-                const styles = await el.styles();
                 const classes = await el.classes();
-                assert.equal(styles['background-color'], 'rgba(0, 0, 255, 1)', 'styles update');
+                const hasStyle = await el.waitForStyles({ "background-color": 'rgba(0, 0, 255, 1)' });
+                assert(hasStyle, 'styles update');
                 assert.ok(classes.includes(selectors.reactive), 'class "reactive" applied');
             });
         }
