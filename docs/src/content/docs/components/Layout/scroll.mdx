@@ -70,13 +70,14 @@ Allows customization of the content within the `Scroll` component. This slot can
 This slot is required and must be used inside the `Scroll` component to define the scrollable content.
 :::
 
-#### Properties
+#### Props
 
 | Prop Name | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the scrollable content. |
 | `class`   | `string` | `""` | Additional CSS classes to style the scrollable content. |
 | `children`| `JSX.Element` | `undefined` | Content to render inside the scrollable area, which can be any valid JSX element. |
+| `ref`  | `HTMLDivElement`  | `undefined`  | A reference to the scroll content wrapper HTML element, useful if you need to do custom calculations with the `scrollTop` or `scrollHeight` properties. |
 
 #### Usage
 
