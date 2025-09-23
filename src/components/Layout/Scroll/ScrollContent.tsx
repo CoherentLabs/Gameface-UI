@@ -46,7 +46,6 @@ export const ScrollContent: ParentComponent<ScrollContentProps> = (props) => {
     });
 
     const initContentRef = (el: HTMLDivElement) => {
-        debugger;
         const token = ContentToken();
         token?.ref && (token.ref as any as (el: HTMLDivElement) => void)(el);
         (props.ref as any as (el: HTMLDivElement) => void)(el);
