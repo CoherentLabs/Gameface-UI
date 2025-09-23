@@ -1,0 +1,144 @@
+---
+title: Working with state
+sidebar:
+    order: 3
+---
+
+import { Steps } from '@astrojs/starlight/components'
+
+When building interactive UIs, managing state is crucial. 
+GamefaceUI components use SolidJS reactivity. This page shows how to get component state and react to it without surprises.
+
+## Getting component state
+
+For the following examples, we will use the [ToggleButton](/components/basic/toggle-button) component, but the same principles apply to other components as well.
+
+### Using component refs
+
+Most components expose their current state through a `ref` prop. This `ref` is an object that contains methods and properties to interact with the component programmatically.
+
+To get the current state of a component using its `ref`:
+<Steps>
+1. Declare a variable with the appropriate type for the component's `ref` (e.g., `ToggleButtonRef` for the `ToggleButton` component).
+2. Pass this variable to the component's `ref` prop.
+3. Call the ref's methods (e.g., `toggleRef.checked()`) to get the current state.
+</Steps>
+
+```tsx
+import ToggleButton, { ToggleButtonRef } from '@components/Basic/ToggleButton/ToggleButton';
+const App = () => {
+    let toggleRef!: ToggleButtonRef;
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+        if (e.keyCode !== 13) return // enter key
+        
+        console.log(toggleRef.checked());
+    }
+    
+    return (
+        <>
+            <ToggleButton ref={toggleRef!} keypress={handleKeyPress} />
+        </>
+    );
+};
+```
+
+### Binding a value using `onChange`
+
+Many components provide an `onChange` prop that allows you to get the up-to-date state of a component whenever it changes.
+
+To get the current state of a component using the `onChange` prop:
+<Steps>
+1. Define a state variable (e.g., using `createSignal`) to store the component's state.
+2. Pass a callback to the `onChange` prop that updates this state variable.
+3. Use the state variable wherever you need the component's state.
+</Steps>
+
+```tsx
+import { createSignal } from 'solid-js';
+import ToggleButton from '@components/Basic/ToggleButton/ToggleButton';
+const App = () => {
+    const [isChecked, setIsChecked] = createSignal(false);
+
+    return (
+        <>
+            <ToggleButton onChange={setIsChecked} />
+            <div>The toggle is {isChecked() ? 'ON' : 'OFF'}</div>
+        </>
+    );
+};
+```
+
+:::tip
+Here, we directly pass the signal's `setter` function to the `onChange` prop, as the `onChange` callback receives the same arguments. This is a common pattern in SolidJS and helps keep the code concise.
+:::
+
+:::caution
+Some components' `onChange` handlers accept more than one argument. Make sure to check the component's documentation to understand what arguments are passed to the `onChange` callback.
+:::
+
+## Reacting to component state changes
+
+Let's say you want to display some content after a user toggles a switch. To achieve this you will need to "react" to the component's state changes.
+To do this, you need to:
+
+<Steps>
+1. Retrieve the state of the component.
+2. Use this state to conditionally render or update other parts of your UI.
+</Steps>
+
+At first glance, directly using the component's `ref` seems like the simplest way to do this. However, reading a `ref` inside a reactive condition is brittle:
+ on the first render the `ref` variable is still `undefined`, and plain variables aren't reactive, so the condition won't re-evaluate when the `ref` gets assigned. In other words, code like this won't work:
+
+```tsx
+import ToggleButton, { ToggleButtonRef } from '@components/Basic/ToggleButton/ToggleButton';
+import { Show } from 'solid-js';
+
+const App = () => {
+    let toggleRef!: ToggleButtonRef;
+
+    return (
+        <>
+            <ToggleButton ref={toggleRef!} />
+            <Show when={toggleRef!.checked()}>
+                <div>The toggle is ON</div>
+            </Show>
+        </>
+    );
+};
+```
+
+:::caution
+The above code will throw an error because `toggleRef` is `undefined` when the `Show` component tries to access it.
+:::
+
+:::tip
+Component's `ref` is great when you need to get the current state of a component as a constant value. But if you want to reactively update your UI based on the component's state,
+it's recommended to use the `onChange` prop and a `signal`.
+:::
+
+Here is a working example using the `onChange` prop:
+
+```tsx
+import ToggleButton, { ToggleButtonRef } from '@components/Basic/ToggleButton/ToggleButton';
+import { Show } from 'solid-js';
+
+const App = () => {
+    const [isChecked, setIsChecked] = createSignal(false);
+
+    return (
+        <>
+            <ToggleButton onChange={setIsChecked} />
+            <Show when={isChecked()}>
+                <div>The toggle is ON</div>
+            </Show>
+        </>
+    );
+};
+```
+
+This approach leverages SolidJS's reactivity to bind the state to a signal and update the UI whenever the toggle state changes.
+
+:::tip
+Using the `onChange` prop guarantees that the state you receive is defined and up-to-date with the component. We recommend retrieving a component's state this way.
+:::
