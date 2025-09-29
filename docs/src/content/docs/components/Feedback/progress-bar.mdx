@@ -1,0 +1,91 @@
+---
+title: Progress Bar
+---
+
+The `Progress.Bar` component is used to visually indicate the progress of a task or operation. 
+It provides a horizontal bar that fills up as a task or operation progresses, giving users feedback on the completion status.
+
+## Usage
+
+To use the `Progress.Bar` component, import it from the library and include it in your JSX code.
+To make it functional you need to provide a value to the `progress` prop. The value should be a number between `0` and `100`, representing the percentage of completion.
+The `Progress.Bar` will react to changes in the `progress` prop and update its visual representation accordingly.
+
+In the following example, we simulate a task that progresses from `0` to `100` over time using a signal and an interval.
+
+```tsx
+import Progress from '@components/Feedback/Progress/Progress';
+import { createSignal, onMount } from 'solid-js';
+
+const App = () => {
+    const [progress, setProgress] = createSignal(0);
+    const simulateProgress = (to: number) => {
+        let interval = setInterval(() => setProgress(prev => {
+            if (prev >= to) {
+                clearInterval(interval);
+                return prev;
+            }
+            return prev + 1;
+        }), 10);
+    };
+
+    onMount(() => {
+        simulateProgress(100);
+    });
+
+    return (
+        <Progress.Bar progress={progress()} />
+    );
+};
+
+export default App;
+```
+
+:::caution
+The `Progress.Bar` component is a controlled component, meaning that it relies on the `progress` prop to determine its state. It does not manage its own state internally.
+:::
+
+## API
+
+### Props
+
+| Prop Name         | Type                      | Default     | Description                                                                                                     |
+|-------------------|---------------------------|-------------|-----------------------------------------------------------------------------------------------------------------|
+| `style`           | `JSX.CSSProperties`       | `{}`        | Inline styles to apply directly to the `Progress.Bar`'s root element.                                                |
+| `class`           | `string`                  | `""`        | Additional CSS classes to apply to the `Progress.Bar`.                                                               |
+| `ref`             | `HTMLDivElement \| undefined` | `undefined` | Reference to the `Progress.Bar` instance, providing access to the underlying HTML element.                  |
+| `progress`        | `number`                  | `undefined`         | The current progress value, represented as a number between `0` and `100`. If the provided value exceeds this range it will be clamped to either `0` or `100`.                                     |
+
+## Slots
+
+### `Progress.Bar.Fill`
+
+The `Progress.Bar.Fill` slot is used to customize the fill element of the progress bar.
+It represents the filled portion of the bar.
+
+#### Properties
+
+| Prop Name         | Type                      | Default     | Description                                                                                                     |
+|-------------------|---------------------------|-------------|-----------------------------------------------------------------------------------------------------------------|
+| `style`           | `JSX.CSSProperties`       | `{}`        | Inline styles to apply directly to the `Progress.Bar.Fill`'s root element.                                                |
+| `class`           | `string`                  | `""`        | Additional CSS classes to apply to the `Progress.Bar.Fill`.                                                               |
+
+#### Usage
+
+```tsx
+import Progress from '@components/Feedback/Progress/Progress';
+
+const App = () => {
+    const [progress, setProgress] = createSignal(50);
+    return (
+        <Progress.Bar progress={progress()}>
+            <Progress.Bar.Fill style={{'background-color': 'green' }} />
+        </Progress.Bar>
+    );
+};
+
+export default App;
+```
+
+
+## Guide

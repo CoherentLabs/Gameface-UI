@@ -1,0 +1,186 @@
+---
+title: Progress Circle
+tableOfContents:
+  maxHeadingLevel: 4
+---
+
+The `Progress.Circle` component is used to visually indicate the progress of a task or operation. 
+It provides a circular indicator that fills up, giving users feedback on the completion status.
+
+## Usage
+
+To use the `Progress.Circle` component, import it from the library and include it in your JSX code.
+To make it functional you need to provide a value to the `progress` prop. The value should be a number between `0` and `100`, representing the percentage of completion.
+The `Progress.Circle` will react to changes in the `progress` prop and update its visual representation accordingly.
+
+In the following example, we simulate a task that progresses from `0` to `100` over time using a signal and an interval.
+
+```tsx
+import Progress from '@components/Feedback/Progress/Progress';
+import { createSignal, onMount } from 'solid-js';
+
+const App = () => {
+    const [progress, setProgress] = createSignal(0);
+    const simulateProgress = (to: number) => {
+        let interval = setInterval(() => setProgress(prev => {
+            if (prev >= to) {
+                clearInterval(interval);
+                return prev;
+            }
+            return prev + 1;
+        }), 10);
+    };
+
+    onMount(() => {
+        simulateProgress(100);
+    });
+
+    return (
+        <Progress.Circle progress={progress()}>
+            <Progress.Circle.Text with-percent />
+        </Progress.Circle>
+    );
+};
+
+export default App;
+```
+
+:::caution
+The `Progress.Circle` component is a controlled component, meaning that it relies on the `progress` prop to determine its state. It does not manage its own state internally.
+:::
+
+## API
+
+### Props
+
+| Prop Name         | Type                      | Default     | Description                                                                                                     |
+|-------------------|---------------------------|-------------|-----------------------------------------------------------------------------------------------------------------|
+| `style`           | `JSX.CSSProperties`       | `{}`        | Inline styles to apply directly to the `Progress.Circle`'s root element.                                                |
+| `class`           | `string`                  | `""`        | Additional CSS classes to apply to the `Progress.Circle`.                                                               |
+| `ref`             | `HTMLDivElement \| undefined` | `undefined` | Reference to the `Progress.Circle` instance, providing access to the underlying HTML element.                  |
+| `progress`        | `number`                  | `undefined`         | The current progress value, represented as a number between `0` and `100`. If the provided value exceeds this range it will be clamped to either `0` or `100`.                                     |
+
+## Slots
+
+### `Progress.Circle.Fill`
+
+The `Progress.Circle.Fill` slot is used to customize the fill element of the progress circle.
+It represents the filled portion of the progress circle.
+
+#### Properties
+
+| Prop Name         | Type                      | Default     | Description                                                                                                     |
+|-------------------|---------------------------|-------------|-----------------------------------------------------------------------------------------------------------------|
+| `style`           | `JSX.CSSProperties`       | `{}`        | Inline styles to apply directly to the `Progress.Circle.Fill`'s root element.                                                |
+| `class`           | `string`                  | `""`        | Additional CSS classes to apply to the `Progress.Circle.Fill`.                                                               |
+| `shape`           | `square` \| `round`                  | `square`        | The shape of the filled portion of the circle.                                                     |
+
+#### Usage
+
+```tsx
+import Progress from '@components/Feedback/Progress/Progress';
+
+const App = () => {
+    const [progress, setProgress] = createSignal(50);
+    return (
+        <Progress.Circle progress={progress()}>
+            <Progress.Circle.Fill style={{'stroke': 'green' }} shape="round" />
+        </Progress.Circle>
+    );
+};
+
+export default App;
+```
+
+:::tip
+To customize the color of the `Progress.Circle.Fill`, you can use the `stroke` CSS property.
+:::
+
+### `Progress.Circle.Outline`
+
+The `Progress.Circle.Outline` slot is used to customize the outline element of the progress circle.
+It represents the unfilled portion of the progress circle.
+
+#### Properties
+
+| Prop Name         | Type                      | Default     | Description                                                                                                     |
+|-------------------|---------------------------|-------------|-----------------------------------------------------------------------------------------------------------------|
+| `style`           | `JSX.CSSProperties`       | `{}`        | Inline styles to apply directly to the `Progress.Circle.Outline`'s root element.                                                |
+| `class`           | `string`                  | `""`        | Additional CSS classes to apply to the `Progress.Circle.Outline`.                                                               |
+
+#### Usage
+
+```tsx
+import Progress from '@components/Feedback/Progress/Progress';
+
+const App = () => {
+    const [progress, setProgress] = createSignal(50);
+    return (
+        <Progress.Circle progress={progress()}>
+            <Progress.Circle.Outline style={{'stroke': 'green'}} />
+        </Progress.Circle>
+    );
+};
+
+export default App;
+```
+
+:::tip
+To customize the color of the `Progress.Circle.Fill`, you can use the `stroke` CSS property.
+:::
+
+### Progress.Circle.Text
+
+The `Progress.Circle.Text` slot is used to display text inside the progress circle. If no text slot is provided, the progress circle will not display any text by default.
+It is used to show the current progress of the component in either percentages or raw value.
+
+#### Properties
+
+| Prop Name         | Type                      | Default     | Description                                                                                                     |
+|-------------------|---------------------------|-------------|-----------------------------------------------------------------------------------------------------------------|
+| `style`           | `JSX.CSSProperties`       | `{}`        | Inline styles to apply directly to the `Progress.Circle.Text`'s root element.                                                |
+| `class`           | `string`                  | `""`        | Additional CSS classes
+| `with-percent`    | `boolean`                 | `false`     | If set to `true`, the text will display the current progress percentage followed by a `%` sign. If omitted or set to `false`, it will display the raw progress value without the `%` sign.                                                               |
+
+#### Usage
+
+```tsx
+import Progress from '@components/Feedback/Progress/Progress';
+
+const App = () => {
+    const [progress, setProgress] = createSignal(50);
+    return (
+        <Progress.Circle progress={progress()}>
+            <Progress.Circle.Text with-percent style={{color: "green"}} />
+        </Progress.Circle>
+    );
+};
+
+export default App;
+```
+
+## Guide
+
+### Visually customizing the Progress Circle component
+
+You can visually customize the `Progress.Circle` component by using the provided slots to change the appearance of the fill, outline, and text elements.
+
+#### Removing the circle's outline
+
+To remove the outline simply provide the `Progress.Circle.Outline` slot and set its `stroke-width` to `0` with either a class or an inline style.
+
+```tsx
+<Progress.Circle progress={progress()}>
+    <Progress.Circle.Outline style={{ 'stroke-width': 0 }} />
+</Progress.Circle>
+```
+
+#### Changing the starting position of the fill
+
+By default, the fill starts at the top (12 o'clock position) and progresses clockwise. To change the starting position, you can use CSS transforms on the `Progress.Circle` component.
+
+```tsx
+<Progress.Circle progress={progress()} style={{ transform: 'rotate(90deg)' }} />
+```
+
+Now the progress bar will start at the 3 o'clock position and progress clockwise.
