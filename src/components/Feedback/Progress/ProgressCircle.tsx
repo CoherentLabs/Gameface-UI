@@ -5,7 +5,7 @@ import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import styles from './Progress.module.scss';
 
 interface FillTokenProps extends TokenBase { shape?: 'square' | 'round', }
-interface TextTokenProps extends TokenBase { 'with-percent': boolean, }
+interface TextTokenProps extends TokenBase { 'with-percent'?: boolean, }
 
 const Fill = createTokenComponent<FillTokenProps>();
 const Text = createTokenComponent<TextTokenProps>();
@@ -61,8 +61,8 @@ const ProgressCircle: ParentComponent<ProgressProps> = (props) => {
                 />
             </svg>
             <Show when={textToken()}>
-                <div class={textClasses()}>
-                    {`${props.progress}${textToken()?.["with-percent"] ? "%" : ""}`}
+                <div class={textClasses()} style={textToken()?.style}>
+                    {`${clampProgress(props.progress)}${textToken()?.["with-percent"] ? "%" : ""}`}
                 </div>
             </Show>
         </div>

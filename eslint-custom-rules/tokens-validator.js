@@ -27,7 +27,9 @@ const componentsWithSlotTokens = {
   LIST: 'List',
   LIST_ITEM: 'List.Item',
   CAROUSEL_PAGINATION: 'Carousel.Pagination',
-  CAROUSEL_ITEMS: 'Carousel.Items'
+  CAROUSEL_ITEMS: 'Carousel.Items',
+  PROGRESS_BAR: 'Progress.Bar',
+  PROGRESS_CIRCLE: 'Progress.Circle',
 }
 
 const tokenComponetsParents = {
@@ -111,6 +113,11 @@ const tokenComponetsParents = {
   'Carousel.Item': componentsWithSlotTokens.CAROUSEL_ITEMS,
   'Carousel.Pagination.Control': componentsWithSlotTokens.CAROUSEL_PAGINATION,
   'Carousel.Pagination.Item': componentsWithSlotTokens.CAROUSEL_PAGINATION,
+
+  'Progress.Bar.Fill': componentsWithSlotTokens.PROGRESS_BAR,
+  'Progress.Circle.Fill': componentsWithSlotTokens.PROGRESS_CIRCLE,
+  'Progress.Circle.Outline': componentsWithSlotTokens.PROGRESS_CIRCLE,
+  'Progress.Circle.Text': componentsWithSlotTokens.PROGRESS_CIRCLE,
 }
 
 const availbleForedTokenComponets = new Set(['Radio.Button', 'Dropdown.Option', 'Segment.Button', 'Stepper.Item', 'Accordion.Panel', 'List.Item', 'Carousel.Item'])
@@ -195,7 +202,20 @@ module.exports = {
 
 function getComponentName(node) {
   if (node.openingElement?.name?.type === 'JSXMemberExpression') {
-    return `${node.openingElement.name.object.name}.${node.openingElement.name.property.name}`;
+    let member = node.openingElement.name;
+    let names = [];
+    while (member) {
+      if (member.type === 'JSXMemberExpression') {
+        names.unshift(member.property.name);
+        member = member.object;
+      } else if (member.type === 'JSXIdentifier') {
+        names.unshift(member.name);
+        break;
+      } else {
+        break;
+      }
+    }
+    return names.join('.');
   }
   if (node.openingElement?.name?.type === 'JSXIdentifier') {
     return node.openingElement.name.name;

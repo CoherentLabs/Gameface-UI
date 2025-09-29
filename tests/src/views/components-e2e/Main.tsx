@@ -32,6 +32,7 @@ import CarouselTest from '../../components/Carousel/CarouselTest';
 import TooltipTest from '../../components/Tooltip/TooltipTest';
 import ToasterTest from '../../components/Toaster/ToasterTest';
 import KeybindsTest from '../../components/Keybinds/KeybindsTest';
+import ProgressTest from '../../components/Progress';
 
 const Main = () => {
     const components = [
@@ -47,11 +48,13 @@ const Main = () => {
         "xy-slider",
         "toggle",
         "pagination",
+        'keybinds',
 
         //Feedback components
         'modal',
         'tooltip',
-        'keybinds',
+        "progress-bar",
+        "progress-circle",
 
         // Complex components
         "color-picker",
@@ -117,6 +120,7 @@ const Main = () => {
                 <TooltipTest />
                 <ToasterTest />
                 <KeybindsTest />
+                <ProgressTest />
             </Tabs>
         </div>
     );
