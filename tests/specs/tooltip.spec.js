@@ -159,8 +159,8 @@ describe('Tooltip', function () {
         assert.ok(tip, 'Tooltip message should be in the DOM');
         assert.ok(await tip.waitForVisibility(false), 'Tooltip message should be hidden initially');
         await element.focus();
-        assert.ok(await tip.waitForVisibility(true), 'Tooltip message should be visible after click');
+        assert.ok(await tip.waitForVisibility(true), 'Tooltip message should be visible after focus');
         await tip.click();
-        assert.ok(await tip.waitForVisibility(false), 'Tooltip message should be hidden after second click');
+        assert.ok(await tip.waitForVisibility(false), 'Tooltip message should be hidden after clicking the tooltip message');
     });
 });

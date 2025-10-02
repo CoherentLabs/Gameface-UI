@@ -14,13 +14,21 @@ Using the `Tooltip` component is simple. Import the `createTooltip` factory func
 
 ```tsx
 import createTooltip from '@components/Feedback/Tooltip/tooltip';
+import { ParentComponent } from 'solid-js';
+
+const CustomTooltip: ParentComponent<{ title: string, message: string }> = (props) => {
+    return <div style={{ position: 'relative', 'background-color': 'rgb(0, 132, 255)', 'justify-content': 'center', 'border-radius': '0.5vmax', padding: '0.5vmax 1vmax', color: 'white', display: 'flex', 'flex-direction': 'column' }}>
+        <h2 style={{ margin: 0 }}>{props.title}</h2>
+        <span>{props.message}</span>
+    </div>
+}
 
 const App = () => {
-    const Tooltip = createTooltip();
+    const Tooltip = createTooltip({ content: CustomTooltip, action: "hover", position: "bottom" });
 
     return (
-        <Tooltip style={{ display: 'flex', "justify-content": 'center', color: 'white', width: '10vmax' }} message="Tooltip text">
-            Text
+        <Tooltip style={{ display: 'flex', "justify-content": 'center', color: 'white', width: '100%' }} title="Tooltip title" message="Tooltip text">
+            <div>Hover for more info</div>
         </Tooltip>
     );
 };
@@ -38,7 +46,7 @@ Creates a new tooltip component with customizable options.
 
 | Option Name | Type                | Default       | Description                                                                                  |
 |-------------|---------------------|---------------|----------------------------------------------------------------------------------------------|
-| `content`   | `JSX.Element` | `(props: { message: string }) => JSX.Element`| The content of the tootip message. Can be a JSX element. If not specified, the `message` prop will be used to display a simple text message. |
+| `content`   | `JSX.Element` | `(props: { message: string }) => JSX.Element`| The content of the tooltip message. Can be a JSX element. If not specified, the `message` prop will be used to display a simple text message. |
 | `position`  | `'top' \| 'bottom' \| 'left' \| 'right' \| 'auto'`| `bottom` | Defines the position of the tooltip relative to the target element. If set to `auto`, the tooltip will automatically choose the best placement based on available space. |
 | `action`   | `'hover' \| 'click' \| 'focus'` | `hover`           | Determines the user interaction that triggers the tooltip.<br/>`hover`: shows on mouse hover and hides on mouse leave.<br/>`click`: toggles visibility when the target is clicked.<br/>`focus`: shows when the target gains focus (e.g., via keyboard) and hides when it loses focus. |
 
@@ -46,7 +54,21 @@ Creates a new tooltip component with customizable options.
 
 ### Customizing tooltip content and appearance
 
-By default, if the `content` option is not provided, the `createTooltip` function returns a component that simply displays the text passed via the `message` prop.
+By default, if the `content` option is not provided, the `createTooltip` function returns a component that simply displays the text passed via the `message` prop. So for basic usage, you can create a tooltip like this:
+
+```tsx
+import createTooltip from '@components/Feedback/Tooltip/tooltip';
+
+const App = () => {
+    const Tooltip = createTooltip({ action: "hover", position: "bottom" });
+
+    return (
+        <Tooltip style={{ display: 'flex', "justify-content": 'center', color: 'white', width: '100%' }} message="Tooltip text">
+            <div>Hover for more info</div>
+        </Tooltip>
+    );
+};
+```
 
 If you want more flexibility, you can pass a custom JSX element to the `content` option. The `content` option accepts a function that returns JSX and can also be configured to receive additional props. These props can then be passed directly to the tooltip when you use it - for example: `<Tooltip message="..." otherProp="...">`.
 
@@ -88,7 +110,7 @@ const App = () => {
 
     return (
         <Tooltip class={styles['wrapper']} message="Tooltip text">
-            Text
+            <div>Hover for more info</div>
         </Tooltip>
     );
 };
@@ -288,7 +310,7 @@ const App = () => {
     return (
         <div style={{ height: '100vh', display: 'flex', 'flex-direction': 'column', 'align-items': 'center' }}>
             <TooltipBottom class={styles['wrapper']} message="Tooltip on bottom" arrowPosition={'bottom'}>
-                Text
+                Bottom
             </TooltipBottom>
             <div style={{ display: 'flex' }}>
                 <TooltipLeft class={styles['wrapper']} style={{ "margin-right": '1vmax' }} message="Tooltip on left" arrowPosition={'left'}>
@@ -299,7 +321,7 @@ const App = () => {
                 </TooltipRight>
             </div>
             <TooltipTop class={styles['wrapper']} message="Tooltip text" arrowPosition={'top'}>
-                Text
+                Top
             </TooltipTop>
         </div>
     );

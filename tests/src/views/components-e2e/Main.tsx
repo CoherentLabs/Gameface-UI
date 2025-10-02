@@ -50,7 +50,7 @@ const Main = () => {
         'modal',
         'tooltip',
 
-        // Compex components
+        // Complex components
         "color-picker",
         "carousel",
         "accordion",
