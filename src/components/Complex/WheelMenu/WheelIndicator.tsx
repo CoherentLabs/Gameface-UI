@@ -1,13 +1,11 @@
 import { createMemo, JSX, ParentComponent, Show, useContext } from "solid-js";
 import { TokenComponentProps } from "@components/types/ComponentProps";
-import styles from './WheelMenu.module.scss';
 import { Icon, Indicator, WheelMenuContext } from "./WheelMenu";
-import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
+import { useToken } from "@components/utils/tokenComponents";
 import Absolute from "@components/Layout/Absolute/Absolute";
+import styles from './WheelMenu.module.scss';
 
-interface WheelIndicatorProps extends TokenComponentProps {
-}
-const WheelIndicator: ParentComponent<WheelIndicatorProps> = (props) => {
+const WheelIndicator: ParentComponent<TokenComponentProps> = (props) => {
     const IndicatorToken = useToken(Indicator, props.parentChildren);
     const IconToken = useToken(Icon, IndicatorToken()?.children);
     
@@ -38,12 +36,27 @@ const WheelIndicator: ParentComponent<WheelIndicatorProps> = (props) => {
 
     return (
         <Show when={IndicatorToken()}>
+            {/* Wrapper around the center that rotates with the mouse */}
             <div class={styles['wheel-indicator-wrapper']} style={{transform: `rotate(${context.rotation()}deg)`}}>
+                {/* The indicator */}
                 <div class={IndicatorClasses()} style={IndicatorStyles()}></div>
+                {/* The icon inside the indicator */}
                 <Show when={IconToken()}>
-                    {IconToken()?.children ? 
-                    <Absolute class={IconToken()?.class ?? ""} style={IconToken()?.style}>{IconToken()?.children}</Absolute> :
-                    <div class={`${IconToken()?.class ?? ""} ${styles['wheel-indicator-icon']}`} style={IconToken()?.style}></div>}
+                    {IconToken()?.children ? (
+                        // Wrapped in Absolute to center the icon inside the indicator
+                        <Absolute
+                            class={IconToken()?.class ?? ""}
+                            style={IconToken()?.style}
+                        >
+                            {IconToken()?.children}
+                        </Absolute>
+                    ) : (
+                        // No children, just render default Icon.
+                        <div
+                            class={`${IconToken()?.class ?? ""} ${styles['wheel-indicator-icon']}`}
+                            style={IconToken()?.style}
+                        />
+                    )}
                 </Show>
             </div>
         </Show>

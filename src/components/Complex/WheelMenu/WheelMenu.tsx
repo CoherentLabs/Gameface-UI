@@ -1,12 +1,16 @@
 import { createTokenComponent, TokenBase, useToken, useTokens } from '@components/utils/tokenComponents';
 import styles from './WheelMenu.module.scss';
 import { ComponentProps } from '@components/types/ComponentProps';
-import { Accessor, createContext, createMemo, createSignal, For, onCleanup, onMount, ParentComponent } from 'solid-js';
+import { Accessor, createContext, createEffect, createMemo, createSignal, For, JSX, on, onCleanup, onMount, ParentComponent, Setter } from 'solid-js';
 import WheelItem from './WheelItem';
 import useBaseComponent from '@components/BaseComponent/BaseComponent';
 import InnerWheelCircle from './InnerWheelCircle';
-
-export const Item = createTokenComponent<TokenBase>()
+export interface ItemTokenProps extends TokenBase {
+    id?: string,
+    "class-selected"?: string,
+    "style-selected"?: JSX.CSSProperties,
+}
+export const Item = createTokenComponent<ItemTokenProps>()
 export const Indicator = createTokenComponent<TokenBase>()
 export const InnerWheel = createTokenComponent<TokenBase>()
 export const Icon = createTokenComponent<TokenBase>()
@@ -15,12 +19,22 @@ interface WheelMenuContextType {
     clipPathValue: Accessor<string>,
     degreesPerSlice: Accessor<number>, 
     selected:  Accessor<number>,
-    rotation:  Accessor<number>
+    rotation:  Accessor<number>,
+    onChange?: (id: string | number) => void;
 }
 export const WheelMenuContext = createContext<WheelMenuContextType>();
 
+export interface WheelMenuRef {
+    element: HTMLDivElement,
+    open: () => void,
+    close: () => void,
+    changeGap: Setter<boolean>
+}
 interface WheelNenuProps extends ComponentProps {
-    onChange?: (title: string) => void;
+    gap?: number, 
+    opened?: boolean,
+    onChange?: (id: string | number) => void;
+    onItemChanged?: () => void;
 }
 
 const WheelMenu: ParentComponent<WheelNenuProps> = (props) => {
@@ -29,7 +43,8 @@ const WheelMenu: ParentComponent<WheelNenuProps> = (props) => {
     
     const [selected, setSelected] = createSignal(0);
     const [rotation, setRotation] = createSignal(0);
-    const [gap, setGap] = createSignal(0);
+    const [isOpen, setIsOpen] = createSignal(props.opened ?? false);
+    const [gap, setGap] = createSignal(props.gap ?? 0);
 
     const length = createMemo(() => ItemTokens()?.length ?? 1);
     const degreesPerSlice = createMemo(() => 360 / length());
@@ -49,9 +64,9 @@ const WheelMenu: ParentComponent<WheelNenuProps> = (props) => {
     });
 
     const getSelectedSector = (e: MouseEvent) => {
-        if (!wheelElement) return;
+        if (!wheelElement && !isOpen()) return;
 
-        const wheelRect = wheelElement.getBoundingClientRect()
+        const wheelRect = wheelElement!.getBoundingClientRect()
         const cx = wheelRect.left + wheelRect.width / 2;
         const cy = wheelRect.top + wheelRect.height / 2;
         
@@ -67,32 +82,67 @@ const WheelMenu: ParentComponent<WheelNenuProps> = (props) => {
         setRotation(degrees);
     }
 
-    onMount(() => {
-        window.addEventListener('mousemove', getSelectedSector)
+    const wheelMenuClasses = createMemo(() => {
+        const classes = [styles.wheel];
+        if (isOpen()) classes.push(styles["wheel-open"]);
 
+        return classes.join(' ');
+    })
+
+    // Subscribe to isOpen changes to add/remove event listeners
+    createEffect(on(isOpen, (isOpened) => {
+        if (isOpened) addEventListeners();
+        else removeEventListeners();
+    }))
+
+    // Subscribe to length changes to trigger onItemChanged
+    createEffect(on(length, () => {
+        props.onItemChanged && props.onItemChanged()
+    }, { defer: true }))
+
+    const addEventListeners = () => {
+        window.addEventListener('mousemove', getSelectedSector)
+    }
+
+    const removeEventListeners = () => {
+        window.removeEventListener('mousemove', getSelectedSector)
+    }
+
+    onMount(() => {
         if (!props.ref || !wheelElement) return;
     
         (props.ref as unknown as (ref: any) => void)({
             element: wheelElement,
+            open: () => setIsOpen(true),
+            close: () => setIsOpen(false),
+            changeGap: setGap
         });
     })
 
-    onCleanup(() => {
-        window.removeEventListener('mousemove', getSelectedSector)
-    })
+    onCleanup(() => removeEventListeners());
 
-    props.componentClasses = () => styles.wheel;
+    props.componentClasses = () => wheelMenuClasses();
     const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
+    const ContextObj = {
+        clipPathValue, 
+        degreesPerSlice, 
+        selected, 
+        rotation, 
+        onChange: props.onChange
+    }
+
     return (
-        <WheelMenuContext.Provider value={{ clipPathValue, degreesPerSlice, selected, rotation }}>
+        <WheelMenuContext.Provider value={ContextObj}>
             <div 
                 ref={wheelElement!}
                 class={className()}
                 style={inlineStyles()}
                 use:forwardEvents={props} 
                 use:forwardAttrs={props} >
+                {/* Content */}
                 <InnerWheelCircle parentChildren={props.children} />
+                {/* Items */}
                 <For each={ItemTokens()}>
                     {(token, index) => <WheelItem index={index} item={token}></WheelItem>}
                 </For>

@@ -5,14 +5,11 @@ import { InnerWheel, WheelMenuContext } from "./WheelMenu";
 import styles from './WheelMenu.module.scss';
 import WheelIndicator from "./WheelIndicator";
 
-interface WheelSelectorProps extends TokenComponentProps {
-}
-
-export const InnerWheelCircle: ParentComponent<WheelSelectorProps> = (props) => {
+export const InnerWheelCircle: ParentComponent<TokenComponentProps> = (props) => {
     const innerWheelToken = useToken(InnerWheel, props.parentChildren)
     const context = useContext(WheelMenuContext);
     if (!context) {
-        console.error('Wheel.InnerWheel must be used inside a WheelMenu component');
+        console.error('Wheel.Content must be used inside a WheelMenu component');
         return null;
     }
 
@@ -25,8 +22,10 @@ export const InnerWheelCircle: ParentComponent<WheelSelectorProps> = (props) => 
 
     return (
         <div class={innerWheelClasses()} style={innerWheelToken()?.style}>
+            {/* Content JSX goes here */}
             {innerWheelToken()?.children}
-            <WheelIndicator parentChildren={ props.parentChildren} />
+            {/* The indicator that points to the selected item */}
+            <WheelIndicator parentChildren={props.parentChildren} />
         </div>
     )
 }

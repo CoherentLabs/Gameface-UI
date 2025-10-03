@@ -6,24 +6,22 @@
     justify-content: center;
     align-items: center;
     border-radius: 50%;
-    color: white;
+    color: $textColor;
+    visibility: hidden;
 
-    &-selector {
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        background-color: $secondaryColor;
+    &-open {
+        visibility: visible;
     }
 
     &-inner {
         position: absolute;
         border-radius: 50%;
         display: flex;
-        width: 40%;
-        height: 40%;
+        width: 50%;
+        height: 50%;
         align-items: center;
         justify-content: center;
-        background-color: $primaryColor;
+        background-color: rgba($primaryColor, 0.9);
     }
 
     &-indicator {
@@ -56,13 +54,13 @@
         width: 100%;
         height: 100%;
         border-radius: 50%;
-        background-color: rgba(0, 0, 0, 0.35);
+        // background-color: rgba(0, 0, 0, 0.35);
         z-index: -1;
-        // border: 5vmax solid rgba(0, 0, 0, 0.35);
+        border: 7.5vmax solid rgba(0, 0, 0, 0.35);
 
         &-selected {
+            // background-color: $secondaryColor;
             border-color: $secondaryColor;
-            background-color: $secondaryColor;
         }
 
         &-content {
