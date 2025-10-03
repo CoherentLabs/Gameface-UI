@@ -1,0 +1,73 @@
+.wheel {
+    width: 30vmax;
+    height: 30vmax;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    color: white;
+
+    &-selector {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-color: $secondaryColor;
+    }
+
+    &-inner {
+        position: absolute;
+        border-radius: 50%;
+        display: flex;
+        width: 40%;
+        height: 40%;
+        align-items: center;
+        justify-content: center;
+        background-color: $primaryColor;
+    }
+
+    &-indicator {
+        width: 100%;
+        height: 100%;
+        border: 1vmax solid $disabledTextColor;
+        border-radius: 50%;
+
+        &-wrapper {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            z-index: 1;
+        }
+
+        &-icon {
+            border: 1vmax solid $disabledTextColor;
+            border-left-color: transparent;
+            border-bottom-color: transparent;
+            position: absolute;
+            top: -0.5vmax;
+            transform: rotate(-45deg);
+        }
+    }
+
+    &-item {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.35);
+        z-index: -1;
+        // border: 5vmax solid rgba(0, 0, 0, 0.35);
+
+        &-selected {
+            border-color: $secondaryColor;
+            background-color: $secondaryColor;
+        }
+
+        &-content {
+            height: 100%;
+            position: absolute;
+        }
+    }
+}
