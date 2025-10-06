@@ -1,0 +1,6 @@
+{
+    "toast" : "gf-toast",
+    "toastText" : "gf-toast-text",
+    "toastCloseButton" : "gf-toast-close-button",
+    "toastProgress" : "gf-toast-progress"
+}

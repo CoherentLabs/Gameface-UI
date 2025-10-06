@@ -1,0 +1,178 @@
+---
+title: Toast
+---
+The `Toast` component is a notification element that displays brief messages to the user. 
+It allows users to receive feedback about an operation or to display important information.
+
+## Usage
+
+To include a toast in your UI, call the `createToast` function with the desired options and include the `Toaster` component in your JSX.
+
+```tsx
+import useToast from '@components/Feedback/Toast/toast';
+
+const App = () => {
+    const [Toaster, createToast] = useToast();
+
+    // Example of creating a toast
+    const showToast = () => {
+        createToast({
+            body: () => <>This is a toast message</>,
+            position: 'top-right', // Position of the toast on the screen
+            timeout: 3000, // Duration in milliseconds before the toast disappears
+        });
+    };
+    return (
+        <>
+            <button onClick={showToast}>Show Toast</button>
+            <Toaster />
+        </>
+    );
+};
+
+export default App;
+```
+
+## API
+
+### `createToast(options: ToastOptions)`
+Creates a new toast notification with the specified options.
+#### Parameters
+| Option Name | Type                | Default       | Description                                                                                  |
+|-------------|---------------------|---------------|----------------------------------------------------------------------------------------------|
+| `body`      | `string \| JSX.Element` | `""`          | The content of the toast message. Can be a string or JSX element.                            |
+| `position`  | `'top-left' \| 'top-center' \| 'top-right' \| 'middle-left' \| 'middle-center' \| 'middle-right' \| 'bottom-left' \| 'bottom-center' \| 'bottom-right'`  | `'top-right'` | The position on the screen where the toast will appear.                                      |
+| `timeout`   | `number`            | `0`           | Duration in milliseconds before the toast disappears. `0` makes the toast persistent.       |
+
+## Guide
+
+### Adding a close button
+
+To allow the user to close the toast manually you can include the `Close` button inside the `body`:
+
+```tsx
+import useToast from '@components/Feedback/Toast/toast';
+
+const App = () => {
+    const [Toaster, createToast] = useToast();
+
+    // Example of creating a toast
+    const showToast = () => {
+        createToast({
+            body: (close) => (
+                <>
+                    This is a toast message
+                    {close(<button>Close</button>)}
+                </>
+            ),
+            position: 'top-right', // Position of the toast on the screen
+            timeout: 3000, // Duration in milliseconds before the toast disappears
+        });
+    };
+    return (
+        <>
+            <button onClick={showToast}>Show Toast</button>
+            <Toaster />
+        </>
+    );
+};
+
+export default App;
+```
+
+### Adding a progress bar
+
+To get the progress of your toast you can use the `progress` signal inside the `body`:
+
+```tsx
+import useToast from '@components/Feedback/Toast/toast';
+
+const App = () => {
+    const [Toaster, createToast] = useToast();
+
+    // Example of creating a toast
+    const showToast = () => {
+        createToast({
+            body: (close, progress) => (
+                <>
+                    This is a toast message
+                    <div style={{ width: '100%', height: '5px', background: '#ccc' }}>
+                        <div style={{ width: `${progress() * 5}%`, height: '100%', background: '#4caf50' }}></div>
+                    </div>
+                    {close(<button>Close</button>)}
+                </>
+            ),
+            position: 'top-right', // Position of the toast on the screen
+            timeout: 3000, // Duration in milliseconds before the toast disappears
+        });
+    };
+
+    return (
+        <>
+            <button onClick={showToast}>Show Toast</button>
+            <Toaster />
+        </>
+    );
+};
+export default App;
+```
+
+:::caution
+If you try to use the `progress` signal outside the return of the `body` function, it will rerender the entire toast every time the progress updates, which can lead to performance issues.
+:::
+
+:::note
+The `progress` signal returns a value between `0` and `20` to allow for smoother progress bar and to not harm performance. If you want to get a value between `0` and `100`, you can multiply the value by `5`.
+:::
+
+### Adding entrance animations
+
+You can add entrance animations to the toast by adding CSS classes to the `body` element:
+
+```tsx
+import useToast from '@components/Feedback/Toast/toast';
+
+const App = () => {
+    const [Toaster, createToast] = useToast();
+
+    // Example of creating a toast
+    const showToast = () => {
+        createToast({
+            body: (close) => (
+                <div class="animate-fade-in">
+                    This is a toast message
+                    {close(<button>Close</button>)}
+                </div>
+            ),
+            position: 'top-right', // Position of the toast on the screen
+            timeout: 3000, // Duration in milliseconds before the toast disappears
+        });
+    };
+    return (
+        <>
+            <button onClick={showToast}>Show Toast</button>
+            <Toaster />
+        </>
+    );
+};
+
+export default App;
+```
+
+```css
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.5s ease-out;
+}
+```
+
