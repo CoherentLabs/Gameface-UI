@@ -1,5 +1,5 @@
 const assert = require('assert');
-const selectors = require('../shared/slider-selectors.json');
+const selectors = require('../shared/toast-selectors.json');
 const TIMEOUT = 2000;
 const positions = [
     'top-left',
@@ -23,9 +23,9 @@ describe('Toast', function () {
     it('Should render toast', async () => {
         const toastText = 'Test Toast';
         await gf.trigger('create-toast', { text: toastText, position: 'top-right', timeout: TIMEOUT });
-        const toast = await gf.get('.gf-toast');
+        const toast = await gf.get(selectors.toast);
         assert.ok(toast, 'Toast should be in the DOM');
-        const toastTextElement = await gf.get('.gf-toast-text');
+        const toastTextElement = await gf.get(selectors.toastText);
         assert.equal(await toastTextElement.text(), `${toastText}`, 'Toast should have correct text');
         await gf.sleep(TIMEOUT);
     });
@@ -38,7 +38,7 @@ describe('Toast', function () {
             position: 'top-right',
             timeout: TIMEOUT,
         });
-        const closeButton = await gf.get('.gf-toast-close-button');
+        const closeButton = await gf.get(selectors.toastCloseButton);
         assert.ok(closeButton, 'Close button should be present');
         await gf.sleep(TIMEOUT);
     });
@@ -51,10 +51,10 @@ describe('Toast', function () {
             position: 'top-right',
             timeout: TIMEOUT,
         });
-        await gf.click(`.gf-toast-close-button`);
+        await gf.click(selectors.toastCloseButton);
         await gf.sleep(500);
         try {
-            await gf.get('.gf-toast');
+            await gf.get(selectors.toast);
         } catch (error) {
             // Expected error since the toast should be gone
             assert.ok(true, 'Toast should be removed from the DOM after timeout');
@@ -69,7 +69,7 @@ describe('Toast', function () {
         await gf.trigger('create-toast', { text: toastText, position: 'top-right', timeout: autoDismissTimeout });
         await gf.sleep(autoDismissTimeout + 500); // Wait for timeout plus a buffer
         try {
-            await gf.get('.gf-toast');
+            await gf.get(selectors.toast);
         } catch (error) {
             // Expected error since the toast should be gone
             assert.ok(true, 'Toast should be removed from the DOM after timeout');
@@ -81,14 +81,15 @@ describe('Toast', function () {
     it('Should show progress bar', async () => {
         const toastText = 'Toast with Progress Bar';
         await gf.trigger('create-toast', { text: toastText, position: 'top-right', timeout: TIMEOUT });
-        await gf.get('.gf-toast-progress');
+        const progressBar = await gf.get(selectors.toastProgress);
+        assert.ok(progressBar, 'Progress bar should be present');
         await gf.sleep(TIMEOUT);
     });
 
     it('Should change progress', async () => {
         const toastText = 'Toast with Changing Progress';
         await gf.trigger('create-toast', { text: toastText, position: 'top-right', timeout: TIMEOUT });
-        const progressBar = await gf.get('.gf-toast-progress');
+        const progressBar = await gf.get(selectors.toastProgress);
         const initialSize = await progressBar.getSize();
         await gf.sleep(TIMEOUT / 2);
         const midSize = await progressBar.getSize();
@@ -101,7 +102,7 @@ describe('Toast', function () {
         const toastText2 = 'Second Toast';
         await gf.trigger('create-toast', { text: toastText1, position: 'top-right', timeout: TIMEOUT });
         await gf.trigger('create-toast', { text: toastText2, position: 'top-right', timeout: TIMEOUT });
-        const toasts = await gf.getAll('.gf-toast');
+        const toasts = await gf.getAll(selectors.toast);
         assert.equal(toasts.length, 2, 'There should be two toasts in the DOM');
         await gf.sleep(TIMEOUT);
     });
@@ -115,7 +116,7 @@ describe('Toast', function () {
 
             const toastText = `Toast at ${position}`;
             await gf.trigger('create-toast', { text: toastText, position: position, timeout: 1000 });
-            const toast = await gf.get('.gf-toast');
+            const toast = await gf.get(selectors.toast);
             const toastSize = await toast.getSize();
             const toastLocation = await toast.getPositionOnScreen();
             switch (position) {

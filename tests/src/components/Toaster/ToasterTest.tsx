@@ -1,7 +1,9 @@
 import { onMount, onCleanup } from 'solid-js';
-import useToast from '@components//Feedback/Toast/toast';
+import useToast from '@components/Feedback/Toast/toast';
 import Tab from '@components/Layout/Tab/Tab';
 import './ToastTest.css';
+
+import classes from '../../../shared/toast-selectors.json';
 
 interface ToastEventDetail {
     position?:
@@ -27,11 +29,11 @@ const ToasterTest = () => {
             position: detail.position || 'top-right',
             body: (close, progress) => {
                 return (
-                    <div class="gf-toast">
-                        <div class="gf-toast-text">{detail.text || 'Default Toast'}</div>
-                        {close(<button class="gf-toast-close-button">X</button>)}
+                    <div class={classes.toast}>
+                        <div class={classes.toastText}>{detail.text || 'Default Toast'}</div>
+                        {close(<button class={classes.toastCloseButton}>X</button>)}
                         <div
-                            class="gf-toast-progress"
+                            class={classes.toastProgress}
                             style={{
                                 width: `${progress() * 5}%`,
                                 'background-color': 'red',
