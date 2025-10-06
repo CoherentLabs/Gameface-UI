@@ -1,7 +1,7 @@
 .wheel {
     width: 30vmax;
     height: 30vmax;
-    position: relative;
+    position: absolute;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -50,22 +50,33 @@
     }
 
     &-item {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        // background-color: rgba(0, 0, 0, 0.35);
-        z-index: -1;
-        border: 7.5vmax solid rgba(0, 0, 0, 0.35);
+        &-wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+        }
+        
+        &-content {
+            height: 100%;
+            position: absolute;
+        }
+
+        &-selector {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            // background-color: rgba(0, 0, 0, 0.35);
+            z-index: -1;
+            border: 7.5vmax solid rgba(0, 0, 0, 0.35);
+        }
 
         &-selected {
             // background-color: $secondaryColor;
             border-color: $secondaryColor;
-        }
-
-        &-content {
-            height: 100%;
-            position: absolute;
         }
     }
 }

@@ -1,15 +1,16 @@
-import { Accessor, JSX, ParentComponent, ParentProps, Show, createEffect, createMemo, on, onCleanup, onMount, useContext } from "solid-js";
+import { Accessor, JSX, ParentComponent, ParentProps, Show, createEffect, createMemo, mergeProps, on, onCleanup, onMount, useContext } from "solid-js";
 import { TokenBase, useToken } from "@components/utils/tokenComponents";
 import { TokenComponentProps } from "@components/types/ComponentProps";
-import { Item, ItemTokenProps, WheelMenuContext } from "./WheelMenu";
+import { Item, ItemTokenProps, Selector, WheelMenuContext } from "./WheelMenu";
 import styles from './WheelMenu.module.scss';
 
-interface WheelSelectorProps {
+interface WheelSelectorProps extends TokenComponentProps{
     item: ParentProps<ItemTokenProps>
     index: Accessor<number>;
 }
 
 export const WheelItem: ParentComponent<WheelSelectorProps> = (props) => {
+    const SelectorToken = useToken(Selector, props.parentChildren);
     const context = useContext(WheelMenuContext);
     if (!context) {
         console.error('Wheel.Item must be used inside a WheelMenu component');
@@ -18,6 +19,7 @@ export const WheelItem: ParentComponent<WheelSelectorProps> = (props) => {
 
     const rotation = createMemo(() => context.degreesPerSlice() * props.index())
     const isSelected = createMemo(() => context.selected() === props.index());
+    const offset = createMemo(() => props.item.offset ?? '1vmax');
 
     // Subscribe to isSelected changes to trigger onChange when new item becomes selected
     createEffect(on(isSelected, (selected) => {
@@ -27,46 +29,65 @@ export const WheelItem: ParentComponent<WheelSelectorProps> = (props) => {
         } 
     }, { defer: true }))
 
-    const itemClasses = createMemo(() => {
-        const classes = [styles['wheel-item']];
+    const wrapperClasses = createMemo(() => {
+        const classes = [styles['wheel-item-wrapper']];
         classes.push(props.item.class ?? "");
+        isSelected() && classes.push(props.item["class-selected"] ?? "");
+        
+        return classes.join(' ');
+    });
+
+    const wrapperStyles = createMemo(() => {
+        const styles: JSX.CSSProperties = {};
+        Object.assign(styles, props.item.style);
+        isSelected() && Object.assign(styles, props.item["style-selected"] ?? {});
+
+        return styles;
+    });
+
+    const selectorClasses = createMemo(() => {
+        const classes = [styles['wheel-item-selector']];
+        classes.push(SelectorToken()?.class ?? "");
         if(isSelected()) {
+            // Default behavior for selected state
             classes.push(styles['wheel-item-selected'])
-            classes.push(props.item["class-selected"] ?? "");
+            // Custom behavior for selected state
+            classes.push(SelectorToken()?.["class-selected"] ?? "");
         }
         
         return classes.join(' ');
     });
 
-    const itemStyles = createMemo(() => {
+    const selectorStyles = createMemo(() => {
         const styles: JSX.CSSProperties = {
             "clip-path": context.clipPathValue(),
             transform: `rotate(${rotation()}deg)`,
         };
 
-        if(isSelected()) {
-            Object.assign(styles, props.item["style-selected"] ?? {});
+        if (props.item.style) {
+            Object.assign(styles, SelectorToken()?.style);
         }
 
-        if (props.item.style) {
-            Object.assign(styles, props.item.style);
+        if(isSelected()) {
+            Object.assign(styles, SelectorToken()?.["style-selected"] ?? {});
         }
 
         return styles;
     });
 
     return (
-        <>
+        // Wrapper of the item content and the clipped selector
+        <div class={wrapperClasses()} style={wrapperStyles()}>
             {/* Colored part of the wheel */}
-            <div class={itemClasses()} style={itemStyles()}></div>
+            <div class={selectorClasses()} style={selectorStyles()}></div>
             {/* Item content goes here */}
-            <div class={styles['wheel-item-content']} style={{transform: `rotate(${rotation()}deg)`}}>
+            <div class={styles['wheel-item-content']} style={{transform: `rotate(${rotation()}deg)`, "padding-top": offset() }}>
                 {/* Rotated negatively to cancel out wheel rotation */}
                 <div style={{transform: `rotate(-${rotation()}deg)`}}>
                     {props.item.children}
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 

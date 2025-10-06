@@ -7,6 +7,7 @@ import useBaseComponent from '@components/BaseComponent/BaseComponent';
 import InnerWheelCircle from './InnerWheelCircle';
 export interface ItemTokenProps extends TokenBase {
     id?: string,
+    offset?: string
     "class-selected"?: string,
     "style-selected"?: JSX.CSSProperties,
 }
@@ -14,6 +15,7 @@ export const Item = createTokenComponent<ItemTokenProps>()
 export const Indicator = createTokenComponent<TokenBase>()
 export const InnerWheel = createTokenComponent<TokenBase>()
 export const Icon = createTokenComponent<TokenBase>()
+export const Selector = createTokenComponent<Omit<ItemTokenProps, 'id'>>();
 
 interface WheelMenuContextType {
     clipPathValue: Accessor<string>,
@@ -29,6 +31,7 @@ export interface WheelMenuRef {
     open: () => void,
     close: () => void,
     changeGap: Setter<boolean>
+    select: (index: number) => void;
 }
 interface WheelNenuProps extends ComponentProps {
     gap?: number, 
@@ -45,6 +48,7 @@ const WheelMenu: ParentComponent<WheelNenuProps> = (props) => {
     const [rotation, setRotation] = createSignal(0);
     const [isOpen, setIsOpen] = createSignal(props.opened ?? false);
     const [gap, setGap] = createSignal(props.gap ?? 0);
+    const [ignoreMouseMove, setIgnoreMouseMove] = createSignal(false);
 
     const length = createMemo(() => ItemTokens()?.length ?? 1);
     const degreesPerSlice = createMemo(() => 360 / length());
@@ -64,7 +68,7 @@ const WheelMenu: ParentComponent<WheelNenuProps> = (props) => {
     });
 
     const getSelectedSector = (e: MouseEvent) => {
-        if (!wheelElement && !isOpen()) return;
+        if (!wheelElement && !isOpen() || ignoreMouseMove()) return;
 
         const wheelRect = wheelElement!.getBoundingClientRect()
         const cx = wheelRect.left + wheelRect.width / 2;
@@ -88,6 +92,17 @@ const WheelMenu: ParentComponent<WheelNenuProps> = (props) => {
 
         return classes.join(' ');
     })
+
+    const selectItem = (index: number) => {
+        if (index < 0 || index >= length()) return;
+        const degrees = index * degreesPerSlice();
+
+        setSelected(index)
+        setRotation(degrees);
+        // Debounce mouse move to avoid immediate override
+        setIgnoreMouseMove(true);
+        setTimeout(() => setIgnoreMouseMove(false), 100);
+    }
 
     // Subscribe to isOpen changes to add/remove event listeners
     createEffect(on(isOpen, (isOpened) => {
@@ -115,7 +130,8 @@ const WheelMenu: ParentComponent<WheelNenuProps> = (props) => {
             element: wheelElement,
             open: () => setIsOpen(true),
             close: () => setIsOpen(false),
-            changeGap: setGap
+            changeGap: setGap,
+            select: selectItem
         });
     })
 
@@ -131,7 +147,7 @@ const WheelMenu: ParentComponent<WheelNenuProps> = (props) => {
         rotation, 
         onChange: props.onChange
     }
-
+    
     return (
         <WheelMenuContext.Provider value={ContextObj}>
             <div 
@@ -144,11 +160,11 @@ const WheelMenu: ParentComponent<WheelNenuProps> = (props) => {
                 <InnerWheelCircle parentChildren={props.children} />
                 {/* Items */}
                 <For each={ItemTokens()}>
-                    {(token, index) => <WheelItem index={index} item={token}></WheelItem>}
+                    {(token, index) => <WheelItem index={index} item={token} parentChildren={props.children}></WheelItem>}
                 </For>
             </div>
         </WheelMenuContext.Provider>
     )
 }
 
-export default Object.assign(WheelMenu, { Item, Content: InnerWheel, Indicator: Object.assign(Indicator, {Icon}) });
+export default Object.assign(WheelMenu, { Item, Content: InnerWheel, Selector, Indicator: Object.assign(Indicator, {Icon}) });
