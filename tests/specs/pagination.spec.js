@@ -1,11 +1,10 @@
 const assert = require('assert');
 const selectors = require('../shared/pagination-selectors.json');
+const { navigateToPage } = require('../shared/utils');
 
 describe('Pagination', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.sleep(1000);
-        await gf.click('.pagination-link');
+        await navigateToPage('.pagination-link');
     })
 
     this.afterEach(async () => {
@@ -21,14 +20,14 @@ describe('Pagination', function () {
         assert.equal(paginationControl.length, 2, 'Two pagination control components should be in the DOM');
         assert.equal(paginationItems.length, 5, 'Five pagination item components should be in the DOM');
     })
-    
+
     it('Should change index with controls', async () => {
         const paginationControl = await gf.getAll(`.${selectors.paginationControl}`);
         const assertionEl = await gf.get(`.${selectors.assertionElement}`);
 
         await paginationControl[1].click();
         assert.equal(await assertionEl.text(), "2", 'The second item should be selected after clicking the control');
-        
+
         await paginationControl[0].click();
         assert.equal(await assertionEl.text(), "1", 'The first option should be selected after clicking the left control');
     })
@@ -50,10 +49,10 @@ describe('Pagination', function () {
 
     it('Should cycle through pages with ref', async () => {
         const assertionEl = await gf.get(`.${selectors.assertionElement}`);
-        
+
         await gf.click(`.${selectors.scenarioBtn}.scenario-1`); // next page
         assert.equal(await assertionEl.text(), "2", 'The second item should be selected');
-        
+
         await gf.click(`.${selectors.scenarioBtn}.scenario-2`); // previous page
         assert.equal(await assertionEl.text(), "1", 'The first option should be selected');
     })
@@ -84,7 +83,7 @@ describe('Pagination', function () {
         const paginationItems = await gf.getAll(`.${selectors.paginationItem}`);
         assert.equal(await paginationItems[0].text(), "1", 'Pagination item should have it\'s index as text');
 
-        await gf.click(`.${selectors.scenarioBtn}.scenario-4`);        
+        await gf.click(`.${selectors.scenarioBtn}.scenario-4`);
         assert.equal(await paginationItems[0].text(), "", 'Pagination item should not have it\'s index as text');
     })
 
@@ -97,9 +96,9 @@ describe('Pagination', function () {
 
         await leftControl.click();
         assert.equal(await assertionEl.text(), "1", 'The first item should remain selected');
-        
+
         await paginationItems[paginationItems.length - 1].click();
-        
+
         await rightControl.click();
         assert.equal(await assertionEl.text(), "5", 'The last item should remain selected');
     })
@@ -111,10 +110,10 @@ describe('Pagination', function () {
         const rightControl = await paginationControls.last();
 
         await gf.click(`.${selectors.scenarioBtn}.scenario-5`);
-        
+
         await leftControl.click();
         assert.equal(await assertionEl.text(), "5", 'The last item should be selected after looping through the items');
-        
+
         await rightControl.click();
         assert.equal(await assertionEl.text(), "1", 'The first item should be selected after looping through the items');
     })
@@ -125,9 +124,9 @@ describe('Pagination', function () {
 
         await gf.click(`.${selectors.scenarioBtn}.scenario-2`);
         assert.equal(await assertionEl.text(), "1", 'The first item should remain selected');
-        
+
         await paginationItems[paginationItems.length - 1].click();
-        
+
         await gf.click(`.${selectors.scenarioBtn}.scenario-1`);
         assert.equal(await assertionEl.text(), "5", 'The last item should remain selected');
     })
@@ -135,10 +134,10 @@ describe('Pagination', function () {
     it('Should enable loop and loop through items with ref', async () => {
         const assertionEl = await gf.get(`.${selectors.assertionElement}`);
         await gf.click(`.${selectors.scenarioBtn}.scenario-5`);
-        
+
         await gf.click(`.${selectors.scenarioBtn}.scenario-2`);
         assert.equal(await assertionEl.text(), "5", 'The last item should be selected after looping through the items');
-        
+
         await gf.click(`.${selectors.scenarioBtn}.scenario-1`);
         assert.equal(await assertionEl.text(), "1", 'The first item should be selected after looping through the items');
     })
@@ -153,7 +152,7 @@ describe('Pagination', function () {
         for (const { selector, desc } of scenarios) {
             it(`should update styles & classes reactively on props change — ${desc}`, async () => {
                 await gf.click(`.${selectors.scenarioBtn}.scenario-7`);
-                const rightControl = await ( await gf.getAll(`.${selectors.paginationControl}`)).last();
+                const rightControl = await (await gf.getAll(`.${selectors.paginationControl}`)).last();
                 await rightControl.click();
                 const el = await gf.get(selector);
                 const styles = await el.styles();
@@ -183,7 +182,7 @@ describe('Pagination Control', function () {
 
     it('Shound have custom hidden class', async () => {
         const leftControl = await gf.get(`.${selectors.paginationControl}`);
-        
+
         const controlStyles = await leftControl.styles();
         const controlClasses = await leftControl.classes();
 

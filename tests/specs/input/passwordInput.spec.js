@@ -1,11 +1,10 @@
 const assert = require('assert');
 const selectors = require('../../shared/input-selectors.json');
+const { navigateToPage } = require('../../shared/utils');
 
 describe('PasswordInput', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.sleep(1000);
-        await gf.click('.password-input-link');
+        await navigateToPage('.password-input-link');
     })
 
     this.afterEach(async () => {
@@ -30,7 +29,7 @@ describe('PasswordInput', function () {
 
         await input.type('test');
         await visibilityButton.click();
-        
+
         assert.equal(await input.getAttribute('type'), 'text', 'Input\'s type should change to text')
         await visibilityButton.click();
         assert.equal(await input.getAttribute('type'), 'password', 'Input\'s type should change to password')
@@ -40,10 +39,10 @@ describe('PasswordInput', function () {
         const input = await gf.get(`.${selectors.input}`)
         await input.type('test');
 
-        await gf.click(`.${selectors.scenarioBtn}.scenario-4`);     
+        await gf.click(`.${selectors.scenarioBtn}.scenario-4`);
         assert.equal(await input.getAttribute('type'), 'text', 'Input\'s type should change to text')
 
-        await gf.click(`.${selectors.scenarioBtn}.scenario-5`);     
+        await gf.click(`.${selectors.scenarioBtn}.scenario-5`);
         assert.equal(await input.getAttribute('type'), 'password', 'Input\'s type should change to password')
     })
 
@@ -61,13 +60,13 @@ describe('PasswordInput', function () {
         assert.equal((await childrenBeforeSwap[0].classes()).includes(selectors.inputBefore), true, 'First element of root should be the Before element')
         assert.equal((await childrenBeforeSwap[2].classes()).includes(selectors.inputVisibilityButton), true, 'Last element of root should be the Visibility button element')
 
-        await gf.click(`.${selectors.scenarioBtn}.scenario-6`);   
+        await gf.click(`.${selectors.scenarioBtn}.scenario-6`);
 
         const childrenAfterSwap = await (await gf.get(`.${selectors.root}`)).children();
         assert.ok(!(await elementExists(selectors.inputBefore)), 'Before element should not be in the DOM');
         assert.equal((await childrenAfterSwap[0].classes()).includes(selectors.inputVisibilityButton), true, 'First element of root should be the Visibility button element')
         assert.equal((await childrenAfterSwap[2].classes()).includes(selectors.inputAfter), true, 'Last element of root should be the After element')
-    }) 
+    })
 
     describe('reactivity', () => {
         const scenarios = [

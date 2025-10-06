@@ -1,14 +1,13 @@
 const assert = require('assert');
 const selectors = require('../shared/media-selectors.json');
+const { navigateToPage } = require('../shared/utils');
 
 const normal = [selectors.image, selectors.liveView];
 const withOptions = [selectors.backgroundImage, selectors.maskImage];
 
 describe('Media component', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.sleep(1000);
-        await gf.click('.media-link');
+        await navigateToPage('.media-link');
     })
 
     this.afterEach(async () => {
@@ -19,7 +18,7 @@ describe('Media component', function () {
         it(`Should change it\'s source - ${type}`, async () => {
             const image = await gf.get(`.${type}`);
             const source = await image.getAttribute('src');
-            
+
             await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
             const newSource = await image.getAttribute('src');
 
@@ -31,7 +30,7 @@ describe('Media component', function () {
         it(`Should change it\'s source - ${type}`, async () => {
             const image = await gf.get(`.${type}`);
             const styles = await image.styles();
-            
+
             await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
             const newStyles = await image.styles();
 
@@ -41,7 +40,7 @@ describe('Media component', function () {
         it(`Should change it\'s options - ${type}`, async () => {
             const image = await gf.get(`.${type}`);
             const classes = await image.classes();
-            
+
             await gf.click(`.${selectors.scenarioBtn}.scenario-1`);
             const newClasses = await image.classes();
 
@@ -53,13 +52,13 @@ describe('Media component', function () {
         it(`Should update styles & classes reactively on props change - ${type}`, async () => {
             const el = await gf.get(`.${type}`);
             await el.click();
-    
+
             const styles = await el.styles();
             const classes = await el.classes();
-    
+
             assert.equal(styles['background-color'], 'rgba(0, 0, 255, 1)', 'background-color should update');
             assert.ok(classes.includes(selectors.reactive), 'reactive class applied');
         });
     })
- 
+
 });

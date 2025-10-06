@@ -1,11 +1,10 @@
 const assert = require('assert');
 const selectors = require('../../shared/input-selectors.json');
+const { navigateToPage } = require('../../shared/utils');
 
 describe('TextInput', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.sleep(1000);
-        await gf.click('.text-input-link');
+        await navigateToPage('.text-input-link');
     })
 
     this.afterEach(async () => {
@@ -25,7 +24,7 @@ describe('TextInput', function () {
         assert.ok(inputElement, 'Input element should be in the DOM');
         assert.ok(placeholder, 'Placeholder should be in the DOM');
     })
-    
+
     it('Should hide placeholder after typing', async () => {
         const input = await gf.get(`.${selectors.input}`);
 
@@ -40,7 +39,7 @@ describe('TextInput', function () {
         assert.ok(await getPlaceholder(), 'Placeholder should be in the DOM');
         await input.type('test');
         assert.ok(!(await getPlaceholder()), 'Placeholder should not be in the DOM after typing in the input');
-    }) 
+    })
 
     describe('reactivity', () => {
         const scenarios = [

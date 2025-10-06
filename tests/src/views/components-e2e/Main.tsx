@@ -29,6 +29,7 @@ import PaginationTest from '../../components/Pagination/PaginationTest';
 import ModalTest from '../../components/Modal/ModalTest';
 import ListTest from '../../components/List/ListTest';
 import CarouselTest from '../../components/Carousel/CarouselTest';
+import TooltipTest from '../../components/Tooltip/TooltipTest';
 
 const Main = () => {
     const components = [
@@ -44,9 +45,12 @@ const Main = () => {
         "xy-slider",
         "toggle",
         "pagination",
-        'modal',
 
-        // Compex components
+        //Feedback components
+        'modal',
+        'tooltip',
+
+        // Complex components
         "color-picker",
         "carousel",
         "accordion",
@@ -104,6 +108,7 @@ const Main = () => {
                 <ModalTest />
                 <ListTest />
                 <CarouselTest />
+                <TooltipTest />
             </Tabs>
         </div>
     );

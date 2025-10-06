@@ -1,11 +1,10 @@
 const assert = require('assert');
 const selectors = require('../../shared/input-selectors.json');
+const { navigateToPage } = require('../../shared/utils');
 
 describe('NumberInput', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.sleep(1000);
-        await gf.click('.number-input-link');
+        await navigateToPage('.number-input-link');
     })
 
     this.afterEach(async () => {
@@ -25,7 +24,7 @@ describe('NumberInput', function () {
         assert.ok(inputElement, 'Input element should be in the DOM');
         assert.ok(placeholder, 'Placeholder should be in the DOM');
     })
-    
+
     it('Should hide placeholder after typing', async () => {
         const input = await gf.get(`.${selectors.input}`);
 
@@ -49,10 +48,10 @@ describe('NumberInput', function () {
         const decreaseControl = await gf.get(`.${selectors.inputDecreaseControl}`);
 
         await input.type('50');
-        
+
         await increaseControl.click();
         assert.equal(await assertionElement.text(), '60', 'Input\'s value should increase by 10');
-        
+
         await decreaseControl.click();
         assert.equal(await assertionElement.text(), '50', 'Input\'s value should decrease by 10');
     })
@@ -60,21 +59,21 @@ describe('NumberInput', function () {
     it('Should increase and decrease the input value via ref', async () => {
         const input = await gf.get(`.${selectors.input}`);
         const assertionElement = await gf.get(`.${selectors.assertionElement}`);
-        
+
         await input.type('50');
 
-        await gf.click(`.${selectors.scenarioBtn}.scenario-4`);     
+        await gf.click(`.${selectors.scenarioBtn}.scenario-4`);
         assert.equal(await assertionElement.text(), '60', 'Input\'s value should increase by 10');
 
-        await gf.click(`.${selectors.scenarioBtn}.scenario-5`);     
+        await gf.click(`.${selectors.scenarioBtn}.scenario-5`);
         assert.equal(await assertionElement.text(), '50', 'Input\'s value should decrease by 10');
     })
 
-     it('Should render custom increase button control', async () => {
+    it('Should render custom increase button control', async () => {
         const assertionElement = await gf.get(`.${selectors.assertionElement}`);
         const increaseControl = await gf.get(`.${selectors.inputIncreaseControl}`);
         assert.equal(await (await increaseControl.children()).first().node.nodeName, "SVG", 'Default icon should be of type SVG');
-        
+
         await gf.click(`.${selectors.scenarioBtn}.scenario-6`)
         assert.equal(await increaseControl.text(), "Custom icon", 'New icon should have text - Custom Icon');
 
