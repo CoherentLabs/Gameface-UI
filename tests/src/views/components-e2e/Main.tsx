@@ -30,6 +30,7 @@ import ModalTest from '../../components/Modal/ModalTest';
 import ListTest from '../../components/List/ListTest';
 import CarouselTest from '../../components/Carousel/CarouselTest';
 import TooltipTest from '../../components/Tooltip/TooltipTest';
+import ToasterTest from '../../components/Toaster/ToasterTest';
 
 const Main = () => {
     const components = [
@@ -69,6 +70,9 @@ const Main = () => {
         'media',
         // base
         'base',
+
+        // Feedback
+        'toaster',
     ]
 
     return (
@@ -109,6 +113,7 @@ const Main = () => {
                 <ListTest />
                 <CarouselTest />
                 <TooltipTest />
+                <ToasterTest />
             </Tabs>
         </div>
     );
