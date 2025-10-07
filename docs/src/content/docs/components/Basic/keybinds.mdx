@@ -94,6 +94,26 @@ The `value` prop can be omitted since it will be seeded from `defaults`.
 | `onConflict`     | `(action: string, key: string \| null, conflictAction: string) => void` | `undefined`          | Called when a conflict happens under any policy.                                                                      |
 | `onChange`       | `(prev: string \| null, next: string \| null, action: string) => void`                         | `undefined`          | Called when a bind or unbind operation succeeds.                                                  |
 
+### Ref API
+
+To interact with the `Keybinds` programmatically, you can use the `KeybindsRef` interface. This interface provides properties and methods to access and manipulate the component's state.
+
+#### Properties
+
+| Property      | Type                                   | Description                                                                 |
+|---------------|----------------------------------------|-----------------------------------------------------------------------------|
+| `bindings`    | `Record<string, string \| null>`       | The current state of the bindings map. Use to retrieve the up-to-date bindings object. |
+
+#### Methods
+
+| Method         | Parameters                                 | Return Value | Description                                      |
+|----------------|--------------------------------------------|--------------|--------------------------------------------------|
+| `bind`         | `(action: string, newKey: string \| null)` | `void`       | Programmatically bind an action. Applies the current `conflictPolicy`. |
+| `unbindKey`    | `(key: string \| null)`                    | `void`       | Unbinds **all** actions that currently use this key (no-op if `null`). |
+| `mapBindings`  | `(bindings: Record<string, string \| null>)`| `void`      | Bulk-apply bindings (clears existing, then binds each). Conflict policy still applies per entry. |
+| `clearAll`     | `()`                                       | `void`       | Clears all keys by setting **every** action's value to `null`. |
+| `reset`        | `()`                                       | `void`       | Restores to the original baseline captured on mount: `defaults` if provided, otherwise whatever the children had seeded initially. |
+
 ### Conflict policies
 
 When a user tries to bind a key that is already in use, one of the following policies will be applied:
@@ -104,17 +124,6 @@ When a user tries to bind a key that is already in use, one of the following pol
 - `allow-duplicates`: Both actions are allowed to share the same key.
 
 All policies will trigger the `onConflict` callback if provided to the component.
-
-### Ref
-
-| Property / Method | Type                                                 | Description                                                                                                                                                           |
-| ----------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `bindings`        | `Record<string, string \| null>`                     | The current state of the bindings map. It can be used to retrieve the up to date bindings object.                                                                                                            |
-| `bind`            | `(action: string, newKey: string \| null) => void`   | Programmatically bind an action. Applies the current `conflictPolicy`. |
-| `unbindKey`       | `(key: string \| null) => void`                      | Unbinds **all** actions that currently use this key (no-op if `null`).                                                                                                |
-| `mapBindings`     | `(bindings: Record<string, string \| null>) => void` | Bulk-apply bindings (clears existing, then binds each). Conflict policy still applies per entry. It can be used to entirely replace the bindings object.                                                                      |
-| `clearAll`        | `() => void`                                         | Clears all keys by setting **every** action's value to `null`.                                                                                                                              |
-| `reset`           | `() => void`                                         | Restores to the original baseline captured on mount: `defaults` if provided, otherwise whatever the children had seeded initially.                                    |
 
 ## Keybind 
 

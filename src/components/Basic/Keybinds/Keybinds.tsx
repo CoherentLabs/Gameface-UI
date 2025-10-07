@@ -10,7 +10,6 @@ type Bindings = Record<Action, KeyCode>;
 
 export interface KeybindsRef {
     bindings: Bindings,
-    isListening?: boolean,
     bind: (action: Action, newKey: KeyCode) => void,
     unbindKey: (key: KeyCode) => void,
     mapBindings: (bindings: Bindings) => void,

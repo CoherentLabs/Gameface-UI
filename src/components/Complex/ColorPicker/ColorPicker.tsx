@@ -81,7 +81,8 @@ const ColorPicker: ParentComponent<ColorPickerProps> = (props) => {
 
     const colorPickerClasses = createMemo(() => {
         const classes = [styles['color-picker']];
-        classes.push(styles[`size-${(props.size ?? 'L').toLowerCase()}`])
+        const sizeClass = styles[`size-${(props.size ?? 'L').toLowerCase()}`];
+        if (sizeClass) classes.push(sizeClass);
         return classes.join(' ');
     });
 

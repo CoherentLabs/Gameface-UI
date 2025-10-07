@@ -14,7 +14,7 @@ const Image: ParentComponent<ImageProps> = (props) => {
 
     return <img src={props.src as string} 
                 ref={props.ref as HTMLImageElement}
-                class={`${className()}`}
+                class={className()}
                 style={inlineStyles()}
                 use:forwardEvents={props}
                 use:forwardAttrs={props} />

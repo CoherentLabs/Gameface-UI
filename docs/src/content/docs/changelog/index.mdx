@@ -6,32 +6,31 @@ import { Badge } from '@astrojs/starlight/components'
 
 ## 1.0.10 :badge[Latest]{variant="note"}
 
-<Badge text="New" variant="tip" size="small" /> Add a guide on [Working with state](/concepts/working-with-state).
+<Badge text="New" variant="tip" size="small" /> Added a guide on how to [work with the state of a component](/concepts/working-with-state).
 
-<Badge text="Feature" variant="success" size="small" /> 
+<Badge text="Feature" variant="success" size="small" /> Added an option for the
 [Image](/components/media/image#fill-the-container), [LiveView](/components/media/live-view#fill-the-container), 
 [BackgroundImage](/components/media/background-image#props), and 
-[MaskImage](/components/media/mask-image#props): added `fill` prop to all media components.
+[MaskImage](/components/media/mask-image#props) to fill its container. The option can be enabled through the `fill` prop.
 
 <Badge text="Feature" variant="success" size="small" /> 
 [Top](/components/layout/top#props), 
 [Content](/components/layout/content#props) and 
 [Bottom](/components/layout/bottom#props): added `basis` prop to set the `flex-basis` as a percentage. Allowing for quick layout customization.
 
-<Badge text="Feature" variant="success" size="small" /> [ColorPicker](/components/complex/color-picker#props): added `size` prop for quick size customization. 
-Available sizes: `S`, `M`, `L`, and `XL`.
+<Badge text="Feature" variant="success" size="small" /> The size of the [ColorPicker](/components/complex/color-picker#props) can now be changed through its `size` prop. Available sizes are: `S`, `M`, `L`, and `XL`.
 
-<Badge text="Bug" variant="danger" size="small" /> [Dropdown](/components/basic/dropdown): fixed dropdown trigger displaying the value of an option and not the content related to it.
+<Badge text="Fix" variant="danger" size="small" /> [Dropdown](/components/basic/dropdown): fixed dropdown trigger displaying the value of an option and not the content related to it.
 
-<Badge text="Bug" variant="danger" size="small" /> [Dropdown](/components/basic/dropdown): fixed dropdown options causing overflow when not visible.
+<Badge text="Fix" variant="danger" size="small" /> [Dropdown](/components/basic/dropdown): fixed dropdown options causing overflow when not visible.
 
 <Badge text="Change" variant="note" size="small" /> [Dropdown](/components/basic/dropdown#props): make dropdown options invert their position when not enough space. Exposed `inverted-class` prop to customize the inverted state.
 
-<Badge text="Bug" variant="danger" size="small" /> [Dropdown](/components/basic/dropdown): fixed `onChange` not triggering when the changed option's value is `""`.
+<Badge text="Fix" variant="danger" size="small" /> [Dropdown](/components/basic/dropdown): fixed `onChange` not triggering when the changed option's value is `""`.
 
-<Badge text="Feature" variant="success" size="small" /> [Scroll](/components/layout/scrol#scrollcontent-required): Expose the inner html element of the scroll's content with a `ref`.
+<Badge text="Feature" variant="success" size="small" /> [Scroll](/components/layout/scroll#scrollcontent-required): Expose the inner html element of the scroll's content with a `ref`.
 
-## 1.0.7
+## 1.0.9
 
 <Badge text="New" variant="tip" size="small" /> Added [Keybinds](/components/basic/keybinds) component.
 
@@ -56,16 +55,16 @@ Available sizes: `S`, `M`, `L`, and `XL`.
 
 <Badge text="Change" variant="note" size="small" /> [Button](/components/basic/button#props): adjusted size scale (S/M/L are slightly smaller).
 
-<Badge text="Bug" variant="danger" size="small" /> [Slider](/components/basic/slider): fixed rounding issues with fractional values.
+<Badge text="Fix" variant="danger" size="small" /> [Slider](/components/basic/slider): fixed rounding issues with fractional values.
 
-<Badge text="Bug" variant="danger" size="small" /> [Layout / Top, Content, Bottom](/components/layout/top): components now stretch to the container and fill remaining space. 
+<Badge text="Fix" variant="danger" size="small" /> [Layout / Top, Content, Bottom](/components/layout/top): components now stretch to the container and fill remaining space. 
 (Also applies to [Content](/components/layout/content) and [Bottom](/components/layout/bottom).)
 
-<Badge text="Bug" variant="danger" size="small" /> Input components: dimensions are now easily customizable.
+<Badge text="Fix" variant="danger" size="small" /> Input components: dimensions are now easily customizable.
 
-<Badge text="Bug" variant="danger" size="small" /> Prevented `onChange` from firing on mount for [Segment](/components/basic/segment), [Dropdown](/components/basic/dropdown), [ToggleButton](/components/basic/toggle-button), and [XYSlider](/components/basic/xy-slider).
+<Badge text="Fix" variant="danger" size="small" /> Prevented `onChange` from firing on mount for [Segment](/components/basic/segment), [Dropdown](/components/basic/dropdown), [ToggleButton](/components/basic/toggle-button), and [XYSlider](/components/basic/xy-slider).
 
-<Badge text="Bug" variant="danger" size="small" /> [Scroll](/components/layout/scroll): prevented `onScroll` from firing on mount.
+<Badge text="Fix" variant="danger" size="small" /> [Scroll](/components/layout/scroll): prevented `onScroll` from firing on mount.
 
 ## 1.0.6
 
