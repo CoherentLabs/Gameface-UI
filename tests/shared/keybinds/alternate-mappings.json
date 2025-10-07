@@ -1,0 +1,12 @@
+{
+    "moveForward": "I",
+    "moveBackward": "K",
+    "moveLeft": null,
+    "moveRight": "L",
+    "jump": "Space",
+    "crouch": "R Ctrl",
+    "sprint": "R Shift",
+    "fire": "LMB",
+    "aimDownSights": "RMB",
+    "reload": "P"
+}

@@ -31,6 +31,7 @@ import ListTest from '../../components/List/ListTest';
 import CarouselTest from '../../components/Carousel/CarouselTest';
 import TooltipTest from '../../components/Tooltip/TooltipTest';
 import ToasterTest from '../../components/Toaster/ToasterTest';
+import KeybindsTest from '../../components/Keybinds/KeybindsTest';
 
 const Main = () => {
     const components = [
@@ -50,6 +51,7 @@ const Main = () => {
         //Feedback components
         'modal',
         'tooltip',
+        'keybinds',
 
         // Complex components
         "color-picker",
@@ -114,6 +116,7 @@ const Main = () => {
                 <CarouselTest />
                 <TooltipTest />
                 <ToasterTest />
+                <KeybindsTest />
             </Tabs>
         </div>
     );

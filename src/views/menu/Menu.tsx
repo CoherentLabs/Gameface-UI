@@ -16,12 +16,13 @@ import { Column12, Column4, Column8 } from '@components/Layout/Column/Column';
 import SidePanel from '@custom-components/Menu/SidePanel/SidePanel';
 import Graphics from '@custom-components/Menu/Options/Graphics/Graphics';
 import { getFirstOptionOfTab } from './util';
-import KeyBinds from '@custom-components/Menu/Options/KeyBinds/KeyBinds';
 import Audio from '@custom-components/Menu/Options/Audio/Audio';
 import Credits from '@custom-components/Menu/Options/Credits/Credits';
 import CustomModal from '@custom-components/Menu/CustomModal/CustomModal';
 import { ModalRef } from '@components/Feedback/Modal/Modal';
 import eventBus from '@components/tools/EventBus';
+import KeyBindsTab from '@custom-components/Menu/Options/KeyBindsTab/KeyBindsTab';
+
 interface MenuContextValue {
     currentOption: Accessor<string>,
     setCurrentOption: Setter<string>,
@@ -104,7 +105,7 @@ const Menu = () => {
                                                     <Graphics />
                                                 </Tab>
                                                 <Tab location={OPTIONS[2]}>
-                                                    <KeyBinds />
+                                                    <KeyBindsTab />
                                                 </Tab>
                                                 <Tab location={OPTIONS[3]}>
                                                     <Audio />
