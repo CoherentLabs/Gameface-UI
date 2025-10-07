@@ -41,6 +41,11 @@
     right: 0;
     z-index: 10;
     transform: translateX(-50%);
+
+    &:hover,
+    &:active {
+        box-shadow: 0 0 0 0.1vmax rgba($secondaryColor, 0.5);
+    }
 }
 
 .thumb {

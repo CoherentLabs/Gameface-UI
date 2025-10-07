@@ -3,9 +3,9 @@ import Block from "@components/Layout/Block/Block"
 import { createSignal } from "solid-js"
 import { parseHSVAColor } from "@components/Complex/ColorPicker/colorPickerUtils";
 import MenuColorPicker, { ColorData } from "./MenuColorPicker";
-import styles from './ColorPreview.module.scss';
 import ExtraContent from "../SidePanel/ExtraContent";
 import { emitChange } from "../../../views/menu/util";
+import styles from './ColorPreview.module.scss';
 
 const ColorPreview = (props: {id: string}) => {
     const [color, setColor] = createSignal('#868599');
@@ -21,6 +21,7 @@ const ColorPreview = (props: {id: string}) => {
             <Block style={{"background-color": color()}} class={styles['color-block']} />
             <ExtraContent id={props.id}>
                 <MenuColorPicker 
+                        size="L"
                         onChange={handleChange} 
                         value={color()} 
                         class={styles['color-picker']} ref={colorPickerRef!} />

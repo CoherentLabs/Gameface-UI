@@ -92,7 +92,7 @@ const Menu = () => {
                                 </For>
                             </Flex>
                         </Top>
-                        <Content class={styles.content}>
+                        <Content basis={70} class={styles.content}>
                             <Row>
                                 <Show when={!isCredits()}>
                                     <Column8>

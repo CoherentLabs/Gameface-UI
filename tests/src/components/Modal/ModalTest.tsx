@@ -13,6 +13,7 @@ import Bottom from "@components/Layout/Bottom/Bottom";
 const ModalTest = () => {
     let modalRef!: ModalRef;
     const [test, setTest] = createSignal('red');
+    const [assertionString, setAssertionString] = createSignal("");
 
     const scenarios = [
         { label: "Open modal with ref", action: () => { modalRef.open() } },
@@ -23,6 +24,7 @@ const ModalTest = () => {
     const reset = () => {
         setTest('red');
         modalRef?.close();
+        setAssertionString("");
     };
 
     const isReactive = createMemo(() => test() === 'blue');
@@ -42,7 +44,14 @@ const ModalTest = () => {
                 )}
             </For>
 
-            <Modal style={reactiveStyle()} class={`${selectors.modal} ${reactiveClass()}`} ref={modalRef}>
+            <div class={selectors.assertionElement}>{assertionString()}</div>
+
+            <Modal 
+                style={reactiveStyle()} 
+                class={`${selectors.modal} ${reactiveClass()}`} 
+                onClose={() => setAssertionString("close")}
+                onOpen={() => setAssertionString("open")}
+                ref={modalRef}>
                 <Modal.Overlay style={reactiveStyle()} class={`${selectors.modalOverlay} ${reactiveClass()}`} />
                 <Modal.Window style={reactiveStyle()} class={`${selectors.modalWindow} ${reactiveClass()}`}>
                     <Top>

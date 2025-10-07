@@ -28,19 +28,13 @@ const CarouselItems: ParentComponent<CarouselItemsProps> = (props) => {
         return null;
     }
 
-    const carouselItemsClasses = createMemo(() => {
-        const classes = [styles['carousel-items']];
-        if (props.class) classes.push(props.class as string);
-        return classes.join(' ');
-    })
-
     const carouselItemsContainerClasses = createMemo(() => {
         const classes = [styles['carousel-items-container']];
         if (props.itemsContainerClass) classes.push(props.itemsContainerClass as string);
         return classes.join(' ');
     })
 
-    props.componentClasses = () => carouselItemsClasses();
+    props.componentClasses = () => styles['carousel-items'];
     const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     const ItemsTokens = useTokens(Item, props.children);

@@ -32,12 +32,23 @@ In this example, the text is wrapped inside the `Scroll` component, and the maxi
 ## API
 
 ### Props
-|Prop Name |Type |Default | Description |
-|---|---|---|---|
-| `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
-| `class` | `string` | `""` | Additional CSS classes to apply to the component |
-| `ref` | `ScrollComponentRef` | `undefined` | A reference to the component that gives you access to its methods and the underlying HTML element. Useful if you need to control scrolling programmatically. |
-| `onScroll` | `OnScrollHandler` | `undefined` | A function that is called every time the content is scrolled. This callback receives an object with information (such as scroll direction) about the scroll event. |
+
+| Prop Name  | Type                                   | Default     | Description                                                                                                                                                                                  |
+| ---------- | -------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `style`    | `JSX.CSSProperties`                    | `{}`        | Inline styles to apply directly to the scroll's wrapper element.                                                                                                                             |
+| `class`    | `string`                               | `""`        | Additional CSS classes to apply to the scroll's wrapper element.                                                                                                                                             |
+| `ref`      | `ScrollComponentRef  \| undefined`      | `undefined` | A reference to the component, providing access to its methods and the underlying HTML element.                                                             |
+| `onScroll` | `(event: { scrollDirection: 'up' \| 'down' }) => void` | `undefined` | A callback function triggered whenever the scroll position changes. |
+
+## Ref API
+
+To interact with the `Scroll` programmatically, you can use the `ScrollComponentRef` interface. This interface provides properties and methods to access and manipulate the component's state.
+
+### Properties
+
+| Property   | Type                | Description                                                                 |
+|------------|---------------------|-----------------------------------------------------------------------------|
+| `element`  | `HTMLDivElement`    | A reference to the scroll's root HTML element, useful for DOM access or styling. |
 
 ### Methods
 |Method |Parameters |Return Value |Description |
@@ -59,13 +70,14 @@ Allows customization of the content within the `Scroll` component. This slot can
 This slot is required and must be used inside the `Scroll` component to define the scrollable content.
 :::
 
-#### Properties
+#### Props
 
 | Prop Name | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the scrollable content. |
 | `class`   | `string` | `""` | Additional CSS classes to style the scrollable content. |
 | `children`| `JSX.Element` | `undefined` | Content to render inside the scrollable area, which can be any valid JSX element. |
+| `ref`  | `HTMLDivElement`  | `undefined`  | A reference to the scroll content wrapper HTML element, useful if you need to do custom calculations with the `scrollTop` or `scrollHeight` properties. |
 
 #### Usage
 

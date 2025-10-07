@@ -9,3 +9,17 @@
 .option-disabled {
     color: red;
 }
+
+.overflow-container {
+    height: 300px;
+    max-height: 300px;
+    border: 0.1vmax solid white;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    overflow-y: scroll;
+}
+
+.options-inverted {
+    bottom: 125%;
+}

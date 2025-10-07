@@ -84,9 +84,8 @@ function forwardEvents(el: HTMLElement, getData: () => Record<string, any>) {
 }
 
 export function useBaseComponent(props: ComponentProps) {
-    const activeClass = props.active ? props.active : () => '';
     const className = () => {
-        const classes = (typeof props.componentClasses === "function" ? props.componentClasses() : props.componentClasses || '') + " " + (props.class || '') + " " + activeClass();
+        const classes = (typeof props.componentClasses === "function" ? props.componentClasses() : props.componentClasses || '') + " " + (props.class || '');
         return classes.trim();
     };
 

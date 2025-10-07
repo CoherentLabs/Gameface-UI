@@ -1,10 +1,13 @@
 import { ParentComponent } from "solid-js";
-import styles from './Top.module.scss';
-import { ComponentBaseProps } from "../../types/ComponentProps";
 import LayoutBase from "../LayoutBase";
+import { LayoutSectionProps } from "@components/types/LayoutBase";
+import styles from './Top.module.scss';
 
-const Top: ParentComponent<ComponentBaseProps> = (props) => {
-    return <LayoutBase {...props} componentClasses={styles.top} />
+const Top: ParentComponent<LayoutSectionProps> = (props) => {
+    return <LayoutBase 
+        {...props} 
+        componentClasses={styles.top} 
+        componentStyles={{'flex-basis': props.basis ? `${props.basis}%` : ""}} />
 }
 
 export default Top;

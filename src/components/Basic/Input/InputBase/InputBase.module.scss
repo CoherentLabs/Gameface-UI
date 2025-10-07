@@ -17,6 +17,11 @@
         background-color: white;
         overflow: hidden;
         height: 2.2vmax;
+        transition: border-color 0.2s ease-in-out;
+
+        &:hover {
+            border-color: $secondaryColor;
+        }
     }
 
     &-element-wrapper {

@@ -42,6 +42,16 @@ describe('Modal', function () {
         try { await gf.get(`.${selectors.modal}`); } catch { }
     });
 
+    it('Should trigger onOpen and onClose after being toggled', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
+        const assertionEl = await gf.get(`.${selectors.assertionElement}`);
+
+        assert.equal(await assertionEl.text(), 'open', "Element\'s text should have changed in the onOpen callback")
+        
+        await gf.click(`.${selectors.scenarioBtn}.scenario-1`);
+        assert.equal(await assertionEl.text(), 'close', "Element\'s text should have changed in the onClose callback")
+    });
+
     for (let selector of [selectors.closeButton, selectors.acceptButton, selectors.rejectButton]) {
         it(`Should close modal when close button is clicked "${selector}"`, async () => {
             await gf.click(`.${selectors.scenarioBtn}.scenario-0`);

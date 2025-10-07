@@ -137,8 +137,6 @@ const Accordion: ParentComponent<AccordionProps> = (props) => {
     const accordionClasses = createMemo(() => {
         const classes = [styles.accordion];
 
-        classes.push(props.class ?? '');
-
         if (props.disabled) {
             classes.push(styles.disabled);
             classes.push(props["class-disabled"] ?? '');

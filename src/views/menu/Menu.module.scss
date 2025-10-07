@@ -16,7 +16,6 @@
 
 .content {
     margin: 0 $horizontal-spacing;
-    flex-basis: 70%;
 }
 
 .link {
@@ -42,7 +41,7 @@
 
 .scroll {
     &-bar {
-        background-color: rgba(0, 0, 0, 5);
+        background-color: rgba(0, 0, 0, 0.5);
         border-radius: 0;
     }
 

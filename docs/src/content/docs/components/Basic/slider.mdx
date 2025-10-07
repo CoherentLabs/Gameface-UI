@@ -37,11 +37,22 @@ export default App;
 | `step`        | `number`                            | `undefined`   | The amount by which the slider value changes when the handle is moved. Determines the granularity of the slider. |
 | `onChange` | `(value: number) => void`              | `undefined` | A function that is called every time the slider's value has changed. It can be used to retrieve the up to date value of the slider. |
 
+## Ref API
+
+To interact with the `Slider` programmatically, you can use the `SliderRef` interface. This interface provides properties and methods to access and manipulate the component's state.
+
+### Properties
+
+| Property   | Type                | Description                                                                 |
+|------------|---------------------|-----------------------------------------------------------------------------|
+| `element`  | `HTMLDivElement`    | A reference to the slider's root HTML element, useful for DOM access or styling. |
+| `value`    | `Accessor<number>`  | The current value of the slider. Use `value()` to get the latest value.      |
+
 ### Methods
 
-|Method |Parameters |Return Value |Description |
-|---|---|---|---|
-| `changeValue ` | `newValue: number`  | `void` | Sets new value for the slider |
+| Method         | Parameters         | Return Value | Description                                      |
+|----------------|-------------------|--------------|--------------------------------------------------|
+| `changeValue`  | `newValue: number`| `void`       | Programmatically sets a new value for the slider. |
 
 ## Slots
 

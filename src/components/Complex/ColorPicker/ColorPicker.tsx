@@ -22,6 +22,7 @@ export interface ColorPickerRef {
 
 interface ColorPickerProps extends ComponentProps {
     value?: string;
+    size?: 'S' | 'M' | 'L' | 'XL'
     onChange?: (value: ColorData) => void;
 }
 
@@ -80,7 +81,8 @@ const ColorPicker: ParentComponent<ColorPickerProps> = (props) => {
 
     const colorPickerClasses = createMemo(() => {
         const classes = [styles['color-picker']];
-        if (props.class) classes.push(props.class);
+        const sizeClass = styles[`size-${(props.size ?? 'L').toLowerCase()}`];
+        if (sizeClass) classes.push(sizeClass);
         return classes.join(' ');
     });
 

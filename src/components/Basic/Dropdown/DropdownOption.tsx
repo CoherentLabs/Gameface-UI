@@ -22,7 +22,7 @@ export const DropdownOption: ParentComponent<{ option: ParentProps<OptionTokenPr
     }
 
     onMount(() => {
-        dropdown?.registerOption(props.option.value, props.option.selected);
+        dropdown?.registerOption(props.option.value, props.option.children, props.option.selected);
     })
 
     onCleanup(() => {

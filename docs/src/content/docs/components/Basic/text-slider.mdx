@@ -32,11 +32,23 @@ export default App;
 | `values`   | `string[]`                            | `undefined`   | An array of options that can be selected by dragging the slider's handle. |
 | `onChange` | `(value: string) => void`              | `undefined` | A callback function triggered whenever the slider's value changes. It provides the updated value of the slider. |
 
+## Ref API
+
+To interact with the `TextSlider` programmatically, you can use the `TextSliderRef` interface. This interface provides properties and methods to access and manipulate the component's state.
+
+### Properties
+
+| Property   | Type                | Description                                                                 |
+|------------|---------------------|-----------------------------------------------------------------------------|
+| `element`  | `HTMLDivElement`    | A reference to the text slider's root HTML element, useful for DOM access or styling. |
+| `value`    | `Accessor<string>`  | The current value of the slider. Use `value()` to get the latest value.      |
+| `values`   | `Accessor<string[]>`| The available options for the text slider.                                   |
+
 ### Methods
 
-| Method          | Parameters          | Return Value | Description                                                                                     |
-|----------------- |-------------------- |--------------|-------------------------------------------------------------------------------------------------|
-| `changeValue`    | `newValue: string` | `void`       | Updates the slider's value. If the new value is not in the `values` array, a warning is logged to the console. |
+| Method         | Parameters         | Return Value | Description                                      |
+|----------------|-------------------|--------------|--------------------------------------------------|
+| `changeValue`  | `newValue: string`| `void`       | Programmatically sets a new value for the text slider. |
 
 ## Slots
 

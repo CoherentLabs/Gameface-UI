@@ -42,18 +42,23 @@ export default App;
 | `loop`            | `boolean`            | `false`     | Enables looping through options when navigating past the first or last option using the controls.              |
 | `onChange`        | `(value: string) => void` | `undefined` | Callback function triggered whenever the selected option changes, providing the selected option's value.        |
 
-### StepperRef Props
+## Ref API
 
-| Prop Name         | Type                  | Default     | Description                                                                                                     |
-|-------------------|-----------------------|-------------|-----------------------------------------------------------------------------------------------------------------|
-| `options`         | `string[]`           | `[]`        | Retrieves all available options for the stepper as an array of strings.                                        |
+To interact with the `Stepper` programmatically, you can use the `StepperRef` interface. This interface provides properties and methods to access and manipulate the component's state.
 
-### StepperRef Methods
+### Properties
 
-| Method          | Parameters       | Return Value | Description                                      |
-|------------------|------------------|--------------|--------------------------------------------------|
-| `selected`       | None             | `void`       | Retrieves the currently selected option.         |
-| `setOption`      | `newOption: string` | `void`    | Programmatically sets a new selected option.     |
+| Property   | Type                | Description                                                                 |
+|------------|---------------------|-----------------------------------------------------------------------------|
+| `element`  | `HTMLDivElement`    | A reference to the stepper's root HTML element, useful for DOM access or styling. |
+| `selected` | `Accessor<string>`  | The currently selected option. Use `selected()` to get the value.            |
+| `options`  | `string[]`          | The available options for the stepper.                                      |
+
+### Methods
+
+| Method         | Parameters         | Return Value | Description                                      |
+|----------------|-------------------|--------------|--------------------------------------------------|
+| `setOption`    | `newOption: string`| `void`       | Programmatically change the selected option.      |
 
 ## Slots
 

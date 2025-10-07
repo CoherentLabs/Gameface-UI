@@ -1,6 +1,7 @@
 import { createMemo, ParentComponent } from 'solid-js';
-import { ComponentProps } from '../../types/ComponentProps';
 import LayoutBase from '@components/Layout/LayoutBase';
+import { ImageProps } from '../Image/Image';
+import style from './ImageBase.module.scss';
 
 const imageSizes = ['contain', 'cover'] as const;
 // This type and the similar ones below are used when setting predefined strings as options for the image or any other string.
@@ -52,8 +53,7 @@ export interface ImageBaseOptions {
     position?: ImagePositions;
 }
 
-export interface ImageComponentProps extends ComponentProps {
-    src: string | ImageMetadata;
+export interface ImageComponentProps extends ImageProps {
     options?: ImageBaseOptions;
 }
 
@@ -85,6 +85,8 @@ const ImageBase: ParentComponent<ImageBaseProps> = (props) => {
         const cls = { value: `${props.styles[props.classPrefix]}` };
         const s = {[`${props.stylePrefix}-image`]: `url(${props.src})`};
         const args = { props, cls, s};
+
+        if (props.fill) cls.value += ` ${style.fill}`;
 
         if (props.options) {
             const { size, position, repeat } = props.options;

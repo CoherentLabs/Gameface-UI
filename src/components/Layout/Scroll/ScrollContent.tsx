@@ -12,6 +12,7 @@ interface ScrollContentProps extends TokenComponentProps {
 interface ContentProps {
     style?: JSX.CSSProperties | undefined
     class?: string
+    ref?: HTMLDivElement
 }
 
 export const Content = createTokenComponent<ContentProps>();
@@ -41,15 +42,21 @@ export const ScrollContent: ParentComponent<ScrollContentProps> = (props) => {
     onMount(() => {
         resizeObserver = new ResizeObserver(scrollContext!.updateMeasurements);
 
-        if (contentRef!) resizeObserver.observe(contentRef);
+        if (contentRef) resizeObserver.observe(contentRef);
     });
+
+    const initContentRef = (el: HTMLDivElement) => {
+        const token = ContentToken();
+        token?.ref && (token.ref as any as (el: HTMLDivElement) => void)(el);
+        (props.ref as any as (el: HTMLDivElement) => void)(el);
+    }
 
     onCleanup(() => {
         if (resizeObserver) resizeObserver.disconnect();
     });
 
-    return <div ref={props.ref!} style={contentStyles()} class={contentClasses()}>
-        <div ref={contentRef!}>
+    return <div ref={initContentRef} style={contentStyles()} class={contentClasses()}>
+        <div ref={contentRef}>
             {ContentToken()?.children}
         </div>
     </div>

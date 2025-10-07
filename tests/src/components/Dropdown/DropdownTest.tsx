@@ -17,6 +17,7 @@ const DropdownTest = () => {
     const [btnDisabled, setBtnDisabled] = createSignal(false);
     const [options, setOptions] = createSignal(dropdownOptions);
     const [customIcon, setCustomIcon] = createSignal(false);
+    const [testInverted, setTestInverted] = createSignal(false);
 
     const scenarios = [
         { label: "Select option with ref", action: () => dropdownRef?.selectOption("test1") },
@@ -24,6 +25,7 @@ const DropdownTest = () => {
         { label: "Disable option", action: () => setBtnDisabled(true) },
         { label: "Enable Overflow", action: () => setOptions([...dropdownOptions, ...dropdownOptions, ...dropdownOptions, ...dropdownOptions]) },
         { label: "Enable custom icon", action: () => setCustomIcon(true) },
+        { label: "Test overflow", action: () => setTestInverted(true) },
     ];
 
     const reset = () => {
@@ -31,6 +33,7 @@ const DropdownTest = () => {
         setDisabled(false);
         setCustomIcon(false);
         setBtnDisabled(false);
+        setTestInverted(false);
         setOptions(dropdownOptions);
         dropdownRef?.selectOption('');
     };
@@ -39,7 +42,9 @@ const DropdownTest = () => {
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
-    onMount(() => document.addEventListener('reset', reset))
+    onMount(() => {
+        document.addEventListener('reset', reset)
+    })
     onCleanup(() => document.removeEventListener('reset', reset))
 
     return (
@@ -87,6 +92,25 @@ const DropdownTest = () => {
                 <Dropdown.Track style={reactiveStyle()} class={`${selectors.track} ${reactiveClass()}`} />
                 <Dropdown.Handle style={reactiveStyle()} class={`${selectors.handle} ${reactiveClass()}`} />
             </Dropdown>
+
+            <Show when={testInverted()}>
+                <div class="overflow-container">
+                    <Dropdown class={`${selectors.invertedDropdown}`}>
+                        <Dropdown.Options
+                            style={reactiveStyle()}
+                            class={`${selectors.options}`}
+                            inverted-class="options-inverted">
+                            <For each={options()}>
+                                {(option, index) => (
+                                    <Dropdown.Option value={option.value + index()}>
+                                        {option.value + index()}
+                                    </Dropdown.Option>
+                                )}
+                            </For>
+                        </Dropdown.Options>
+                    </Dropdown>
+                </div>
+            </Show>
         </Tab>
     )
 }

@@ -65,3 +65,23 @@ const App = () => {
 
 export default App;
 ```
+
+### Fill the container
+
+To make the `Image` component fill its container, set the `fill` property to `true`. 
+This will apply styles to ensure the image occupies the entire space of its parent element. This prop is useful when you want the image to just adapt to the size of its container.
+
+```tsx
+import Image from '@components/Media/Image/Image';
+import MyImage from '../../assets/my-image.png';
+
+const App = () => {
+    return (
+        <div style={{ width: "10vmax", height: "10vmax" }}>
+            <Image fill src={MyImage} />
+        </div>
+    );
+};
+
+export default App;
+```

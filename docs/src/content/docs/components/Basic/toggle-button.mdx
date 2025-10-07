@@ -38,6 +38,17 @@ export default App;
 | `checked`       | `boolean`                  | `false`     | Specifies the initial checked state of the toggle button.                                                           |
 | `onChange`      | `(checked: boolean) => void`| `undefined` | Callback function triggered whenever the toggle button is toggled, providing the current checked state.             |
 
+## Ref API
+
+To interact with the `ToggleButton` programmatically, you can use the `ToggleButtonRef` interface. This interface provides properties and methods to access and manipulate the component's state.
+
+### Properties
+
+| Property  | Type                | Description                                                   |
+| --------- | ------------------- | ------------------------------------------------------------- |
+| `checked` | `Accessor<boolean>` | Read the current state: `ref.checked()` returns `true/false`. |
+| `element` | `HTMLDivElement`    | A reference to the button's underlying HTML element, useful for accessing DOM properties or applying additional styles.        |
+
 ### Methods
 
 | Method       | Parameters         | Return Value | Description                                                                 |
@@ -209,6 +220,42 @@ export default App;
 ```
 
 ## Guide
+
+### Retrieve the ToggleButton value
+
+To retrieve the current value assigned of the `ToggleButton`, you can:
+
+- Use a `ref` to access the component instance
+- Use the `onChange` prop to respond when the checked state changes
+- Combine both to work with the value only when the ToggleButton is toggled on
+
+#### Steps 
+
+1. Declare a `ref` variable with type `ToggleButtonRef` and pass it to the `ToggleButton` component.
+2. Provide a callback to the `onChange` prop to respond to state changes.
+3. Inside the callback, access the component's value via the `ref` and act based on the current state.
+
+```tsx
+import ToggleButton, { ToggleButtonRef } from '@components/Basic/ToggleButton/ToggleButton';
+
+const App = () => {
+    let toggleButtonRef!: ToggleButtonRef
+    const getValue = (checked: boolean) => {
+        if (checked) {
+            // Log the value whenever the toggle button is toggled on
+            console.log(toggleButtonRef.checked());
+        }
+    }
+
+    return (
+        <>
+            <ToggleButton ref={toggleButtonRef} onChange={getValue} />
+        </>
+    );
+};
+
+export default App;
+```
 
 ### Set the value of the ToggleButton Programmatically 
 
