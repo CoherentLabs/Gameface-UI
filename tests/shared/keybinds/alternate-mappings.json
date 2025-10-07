@@ -4,9 +4,9 @@
     "moveLeft": null,
     "moveRight": "L",
     "jump": "Space",
-    "crouch": "RightCtrl",
-    "sprint": "RightShift",
-    "fire": "Mouse1",
-    "aimDownSights": "Mouse2",
+    "crouch": "R Ctrl",
+    "sprint": "R Shift",
+    "fire": "LMB",
+    "aimDownSights": "RMB",
     "reload": "P"
 }

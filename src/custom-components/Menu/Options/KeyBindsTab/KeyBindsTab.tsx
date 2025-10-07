@@ -10,6 +10,10 @@ import Keybinds, { KeybindsRef } from "@components/Basic/Keybinds/Keybinds";
 import Keybind from "@components/Basic/Keybinds/Keybind";
 
 const OPTIONS = ['PC', 'Tactical', 'Left-Handed', 'Custom'] as const;
+const KeyOverrides = {
+    "0": "Mouse Left",
+    "2": "Mouse Right"
+}
 
 const KeyBindsTab: ParentComponent = () => {
     let segmentRef!: SegmentRef;
@@ -39,6 +43,7 @@ const KeyBindsTab: ParentComponent = () => {
             <Keybinds
                 onChange={handleKeybindChange}
                 ref={keybindsRef}
+                overrides={KeyOverrides}
                 conflictPolicy="replace-existing"
                 placeholder="Unbound"
                 defaults={PRESETS.PC}>

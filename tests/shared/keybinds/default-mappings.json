@@ -4,8 +4,8 @@
   { "action": "moveLeft",     "key": "A" },
   { "action": "moveRight",    "key": "D" },
   { "action": "jump",         "key": "Space" },
-  { "action": "crouch",       "key": "Control Left" },
-  { "action": "sprint",       "key": "Shift Left" },
+  { "action": "crouch",       "key": "L Ctrl" },
+  { "action": "sprint",       "key": "L Shift" },
   { "action": "fire",         "key": "LMB" },
   { "action": "aimDownSights","key": "RMB" },
   { "action": "reload",       "key": "R" }

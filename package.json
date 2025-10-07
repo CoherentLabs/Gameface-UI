@@ -1,6 +1,6 @@
 {
   "name": "gameface-ui-template",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "",
   "scripts": {
     "start": "vite",

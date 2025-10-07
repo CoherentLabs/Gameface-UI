@@ -1,6 +1,9 @@
 ---
 title: Keybinds
+tableOfContents:
+  maxHeadingLevel: 4
 ---
+
 The `Keybinds` component is an easy way to set up keyboard + mouse binding logic in your UI.
 It works together with the `Keybind` component, which represents a single action slot. `Keybinds` provides context, conflict handling, and programmatic control.
 
@@ -16,8 +19,8 @@ const App = () => {
     return (
         <Keybinds>
             <Keybind action="forward" value="W" />
-            <Keybind action="backward" value="A" />
-            <Keybind action="left" value="S" />
+            <Keybind action="backward" value="S" />
+            <Keybind action="left" value="A" />
             <Keybind action="right" value="D" />
             <Keybind action="jump" /> 
         </Keybinds>
@@ -26,6 +29,10 @@ const App = () => {
 
 export default App;
 ```
+
+:::note
+If a `Keybind` does not have a `value` prop, it will be initialized with `null` (unbound).
+:::
 
 ### Dynamic Keybinds
 
@@ -78,14 +85,14 @@ The `value` prop can be omitted since it will be seeded from `defaults`.
 
 | Prop name        | Type                                                                    | Default              | Description                                                                                                           |
 | ---------------- | ----------------------------------------------------------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `defaults`       | `Record<string, string \| null>`                                        | `undefined`          | Initial bindings map: `{ action: key }`. If omitted, children can seed themselves via their `value`.              |
+| `defaults`       | `Record<string, string \| null>`                                        | `undefined`          | Initial bindings map: `{ action: label }`. If omitted, children can seed themselves via their `value`.              |
 | `placeholder`    | `string`                                                                | `undefined`          | Text shown in each `Keybind` when no key is bound.                                                                    |
 | `listeningText`  | `string`                                                                | `Press any key...`   | Text to show while waiting for input.                                                         |
-| `useChars`       | `boolean`                                                               | `false`              | If `true`, it renders special characters instead of the word equivalent (e.g., Backquote -> "\`"). You can customize these bindings and add your own by modifying the `codeToChar` object located at "Keybinds/util/codeToChar.ts/" |
-| `conflictPolicy` | `'block' \| 'replace-existing' \| 'swap' \| 'allow-duplicates'`         | `'allow-duplicates'` | How to resolve when a new binding collides with an existing one (see below).                                          |
+| `overrides`      | `Partial<Record<BindingCode, string>>`                                  | `{}`                 | Object of custom key overrides. Include only the codes you want to change (e.g., `KeyW`, `ArrowLeft`, `Digit1`). [See Mappings](#mappings-object) |
+| `conflictPolicy` | `'block' \| 'replace-existing' \| 'swap' \| 'allow-duplicates'`         | `'allow-duplicates'` | How to resolve when a new binding collides with an existing one ([see below](#conflict-policies)).                                        |
 | `ref`            | `(ref: KeybindsRef) => void`                                            | `undefined`          | Exposes programmatic methods and the current bindings.                                                                |
 | `onConflict`     | `(action: string, key: string \| null, conflictAction: string) => void` | `undefined`          | Called when a conflict happens under any policy.                                                                      |
-| `onChange`       | `(action: string, key: string \| null) => void`                         | `undefined`          | Called when a bind or unbind operation succeeds.                                                  |
+| `onChange`       | `(prev: string \| null, next: string \| null, action: string) => void`                         | `undefined`          | Called when a bind or unbind operation succeeds.                                                  |
 
 ### Conflict policies
 
@@ -119,7 +126,7 @@ it starts to listen for the user to press a key or mouse button to bind the asso
 | Prop name | Type | Default | Description |
 | --------- | ---- | ------- | ----------- |
 | `action`  | `string` | `undefined` | The action that will have a key bound to it. |
-| `value`   | `string \| undefined` | `undefined` | The value associated with the keybind by default. If omitted, it will be null. |
+| `value`   | `string \| undefined` | `undefined` | The value associated with the keybind by default. If omitted, it will be null. The string provided must match the label from the [mappings object](#mappings-object), unless overridden. |
 
 ## Guide
 
@@ -143,14 +150,15 @@ import Keybind from '@components/Basic/Keybinds/Keybind';
 const App = () => {
     let keybindsRef!: KeybindsRef;
 
-    const retrieveBindings = () => {
+    const retrieveBindings = (prev: string | null, next: string | null, action: string) => {
+        console.log(`Changed "${action}" from "${prev}" to "${next}"`);
         console.log(keybindsRef.bindings);
     }
 
     return (
         <Keybinds ref={keybindsRef} onChange={retrieveBindings} conflictPolicy="block">
             <Keybind action={'forward'} value="W" />
-            <Keybind action={'backward'} value="Arrow Down" />
+            <Keybind action={'backward'} value="Down" />
         </Keybinds>
     );
 };
@@ -181,7 +189,7 @@ const App = () => {
     return (
         <Keybinds ref={keybindsRef} >
             <Keybind action={'forward'} value="W" />
-            <Keybind action={'backward'} value="Arrow Down" />
+            <Keybind action={'backward'} value="Down" />
         </Keybinds>
     );
 };
@@ -190,7 +198,7 @@ export default App;
 ```
 
 :::Note
-In this case because no `defaults` prop was provided, it will reset to the original values seeded by the children: `forward: "W"` and `backward: "Arrow Down"`.
+In this case because no `defaults` prop was provided, it will reset to the original values seeded by the children: `forward: "W"` and `backward: "Down"`.
 :::
 
 ### Programmatically binding/unbinding keys
@@ -211,16 +219,16 @@ import Keybind from '@components/Basic/Keybinds/Keybind';
 const App = () => {
     let keybindsRef!: KeybindsRef;
 
-    const rebindForward = () => keybindsRef.bind('forward', 'Arrow Up');
-    const unbindBackward = () => keybindsRef.unbindKey('Arrow Down');
+    const rebindForward = () => keybindsRef.bind('forward', 'Up');
+    const unbindBackward = () => keybindsRef.unbindKey('Down');
 
     return (
         <>
-            <button onClick={rebindForward}>Rebind Forward to Arrow Up</button>
+            <button onClick={rebindForward}>Rebind Forward to Up</button>
             <button onClick={unbindBackward}>Unbind backward</button>
             <Keybinds ref={keybindsRef} conflictPolicy="block" placeholder="Unbound">
                 <Keybind action={'forward'} value="W" />
-                <Keybind action={'backward'} value="Arrow Down" />
+                <Keybind action={'backward'} value="Down" />
             </Keybinds>
         </>
     );
@@ -258,7 +266,7 @@ const App = () => {
         <>
             <Keybinds conflictPolicy="block" onConflict={handleConflict}>
                 <Keybind action={'forward'} value="W" />
-                <Keybind action={'backward'} value="Arrow Down" />
+                <Keybind action={'backward'} value="Down" />
             </Keybinds>
         </>
     );
@@ -284,10 +292,10 @@ const App = () => {
     let keybindsRef!: KeybindsRef;
 
     const preset = {
-        forward: "Arrow Up",
-        backward: "Arrow Down",
-        left: "Arrow Left",
-        right: "Arrow Right",
+        forward: "Up",
+        backward: "Down",
+        left: "Left",
+        right: "Right",
         jump: null
     };
 
@@ -314,24 +322,41 @@ export default App;
 You can see an extended example of presets in the Menu UI view located at `src/views/menu/Menu.tsx`.
 :::
 
-### Modifying key characters 
+### Key label overrides (custom key display)
 
-By default, the `Keybind` component displays special keys (like "Backquote", "BracketLeft", etc.) as their word equivalents.
-If you prefer to show the actual character (like `` ` ``, `[`, etc.), you can enable this behavior by setting the `useChars` prop to `true` on the `Keybinds` component.
+In order to provide custom values for some keys you need to customize how keys are displayed. To achieve that, do the following.
+
+1. Create an object where the keys are the codes you want to override and the values are the custom labels you want to display.
+2. Pass the object to the `overrides` prop of the `Keybinds` component.
+3. Now the `Keybinds` component will consider you custom labels as valid display values.
 
 ```tsx
 import Keybinds, { KeybindsRef } from '@components/Basic/Keybinds/Keybinds';
 import Keybind from '@components/Basic/Keybinds/Keybind';
 
 const App = () => {
+    const overrides = {
+        "ArrowUp": "Up",
+        "ArrowDown": "Down",
+        "Backquote": "`",
+        "BracketLeft": "[",
+        "BracketRight": "]",
+        "0": "Mouse Left",
+        "2": "Mouse Right",
+        "WheelUp": "Wheel Up",
+    };
+
     return (
         <>
-            <Keybinds useChars={true} conflictPolicy="block" placeholder="Unbound">
-                <Keybind action={'forward'} value="ArrowUp" />
-                <Keybind action={'backward'} value="ArrowDown" />
-                <Keybind action={'special-action-one'} value="Backquote" />
-                <Keybind action={'special-action-two'} value="BracketLeft" />
-                <Keybind action={'special-action-three'} value="BracketRight" />
+            <Keybinds overrides={overrides} conflictPolicy="block" placeholder="Unbound">
+                <Keybind action={'forward'} value="Up" />
+                <Keybind action={'backward'} value="Down" />
+                <Keybind action={'special-action-one'} value="`" />
+                <Keybind action={'special-action-two'} value="[" />
+                <Keybind action={'special-action-three'} value="]" />
+                <Keybind action={'select-item'} value="Mouse Left" />
+                <Keybind action={'interact'} value="Mouse Right" />
+                <Keybind action={'view-up'} value="Wheel up" />
             </Keybinds>
         </>
     );
@@ -340,36 +365,175 @@ const App = () => {
 export default App;
 ```
 
-The code will display the keys as `Up`, `Down`, `` ` ``, `[`, and `]` respectively.
-
-### Customzing key characters
-
-You can control how keys are displayed (not how they're detected) by editing the utility maps in: `src/components/Basic/Keybinds/util/*.ts`.
-
-#### Files and what they do
-
-- `codeToChar.ts`: Maps `KeyboardEvent.code` to their character equivalents (e.g., "Backquote" -> "`").
-- `buttonToCode.ts`: Maps mouse button numbers to key bindings (e.g., `0` -> "Mouse0", `1` → "MouseMiddle").
-- `wheelCodes.ts`: Specifies the how the mouse wheel codes will display (currently -> "Wheel Up" and "Wheel Down").
-
-You can change the `codeToChar` object to add your own custom mappings or modify existing ones.
-
-```diff lang="ts"
-const codeToChar: Record<string, string> = {
-+    ArrowUp: "↑",
-+    ArrowDown: "↓",
-    ArrowLeft: "Left",
-    ArrowRight: "Right",
-+   Space: "␣",           // show a nice visible space symbol
-+   NumpadMultiply: "x",  // custom numpad symbol
-    // ...
-}
-```
-
 :::caution
-You must use the exact key code names as defined in the [KeyboardEvent.code](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code/code_values) documentation.
+Overrides must follow the exact casing of the codes as specified in the [Reference](#mappings-object) table. For example, use `ArrowUp` instead of `arrowup` or `ARROWUP`.
 :::
 
 :::caution
-Make sure to use the `useChars` prop on the `Keybinds` component to be able to see your custom defined character strings.
+Overrides are applied when the component first mounts. Changing the `overrides` prop later will not update existing keybinds.
 :::
+
+## Reference
+
+### Mappings object
+
+The `Keybinds` component comes with a default mapping object that translates common `KeyboardEvent.code` and mouse button codes to user-friendly labels.
+
+The mappings object uses [KeyboardEvent.code](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code/code_values) for keyboard mappings and 
+[MouseEvent.button](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button#value) for mouse button mappings.
+
+The object is located at `src/components/Basic/Keybinds/mappings.ts`.
+
+#### Keyboard
+
+| Code              | Label          |
+|-------------------|----------------|
+| KeyA              | A              |
+| KeyB              | B              |
+| KeyC              | C              |
+| KeyD              | D              |
+| KeyE              | E              |
+| KeyF              | F              |
+| KeyG              | G              |
+| KeyH              | H              |
+| KeyI              | I              |
+| KeyJ              | J              |
+| KeyK              | K              |
+| KeyL              | L              |
+| KeyM              | M              |
+| KeyN              | N              |
+| KeyO              | O              |
+| KeyP              | P              |
+| KeyQ              | Q              |
+| KeyR              | R              |
+| KeyS              | S              |
+| KeyT              | T              |
+| KeyU              | U              |
+| KeyV              | V              |
+| KeyW              | W              |
+| KeyX              | X              |
+| KeyY              | Y              |
+| KeyZ              | Z              |
+| Digit0            | 0              |
+| Digit1            | 1              |
+| Digit2            | 2              |
+| Digit3            | 3              |
+| Digit4            | 4              |
+| Digit5            | 5              |
+| Digit6            | 6              |
+| Digit7            | 7              |
+| Digit8            | 8              |
+| Digit9            | 9              |
+| F1                | F1             |
+| F2                | F2             |
+| F3                | F3             |
+| F4                | F4             |
+| F5                | F5             |
+| F6                | F6             |
+| F7                | F7             |
+| F8                | F8             |
+| F9                | F9             |
+| F10               | F10            |
+| F11               | F11            |
+| F12               | F12            |
+| F13               | F13            |
+| F14               | F14            |
+| F15               | F15            |
+| F16               | F16            |
+| F17               | F17            |
+| F18               | F18            |
+| F19               | F19            |
+| F20               | F20            |
+| F21               | F21            |
+| F22               | F22            |
+| F23               | F23            |
+| F24               | F24            |
+| Numpad0           | Num 0          |
+| Numpad1           | Num 1          |
+| Numpad2           | Num 2          |
+| Numpad3           | Num 3          |
+| Numpad4           | Num 4          |
+| Numpad5           | Num 5          |
+| Numpad6           | Num 6          |
+| Numpad7           | Num 7          |
+| Numpad8           | Num 8          |
+| Numpad9           | Num 9          |
+| NumpadAdd         | +              |
+| NumpadSubtract    | -              |
+| NumpadMultiply    | *              |
+| NumpadDivide      | /              |
+| NumpadDecimal     | .              |
+| NumpadComma       | ,              |
+| NumpadEnter       | Num Enter      |
+| NumpadEqual       | Num =          |
+| Backquote         | `              |
+| Minus             | -              |
+| Equal             | =              |
+| BracketLeft       | [              |
+| BracketRight      | ]              |
+| Backslash         | \              |
+| Semicolon         | ;              |
+| Quote             | '              |
+| Comma             | ,              |
+| Period            | .              |
+| Slash             | /              |
+| ShiftLeft         | L Shift        |
+| ShiftRight        | R Shift        |
+| ControlLeft       | L Ctrl         |
+| ControlRight      | R Ctrl         |
+| AltLeft           | L Alt          |
+| AltRight          | R Alt          |
+| MetaLeft          | L Meta         |
+| MetaRight         | R Meta         |
+| Escape            | Esc            |
+| Tab               | Tab            |
+| CapsLock          | Caps           |
+| Space             | Space          |
+| Enter             | Enter          |
+| Backspace         | Back           |
+| Delete            | Del            |
+| Insert            | Ins            |
+| Home              | Home           |
+| End               | End            |
+| PageUp            | PgUp           |
+| PageDown          | PgDn           |
+| ArrowUp           | Up             |
+| ArrowDown         | Down           |
+| ArrowLeft         | Left           |
+| ArrowRight        | Right          |
+| PrintScreen       | PrtSc          |
+| ScrollLock        | Scroll         |
+| Pause             | Pause          |
+| ContextMenu       | Menu           |
+| NumLock           | NumLock        |
+| AudioVolumeMute   | Mute           |
+| AudioVolumeDown   | Vol-           |
+| AudioVolumeUp     | Vol+           |
+| MediaTrackNext    | Next           |
+| MediaTrackPrevious| Prev           |
+| MediaStop         | Stop           |
+| MediaPlayPause    | Play/Pause     |
+| BrowserBack       | BrowserBack    |
+| BrowserForward    | BrowserForward |
+| BrowserRefresh    | BrowserRefresh |
+| BrowserStop       | BrowserStop    |
+| BrowserSearch     | BrowserSearch  |
+| BrowserFavorites  | BrowserFav     |
+| BrowserHome       | BrowserHome    |
+
+#### Mouse Buttons
+
+| Code              | Label          |
+|-------------------|----------------|
+| 0                 | LMB            |
+| 1                 | MMB            |
+| 2                 | RMB            |
+| 3                 | BMB            |
+| 4                 | FMB            |
+
+#### Mouse Wheel
+
+| Code              | Label          |
+|-------------------|----------------|
+| WheelUp           | Wheel Up       |
+| WheelDown         | Wheel Down     |

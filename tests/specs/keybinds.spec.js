@@ -2,6 +2,7 @@ const assert = require('assert');
 const selectors = require('../shared/keybinds/keybinds-selectors.json');
 const DEFAULT_MAPPINGS = require('../shared/keybinds/default-mappings.json');
 const ALTERNATE_MAPPINGS = require('../shared/keybinds/alternate-mappings.json');
+const OVERRIDES = require('../shared/keybinds/overrides.json');
 
 describe('Keybinds', function () {
     this.beforeAll(async () => {
@@ -92,14 +93,14 @@ describe('Keybinds', function () {
         assert.equal(await keybinds[1].text(), oldKey, `Keybind should change to ${oldKey}`);
     });
 
-    it('Should rebind a key progrmatically', async () => {
+    it('Should rebind a key programmatically', async () => {
         await gf.click(`.${selectors.scenarioBtn}.scenario-3`);
         const keybinds = await gf.getAll(`.${selectors.keybind}`);
 
-        assert.equal(await keybinds[0].text(), 'Q', `Keybind should change to Q`);
+        assert.equal(await keybinds[0].text(), 'Z', `Keybind should change to Z`);
     });
 
-    it('Should unbind a key progrmatically', async () => {
+    it('Should unbind a key programmatically', async () => {
         await gf.click(`.${selectors.scenarioBtn}.scenario-4`);
         const keybinds = await gf.getAll(`.${selectors.keybind}`);
 
@@ -155,12 +156,21 @@ describe('Keybinds', function () {
 
     it('Should bind a refactored keybind value', async () => {
         await gf.click(`.${selectors.scenarioBtn}.scenario-1`); // allow duplicated for easier assertion
-        await gf.click(`.${selectors.scenarioBtn}.scenario-10`); // Use characters
         const keybinds = await gf.getAll(`.${selectors.keybind}`);
-        await keybinds[0].click();
-        await gf.keyPress(gf.KEYS.ARROW_UP);
 
-        assert.equal(await keybinds[0].text(), 'Up', 'Keybind value shouldn\'t be \'Arrow Up\' but only Up');
+        const overridesArr = Object.values(OVERRIDES);
+        for (let i = 0; i < overridesArr.length; i++) {
+            await keybinds[i].click();
+
+            if (overridesArr[i].includes('Mouse')) {
+                await keybinds[i].mousePress('middle');
+                await keybinds[i].mouseRelease();
+            } else {
+                await gf.keyPress(overridesArr[i].split(' ')[1]);
+            }
+
+            assert.equal(await keybinds[i].text(), overridesArr[i], 'Keybind value should match override');
+        }
     });
 
     it('Should bind mouse value without triggering listen state on another keybind', async () => {
@@ -180,7 +190,9 @@ describe('Keybinds', function () {
         await keybinds[0].click();
         await gf.keyPress('Z');
 
-        assert.equal(await assertionEl.text(), `${DEFAULT_MAPPINGS[0].action} Z`, 'OnChange should reflect rebinding');
+        const prevKey = DEFAULT_MAPPINGS[0].key;
+        const action = DEFAULT_MAPPINGS[0].action;
+        assert.equal(await assertionEl.text(), `${prevKey} Z ${action}`, 'OnChange should reflect rebinding');
     });
 
     it('Should not trigger onChange event after keybind change attempt', async () => {
@@ -190,7 +202,7 @@ describe('Keybinds', function () {
         await keybinds[0].click();
         await gf.keyPress(DEFAULT_MAPPINGS[1].key);
         
-        assert.equal(await assertionEl.text(), " ", 'OnChange should not trigger');
+        assert.equal((await assertionEl.text()).trim(), "", 'OnChange should not trigger');
     });
 
     it('Should trigger onConflict event after binding conflict occurs', async () => {
@@ -205,7 +217,7 @@ describe('Keybinds', function () {
     });
 
     it('Should update styles & classes reactively on props change', async () => {
-        await gf.click(`.${selectors.scenarioBtn}.scenario-11`);
+        await gf.click(`.${selectors.scenarioBtn}.scenario-10`);
         const el = await gf.get(`.${selectors.keybind}`);
         const styles = await el.styles();
         const classes = await el.classes();
@@ -240,7 +252,7 @@ describe('Keybinds', function () {
             await keybinds[1].click();
             await gf.keyPress('X');
 
-            await gf.click(`.${selectors.scenarioBtn}.scenario-12`)
+            await gf.click(`.${selectors.scenarioBtn}.scenario-11`)
             assert.strictEqual(await keybinds[0].text(), keybind1InitialText, `Keybind should have its initial value`);
             assert.strictEqual(await keybinds[1].text(), keybind2InitialText, `Keybind should have its initial value`);
         });
