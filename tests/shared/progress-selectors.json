@@ -1,0 +1,9 @@
+{
+  "assertionElement": "assertion-element",
+  "scenarioBtn": "scenario-btn",
+  "base": "progress-base",
+  "fill": "fill",
+  "outline": "outline",
+  "text": "text",
+  "reactive": "reactive"
+}
