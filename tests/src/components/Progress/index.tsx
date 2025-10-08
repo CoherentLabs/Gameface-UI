@@ -6,7 +6,6 @@ import Progress from "@components/Feedback/Progress/Progress";
 const INITIAL_VALUE = 10;
 const ProgressTest = () => {
     const [value, setValue] = createSignal(INITIAL_VALUE);
-    const [withPercent, setWithPercent] = createSignal(true);
     const [shape, setShape] = createSignal<'square' | 'round'>("square");
     const [test, setTest] = createSignal('red');
 
@@ -25,15 +24,13 @@ const ProgressTest = () => {
         { label: "Load to 50%", action: () => {simulateProgress(50)}},
         { label: "Load to 120%", action: () => {simulateProgress(120)}},
         { label: "Change styles", action: () => {setTest('blue')}},
-        { label: "Remove percent", action: () => {setWithPercent(false)}},
         { label: "Set shape to round", action: () => {setShape('round')}},
     ];
 
     const reset = () => {
         setTest('red');
-        setValue(INITIAL_VALUE)
-        setWithPercent(true);
-        setShape('square')
+        setValue(INITIAL_VALUE);
+        setShape('square');
     };
 
     const TestBoilerplate = () => (
@@ -77,7 +74,9 @@ const ProgressTest = () => {
                     class={`${selectors.base} ${reactiveClass()}`}>
                     <Progress.Circle.Fill class={`${selectors.fill} ${reactiveClass()}`} style={reactiveStyle()} shape={shape()} />
                     <Progress.Circle.Outline class={`${selectors.outline} ${reactiveClass()}`} style={reactiveStyle()} />
-                    <Progress.Circle.Text with-percent={withPercent()} class={`${selectors.text} ${reactiveClass()}`} style={reactiveStyle()} />
+                    <Progress.Circle.Text class={`${selectors.text} ${reactiveClass()}`} style={reactiveStyle()}>
+                        {`${value()}%`}
+                    </Progress.Circle.Text>
                 </Progress.Circle>
             </Tab> 
         </>

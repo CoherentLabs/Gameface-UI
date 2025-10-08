@@ -82,10 +82,11 @@ export default App;
 
 ### Adding a progress bar
 
-To get the progress of your toast you can use the `progress` signal inside the `body`:
+You can display a progress bar inside your toast by using the `progress` signal within the `body` function, together with the [`Progress.Bar`](/components/feedback/progress-bar/) component:
 
 ```tsx
 import useToast from '@components/Feedback/Toast/toast';
+import Progress from '@components/Feedback/Progress/Progress';
 
 const App = () => {
     const [Toaster, createToast] = useToast();
@@ -97,7 +98,7 @@ const App = () => {
                 <>
                     This is a toast message
                     <div style={{ width: '100%', height: '5px', background: '#ccc' }}>
-                        <div style={{ width: `${progress() * 5}%`, height: '100%', background: '#4caf50' }}></div>
+                        <Progress.Bar progress={progress() * 5} />
                     </div>
                     {close(<button>Close</button>)}
                 </>

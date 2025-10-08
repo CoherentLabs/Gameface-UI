@@ -42,7 +42,7 @@ describe('Progress Bar', function () {
 
         await gf.sleep(1000)
         const {width} = await fill.styles();
-        assert.notEqual(width, 120, 'Width should be with be a 100%');
+        assert.notEqual(width, 120, 'Width should be 100%');
     })
 
     describe('reactivity', () => {

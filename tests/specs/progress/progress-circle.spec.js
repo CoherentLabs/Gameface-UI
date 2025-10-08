@@ -46,25 +46,16 @@ describe('Progress Circle', function () {
 
     it('Should not load beyond 100%', async () => {
         const fill= await gf.get(`.${selectors.fill}`);
-        const text= await gf.get(`.${selectors.text}`);
         await gf.click(`.${selectors.scenarioBtn}.scenario-2`);
 
         await gf.sleep(1000)
         const dashoffset = await fill.getAttribute('stroke-dashoffset');
         assert.notEqual(dashoffset, -20, 'Dashoffset should be 0');
-        assert.equal(await text.text(), '100%', 'Circles\'s text should be 100%');
-    })
-
-    it('Should remove percent symbol from text', async () => {
-        const text= await gf.get(`.${selectors.text}`);
-        await gf.click(`.${selectors.scenarioBtn}.scenario-4`);
-
-        assert.equal(await text.text(), '10', 'Circles\'s text should be without %');
     })
 
     it('Should make fill round', async () => {
         const fill = await gf.get(`.${selectors.fill}`);
-        await gf.click(`.${selectors.scenarioBtn}.scenario-5`);
+        await gf.click(`.${selectors.scenarioBtn}.scenario-4`);
 
         const strokeLinecap = await fill.getAttribute('stroke-linecap');
         assert.equal(strokeLinecap, 'round', 'Circles\'s fill shape should be round');

@@ -1,11 +1,11 @@
-import { createMemo, ParentComponent, Show } from "solid-js";
+import { createMemo, ParentComponent, ParentProps, Show } from "solid-js";
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
 import { clampProgress, ProgressProps } from "./Progress";
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import styles from './Progress.module.scss';
 
 interface FillTokenProps extends TokenBase { shape?: 'square' | 'round', }
-interface TextTokenProps extends TokenBase { 'with-percent'?: boolean, }
+interface TextTokenProps extends TokenBase, ParentProps {}
 
 const Fill = createTokenComponent<FillTokenProps>();
 const Text = createTokenComponent<TextTokenProps>();
@@ -62,7 +62,7 @@ const ProgressCircle: ParentComponent<ProgressProps> = (props) => {
             </svg>
             <Show when={textToken()}>
                 <div class={textClasses()} style={textToken()?.style}>
-                    {`${clampProgress(props.progress)}${textToken()?.["with-percent"] ? "%" : ""}`}
+                    {textToken()?.children}
                 </div>
             </Show>
         </div>
