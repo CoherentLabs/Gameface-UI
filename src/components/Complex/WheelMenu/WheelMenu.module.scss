@@ -8,6 +8,9 @@
     border-radius: 50%;
     color: $textColor;
     visibility: hidden;
+    left: 50vw;
+    top: 50vh;
+    transform: translate(-50%, -50%);
 
     &-open {
         visibility: visible;

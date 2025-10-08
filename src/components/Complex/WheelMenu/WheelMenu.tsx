@@ -1,10 +1,11 @@
-import { createTokenComponent, TokenBase, useToken, useTokens } from '@components/utils/tokenComponents';
+import { createTokenComponent, TokenBase, useTokens } from '@components/utils/tokenComponents';
 import styles from './WheelMenu.module.scss';
 import { ComponentProps } from '@components/types/ComponentProps';
 import { Accessor, createContext, createEffect, createMemo, createSignal, For, JSX, on, onCleanup, onMount, ParentComponent, Setter } from 'solid-js';
 import WheelItem from './WheelItem';
 import useBaseComponent from '@components/BaseComponent/BaseComponent';
 import InnerWheelCircle from './InnerWheelCircle';
+import { angleToSlice, mouseToStick, Stick, stickToPolar } from './utils';
 export interface ItemTokenProps extends TokenBase {
     id?: string,
     offset?: string
@@ -31,7 +32,8 @@ export interface WheelMenuRef {
     open: () => void,
     close: () => void,
     changeGap: Setter<boolean>
-    select: (index: number) => void;
+    selectByIndex: (index: number) => void;
+    selectByVector: (x: number, y: number) => void;
 }
 interface WheelNenuProps extends ComponentProps {
     gap?: number, 
@@ -67,23 +69,48 @@ const WheelMenu: ParentComponent<WheelNenuProps> = (props) => {
         return `polygon(${xLeftPercent}% 0, 50% 50%, ${xRightPercent}% 0)`
     });
 
-    const getSelectedSector = (e: MouseEvent) => {
-        if (!wheelElement && !isOpen() || ignoreMouseMove()) return;
+    const mouseMoveHandler = (e: MouseEvent) => {
+        if (!wheelElement || !isOpen() || ignoreMouseMove()) return;
 
-        const wheelRect = wheelElement!.getBoundingClientRect()
-        const cx = wheelRect.left + wheelRect.width / 2;
-        const cy = wheelRect.top + wheelRect.height / 2;
-        
-        const dx = e.clientX - cx;
-        const dy = e.clientY - cy;
+        const rect = wheelElement.getBoundingClientRect();
+        const stick = mouseToStick(e, rect);
 
-        const rad = Math.atan2(dx, -dy); // swap, flip Y → 0° is up, clockwise positive
-        const degrees = (rad * 180 / Math.PI + 360) % 360; // normalize to [0, 360)
-        const slice = degreesPerSlice()
-        const index = Math.floor(((degrees + (slice / 2)) % 360) / slice); // divide by 2 to shift half a sector
+        handleIndexSelection(stick);
+    };
+
+    const selectByVector = (x: number, y: number) => {
+        if (!isOpen()) return;
+
+        const stick = stickToPolar(x, y);
+        handleIndexSelection(stick);
+        // Debounce mouse move to avoid immediate override
+        debounceMouseMovement();
+    }
+
+    const selectByIndex = (index: number) => {
+        if (index < 0 || index >= length() || !isOpen()) return;
+        const degrees = index * degreesPerSlice();
 
         setSelected(index)
         setRotation(degrees);
+        // Debounce mouse move to avoid immediate override
+        debounceMouseMovement();
+    }
+
+    /** Handles item selection based on stick input */
+    const handleIndexSelection = (stick: Stick) => {
+        // Deadzone for stick drift
+        const DEADZONE = 0.12; // 12% allowence from center
+        if (stick.mag < DEADZONE) return
+
+        const index = angleToSlice(stick.angleDeg, degreesPerSlice());
+        setSelected(index);
+        setRotation(stick.angleDeg);
+    }
+
+    const debounceMouseMovement = () => {
+        setIgnoreMouseMove(true);
+        setTimeout(() => setIgnoreMouseMove(false), 100);
     }
 
     const wheelMenuClasses = createMemo(() => {
@@ -92,17 +119,6 @@ const WheelMenu: ParentComponent<WheelNenuProps> = (props) => {
 
         return classes.join(' ');
     })
-
-    const selectItem = (index: number) => {
-        if (index < 0 || index >= length()) return;
-        const degrees = index * degreesPerSlice();
-
-        setSelected(index)
-        setRotation(degrees);
-        // Debounce mouse move to avoid immediate override
-        setIgnoreMouseMove(true);
-        setTimeout(() => setIgnoreMouseMove(false), 100);
-    }
 
     // Subscribe to isOpen changes to add/remove event listeners
     createEffect(on(isOpen, (isOpened) => {
@@ -116,11 +132,11 @@ const WheelMenu: ParentComponent<WheelNenuProps> = (props) => {
     }, { defer: true }))
 
     const addEventListeners = () => {
-        window.addEventListener('mousemove', getSelectedSector)
+        window.addEventListener('mousemove', mouseMoveHandler)
     }
 
     const removeEventListeners = () => {
-        window.removeEventListener('mousemove', getSelectedSector)
+        window.removeEventListener('mousemove', mouseMoveHandler)
     }
 
     onMount(() => {
@@ -131,7 +147,8 @@ const WheelMenu: ParentComponent<WheelNenuProps> = (props) => {
             open: () => setIsOpen(true),
             close: () => setIsOpen(false),
             changeGap: setGap,
-            select: selectItem
+            selectByIndex,
+            selectByVector
         });
     })
 
