@@ -33,6 +33,7 @@ import TooltipTest from '../../components/Tooltip/TooltipTest';
 import ToasterTest from '../../components/Toaster/ToasterTest';
 import KeybindsTest from '../../components/Keybinds/KeybindsTest';
 import ProgressTest from '../../components/Progress';
+import WheelMenuTest from '../../components/WheelMenu/WheelMenuTest';
 
 const Main = () => {
     const components = [
@@ -49,20 +50,22 @@ const Main = () => {
         "toggle",
         "pagination",
         'keybinds',
+        "accordion",
+        "text-input",
+        "password-input",
+        "number-input",
 
         //Feedback components
         'modal',
         'tooltip',
+        'toaster',
         "progress-bar",
         "progress-circle",
 
         // Complex components
         "color-picker",
         "carousel",
-        "accordion",
-        "text-input",
-        "password-input",
-        "number-input",
+        "wheel-menu",
 
         // Layout components
         "absolute",
@@ -75,9 +78,6 @@ const Main = () => {
         'media',
         // base
         'base',
-
-        // Feedback
-        'toaster',
     ]
 
     return (
@@ -121,6 +121,7 @@ const Main = () => {
                 <ToasterTest />
                 <KeybindsTest />
                 <ProgressTest />
+                <WheelMenuTest />
             </Tabs>
         </div>
     );

@@ -1,7 +1,7 @@
-import { Accessor, JSX, ParentComponent, ParentProps, Show, createEffect, createMemo, mergeProps, on, onCleanup, onMount, useContext } from "solid-js";
-import { TokenBase, useToken } from "@components/utils/tokenComponents";
+import { Accessor, JSX, ParentComponent, ParentProps, createEffect, createMemo,on, useContext } from "solid-js";
+import { useToken } from "@components/utils/tokenComponents";
 import { TokenComponentProps } from "@components/types/ComponentProps";
-import { Item, ItemTokenProps, Selector, WheelMenuContext } from "./WheelMenu";
+import { ItemTokenProps, Selector, WheelMenuContext } from "./WheelMenu";
 import styles from './WheelMenu.module.scss';
 
 interface WheelSelectorProps extends TokenComponentProps{

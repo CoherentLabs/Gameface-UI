@@ -16,7 +16,7 @@ export const Item = createTokenComponent<ItemTokenProps>()
 export const Indicator = createTokenComponent<TokenBase>()
 export const InnerWheel = createTokenComponent<TokenBase>()
 export const Icon = createTokenComponent<TokenBase>()
-export const Selector = createTokenComponent<Omit<ItemTokenProps, 'id'>>();
+export const Selector = createTokenComponent<Omit<ItemTokenProps, 'id' | 'offset'>>();
 
 interface WheelMenuContextType {
     clipPathValue: Accessor<string>,
@@ -31,13 +31,14 @@ export interface WheelMenuRef {
     element: HTMLDivElement,
     open: () => void,
     close: () => void,
-    changeGap: Setter<boolean>
+    changeGap: Setter<number>
     selectByIndex: (index: number) => void;
     selectByVector: (x: number, y: number) => void;
 }
 interface WheelNenuProps extends ComponentProps {
     gap?: number, 
     opened?: boolean,
+    selected?: number,
     onChange?: (id: string | number) => void;
     onItemChanged?: () => void;
 }
@@ -46,7 +47,7 @@ const WheelMenu: ParentComponent<WheelNenuProps> = (props) => {
     const ItemTokens = useTokens(Item, props.children);
     let wheelElement: HTMLDivElement | undefined;
     
-    const [selected, setSelected] = createSignal(0);
+    const [selected, setSelected] = createSignal(props.selected ?? 0);
     const [rotation, setRotation] = createSignal(0);
     const [isOpen, setIsOpen] = createSignal(props.opened ?? false);
     const [gap, setGap] = createSignal(props.gap ?? 0);
@@ -54,6 +55,7 @@ const WheelMenu: ParentComponent<WheelNenuProps> = (props) => {
 
     const length = createMemo(() => ItemTokens()?.length ?? 1);
     const degreesPerSlice = createMemo(() => 360 / length());
+    
     const clipPathValue = createMemo(() => {
         if (length() === 1) return "";
         if (length() === 2) return 'polygon(0% 50%, 0% 0%, 100% 0%, 100% 50%)'
