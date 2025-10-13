@@ -33,7 +33,7 @@ import TooltipTest from '../../components/Tooltip/TooltipTest';
 import ToasterTest from '../../components/Toaster/ToasterTest';
 import KeybindsTest from '../../components/Keybinds/KeybindsTest';
 import ProgressTest from '../../components/Progress';
-import WheelMenuTest from '../../components/WheelMenu/WheelMenuTest';
+import RadialMenuTest from '../../components/RadialMenu/RadialMenuTest';
 
 const Main = () => {
     const components = [
@@ -65,7 +65,7 @@ const Main = () => {
         // Complex components
         "color-picker",
         "carousel",
-        "wheel-menu",
+        "radial-menu",
 
         // Layout components
         "absolute",
@@ -121,7 +121,7 @@ const Main = () => {
                 <ToasterTest />
                 <KeybindsTest />
                 <ProgressTest />
-                <WheelMenuTest />
+                <RadialMenuTest />
             </Tabs>
         </div>
     );

@@ -1,22 +1,22 @@
 import { createMemo, JSX, ParentComponent, Show, useContext } from "solid-js";
 import { TokenComponentProps } from "@components/types/ComponentProps";
-import { Icon, Indicator, WheelMenuContext } from "./WheelMenu";
+import { Icon, Indicator, RadialMenuContext } from "./RadialMenu";
 import { useToken } from "@components/utils/tokenComponents";
 import Absolute from "@components/Layout/Absolute/Absolute";
-import styles from './WheelMenu.module.scss';
+import styles from './RadialMenu.module.scss';
 
-const WheelIndicator: ParentComponent<TokenComponentProps> = (props) => {
+const MenuIndicator: ParentComponent<TokenComponentProps> = (props) => {
     const IndicatorToken = useToken(Indicator, props.parentChildren);
     const IconToken = useToken(Icon, IndicatorToken()?.children);
     
-    const context = useContext(WheelMenuContext);
+    const context = useContext(RadialMenuContext);
     if (!context) {
-        console.error('Wheel.Indicator must be used inside a WheelMenu component');
+        console.error('RadialMenu.Indicator must be used inside a RadialMenu component');
         return null;
     }
 
     const IndicatorClasses = createMemo(() => {
-        const classes = [styles['wheel-indicator']];
+        const classes = [styles['menu-indicator']];
         classes.push(IndicatorToken()?.class ?? "");
 
         return classes.join(' ');
@@ -37,7 +37,7 @@ const WheelIndicator: ParentComponent<TokenComponentProps> = (props) => {
     return (
         <Show when={IndicatorToken()}>
             {/* Wrapper around the center that rotates with the mouse */}
-            <div class={styles['wheel-indicator-wrapper']} style={{transform: `rotate(${context.rotation()}deg)`}}>
+            <div class={styles['menu-indicator-wrapper']} style={{transform: `rotate(${context.rotation()}deg)`}}>
                 {/* The indicator */}
                 <div class={IndicatorClasses()} style={IndicatorStyles()}></div>
                 {/* The icon inside the indicator */}
@@ -53,7 +53,7 @@ const WheelIndicator: ParentComponent<TokenComponentProps> = (props) => {
                     ) : (
                         // No children, just render default Icon.
                         <div
-                            class={`${IconToken()?.class ?? ""} ${styles['wheel-indicator-icon']}`}
+                            class={`${IconToken()?.class ?? ""} ${styles['menu-indicator-icon']}`}
                             style={IconToken()?.style}
                         />
                     )}
@@ -63,4 +63,4 @@ const WheelIndicator: ParentComponent<TokenComponentProps> = (props) => {
     )
 }
 
-export default WheelIndicator;
+export default MenuIndicator;

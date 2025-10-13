@@ -1,6 +1,6 @@
 {
-    "open-menu": "Open Wheel Menu",
-    "close-menu": "Close Wheel Menu",
+    "open-menu": "Open Radial Menu",
+    "close-menu": "Close Radial Menu",
     "change-gap": "Change Gap Size",
     "select-item": "Select Item by Index",
     "select-by-vector": "Select Item by Vector",

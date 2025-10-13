@@ -1,19 +1,19 @@
 import { Accessor, JSX, ParentComponent, ParentProps, createEffect, createMemo,on, useContext } from "solid-js";
 import { useToken } from "@components/utils/tokenComponents";
 import { TokenComponentProps } from "@components/types/ComponentProps";
-import { ItemTokenProps, Selector, WheelMenuContext } from "./WheelMenu";
-import styles from './WheelMenu.module.scss';
+import { ItemTokenProps, Selector, RadialMenuContext } from "./RadialMenu";
+import styles from './RadialMenu.module.scss';
 
-interface WheelSelectorProps extends TokenComponentProps{
+interface MenuItemComponentProps extends TokenComponentProps {
     item: ParentProps<ItemTokenProps>
     index: Accessor<number>;
 }
 
-export const WheelItem: ParentComponent<WheelSelectorProps> = (props) => {
+export const MenuItem: ParentComponent<MenuItemComponentProps> = (props) => {
     const SelectorToken = useToken(Selector, props.parentChildren);
-    const context = useContext(WheelMenuContext);
+    const context = useContext(RadialMenuContext);
     if (!context) {
-        console.error('Wheel.Item must be used inside a WheelMenu component');
+        console.error('RadialMenu.Item must be used inside a RadialMenu component');
         return null;
     }
 
@@ -30,7 +30,7 @@ export const WheelItem: ParentComponent<WheelSelectorProps> = (props) => {
     }, { defer: true }))
 
     const wrapperClasses = createMemo(() => {
-        const classes = [styles['wheel-item-wrapper']];
+        const classes = [styles['menu-item-wrapper']];
         classes.push(props.item.class ?? "");
         isSelected() && classes.push(props.item["class-selected"] ?? "");
         
@@ -46,11 +46,11 @@ export const WheelItem: ParentComponent<WheelSelectorProps> = (props) => {
     });
 
     const selectorClasses = createMemo(() => {
-        const classes = [styles['wheel-item-selector']];
+        const classes = [styles['menu-item-selector']];
         classes.push(SelectorToken()?.class ?? "");
         if(isSelected()) {
             // Default behavior for selected state
-            classes.push(styles['wheel-item-selected'])
+            classes.push(styles['menu-item-selected'])
             // Custom behavior for selected state
             classes.push(SelectorToken()?.["class-selected"] ?? "");
         }
@@ -78,11 +78,11 @@ export const WheelItem: ParentComponent<WheelSelectorProps> = (props) => {
     return (
         // Wrapper of the item content and the clipped selector
         <div class={wrapperClasses()} style={wrapperStyles()}>
-            {/* Colored part of the wheel */}
+            {/* Colored part of the menu */}
             <div class={selectorClasses()} style={selectorStyles()}></div>
             {/* Item content goes here */}
-            <div class={styles['wheel-item-content']} style={{transform: `rotate(${rotation()}deg)`, "padding-top": offset() }}>
-                {/* Rotated negatively to cancel out wheel rotation */}
+            <div class={styles['menu-item-content']} style={{transform: `rotate(${rotation()}deg)`, "padding-top": offset() }}>
+                {/* Rotated negatively to cancel out menu rotation */}
                 <div style={{transform: `rotate(-${rotation()}deg)`}}>
                     {props.item.children}
                 </div>
@@ -91,4 +91,4 @@ export const WheelItem: ParentComponent<WheelSelectorProps> = (props) => {
     )
 }
 
-export default WheelItem;
+export default MenuItem;

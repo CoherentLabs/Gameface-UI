@@ -40,7 +40,7 @@ const KeybindsTest = () => {
         setPolicy('block');
         setListeningText(undefined);
         setPlaceholder('Unbound');
-        keybindsRef.reset();
+        keybindsRef?.reset();
     };
 
     const isReactive = createMemo(() => test() === 'blue');

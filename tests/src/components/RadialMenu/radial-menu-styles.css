@@ -1,8 +1,8 @@
 .base {
-    top: 70vh;
+    top: 65vh !important;
 }
 
-.wheel-content {
+.menu-content {
     width: 40%;
     height: 40%;
 }
@@ -12,11 +12,11 @@
     height: 80%;
 }
 
-.wheel-item {
+.menu-item {
     transition: transform 0.2s linear;
 }
 
-.wheel-item-selected {
+.menu-item-selected {
     transform: scale(1.1);
 }
 

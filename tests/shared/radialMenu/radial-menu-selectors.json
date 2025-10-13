@@ -1,0 +1,14 @@
+{
+  "assertionElement": "assertion-element",
+  "scenarioBtn": "scenario-btn",
+  "radialMenu": "base",
+  "menuItem": "menu-item",
+  "menuItemSelected": "menu-item-selected",
+  "menuIndicator": "menu-indicator",
+  "menuContent": "menu-content",
+  "menuIcon": "menu-icon",
+  "menuSelector": "menu-selector",
+  "menuSelectorSelected": "menu-selector-selected",
+  "customIcon": "custom-icon",
+  "reactive": "reactive"
+}

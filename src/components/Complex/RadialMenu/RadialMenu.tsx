@@ -1,10 +1,10 @@
 import { createTokenComponent, TokenBase, useTokens } from '@components/utils/tokenComponents';
-import styles from './WheelMenu.module.scss';
+import styles from './RadialMenu.module.scss';
 import { ComponentProps } from '@components/types/ComponentProps';
 import { Accessor, createContext, createEffect, createMemo, createSignal, For, JSX, on, onCleanup, onMount, ParentComponent, Setter } from 'solid-js';
-import WheelItem from './WheelItem';
+import MenuItem from './MenuItem';
 import useBaseComponent from '@components/BaseComponent/BaseComponent';
-import InnerWheelCircle from './InnerWheelCircle';
+import MenuCenter from './MenuCenter';
 import { angleToSlice, mouseToStick, Stick, stickToPolar } from './utils';
 export interface ItemTokenProps extends TokenBase {
     id?: string,
@@ -14,20 +14,20 @@ export interface ItemTokenProps extends TokenBase {
 }
 export const Item = createTokenComponent<ItemTokenProps>()
 export const Indicator = createTokenComponent<TokenBase>()
-export const InnerWheel = createTokenComponent<TokenBase>()
+export const Content = createTokenComponent<TokenBase>()
 export const Icon = createTokenComponent<TokenBase>()
 export const Selector = createTokenComponent<Omit<ItemTokenProps, 'id' | 'offset'>>();
 
-interface WheelMenuContextType {
+interface RadialMenuContextType {
     clipPathValue: Accessor<string>,
     degreesPerSlice: Accessor<number>, 
     selected:  Accessor<number>,
     rotation:  Accessor<number>,
     onChange?: (id: string | number) => void;
 }
-export const WheelMenuContext = createContext<WheelMenuContextType>();
+export const RadialMenuContext = createContext<RadialMenuContextType>();
 
-export interface WheelMenuRef {
+export interface RadialMenuRef {
     element: HTMLDivElement,
     open: () => void,
     close: () => void,
@@ -35,7 +35,7 @@ export interface WheelMenuRef {
     selectByIndex: (index: number) => void;
     selectByVector: (x: number, y: number) => void;
 }
-interface WheelNenuProps extends ComponentProps {
+interface RadialMenuProps extends ComponentProps {
     gap?: number, 
     opened?: boolean,
     selected?: number,
@@ -43,9 +43,9 @@ interface WheelNenuProps extends ComponentProps {
     onItemChanged?: () => void;
 }
 
-const WheelMenu: ParentComponent<WheelNenuProps> = (props) => {
+const RadialMenu: ParentComponent<RadialMenuProps> = (props) => {
     const ItemTokens = useTokens(Item, props.children);
-    let wheelElement: HTMLDivElement | undefined;
+    let element: HTMLDivElement | undefined;
     
     const [selected, setSelected] = createSignal(props.selected ?? 0);
     const [rotation, setRotation] = createSignal(0);
@@ -72,9 +72,9 @@ const WheelMenu: ParentComponent<WheelNenuProps> = (props) => {
     });
 
     const mouseMoveHandler = (e: MouseEvent) => {
-        if (!wheelElement || !isOpen() || ignoreMouseMove()) return;
+        if (!element || !isOpen() || ignoreMouseMove()) return;
 
-        const rect = wheelElement.getBoundingClientRect();
+        const rect = element.getBoundingClientRect();
         const stick = mouseToStick(e, rect);
 
         handleIndexSelection(stick);
@@ -115,9 +115,9 @@ const WheelMenu: ParentComponent<WheelNenuProps> = (props) => {
         setTimeout(() => setIgnoreMouseMove(false), 100);
     }
 
-    const wheelMenuClasses = createMemo(() => {
-        const classes = [styles.wheel];
-        if (isOpen()) classes.push(styles["wheel-open"]);
+    const radialMenuClasses = createMemo(() => {
+        const classes = [styles.menu];
+        if (isOpen()) classes.push(styles["menu-open"]);
 
         return classes.join(' ');
     })
@@ -142,10 +142,10 @@ const WheelMenu: ParentComponent<WheelNenuProps> = (props) => {
     }
 
     onMount(() => {
-        if (!props.ref || !wheelElement) return;
+        if (!props.ref || !element) return;
     
         (props.ref as unknown as (ref: any) => void)({
-            element: wheelElement,
+            element: element,
             open: () => setIsOpen(true),
             close: () => setIsOpen(false),
             changeGap: setGap,
@@ -156,7 +156,7 @@ const WheelMenu: ParentComponent<WheelNenuProps> = (props) => {
 
     onCleanup(() => removeEventListeners());
 
-    props.componentClasses = () => wheelMenuClasses();
+    props.componentClasses = () => radialMenuClasses();
     const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     const ContextObj = {
@@ -168,22 +168,22 @@ const WheelMenu: ParentComponent<WheelNenuProps> = (props) => {
     }
     
     return (
-        <WheelMenuContext.Provider value={ContextObj}>
+        <RadialMenuContext.Provider value={ContextObj}>
             <div 
-                ref={wheelElement!}
+                ref={element!}
                 class={className()}
                 style={inlineStyles()}
                 use:forwardEvents={props} 
                 use:forwardAttrs={props} >
                 {/* Content */}
-                <InnerWheelCircle parentChildren={props.children} />
+                <MenuCenter parentChildren={props.children} />
                 {/* Items */}
                 <For each={ItemTokens()}>
-                    {(token, index) => <WheelItem index={index} item={token} parentChildren={props.children}></WheelItem>}
+                    {(token, index) => <MenuItem index={index} item={token} parentChildren={props.children}></MenuItem>}
                 </For>
             </div>
-        </WheelMenuContext.Provider>
+        </RadialMenuContext.Provider>
     )
 }
 
-export default Object.assign(WheelMenu, { Item, Content: InnerWheel, Selector, Indicator: Object.assign(Indicator, {Icon}) });
+export default Object.assign(RadialMenu, { Item, Content, Selector, Indicator: Object.assign(Indicator, {Icon}) });

@@ -1,12 +1,12 @@
 const assert = require('assert');
-const events = require('../shared/wheelMenu/wheel-menu-events.json');
-const selectors = require('../shared/wheelMenu/wheel-menu-selectors.json');
-const items = require('../shared/wheelMenu/wheel-item-ids.json');
+const events = require('../shared/radialMenu/radial-menu-events.json');
+const selectors = require('../shared/radialMenu/radial-menu-selectors.json');
+const items = require('../shared/radialMenu/radial-menu-item-ids.json');
 const { navigateToPage, clickEventButton } = require('../shared/utils');
 
-describe('Wheel Menu', function () {
+describe('Radial Menu', function () {
     this.beforeAll(async () => {
-        await navigateToPage('.wheel-menu-link');
+        await navigateToPage('.radial-menu-link');
     })
 
     this.afterEach(async () => {
@@ -14,29 +14,29 @@ describe('Wheel Menu', function () {
     })
 
     it('Should render itself and it\'s children correctly', async () => {
-        const wheelMenu = await gf.get(`.${selectors.wheelMenu}`);
-        const wheelInner = await wheelMenu.find(`.${selectors.wheelInner}`);
-        const indicator = await wheelMenu.find(`.${selectors.wheelIndicator}`);
-        const icon = await wheelMenu.find(`.${selectors.wheelIcon}`);
-        const selector = await wheelMenu.find(`.${selectors.wheelSelector}`);
-        const wheelItems = await wheelMenu.findAll(`.${selectors.wheelItem}`);
+        const radialMenu = await gf.get(`.${selectors.radialMenu}`);
+        const menuContent = await radialMenu.find(`.${selectors.menuContent}`);
+        const indicator = await radialMenu.find(`.${selectors.menuIndicator}`);
+        const icon = await radialMenu.find(`.${selectors.menuIcon}`);
+        const selector = await radialMenu.find(`.${selectors.menuSelector}`);
+        const menuItems = await radialMenu.findAll(`.${selectors.menuItem}`);
 
-        assert.ok(wheelMenu, 'Wheel Menu should be in the DOM');
-        assert.ok(wheelInner, 'Wheel Inner should be in the DOM');
-        assert.ok(indicator, 'Wheel Indicator should be in the DOM');
-        assert.ok(icon, 'Wheel Icon should be in the DOM');
-        assert.ok(selector, 'Wheel Selector should be in the DOM');
-        assert.ok(wheelItems && wheelItems.length === items.length, `${items.length} Wheel Items should be in the DOM`);
+        assert.ok(radialMenu, 'Radial Menu should be in the DOM');
+        assert.ok(menuContent, 'Menu content should be in the DOM');
+        assert.ok(indicator, 'Menu Indicator should be in the DOM');
+        assert.ok(icon, 'Menu Icon should be in the DOM');
+        assert.ok(selector, 'Menu Selector should be in the DOM');
+        assert.ok(menuItems && menuItems.length === items.length, `${items.length} Menu Items should be in the DOM`);
     })
 
     it('Should close and open the menu', async () => {
-        const wheelMenu = await gf.get(`.${selectors.wheelMenu}`);
+        const radialMenu = await gf.get(`.${selectors.radialMenu}`);
 
         await clickEventButton(events["close-menu"]);
-        assert.equal(await wheelMenu.isVisible(), false, 'Wheel Menu should not be visible');
+        assert.equal(await radialMenu.isVisible(), false, 'Radial Menu should not be visible');
 
         await clickEventButton(events["open-menu"]);
-        assert.equal(await wheelMenu.isVisible(), true, 'Wheel Menu should be visible again');
+        assert.equal(await radialMenu.isVisible(), true, 'Radial Menu should be visible again');
     });
 
     it('Selected item should not change after closing and opening the menu', async () => {
@@ -50,9 +50,9 @@ describe('Wheel Menu', function () {
     });
 
     it('Should change gap between items', async () => {
-        const styles = await gf.getStyles(`.${selectors.wheelSelector}`);
+        const styles = await gf.getStyles(`.${selectors.menuSelector}`);
         await clickEventButton(events["change-gap"]);
-        const newStyles = await gf.getStyles(`.${selectors.wheelSelector}`);
+        const newStyles = await gf.getStyles(`.${selectors.menuSelector}`);
 
         assert.notEqual(styles['clip-path'], newStyles['clip-path'], 'Clip path should change when gap changes');
     });
@@ -65,20 +65,20 @@ describe('Wheel Menu', function () {
     });
 
     it('Should change properties after items\' lenght changes', async () => {
-        const wheelItems = await gf.getAll(`.${selectors.wheelItem}`);
-        const styles = await gf.getStyles(`.${selectors.wheelSelector}`);
+        const menuItems = await gf.getAll(`.${selectors.menuItem}`);
+        const styles = await gf.getStyles(`.${selectors.menuSelector}`);
 
         await clickEventButton(events["change-items"]);
-        const newStyles = await gf.getStyles(`.${selectors.wheelSelector}`);
-        const newWheelItems = await gf.getAll(`.${selectors.wheelItem}`);
+        const newStyles = await gf.getStyles(`.${selectors.menuSelector}`);
+        const newMenuItems = await gf.getAll(`.${selectors.menuItem}`);
         
-        assert.notEqual(wheelItems.length, newWheelItems.length, 'Number of items should change');
+        assert.notEqual(menuItems.length, newMenuItems.length, 'Number of items should change');
         assert.notEqual(styles['clip-path'], newStyles['clip-path'], 'Clip path should change when when items change');
     });
 
     it('Should correctly rotate the indicator', async () => {
-        const innerWheel = await gf.get(`.${selectors.wheelInner}`);
-        const children = await innerWheel.children();
+        const menuContent = await gf.get(`.${selectors.menuContent}`);
+        const children = await menuContent.children();
         const indicatorWrapper = children[children.length - 1]; // The element that is rotated
 
         await clickEventButton(events["change-items"]); // Change items to 4 to have a clear 90 degree rotation
@@ -89,16 +89,16 @@ describe('Wheel Menu', function () {
     });
 
     it('Should replace icon with a custom one', async () => {
-        const innerWheel = await gf.get(`.${selectors.wheelInner}`)
+        const menuContent = await gf.get(`.${selectors.menuContent}`);
         await clickEventButton(events["set-custom-icon"]);
-        const newIcon = await innerWheel.find(`.${selectors.customIcon}`);
+        const newIcon = await menuContent.find(`.${selectors.customIcon}`);
         
         assert.ok(newIcon, 'Custom icon should be in the DOM')
     });
 
     it('Should change item\'s offset', async () => {
-        const wheelItem = await gf.get(`.${selectors.wheelItem}`)
-        const children = await wheelItem.children();
+        const menuItem = await gf.get(`.${selectors.menuItem}`)
+        const children = await menuItem.children();
         await clickEventButton(events["change-item-offset"]);
         
         const itemContentWrapper = children[children.length - 1]; // offset is applied to this element
@@ -111,7 +111,7 @@ describe('Wheel Menu', function () {
 
         for (let i = 0; i < cases.length; i++) {
             it(`Should change - ${cases[i]}`, async () => {
-                const wheelItems = await gf.getAll(`.${selectors.wheelItem}`);
+                const menuItems = await gf.getAll(`.${selectors.menuItem}`);
                 const assertionEl = await gf.get(`.${selectors.assertionElement}`);
 
                 switch (cases[i]) {
@@ -127,11 +127,11 @@ describe('Wheel Menu', function () {
                         break;
                 }
 
-                const selectedItemStyles = await wheelItems[1].styles();
-                const selectedItemClasses = await wheelItems[1].classes();
+                const selectedItemStyles = await menuItems[1].styles();
+                const selectedItemClasses = await menuItems[1].classes();
 
                 assert.equal(await assertionEl.text(), items[1], 'Second item should be selected');        
-                assert.ok(selectedItemClasses.includes(selectors.wheelItemSelected), 'Item should have selected class');
+                assert.ok(selectedItemClasses.includes(selectors.menuItemSelected), 'Item should have selected class');
                 assert.equal(selectedItemStyles['background-color'], 'rgba(0, 0, 0, 0.1)', 'Item should have selected styles applied');      
             });
         }
@@ -165,12 +165,12 @@ describe('Wheel Menu', function () {
 
     describe('reactivity', () => {
         const scenarios = [
-            { selector: `.${selectors.wheelMenu}`, desc: 'root' },
-            { selector: `.${selectors.wheelItem}`, desc: 'item' },
-            { selector: `.${selectors.wheelIndicator}`, desc: 'indicator' },
-            { selector: `.${selectors.wheelIcon}`, desc: 'icon' },
-            { selector: `.${selectors.wheelInner}`, desc: 'inner-wheel' },
-            { selector: `.${selectors.wheelSelector}`, desc: 'selector' },
+            { selector: `.${selectors.radialMenu}`, desc: 'root' },
+            { selector: `.${selectors.menuItem}`, desc: 'item' },
+            { selector: `.${selectors.menuIndicator}`, desc: 'indicator' },
+            { selector: `.${selectors.menuIcon}`, desc: 'icon' },
+            { selector: `.${selectors.menuContent}`, desc: 'content' },
+            { selector: `.${selectors.menuSelector}`, desc: 'selector' },
         ];
 
         for (const { selector, desc } of scenarios) {
@@ -179,7 +179,7 @@ describe('Wheel Menu', function () {
                 const el = await gf.get(selector);
                 const styles = await el.styles();
                 const classes = await el.classes();
-                if (selector === `.${selectors.wheelItem}`) {
+                if (selector === `.${selectors.menuItem}`) {
                     assert.equal(styles['background-color'], 'rgba(0, 0, 0, 0.1)', 'styles update');
                 } else {
                     assert.equal(styles['background-color'], 'rgba(0, 0, 255, 1)', 'styles update');

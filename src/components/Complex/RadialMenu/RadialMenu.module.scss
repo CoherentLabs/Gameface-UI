@@ -1,4 +1,4 @@
-.wheel {
+.menu {
     width: 30vmax;
     height: 30vmax;
     position: absolute;
@@ -16,7 +16,7 @@
         visibility: visible;
     }
 
-    &-inner {
+    &-content {
         position: absolute;
         border-radius: 50%;
         display: flex;
