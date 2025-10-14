@@ -4,6 +4,11 @@ async function navigateToPage(link) {
     await gf.retryIfFails(async () => await gf.click(link), 5);
 }
 
+async function clickEventButton(eventName) {
+    return await gf.click(`[data-event="${eventName}"]`);
+}
+
 module.exports = {
-    navigateToPage
+    navigateToPage,
+    clickEventButton
 }
