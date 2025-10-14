@@ -31,6 +31,7 @@ export interface RadialMenuRef {
     element: HTMLDivElement,
     open: () => void,
     close: () => void,
+    opened: Accessor<boolean>,
     changeGap: Setter<number>
     selectByIndex: (index: number) => void;
     selectByVector: (x: number, y: number) => void;
@@ -148,6 +149,7 @@ const RadialMenu: ParentComponent<RadialMenuProps> = (props) => {
             element: element,
             open: () => setIsOpen(true),
             close: () => setIsOpen(false),
+            opened: () => isOpen(),
             changeGap: setGap,
             selectByIndex,
             selectByVector
@@ -163,7 +165,7 @@ const RadialMenu: ParentComponent<RadialMenuProps> = (props) => {
         clipPathValue, 
         degreesPerSlice, 
         selected, 
-        rotation, 
+        rotation,
         onChange: props.onChange
     }
     
