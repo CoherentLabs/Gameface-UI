@@ -1,14 +1,20 @@
-import { createMemo, createSignal, JSX, onCleanup, onMount, ParentComponent, splitProps } from "solid-js";
+import { createMemo, createSignal, JSX, onCleanup, onMount, ParentComponent, Show, splitProps } from "solid-js";
 import styles from './Tooltip.module.scss';
+import { BaseComponentRef } from "@components/types/ComponentProps";
+
+export interface TooltipRef extends BaseComponentRef {
+    show: () => void,
+    hide: () => void
+}
 
 interface TooltipOptions<T extends Record<string, any> = { message: string }> {
     content?: (props: T) => JSX.Element
     position?: 'top' | 'bottom' | 'left' | 'right' | 'auto'
-    action?: 'hover' | 'click' | 'focus'
+    action?: 'hover' | 'click' | 'focus' | 'none'
 }
 
 const DEFAULT_TIP_POSITION = 'bottom';
-const createTooltip = <T extends Record<string, any> = { message: string }>(options: TooltipOptions<T> = {}): ParentComponent<T & { style?: JSX.CSSProperties, class?: string }> => {
+const createTooltip = <T extends Record<string, any> = { message: string }>(options: TooltipOptions<T> = {}): ParentComponent<T & { style?: JSX.CSSProperties, class?: string, ref?: TooltipRef}> => {
     const defaultOptions: TooltipOptions<T> = {
         content: (props) => <div class={styles['tooltip-message']}>{props.message}</div>,
         position: DEFAULT_TIP_POSITION,
@@ -21,10 +27,13 @@ const createTooltip = <T extends Record<string, any> = { message: string }>(opti
         const [visible, setVisible] = createSignal(false);
         let tooltipChildrenRef!: HTMLDivElement;
         let tooltipRef!: HTMLDivElement;
-        const [others, contentProps] = splitProps(props, ['style', 'class']);
+        let wrapperRef: HTMLDivElement | undefined;
+        const [others, contentProps] = splitProps(props, ['style', 'class', 'ref']);
 
         const toggleEventListeners = (on = true) => {
             const method = on ? 'addEventListener' : 'removeEventListener';
+
+            if (options.action === 'none') return showTooltip();
 
             if (!tooltipChildrenRef) return;
             if (options.action === 'click') tooltipChildrenRef[method]('click', toggleTooltip);
@@ -40,6 +49,14 @@ const createTooltip = <T extends Record<string, any> = { message: string }>(opti
 
         onMount(() => {
             toggleEventListeners(true);
+
+            if (!others.ref || !wrapperRef) return;
+
+            (others.ref as (ref: TooltipRef) => void)({
+                element: wrapperRef,
+                show: showTooltip,
+                hide: hideTooltip,
+            });
         });
 
         onCleanup(() => {
@@ -104,10 +121,12 @@ const createTooltip = <T extends Record<string, any> = { message: string }>(opti
         });
 
         return (
-            <div class={tooltipWrapperClasses()} style={others.style}>
-                <div ref={tooltipChildrenRef}>
-                    {props.children}
-                </div>
+            <div class={tooltipWrapperClasses()} style={others.style} ref={wrapperRef}>
+                <Show when={options.action !== 'none'} fallback={props.children}>
+                    <div ref={tooltipChildrenRef}>
+                        {props.children}
+                    </div>
+                </Show>
                 <div ref={tooltipRef} class={tooltipClasses()}>
                     {options.content?.(contentProps as T)}
                 </div>
