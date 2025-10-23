@@ -1,6 +1,7 @@
 import { createMemo, createSignal, JSX, onCleanup, onMount, ParentComponent, Show, splitProps } from "solid-js";
 import styles from './Tooltip.module.scss';
 import { BaseComponentRef } from "@components/types/ComponentProps";
+import { getSafePosition } from "@components/utils/getSafePosition";
 
 export interface TooltipRef extends BaseComponentRef {
     show: () => void,
@@ -80,20 +81,10 @@ const createTooltip = <T extends Record<string, any> = { message: string }>(opti
             if (!tooltipRef) return DEFAULT_TIP_POSITION;
 
             const rect = tooltipRef.getBoundingClientRect();
-            const overflows = {
-                top: rect.top < 0,
-                left: rect.left < 0,
-                bottom: rect.bottom > (window.innerHeight || document.documentElement.clientHeight),
-                right: rect.right > (window.innerWidth || document.documentElement.clientWidth)
-            };
+            const position = currentPosition || DEFAULT_TIP_POSITION;
+            const safePosition = getSafePosition(rect); 
 
-            let position = currentPosition || DEFAULT_TIP_POSITION;
-            if (overflows.top && !overflows.bottom) position = 'bottom';
-            if (overflows.left && !overflows.right) position = 'right';
-            if (overflows.right && !overflows.left) position = 'left';
-            if (overflows.bottom && !overflows.top) position = 'top';
-
-            return position;
+            return safePosition || position;
         }
 
         const tooltipPosition = createMemo((prev) => {

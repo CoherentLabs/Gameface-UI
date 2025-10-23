@@ -20,7 +20,7 @@ const ProgressBar: ParentComponent<ProgressProps> = (props) => {
         return classes.join(' ');
     });
 
-    props.componentClasses = () => styles.bar;
+    props.componentClasses = styles.bar;
     const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     return (
