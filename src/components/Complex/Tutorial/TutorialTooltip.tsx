@@ -1,7 +1,7 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, Component, createEffect, createMemo, createRenderEffect, createSignal, JSX, on, Show, useContext } from "solid-js";
+import { Accessor, Component, createEffect, createMemo, createSignal, JSX, on, Show, useContext } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import { HighlightRect, TutorialContext } from "./Tutorial";
+import { TutorialContext } from "./Tutorial";
 import Controls from "./Controls";
 import Progress from "@components/Feedback/Progress/Progress";
 import Flex from "@components/Layout/Flex/Flex";
@@ -30,13 +30,13 @@ export interface ProvidedProps {
 export type TooltipType<T extends Record<string, any> = {}> = Component<ProvidedProps & T & DefaultProps>;
 
 interface TutorialTooltipProps<T extends Record<string, any>> {
-    data: Accessor<ToolTipData>,
-    showTooltip: Accessor<boolean>,
     userTooltip: TooltipType<T> | undefined,
+    tooltipData: Accessor<ToolTipData>,
     progress: Accessor<number>,
+    exit: () => void,
 }
 
-const DefaultTooltip: TooltipType = (props) => {
+const DefaultTooltip: TooltipType<{exit: () => void}> = (props) => {
     return (
         <div class={styles.tooltip} >
             <h2 class={styles['tooltip-heading']}>{props.title}</h2>
@@ -45,7 +45,9 @@ const DefaultTooltip: TooltipType = (props) => {
             </Progress.Bar>
             <Flex>
                 <props.Prev class={`${styles['tooltip-control']} ${styles['tooltip-control-first']}`}>Prev</props.Prev>
-                <props.Next class={styles['tooltip-control']}>Next</props.Next>
+                <Show when={props.progress() === 100} fallback={<props.Next class={styles['tooltip-control']}>Next</props.Next>}>
+                    <div onclick={props.exit} class={`${styles['tooltip-control']}`}>Done</div>
+                </Show>
             </Flex>
         </div>
     )
@@ -64,10 +66,8 @@ const TutorialTooltip = <T extends Record<string, any> = {}>(props: TutorialTool
     let elementRef: HTMLDivElement | undefined;
     let visibleTO: NodeJS.Timeout | undefined;
 
-    
-
     const providedTooltipProps = (): ProvidedProps => {
-        const data = props.data();
+        const data = props.tooltipData();
 
         return {
             title: data.title,
@@ -79,19 +79,24 @@ const TutorialTooltip = <T extends Record<string, any> = {}>(props: TutorialTool
         }
     }
 
-    createEffect(on(ctx.current, () => {
+    createEffect(on(ctx.current, (current) => {
         setVisible(false);
 
         if (visibleTO) clearTimeout(visibleTO);
-        visibleTO = setTimeout(() => setVisible(true), 500)
-    }))
+        visibleTO = setTimeout(() => {
+            if (current === 0) return;
+            setVisible(true)
+        }, 500)
+    }, {defer: true}))
 
     const position = createMemo((prev) => {
         const currentPosition = prev || DEFAULT_POSITION;
         if (!visible() || !elementRef) return currentPosition;
 
         const rect = elementRef!.getBoundingClientRect();
-        return  getSafePosition(rect!) || currentPosition;
+        const suggested = getSafePosition(rect!)
+
+        return suggested || currentPosition;
     })
 
     const tooltipClasses = createMemo(() => {
@@ -103,10 +108,8 @@ const TutorialTooltip = <T extends Record<string, any> = {}>(props: TutorialTool
     });
 
     return (
-        <div 
-            ref={elementRef} 
-            class={tooltipClasses()}>
-            <Show when={props.userTooltip} fallback={<DefaultTooltip {...providedTooltipProps()} />}>
+        <div ref={elementRef} class={tooltipClasses()}>
+            <Show when={props.userTooltip} fallback={<DefaultTooltip exit={props.exit} {...providedTooltipProps()} />}>
                 <Dynamic component={props.userTooltip! as Component<ProvidedProps & DefaultProps>} {...providedTooltipProps()} />
             </Show>
         </div>

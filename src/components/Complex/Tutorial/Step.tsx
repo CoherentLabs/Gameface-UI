@@ -4,8 +4,8 @@ import { waitForFrames } from "@components/utils/waitForFrames";
 
 interface StepProps {
     order: number,
-    title: string,
-    content: string,
+    title?: string,
+    content?: string,
 }
 
 const Step: ParentComponent<StepProps> = (props) => {
@@ -43,10 +43,10 @@ const Step: ParentComponent<StepProps> = (props) => {
     }
 
     const updateTooltipContent = () => {
-        ctx.setTooltipData({
-            title: props.title,
-            content: props.content,
-        })
+        ctx.setTooltipData((prev) => ({
+            title: props.title || prev.title,
+            content: props.content || prev.content,
+        }))
     }
 
     onMount(() => ctx.setCount(prev => prev + 1))

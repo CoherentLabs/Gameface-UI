@@ -1,13 +1,14 @@
 .tutorial {
     position: absolute;
-    background-color:transparent;
+    background-color: transparent;
     width: 0;
     height: 0;
-    z-index: 99997;
+    z-index: 9999998;
     border: 2px solid white;
     box-shadow: 0 0 5px 100vmax rgba(0, 0, 0, 0.394);
-    transition: width 0.3s ease-in, height 0.3s ease-in, left 0.3s ease-in, top 0.3s ease-in;
+    transition: width 0.3s ease-in, height 0.3s ease-in, left 0.3s ease-in, top 0.3s ease-in, opacity 0.3s ease-in;
     opacity: 0;
+    pointer-events: none;
 
     &-visible {
         opacity: 1;
@@ -21,12 +22,9 @@
     width: 100vw;
     height: 100vh;
     opacity: 0;
+    z-index: 9999997;
+    pointer-events: auto;
     cursor: pointer;
-    pointer-events: all; 
-
-    &-off {
-        pointer-events: none;
-    }
 }
 
 .tooltip {
@@ -38,10 +36,16 @@
     padding: 0.75vmax 1vmax;
     border-radius: 0.5vmax;
     color: white;
+
+    &-reference {
+        position: absolute;
+        z-index: 9999999; /* ABOVE tutorial */
+        visibility: hidden;
+        pointer-events: auto
+    }
     
     &-wrapper {
         position: absolute;
-        z-index: 9999999;
         visibility: hidden;
     }
 

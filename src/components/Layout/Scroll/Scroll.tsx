@@ -246,7 +246,8 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     createEffect(on(handleTop, handleOnScroll, {defer: true}))
 
     onMount(() => {
-        contentWrapperRef!?.addEventListener('scroll', updateHandlePosition);
+        contentWrapperRef!.addEventListener('scroll', updateHandlePosition);
+        contentWrapperRef!.addEventListener('property-scroll', updateHandlePosition)
     });
 
     onCleanup(() => {

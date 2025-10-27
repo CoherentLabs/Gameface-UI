@@ -14,7 +14,7 @@ export function getSafePosition(rect: DOMRect) {
     };
 
     if (overflows.top && !overflows.bottom) return 'bottom';
+    if (overflows.bottom && !overflows.top) return 'top';
     if (overflows.left && !overflows.right) return 'right';
     if (overflows.right && !overflows.left) return 'left';
-    if (overflows.bottom && !overflows.top) return 'top';
 }
