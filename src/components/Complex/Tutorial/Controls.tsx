@@ -11,7 +11,8 @@ const Controls = (props: ControlsProps) => {
     const ctx = useContext(TutorialContext);
     if (!ctx) return;
 
-    const clickHanlder = () => {
+    const clickHanlder = (e: MouseEvent) => {
+        props.click?.(e);
         return props.direction === 'prev' ? ctx.previousStep() : ctx.nextStep();
     }
 

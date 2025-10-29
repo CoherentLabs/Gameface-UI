@@ -11,7 +11,10 @@ import styles from './Tutorial.module.scss';
 export interface ToolTipData {
     title?: string; 
     content?: string | JSX.Element;
+    position?: TooltipPosition
 }
+
+export type TooltipPosition = "bottom" | "top" | "right" | "left" | null;
 
 type DefaultProps = {
   class?: string;
@@ -93,6 +96,9 @@ const TutorialTooltip = <T extends Record<string, any> = {}>(props: TutorialTool
         const currentPosition = prev || DEFAULT_POSITION;
         if (!visible() || !elementRef) return currentPosition;
 
+        const provided = props.tooltipData().position;
+        if (provided) return provided;
+
         const rect = elementRef!.getBoundingClientRect();
         const suggested = getSafePosition(rect!)
 
@@ -107,11 +113,18 @@ const TutorialTooltip = <T extends Record<string, any> = {}>(props: TutorialTool
         return classes.join(' ');
     });
 
+    const renderTooltip = () => {
+        const tooltip = props.userTooltip;
+
+        // Return default tooltip
+        if (!tooltip) return <DefaultTooltip exit={props.exit} {...providedTooltipProps()} />
+
+        return (tooltip as any)({ ...providedTooltipProps()});
+    }
+
     return (
         <div ref={elementRef} class={tooltipClasses()}>
-            <Show when={props.userTooltip} fallback={<DefaultTooltip exit={props.exit} {...providedTooltipProps()} />}>
-                <Dynamic component={props.userTooltip! as Component<ProvidedProps & DefaultProps>} {...providedTooltipProps()} />
-            </Show>
+            {renderTooltip()}
         </div>
     )
 }

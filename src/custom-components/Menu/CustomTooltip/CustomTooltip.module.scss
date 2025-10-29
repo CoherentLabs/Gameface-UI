@@ -1,0 +1,87 @@
+
+.tooltip {
+    background-color: $background-soft-solid;
+    border: 0.2vmax solid $secondaryColor;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0.75vmax 1vmax;
+    font-size: 1vmax;
+    border-radius: 0.5vmax;
+    color: white;
+    position: relative;
+    max-width: 15vmax;
+
+    &-heading {
+        margin: 0;
+        font-size: 1em;
+        margin-bottom: 0.25em;
+        padding-right: 1vmax;
+    }
+
+    &-content {
+        margin: 0.75em 0;
+        font-size: 0.75em;
+        line-height: 125%;
+    }
+
+    &-exit {
+        position: absolute;
+        top: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 2vmax;
+        height: 2vmax;
+        color: $disabledTextColor;
+        font-size: 1.15vmax;
+        cursor: pointer;
+        z-index: 1;
+
+        &:hover {
+            color: white;
+        }
+    }
+
+    &-control {
+        padding: 0.5vmax 0.75vmax;
+        border: 0.1vmax solid $secondaryColor;
+        background-color: $primaryColor;
+        transition: background-color 0.2s ease-in-out;
+        border-radius: 0.2vmax;
+
+        &-first {
+            margin-right: 0.5vmax;
+        }
+
+        &-disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        &:hover {
+            background-color: $secondaryColor;
+        }
+    }
+
+    &-progress {
+        background-color: $primaryColor;
+        margin-bottom: 0.5vmax;
+        border-radius: 0.35vmax;
+        overflow: hidden;
+    }
+}
+
+.top-offset {
+    top: 105%;
+}
+
+.wider {
+    max-width: 25vmax;
+    font-size: 0.9vmax;
+}
+
+.interactive {
+    width: 15vmax;
+}

@@ -1,4 +1,4 @@
-import { Accessor, children, Component, createContext, createEffect, createMemo, createSignal, For, JSX, onMount, ParentComponent, Setter, Show, untrack } from "solid-js";
+import { Accessor, createContext, createEffect, createMemo, createSignal, JSX, onMount, Setter, Show } from "solid-js";
 import { ComponentProps } from "@components/types/ComponentProps";
 import Step from "./Step";
 import styles from './Tutorial.module.scss';
@@ -7,12 +7,13 @@ import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import TutorialTooltip, { ToolTipData, TooltipType } from "./TutorialTooltip";
 import { clamp } from "@components/utils/clamp";
 import getScrollableParent from "@components/utils/getScrollableParent";
+import { waitForFrames } from "@components/utils/waitForFrames";
 
 export type HighlightRect = Omit<DOMRect, 'bottom' | 'right' | 'x' | 'y' | 'toJSON'>;
 
 interface TutorialProps<T extends Record<string, any> = {}> extends ComponentProps {
     outset?: number
-    tooltip?: TooltipType<T>
+    tooltip?: TooltipType<T>,
     onChange?: (step: number) => void,
 }
 
@@ -24,7 +25,8 @@ interface TutorialContextType {
     previousStep: () => void,
     setTooltipData: Setter<ToolTipData>,
     initialRender: Accessor<boolean>,
-    setInitialRender: Setter<boolean>
+    setInitialRender: Setter<boolean>,
+    setOutset: Setter<number | null>
 }
 export const TutorialContext = createContext<TutorialContextType>();
 
@@ -38,14 +40,15 @@ export interface TutorialRef {
     next: () => void,
     previous: () => void,
     pause: () => void,
-    resume: () => void,
+    resume: (next?: boolean) => void,
     changeStep: (step: number) => void,
 }
 
 function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): JSX.Element {
     let element: HTMLDivElement | undefined;
-
-    const [currentStep, setCurrentStep] = createSignal(0);
+    const initialOutset = props.outset ?? 0
+    const [currentStep, setCurrentStep] = createSignal<number>(0);
+    const [outset, setOutset] = createSignal<number | null>(initialOutset)
     const [pausedAt, setPausedAt] = createSignal<number | null>(null);
     const [initialRender, setInitialRender] = createSignal(true);
     const [targetElement, setTargetElement] = createSignal<HTMLElement | null>(null);
@@ -84,7 +87,7 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
         setPausedAt(current);
     }
 
-    const resume = () => {
+    const resume = (next: boolean = false) => {
         const resumeStep = pausedAt();
         if (!resumeStep) {
             return console.warn("No paused tutorial to resume.");
@@ -97,7 +100,7 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
         }
 
         setPausedAt(null);
-        tour(resumeStep);
+        tour(next ? resumeStep + 1 : resumeStep);
     }
     
     // Clamps provided step to valid range (1 to total step count)
@@ -126,49 +129,57 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
     createEffect(() => {
         const target = targetElement();
         if (!target) return;
-
-        const rect = target.getBoundingClientRect();
-        let finalTop = rect.top;
-
-        let scrollableParent = getScrollableParent(target);
-        if (scrollableParent) {
-            const parentRect = scrollableParent.getBoundingClientRect();
-            let newScrollTop = scrollableParent.scrollTop;
-
-            if ( rect.bottom > parentRect.height) {
-                 // Scroll to bottom of the target
-                newScrollTop = scrollableParent.scrollHeight - target.offsetTop;
-                const scrollDelta = newScrollTop - scrollableParent.scrollTop;
-                finalTop = rect.top - scrollDelta;
-            } else if (scrollableParent.scrollTop > rect.bottom) {
-                // Scroll up so target is visible again
-                newScrollTop = rect.top;
-                finalTop = parentRect.top + rect.top;
-            }
-            scrollableParent.scrollTop = newScrollTop;
-            scrollableParent.dispatchEvent(new CustomEvent('property-scroll'));
-        } 
         
-        const outset = props.outset ?? 0;
-        
-        setHighlightRect({
-            top: finalTop - outset,
-            left: rect.left - outset,
-            width: rect.width + outset * 2,
-            height: rect.height + outset * 2,
-        })
+        const elementHasLoaded = target.offsetHeight && target.offsetWidth;
+        waitForFrames(() => {
+            const rect = target.getBoundingClientRect();
+            let finalTop = rect.top;
+            let finalHeight = rect.height;
 
-        setTutorialStyles(() => {
-            const { left, top, width, height } = highlightRect()!;
-            return {
-                left: `${left}px`,
-                top: `${top}px`,
-                width: `${width}px`,
-                height: `${height}px`
-            }
-        });
+            let scrollableParent = getScrollableParent(target);
+            if (scrollableParent) {
+                const parentRect = scrollableParent.getBoundingClientRect();
+                let newScrollTop = scrollableParent.scrollTop;
+                let dispatchScroll = true;
 
-        props.onChange?.(currentStep())
+                if (rect.height > parentRect.height) {
+                    finalHeight = parentRect.height;
+                    dispatchScroll = false
+                } else if ( rect.bottom > parentRect.height) {
+                    // Scroll to bottom of the target
+                    newScrollTop = scrollableParent.scrollHeight - target.offsetTop;
+                    const scrollDelta = newScrollTop - scrollableParent.scrollTop;
+                    finalTop = rect.top - scrollDelta;
+                } else if (scrollableParent.scrollTop > rect.bottom) {
+                    // Scroll up so target is visible again
+                    newScrollTop = rect.top;
+                    finalTop = parentRect.top + rect.top;
+                }
+                scrollableParent.scrollTop = newScrollTop;
+                if (dispatchScroll) scrollableParent.dispatchEvent(new CustomEvent('property-scroll'));
+            } 
+            
+            const rectOutset = outset() ?? initialOutset;
+            
+            setHighlightRect({
+                top: finalTop - rectOutset,
+                left: rect.left - rectOutset,
+                width: rect.width + rectOutset * 2,
+                height: finalHeight + rectOutset * 2,
+            })
+
+            setTutorialStyles(() => {
+                const { left, top, width, height } = highlightRect()!;
+                return {
+                    left: `${left}px`,
+                    top: `${top}px`,
+                    width: `${width}px`,
+                    height: `${height}px`
+                }
+            });
+
+            props.onChange?.(currentStep())
+        }, !elementHasLoaded ? 3 : 0)
     })
         
     const tutorialClasses = createMemo(() => {
@@ -208,7 +219,8 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
         previousStep,
         setTooltipData,
         initialRender,
-        setInitialRender
+        setInitialRender,
+        setOutset
     }
 
     return (

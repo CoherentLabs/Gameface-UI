@@ -8,10 +8,11 @@
     box-shadow: 0 0 5px 100vmax rgba(0, 0, 0, 0.394);
     transition: width 0.3s ease-in, height 0.3s ease-in, left 0.3s ease-in, top 0.3s ease-in, opacity 0.3s ease-in;
     opacity: 0;
-    pointer-events: none;
+    visibility: hidden;
 
     &-visible {
         opacity: 1;
+        visibility: visible;
     }
 }
 
@@ -22,7 +23,6 @@
     width: 100vw;
     height: 100vh;
     opacity: 0;
-    z-index: 9999997;
     pointer-events: auto;
     cursor: pointer;
 }

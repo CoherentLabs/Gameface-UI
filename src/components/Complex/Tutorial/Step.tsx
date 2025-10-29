@@ -1,11 +1,14 @@
 import { children, createEffect, createMemo, onMount, ParentComponent, Show, useContext } from "solid-js"
 import { TutorialContext } from "./Tutorial";
 import { waitForFrames } from "@components/utils/waitForFrames";
+import { TooltipPosition } from "./TutorialTooltip";
 
 interface StepProps {
     order: number,
     title?: string,
     content?: string,
+    outset?: number,
+    position?: TooltipPosition
 }
 
 const Step: ParentComponent<StepProps> = (props) => {
@@ -43,9 +46,11 @@ const Step: ParentComponent<StepProps> = (props) => {
     }
 
     const updateTooltipContent = () => {
+        ctx.setOutset(props.outset ?? null);
         ctx.setTooltipData((prev) => ({
             title: props.title || prev.title,
             content: props.content || prev.content,
+            position: props.position || null
         }))
     }
 
