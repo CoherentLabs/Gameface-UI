@@ -44,9 +44,12 @@ interface RadialMenuProps extends ComponentProps {
     onItemChanged?: () => void;
 }
 
+const EPS = 0.00001;
+
 const RadialMenu: ParentComponent<RadialMenuProps> = (props) => {
     const ItemTokens = useTokens(Item, props.children);
     let element: HTMLDivElement | undefined;
+    let eventAttached = false;
     
     const [selected, setSelected] = createSignal(props.selected ?? 0);
     const [rotation, setRotation] = createSignal(0);
@@ -61,14 +64,14 @@ const RadialMenu: ParentComponent<RadialMenuProps> = (props) => {
         if (length() === 1) return "";
         if (length() === 2) return 'polygon(0% 50%, 0% 0%, 100% 0%, 100% 50%)'
 
-        const eps = 0.00001;
+        
         const g = gap();
         const halfSliceDeg = degreesPerSlice() / 2;
         const halfSliceTan = Math.tan(halfSliceDeg * Math.PI / 180);
         const halfSliceProportion = halfSliceTan * 50;
 
-        const xLeftPercent = 50 - halfSliceProportion + eps + g;
-        const xRightPercent = 50 + halfSliceProportion + eps - g;
+        const xLeftPercent = 50 - halfSliceProportion + EPS + g;
+        const xRightPercent = 50 + halfSliceProportion + EPS - g;
         return `polygon(${xLeftPercent}% 0, 50% 50%, ${xRightPercent}% 0)`
     });
 
@@ -135,10 +138,14 @@ const RadialMenu: ParentComponent<RadialMenuProps> = (props) => {
     }, { defer: true }))
 
     const addEventListeners = () => {
+        eventAttached = true;
         window.addEventListener('mousemove', mouseMoveHandler)
     }
 
     const removeEventListeners = () => {
+        if (!eventAttached) return;
+        
+        eventAttached = false;
         window.removeEventListener('mousemove', mouseMoveHandler)
     }
 
