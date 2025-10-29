@@ -1,0 +1,11 @@
+{
+    "open-menu": "Open Radial Menu",
+    "close-menu": "Close Radial Menu",
+    "change-gap": "Change Gap Size",
+    "select-item": "Select Item by Index",
+    "select-by-vector": "Select Item by Vector",
+    "change-items": "Change Items",
+    "change-item-offset": "Change Item Offset",
+    "set-custom-icon": "Set Custom Icon",
+    "change-styles": "Change styles"
+}

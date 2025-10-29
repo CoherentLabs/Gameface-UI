@@ -1,0 +1,33 @@
+.base {
+    top: 65vh !important;
+}
+
+.menu-content {
+    width: 40%;
+    height: 40%;
+}
+
+.center-image {
+    width: 80%;
+    height: 80%;
+}
+
+.menu-item {
+    transition: transform 0.2s linear;
+}
+
+.menu-item-selected {
+    transform: scale(1.1);
+}
+
+.item-wrapper {
+    width: 5vmax;
+    height: 5vmax;
+}
+
+.custom-icon {
+    width: 3vmax;
+    height: 3vmax;
+    border-radius: 50%;
+    background-color: orange;
+}

@@ -1,6 +1,6 @@
 {
   "name": "gameface-ui-template",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "",
   "scripts": {
     "start": "vite",
@@ -32,7 +32,7 @@
     "dotenv": "^17.2.0",
     "glob": "^11.0.0",
     "solid-js": "^1.9.3",
-    "vite-gameface": "^1.0.1",
+    "vite-gameface": "^1.0.3",
     "vite-solid-style-to-css": "^1.0.1"
   }
 }

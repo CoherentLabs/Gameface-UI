@@ -30,6 +30,8 @@ const componentsWithSlotTokens = {
   CAROUSEL_ITEMS: 'Carousel.Items',
   PROGRESS_BAR: 'Progress.Bar',
   PROGRESS_CIRCLE: 'Progress.Circle',
+  RADIAL_MENU: 'RadialMenu',
+  RADIAL_MENU_INDICATOR: 'RadialMenu.Indicator',
 }
 
 const tokenComponetsParents = {
@@ -118,9 +120,15 @@ const tokenComponetsParents = {
   'Progress.Circle.Fill': componentsWithSlotTokens.PROGRESS_CIRCLE,
   'Progress.Circle.Outline': componentsWithSlotTokens.PROGRESS_CIRCLE,
   'Progress.Circle.Text': componentsWithSlotTokens.PROGRESS_CIRCLE,
+
+  'RadialMenu.Content': componentsWithSlotTokens.RADIAL_MENU,
+  'RadialMenu.Indicator': componentsWithSlotTokens.RADIAL_MENU,
+  'RadialMenu.Indicator.Icon': componentsWithSlotTokens.RADIAL_MENU_INDICATOR,
+  'RadialMenu.Selector': componentsWithSlotTokens.RADIAL_MENU,
+  'RadialMenu.Item': componentsWithSlotTokens.RADIAL_MENU,
 }
 
-const availbleForedTokenComponets = new Set(['Radio.Button', 'Dropdown.Option', 'Segment.Button', 'Stepper.Item', 'Accordion.Panel', 'List.Item', 'Carousel.Item'])
+const availbleForedTokenComponets = new Set(['Radio.Button', 'Dropdown.Option', 'Segment.Button', 'Stepper.Item', 'Accordion.Panel', 'List.Item', 'Carousel.Item', 'RadialMenu.Item'])
 
 function isParentMatchingPath(node, path, wrapperName) {
   let currentNode = node.parent;
