@@ -34,6 +34,7 @@ import ToasterTest from '../../components/Toaster/ToasterTest';
 import KeybindsTest from '../../components/Keybinds/KeybindsTest';
 import ProgressTest from '../../components/Progress';
 import RadialMenuTest from '../../components/RadialMenu/RadialMenuTest';
+import TutorialTest from '../../components/Tutorial/TutorialTest';
 
 const Main = () => {
     const components = [
@@ -66,6 +67,7 @@ const Main = () => {
         "color-picker",
         "carousel",
         "radial-menu",
+        "tutorial",
 
         // Layout components
         "absolute",
@@ -122,6 +124,7 @@ const Main = () => {
                 <KeybindsTest />
                 <ProgressTest />
                 <RadialMenuTest />
+                <TutorialTest />
             </Tabs>
         </div>
     );

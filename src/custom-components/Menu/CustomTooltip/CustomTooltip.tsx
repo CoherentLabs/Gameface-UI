@@ -55,7 +55,9 @@ const CustomTooltip: TooltipType<CustomTooltipProps> = (props) => {
             }
         }
 
-        return <props.Next click={changeActiveItem} class={styles['tooltip-control']}>Next</props.Next>
+        return <props.Next click={changeActiveItem} class={styles['tooltip-control']}>
+            {props.progress() === 100 ? "Done" : "Next" }
+        </props.Next>
     }
 
     return (
@@ -72,9 +74,7 @@ const CustomTooltip: TooltipType<CustomTooltipProps> = (props) => {
                         ${props.step() === 1 ? styles['tooltip-control-disabled'] : ''}`}>
                         Prev
                     </props.Prev>
-                    <Show when={props.progress() === 100} fallback={<NextButton />}>
-                        <div onclick={props.api?.exit} class={`${styles['tooltip-control']}`}>Done</div>
-                    </Show>
+                    <NextButton />
                 </Flex>
             </Show>
             <div class={styles['tooltip-exit']} onclick={props.api?.exit}>x</div>

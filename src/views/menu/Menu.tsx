@@ -95,10 +95,6 @@ const Menu = () => {
 
     const isCredits = createMemo(() => activeTab() === OPTIONS[4])
 
-    const handleTutorialChange = (step: number) => {
-        console.log(step)
-    }
-
     const handleClick = () => {
         if (tutorialRef?.current() === TutorialSteps.Interactive.order) {
             tutorialRef.pause();
@@ -125,7 +121,7 @@ const Menu = () => {
 
     return (
     <MenuContext.Provider value={MenuContextValue}>
-        <Tutorial click={handleClick} ref={tutorialRef} outset={5} tooltip={(props) => <CustomTooltip {...props} some={1} api={tutorialRef!} />} onChange={handleTutorialChange}>
+        <Tutorial click={handleClick} ref={tutorialRef} outset={5} tooltip={(props) => <CustomTooltip {...props} some={1} api={tutorialRef!} />} >
             <Toaster /> 
             <Tutorial.Step title={TutorialSteps.End.title} content={TutorialSteps.End.content} order={TutorialSteps.End.order} outset={-10} position={"top"}>
                 <div class={styles.Menu}>

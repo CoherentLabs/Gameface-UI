@@ -1,4 +1,4 @@
-import { children, createEffect, createMemo, onMount, ParentComponent, Show, useContext } from "solid-js"
+import { children, createEffect, createMemo, on, onCleanup, onMount, ParentComponent, Show, useContext } from "solid-js"
 import { TutorialContext } from "./Tutorial";
 import { waitForFrames } from "@components/utils/waitForFrames";
 import { TooltipPosition } from "./TutorialTooltip";
@@ -55,6 +55,7 @@ const Step: ParentComponent<StepProps> = (props) => {
     }
 
     onMount(() => ctx.setCount(prev => prev + 1))
+    onCleanup(() => ctx.setCount(prev => prev - 1))
 
     return storedChildren()
 }

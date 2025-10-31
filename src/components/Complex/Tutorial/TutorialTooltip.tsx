@@ -30,27 +30,23 @@ export interface ProvidedProps {
     progress: Accessor<number>,
 }
 
-export type TooltipType<T extends Record<string, any> = {}> = Component<ProvidedProps & T & DefaultProps>;
+export type TooltipType<T extends Record<string, any> = {}> = Component<ProvidedProps & Partial<T> & DefaultProps>;
 
 interface TutorialTooltipProps<T extends Record<string, any>> {
     userTooltip: TooltipType<T> | undefined,
     tooltipData: Accessor<ToolTipData>,
     progress: Accessor<number>,
-    exit: () => void,
 }
 
-const DefaultTooltip: TooltipType<{exit: () => void}> = (props) => {
+const DefaultTooltip: TooltipType = (props) => {
     return (
         <div class={styles.tooltip} >
             <h2 class={styles['tooltip-heading']}>{props.title}</h2>
             <span class={styles['tooltip-content']}>{props.content}</span>
-            <Progress.Bar class={styles['tooltip-progress']} style={{width: '100%'}} progress={props.progress()}>
-            </Progress.Bar>
+            <Progress.Bar class={styles['tooltip-progress']} progress={props.progress()} />
             <Flex>
                 <props.Prev class={`${styles['tooltip-control']} ${styles['tooltip-control-first']}`}>Prev</props.Prev>
-                <Show when={props.progress() === 100} fallback={<props.Next class={styles['tooltip-control']}>Next</props.Next>}>
-                    <div onclick={props.exit} class={`${styles['tooltip-control']}`}>Done</div>
-                </Show>
+                <props.Next class={styles['tooltip-control']}>{props.progress() === 100 ? 'Done' : "Next"}</props.Next>
             </Flex>
         </div>
     )
@@ -113,18 +109,11 @@ const TutorialTooltip = <T extends Record<string, any> = {}>(props: TutorialTool
         return classes.join(' ');
     });
 
-    const renderTooltip = () => {
-        const tooltip = props.userTooltip;
-
-        // Return default tooltip
-        if (!tooltip) return <DefaultTooltip exit={props.exit} {...providedTooltipProps()} />
-
-        return (tooltip as any)({ ...providedTooltipProps()});
-    }
+    const ComponentToRender = () => (props.userTooltip ?? DefaultTooltip) as TooltipType<T>;
 
     return (
         <div ref={elementRef} class={tooltipClasses()}>
-            {renderTooltip()}
+            <Dynamic component={ComponentToRender()} {...(providedTooltipProps() as ProvidedProps & Partial<T> & DefaultProps)} />
         </div>
     )
 }

@@ -12,8 +12,13 @@ const Controls = (props: ControlsProps) => {
     if (!ctx) return;
 
     const clickHanlder = (e: MouseEvent) => {
+        const isNext = props.direction === 'next';
         props.click?.(e);
-        return props.direction === 'prev' ? ctx.previousStep() : ctx.nextStep();
+        
+        if (isNext) {
+            return ctx.progress() === 100 ? ctx.exit() : ctx.nextStep();
+        }
+        return ctx.previousStep();
     }
 
     const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);

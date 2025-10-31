@@ -23,10 +23,12 @@ interface TutorialContextType {
     setCount: Setter<number>,
     nextStep: () => void,
     previousStep: () => void,
+    exit: () => void,
     setTooltipData: Setter<ToolTipData>,
     initialRender: Accessor<boolean>,
     setInitialRender: Setter<boolean>,
-    setOutset: Setter<number | null>
+    setOutset: Setter<number | null>,
+    progress: Accessor<number>,
 }
 export const TutorialContext = createContext<TutorialContextType>();
 
@@ -220,7 +222,9 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
         setTooltipData,
         initialRender,
         setInitialRender,
-        setOutset
+        setOutset,
+        exit,
+        progress
     }
 
     return (
@@ -241,8 +245,7 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
                     <TutorialTooltip 
                         userTooltip={props.tooltip}
                         tooltipData={tooltipData}
-                        progress={progress}
-                        exit={exit} />
+                        progress={progress} />
                 </div>
             </Portal>
         </TutorialContext.Provider>
