@@ -1,0 +1,466 @@
+---
+title: Tutorial
+tableOfContents:
+  maxHeadingLevel: 4
+---
+
+The `Tutorial` component provides a declarative way to build guided walkthroughs directly inside your UI.
+Each `Tutorial.Step` wraps real elements, highlights them, and displays a tooltip with title and content, creating a structured onboarding or feature tour.
+
+## Usage
+
+To use the Tutorial component, wrap your existing UI with it and wrap every elemnt you wish to be part of the tutorial with the `Tutorial.Step` component and provide it with an order.
+
+:::note
+For detailed usage instructions, examples, and customization options, refer to the [Guide](/components/complex/tutorial#guide) section.
+:::
+
+:::tip
+Check out [our blog post](https://coherent-labs.com/blog/uitutorials/gamefaceui-menu-glow-up/) to see how we used the `Tutorial` component to build an interactive walkthrough for our Menu UI.
+:::
+
+```tsx
+import Tutorial, {TutorialRef} from "@components/Complex/Tutorial/Tutorial";
+
+const App = () => {
+    let ref!: TutorialRef;
+    return (
+        <>
+            <button onclick={() => ref!.tour()}>Start tutorial?</button>
+            <Tutorial ref={ref} outset={5} >
+                <Tutorial.Step order={1} title="Welcome" content="This is the main menu.">
+                    <button>Play</button>
+                </Tutorial.Step>
+
+                <Tutorial.Step order={2} title="Settings" content="Change your preferences here." position="bottom">
+                    <button>Settings</button>
+                </Tutorial.Step>
+            </Tutorial>
+        </>
+    );
+};
+
+export default App;
+```
+
+## API
+
+### Tutorial Props
+
+| Prop Name  | Type                             | Default     | Description                                                                                                                                                 |
+| ---------- | ------------------------         | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `style`    | `JSX.CSSProperties`              | `{}`        | Inline styles to apply directly to the radial menu's root element.                                                                                              |
+| `class`    | `string`                         | `""`        | Additional CSS classes to apply to the radial menu's root element.                                                                                              |
+| `ref`      | [`TutorialRef`](#ref-api) \| `undefined`       | `undefined` | A reference to the component, providing access to its methods and the underlying HTML element.                                                                  |
+| `outset`   | `number`                         | `0`         | Extra offset (in px) applied between the tooltip/highlight and the target element. Useful when the target has shadows/borders or sits inside tight layouts. |
+| `tooltip`  | [`TooltipType<T>`](#provided-props)                 | `undefined` | Custom tooltip component to render instead of the default one. Receives the provided tutorial props (title, content, step, controls).                       |
+| `onChange` | `(step: number) => void`         | `undefined` | Fired whenever the active tutorial step changes. The callback receives the **1-based** step index.                                                          |
+
+## Ref API
+
+To interact with the `Tutorial` programmatically, you can use the `TutorialRef` interface.
+This interface provides access to the component's root element and exposes methods for controlling its state and selection.
+
+### Properties
+
+| Property   | Type                            | Description                                                                                                                              |
+| ---------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `element`  | `HTMLDivElement`                | Root element of the tutorial wrapper.                                                                                                    |
+| `progress` | `Accessor<number>`              | Current progress in `%` (0-100). Use it to display custom progress UIs.                                                                  |
+| `current`  | `Accessor<number>`              | Current active step (1-based). Returns `0` when the tutorial is not running.                                                             |
+| `target`   | `Accessor<HTMLElement \| null>` | The DOM element currently being highlighted. Useful if you need any specific information about the position or dimensions of the element |
+
+### Methods
+
+| Method       | Parameters         | Return value | Description                                                                                                                |
+| ------------ | ------------------ | ------       | -------------------------------------------------------------------------------------------------------------------------- |
+| `tour`       | `(step?: number)`  | `void`       | Starts the tutorial. If a step is provided, starts from that step instead of the first one.                                |
+| `exit`       | —                  | `void`       | Stops the tutorial and clears the active step.                                                                             |
+| `next`       | —                  | `void`       | Moves to the next step, if any.                                                                                            |
+| `previous`   | —                  | `void`       | Moves to the previous step, if any.                                                                                        |
+| `pause`      | —                  | `void`       | Pauses the tutorial.                                                             |
+| `resume`     | `(next?: boolean)` | `void`       | Resumes a paused tutorial. If `next` is `true`, it will advance to the next step on resume (useful for interactive steps). |
+| `changeStep` | `(step: number)`   | `void`       | Jumps directly to the provided step (1-based). Use this when the tutorial should react to external UI events.              |
+
+## Slots/Components
+
+The `Tutorial` component exposes:
+
+- [**Tutorial.Step**](#tutorialstep) - defines one step of the tutorial and marks the wrapped UI as the current target.
+- [**Custom Tooltip** (via tooltip prop)](#custom-tooltip) - lets you fully replace the default tooltip UI.
+
+### Tutorial.Step
+
+Wraps the element you want to highlight and registers it in the tutorial flow.
+
+#### Usage
+
+Simply wrap the target element with `Tutorial.Step` and provide the required `order` prop. Providing `title` and `content` will display them in the tooltip for this step.
+
+```tsx
+<Tutorial>
+    <Tutorial.Step order={1} title="Tabs" content="Use these to switch sections.">
+        <Tabs /> 
+    </Tutorial.Step>
+
+    <Tutorial.Step order={2} title="Side Panel" content="Use it for additional information." position="right" outset={-5}>
+        <SidePanel />
+    </Tutorial.Step>
+</Tutorial>
+```
+
+:::caution
+Make sure to provide unique `order` values for each step. The tutorial will follow the ascending order of these values.
+:::
+
+:::caution
+If a step is repeated, it may cause unexpected behavior.
+:::
+
+#### Props
+
+| Prop Name  | Type              | Default  | Description                                                              |
+| ---------- | ----------------- | -------- | ------------------------------------------------------------------------ |
+| `order`    | `number`          | —        | Required. Controls the order in which the step is shown.                 |
+| `title`    | `string`          | inherits | Tooltip title. If omitted, the previous step's title is reused.          |
+| `content`  | `string`          | inherits | Tooltip content. If omitted, the previous step's content is reused.      |
+| `outset`   | `number`          | global   | Per-step offset. Overrides the `Tutorial`'s `outset` for this step only. |
+| `position` | `top` \| `left` \| `right` \| `bottom` | `auto`   | Tooltip placement relative to the target.                                |
+
+### Custom Tooltip
+
+You can replace the default tooltip by passing a tooltip prop to `Tutorial`.
+This prop accepts a **custom component** or a **function that returns JSX**, allowing you to fully control the tooltip's layout, animations, and controls.
+
+#### Provided props
+
+| Prop Name  | Type                                 | Description                                                                             |
+| ---------- | ------------------------------------ | --------------------------------------------------------------------------------------- |
+| `title`    | `string \| undefined`                | The current step's title. Falls back to the previous step's title if omitted.           |
+| `content`  | `string \| JSX.Element \| undefined` | The tooltip's main content. Falls back to the previous step's content if omitted.       |
+| `step`     | `Accessor<number>`                   | The current **1-based** step index.                                                     |
+| `progress` | `Accessor<number>`                   | Current tutorial progress (0-100). Useful for showing a progress bar.                   |
+| `Next`     | `Component<ComponentProps>`          | Prebuilt “Next” button component. When clicked on the final step, it ends the tutorial. |
+| `Prev`     | `Component<ComponentProps>`          | Prebuilt “Previous” button component. Navigates back one step.                          |
+
+#### Usage
+
+To declare a custom tooltip, you need to follow these steps:
+
+1. Create a component typed as `TooltipType` (you need to import the type)
+2. Pass it to the `tooltip` prop of the `Tutorial` component
+3. Use the provided props (`title`, `content`, `step`, `progress`, `Next`, `Prev`) to build your layout and behavior.
+
+```tsx
+import Tutorial, {TutorialRef} from "@components/Complex/Tutorial/Tutorial";
+import { TooltipType } from "@components/Complex/Tutorial/TutorialTooltip";
+import Progress from "@components/Feedback/Progress/Progress";
+import Flex from "@components/Layout/Flex/Flex";
+
+const MyTooltip: TooltipType = (props) => {
+    return (
+        <div>
+            <div>{props.title}</div>
+            <div>{props.content}</div>
+            <Progress.Bar progress={props.progress()} />
+            <Flex>
+                <props.Prev>Previous</props.Prev>
+                <props.Next>Next</props.Next>
+            </Flex>
+        </div>
+    )
+}
+
+const App = () => {
+    let ref!: TutorialRef;
+    return (
+        <Tutorial tooltip={MyTooltip}>
+            <Tutorial.Step order={1} title="Tabs" content="Switch between sections here.">
+                <Tabs />
+            </Tutorial.Step>
+        </Tutorial>
+    );
+};
+
+export default App;
+```
+
+Optionally, you can extend the `TooltipType` to pass **additional custom props** to your `tooltip` component.
+
+```diff lang="tsx"
++interface CustomTooltipProps {
++    customLabel: string;
++}
+
++const MyTooltip: TooltipType<CustomTooltipProps> = (props) => {
+    return (
+        <div>
+            <div>{props.title}</div>
+            <div>{props.content}</div>
+            <Progress.Bar progress={props.progress()} />
+            <Flex>
+                <props.Prev>Previous</props.Prev>
+                <props.Next>Next</props.Next>
+            </Flex>
++            <div>{props.customLabel}</div>
+        </div>
+    )
+}
+
+const App = () => {
+    return (
++        <Tutorial tooltip={(props) => <MyTooltip {...props} customLabel="Custom label" />}>
+            {/* ... */}
+        </Tutorial>
+    );
+};
+
+export default App;
+```
+
+:::caution
+When passing additional props, you must provide the tooltip as a callback function that returns your component.
+This ensures both the built-in tutorial props and your custom ones are passed correctly.
+:::
+
+## Guide
+
+:::note
+Working with the Tutorial component requires understanding how to use access the component's refs. Checkout the [following guide](/concepts/working-with-state/#using-component-refs) to learn more.
+:::
+
+### Controlling the tutorial programmatically
+
+You can start, pause, stop, and navigate the tutorial using the `TutorialRef` methods.
+
+#### Starting the tutorial
+
+The tutorial can be started programmatically using the `tour()` method from the `TutorialRef`.
+
+```tsx
+import Tutorial, {TutorialRef} from "@components/Complex/Tutorial/Tutorial";
+const App = () => {
+    let ref!: TutorialRef;
+
+    return (
+        <>
+            <button onclick={() => ref!.tour()}>Start tutorial?</button>
+            <Tutorial ref={ref} >
+                {/* Steps go here */}
+            </Tutorial>
+        </>
+    );
+};
+```
+
+#### Pausing and resuming the tutorial
+
+You can pause the tutorial at any time using the `pause()` method, and resume it later with the `resume()` method.
+This behavior is useful for interactive steps where user input is required.
+
+```tsx
+import Tutorial, {TutorialRef} from "@components/Complex/Tutorial/Tutorial";
+const App = () => {
+    let ref!: TutorialRef;
+
+    const handleUserInteraction = () => {
+        if (ref.current() === 0) return; // Tutorial not running
+
+        if (ref.current() === 3) {
+            // pause on step 3
+            ref.pause();
+
+            // Do something...
+
+            setTimeout(() => {
+                // Resume after 2 seconds
+                ref.resume();
+            }, 2000);
+        }
+    };
+
+    return (
+        <>
+            <div onclick={handleUserInteraction}>
+                <Tutorial ref={ref} >
+                    {/* Steps go here */}
+                </Tutorial>
+            </div>
+        </>
+    );
+};
+```
+
+:::tip
+When resuming, you can pass `true` to the `resume()` method to automatically advance to the next step.
+:::
+
+#### Concluding the tutorial
+
+You can end the tutorial manually at any time using the `exit()` method from the `TutorialRef`.
+
+```tsx
+import Tutorial, {TutorialRef} from "@components/Complex/Tutorial/Tutorial";
+const App = () => {
+    let ref!: TutorialRef;
+
+    const handleUserInteraction = () => {
+        if (ref.current() === 0) return; // Tutorial not running
+
+        if (ref.current() === 3 && someCondition) {
+            ref.end();
+        }
+    };
+
+    return (
+        <>
+            <div onclick={handleUserInteraction}>
+                <Tutorial ref={ref} >
+                    {/* Steps go here */}
+                </Tutorial>
+            </div>
+        </>
+    );
+};
+```
+
+### Reacting to step changes
+
+You can use the `onChange` prop to react to step changes in the tutorial. This is useful if additional logic is needed between certain steps.
+
+```tsx ins="onChange={handleStepChange}"
+import Tutorial, {TutorialRef} from "@components/Complex/Tutorial/Tutorial";
+const App = () => {
+    let ref!: TutorialRef;
+
+    const handleStepChange = (step: number) => {
+        if (step === 2) {
+            console.log("User reached step 2, showing modal...");
+            // Show a modal or perform other actions
+        }
+
+        if (step === 4) {
+            ref.pause();
+            console.log("Tutorial paused at step 4 for user interaction.");
+        }
+    };
+
+    return (
+        <>
+            <Tutorial onChange={handleStepChange} ref={ref} >
+                {/* Steps go here */}
+            </Tutorial>
+        </>
+    );
+};
+```
+
+### Customizing your tooltip's behavior (Examples)
+
+You can replace the default tooltip by passing a tooltip prop to `Tutorial`. The component you provide will receive several [props](#provided-props) to help you build your custom layout and behavior.
+
+#### Manually placing the tooltip for specific steps
+
+Sometimes, you may want to adjust the tooltip's position for a particular step.
+You can do this by checking the current step and applying classes or inline styles that offset the tooltip as needed.
+
+```tsx collapse={1-4} collapse={15-28} ins="style={props.step() === 2 ? {position: 'relative', top: '10%%'} : {}}"
+import Tutorial, {TutorialRef} from "@components/Complex/Tutorial/Tutorial";
+import { TooltipType } from "@components/Complex/Tutorial/TutorialTooltip";
+import Flex from "@components/Layout/Flex/Flex";
+
+const MyTooltip: TooltipType = (props) => {
+    return (
+        <div style={props.step() === 2 ? {position: 'relative', top: '10%%'} : {}}>
+            <div>{props.title}</div>
+            <div>{props.content}</div>
+            <Flex>
+                <props.Prev>Previous</props.Prev>
+                <props.Next>Next</props.Next>
+            </Flex>
+        </div>
+    )
+}
+
+const App = () => {
+    return (
+        <Tutorial tooltip={MyTooltip}>
+            { /* Steps go here */ }
+        </Tutorial>
+    );
+};
+
+export default App;
+```
+
+:::note
+In this example, the tooltip is positioned relative to its own wrapper, which already defines its base placement on the screen.
+:::
+
+#### Changing the next button's content for the last step
+
+You can customize your tooltip with the custom provided props to change the "Next" button's content on the final step.
+
+```tsx collapse={1-4} collapse={19-28} ins="{props.progress() === 100 ? 'Done' : 'Next' }"
+import Tutorial, {TutorialRef} from "@components/Complex/Tutorial/Tutorial";
+import { TooltipType } from "@components/Complex/Tutorial/TutorialTooltip";
+import Flex from "@components/Layout/Flex/Flex";
+
+const MyTooltip: TooltipType = (props) => {
+    return (
+        <div>
+            <div>{props.title}</div>
+            <div>{props.content}</div>
+            <Flex>
+                <props.Prev>Previous</props.Prev>
+                <props.Next>
+                    {props.progress() === 100 ? 'Done' : 'Next' }
+                </props.Next>
+            </Flex>
+        </div>
+    )
+}
+
+const App = () => {
+    return (
+        <Tutorial tooltip={MyTooltip}>
+            { /* Steps go here */ }
+        </Tutorial>
+    );
+};
+
+export default App;
+```
+
+#### Applying conditional classes to control button visibility
+
+You can conditionally apply classes and styles to the provided `Next` and `Prev` components to control their visibility based on the current step.
+
+```tsx collapse={1-4} collapse={17-28} ins="props.step() === 1 ? 'control-hidden' : ''"
+import Tutorial, {TutorialRef} from "@components/Complex/Tutorial/Tutorial";
+import { TooltipType } from "@components/Complex/Tutorial/TutorialTooltip";
+import Flex from "@components/Layout/Flex/Flex";
+
+const MyTooltip: TooltipType = (props) => {
+    return (
+        <div>
+            <div>{props.title}</div>
+            <div>{props.content}</div>
+            <Flex>
+                <props.Prev class={props.step() === 1 ? 'control-hidden' : ''}>Previous</props.Prev>
+                <props.Next class={props.step() === 3 ? 'control-hidden' : ''}>Next</props.Next>
+            </Flex>
+        </div>
+    )
+}
+
+const App = () => {
+    return (
+        <Tutorial tooltip={MyTooltip}>
+            { /* Steps go here */ }
+        </Tutorial>
+    );
+};
+
+export default App;
+```

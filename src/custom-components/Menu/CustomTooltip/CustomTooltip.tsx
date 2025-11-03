@@ -64,7 +64,7 @@ const CustomTooltip: TooltipType<CustomTooltipProps> = (props) => {
         <div class={conditionalClasses()}>
             <h2 class={styles['tooltip-heading']}>{props.title}</h2>
             <span class={styles['tooltip-content']}>{props.content}</span>
-            <Progress.Bar class={styles['tooltip-progress']} style={{width: '100%'}} progress={props.progress()}>
+            <Progress.Bar class={styles['tooltip-progress']} progress={props.progress()}>
             </Progress.Bar>
             <Show when={shouldShowButtons()}>
                 <Flex>
