@@ -16,7 +16,7 @@ For detailed usage instructions, examples, and customization options, refer to t
 :::
 
 :::tip
-Check out [our blog post](https://coherent-labs.com/blog/uitutorials/gamefaceui-menu-glow-up/) to see how we used the `Tutorial` component to build an interactive walkthrough for our Menu UI.
+Check out [our blog post](https://coherent-labs.com/blog/uitutorials/gamefaceui-menu-tutorial/) to see how we used the `Tutorial` component to build an interactive walkthrough for our Menu UI.
 :::
 
 ```tsx
@@ -354,6 +354,37 @@ const App = () => {
     );
 };
 ```
+
+### Per step customization
+
+You can customize individual steps of the tutorial by using the `outset` and `position` props on the `Tutorial.Step` component. This allows for fine-tuning the tooltip's placement and offset for specific steps.
+
+```tsx ins="outset={10} position='top'" ins="outset={-5} position='right'"
+import Tutorial, {TutorialRef} from "@components/Complex/Tutorial/Tutorial";
+
+const App = () => {
+    let ref!: TutorialRef;
+    return (
+        <>
+            <Tutorial ref={ref} outset={5} >
+                <Tutorial.Step order={1} outset={10} position='top' title="Welcome" content="This is the main menu." >
+                    <button>Play</button>
+                </Tutorial.Step>
+
+                <Tutorial.Step order={2} outset={-5} position='right' title="Settings" content="Change your preferences here." >
+                    <button>Settings</button>
+                </Tutorial.Step>
+            </Tutorial>
+        </>
+    );
+};
+
+export default App;
+```
+
+:::tip
+The `outset` also accept negative values, allowing you tho "shrink" the highlight rectangle around the target element.
+:::
 
 ### Customizing your tooltip's behavior (Examples)
 

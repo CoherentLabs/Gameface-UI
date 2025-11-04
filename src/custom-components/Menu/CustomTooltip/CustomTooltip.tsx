@@ -8,8 +8,7 @@ import { TutorialSteps } from "../../../views/menu/util/tutorialSteps"
 import { MenuContext } from "../../../views/menu/Menu"
 
 interface CustomTooltipProps {
-    api: TutorialRef,
-    some: number,
+    exit: () => void;
 }
 
 const CustomTooltip: TooltipType<CustomTooltipProps> = (props) => {
@@ -64,8 +63,7 @@ const CustomTooltip: TooltipType<CustomTooltipProps> = (props) => {
         <div class={conditionalClasses()}>
             <h2 class={styles['tooltip-heading']}>{props.title}</h2>
             <span class={styles['tooltip-content']}>{props.content}</span>
-            <Progress.Bar class={styles['tooltip-progress']} progress={props.progress()}>
-            </Progress.Bar>
+            <Progress.Bar class={styles['tooltip-progress']} progress={props.progress()} />
             <Show when={shouldShowButtons()}>
                 <Flex>
                     <props.Prev 
@@ -77,7 +75,7 @@ const CustomTooltip: TooltipType<CustomTooltipProps> = (props) => {
                     <NextButton />
                 </Flex>
             </Show>
-            <div class={styles['tooltip-exit']} onclick={props.api?.exit}>x</div>
+            <div class={styles['tooltip-exit']} onclick={props.exit}>x</div>
         </div>
     )
 }
