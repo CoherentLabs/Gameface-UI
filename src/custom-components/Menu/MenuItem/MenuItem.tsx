@@ -18,7 +18,7 @@ const MenuItem: ParentComponent<MenuItemsProps> = (props) => {
     }
 
     return (
-        <Block class={`${styles['item-container']} ${isActive() ? styles.active : ''}`} mouseenter={handleMouseEnter}>
+        <Block attr:id={props.id} focus={handleMouseEnter} class={`${styles['item-container']} ${isActive() ? styles.active : ''} menu-item`} mouseenter={handleMouseEnter}>
             <Flex class={styles.item} justify-content="space-between" align-items="center">
                 {props.name}
                 <Flex align-items="center" style={{ height: '100%', padding: '0 3vmax' }}>

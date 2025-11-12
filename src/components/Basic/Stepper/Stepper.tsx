@@ -1,10 +1,14 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, createSignal, onMount, ParentComponent, Show, createContext, createMemo, For, DEV, JSX } from "solid-js";
+import { Accessor, createSignal, onMount, ParentComponent, Show, createContext, createMemo, For, DEV, JSX, useContext } from "solid-js";
 import styles from './Stepper.module.scss';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { Control, StepperControl } from "./StepperControl";
 import { Item, StepperItem } from "./StepperItem";
 import { createTokenComponent, useToken, useTokens } from '@components/utils/tokenComponents';
+import { NavigationContext } from "@components/Navigation/Navigation/Navigation";
+import eventBus from "@components/tools/EventBus";
+import { waitForFrames } from "@components/utils/waitForFrames";
+import resolveAnchor from "@components/utils/resolveFocusAnchor";
 
 export interface StepperRef {
     selected?: Accessor<string>
@@ -17,7 +21,8 @@ interface StepperProps extends ComponentProps {
     disabled?: boolean
     'class-disabled'?: string
     'controls-position'?: 'before' | 'after'
-    loop?: boolean
+    loop?: boolean,
+    anchor?: string | HTMLElement,
     onChange?: (value: string) => void;
 }
 
@@ -132,7 +137,25 @@ const Stepper: ParentComponent<StepperProps> = (props) => {
         return true;
     });
 
+    const setupNavigation = () => {
+        const Navigation = useContext(NavigationContext);
+        if (!Navigation) return;
+        
+        let focusAnchor: null | Element;
+        waitForFrames(() => focusAnchor = resolveAnchor(props.anchor));
+
+        const handleMove = (direction: 'prev' | 'next') => {
+            if (document.activeElement === focusAnchor || document.activeElement === element) {
+                changeSelected(direction)
+            }
+        }
+
+        eventBus.on('move-left', () => handleMove('prev'))
+        eventBus.on('move-right', () => handleMove('next'))
+    }
+
     onMount(() => {
+        setupNavigation();
         if (!props.ref || !element) return;
 
         (props.ref as unknown as (ref: any) => void)({

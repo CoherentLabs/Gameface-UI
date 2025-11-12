@@ -1,11 +1,15 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, Setter, createSignal, onMount, ParentComponent, Show, createContext, createMemo, createEffect, on } from "solid-js";
+import { Accessor, Setter, createSignal, onMount, ParentComponent, Show, createContext, createMemo, createEffect, on, useContext } from "solid-js";
 import styles from './ToggleButton.module.scss';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { Control, ToggleButtonControl } from "./ToggleButtonControl";
 import { Indicator } from "./ToggleButtonIndicator";
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 import { Handle } from "./ToggleButtonHandle";
+import { NavigationContext } from "@components/Navigation/Navigation/Navigation";
+import eventBus from "@components/tools/EventBus";
+import { waitForFrames } from "@components/utils/waitForFrames";
+import resolveAnchor from "@components/utils/resolveFocusAnchor";
 
 export const LabelLeft = createTokenComponent();
 export const LabelRight = createTokenComponent();
@@ -20,7 +24,8 @@ interface ToggleButtonProps extends ComponentProps {
     checked?: boolean
     disabled?: boolean
     'class-disabled'?: string
-    'class-checked'?: string
+    'class-checked'?: string,
+    anchor?: string | HTMLElement
     onChange?: (checked: boolean) => void;
 }
 
@@ -65,7 +70,22 @@ const ToggleButton: ParentComponent<ToggleButtonProps> = (props) => {
         }, {defer: true})
     );
 
+    const setupNavigation = () => {
+        const Navigation = useContext(NavigationContext);
+        if (!Navigation) return;
+        
+        let focusAnchor: null | Element;
+        waitForFrames(() => focusAnchor = resolveAnchor(props.anchor));
+
+        eventBus.on('select', () => {
+            if (document.activeElement === focusAnchor || document.activeElement === element) {
+                toggle()
+            }
+        });
+    }
+
     onMount(() => {
+        setupNavigation();
         if (!props.ref || !element) return;
 
         (props.ref as unknown as (ref: any) => void)({

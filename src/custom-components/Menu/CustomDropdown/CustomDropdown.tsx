@@ -6,11 +6,12 @@ import { emitChange } from "../../../views/menu/util";
 interface CustomDropdownProps {
     values: { value: string, label: string }[],
     default: string,
+    anchor?: string,
 }
 
 const CustomDropdown = (props: CustomDropdownProps) => {
     return (
-        <Dropdown onChange={emitChange} class={style.dropdown}>
+        <Dropdown anchor={props.anchor} onChange={emitChange} class={style.dropdown}>
             <Dropdown.Options class={style["dropdown-options"]} inverted-class={style['dropdown-inverted']}>
                 <For each={props.values}>
                 {(opt) => (

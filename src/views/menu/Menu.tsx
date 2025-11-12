@@ -9,7 +9,7 @@ import Top from '@components/Layout/Top/Top';
 import Content from '@components/Layout/Content/Content';
 import Bottom from '@components/Layout/Bottom/Bottom';
 import Scroll from '@components/Layout/Scroll/Scroll';
-import { Accessor, batch, createContext, createMemo, createSignal, For, onMount, Setter, Show } from 'solid-js';
+import { Accessor, batch, createContext, createEffect, createMemo, createSignal, For, onMount, Setter, Show } from 'solid-js';
 import Gameplay from '@custom-components/Menu/Options/Gameplay/Gameplay';
 import styles from './Menu.module.scss';
 import { Column12, Column4, Column8 } from '@components/Layout/Column/Column';
@@ -22,6 +22,8 @@ import CustomModal from '@custom-components/Menu/CustomModal/CustomModal';
 import { ModalRef } from '@components/Feedback/Modal/Modal';
 import eventBus from '@components/tools/EventBus';
 import KeyBindsTab from '@custom-components/Menu/Options/KeyBindsTab/KeyBindsTab';
+import Navigation, { NavigationRef } from '@components/Navigation/Navigation/Navigation';
+import Draggable from '@components/Navigation/Navigation/Draggable';
 
 interface MenuContextValue {
     currentOption: Accessor<string>,
@@ -44,6 +46,8 @@ const Menu = () => {
         setCurrentOption,
         activeTab
     }
+
+    let navigationRef!: NavigationRef;
 
     const handleTabChange = (newTab: string) => {
         batch(() => {
@@ -69,19 +73,31 @@ const Menu = () => {
 
     onMount(() => {
         eventBus.on('ui-change', () => setHasChanges(true))
+        
     })
 
     const isCredits = createMemo(() => activeTab() === OPTIONS[4])
+    
+    const menuRight = () => tabsRef.changeTab('Graphics'); // currently no way to "cycle" tabs
+    const menuLeft = () => tabsRef.changeTab('Gameplay');
+    const defaultActions = {
+        // User added
+        'tab-left': {key: 'Q', callback: menuLeft},
+        'tab-right': {key: 'E', callback: menuRight},
+    }
 
     return (
         <MenuContext.Provider value={MenuContextValue}>
+            <Navigation actions={defaultActions} ref={navigationRef}>
             <div class={styles.Menu}>
                 <Tabs ref={tabsRef} onBeforeTabChange={handleBeforeTabChange} onTabChanged={handleTabChange} default={OPTIONS[0]}>
                     <Layout>
                         <Top class={styles.top}>
-                            <Flex>
-                                <h2 style={{ 'text-transform': 'uppercase' }}>Options</h2>
-                            </Flex>
+                                <Flex>
+                                <Draggable >
+                                    <h2 style={{ 'text-transform': 'uppercase' }}>Options</h2>
+                                </Draggable>
+                                </Flex>
                             <Flex direction='row'>
                                 <For each={OPTIONS}>
                                     {(tab) => {
@@ -148,6 +164,7 @@ const Menu = () => {
                 </Tabs>
             </div>
             <CustomModal ref={modalRef} onClose={handleModalClose} />
+            </Navigation>
         </MenuContext.Provider>
     );
 };

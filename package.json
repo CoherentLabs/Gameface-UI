@@ -28,6 +28,7 @@
   "dependencies": {
     "@solid-primitives/jsx-tokenizer": "^1.1.1",
     "@types/node": "^22.9.0",
+    "coherent-gameface-interaction-manager": "^2.3.4",
     "cors-env": "^1.0.2",
     "dotenv": "^17.2.0",
     "glob": "^11.0.0",

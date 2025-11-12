@@ -1,4 +1,4 @@
-import { Accessor, createContext, createEffect, createMemo, createSignal, onCleanup, onMount, ParentComponent, on } from 'solid-js';
+import { Accessor, createContext, createEffect, createMemo, createSignal, onCleanup, onMount, ParentComponent, on, useContext } from 'solid-js';
 import styles from './Scroll.module.scss';
 import LayoutBase from '../LayoutBase';
 import { clamp } from '@components/utils/clamp';
@@ -6,6 +6,12 @@ import { Content, ScrollContent } from './ScrollContent';
 import { Bar, ScrollBar } from './ScrollBar';
 import { BaseComponentRef, ComponentBaseProps } from '@components/types/ComponentProps';
 import { Handle } from './ScrollHandle';
+import { NavigationContext } from '@components/Navigation/Navigation/Navigation';
+import { waitForFrames } from '@components/utils/waitForFrames';
+import resolveAnchor from '@components/utils/resolveFocusAnchor';
+// @ts-ignore
+import { actions, keyboard } from 'coherent-gameface-interaction-manager';
+import eventBus from '@components/tools/EventBus';
 
 export const ScrollContext = createContext<{
     scrollToMouseHandler: (event: MouseEvent) => void,
@@ -245,7 +251,21 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
 
     createEffect(on(handleTop, handleOnScroll, {defer: true}))
 
+    const setupNavigation = () => {
+        const Navigation = useContext(NavigationContext);
+        if (!Navigation) return;
+
+        eventBus.on('move-down', () => {
+            document.activeElement && scrollIntoView(document.activeElement as HTMLElement)
+        });
+
+        eventBus.on('move-up', () => {
+            document.activeElement && scrollIntoView(document.activeElement as HTMLElement)
+        });
+    }
+
     onMount(() => {
+        setupNavigation();
         contentWrapperRef!?.addEventListener('scroll', updateHandlePosition);
     });
 

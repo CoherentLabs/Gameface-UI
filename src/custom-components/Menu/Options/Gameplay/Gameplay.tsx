@@ -8,14 +8,15 @@ import CustomToggle from "@custom-components/Menu/CustomToggle/CustomToggle";
 import Block from "@components/Layout/Block/Block";
 import CustomDropdown from "@custom-components/Menu/CustomDropdown/CustomDropdown";
 import { emitChange } from "../../../../views/menu/util";
+import Navigation from "@components/Navigation/Navigation/Navigation";
 
 const Gameplay: ParentComponent = () => {
     const [showSubtitleOptions, setShowSubtitleOptions] = createSignal(true);
 
     return (
-        <>
+        <Navigation.Area name="content" selector="menu-item">
             <MenuItem id="difficulty" name='Difficulty'>
-                <Stepper onChange={emitChange} style={{width: '15vmax'}}>
+                <Stepper anchor='#difficulty' onChange={emitChange} style={{width: '15vmax'}}>
                     <Stepper.Items>
                         <Stepper.Item value='Easy'>Easy</Stepper.Item>
                         <Stepper.Item value='Normal' selected>Normal</Stepper.Item>
@@ -26,7 +27,7 @@ const Gameplay: ParentComponent = () => {
                 </Stepper>
             </MenuItem>
             <MenuItem id="subtitles" name='Subtitles'>
-                <CustomToggle checked={showSubtitleOptions()} onChange={(checked) => setShowSubtitleOptions(checked)} />
+                <CustomToggle anchor="#subtitles" checked={showSubtitleOptions()} onChange={(checked) => setShowSubtitleOptions(checked)} />
             </MenuItem>
             <Show when={showSubtitleOptions()}>
                 <Block style={{"padding-left": '2vmax'}}>
@@ -38,6 +39,7 @@ const Gameplay: ParentComponent = () => {
                     </MenuItem>
                     <MenuItem id="subtitleLanguage" name="Subtitle Language">
                         <CustomDropdown
+                            anchor="#subtitleLanguage"
                             values={[
                                 { value: "en", label: "English" },
                                 { value: "de", label: "Deutsch" },
@@ -56,18 +58,18 @@ const Gameplay: ParentComponent = () => {
                 <CustomSlider step={0.1} min={1} max={10} value={3.3} />
             </MenuItem>
             <MenuItem id="tutorialHints" name='Tutorial Hints'>
-                <CustomToggle checked={true} />
+                <CustomToggle anchor="#tutorialHints" checked={true} />
             </MenuItem>
             <MenuItem id="autoSave" name='Auto-Save'>
-                <CustomToggle checked={false} />
+                <CustomToggle anchor="#autoSave" checked={false} />
             </MenuItem>
             <MenuItem id="aimAssist" name='Aim Assist'>
-                <CustomToggle checked={false} />
+                <CustomToggle anchor="#aimAssist" checked={false} />
             </MenuItem>
             <MenuItem id="vibration" name='Controller Vibration'>
-                <CustomToggle checked={true} />
+                <CustomToggle anchor="#vibration" checked={true} />
             </MenuItem>
-        </>
+        </Navigation.Area>
     )
 }
 

@@ -1,4 +1,4 @@
-import { Accessor, createContext, createEffect, createMemo, createSignal, DEV, JSX, onMount, ParentComponent } from 'solid-js';
+import { Accessor, createContext, createEffect, createMemo, createSignal, DEV, JSX, onMount, ParentComponent, useContext } from 'solid-js';
 import style from './Dropdown.module.scss';
 import { DropdownOptions, Handle, Options, Track } from './DropdownOptions';
 import { Option } from './DropdownOption';
@@ -6,6 +6,11 @@ import { DropdownTrigger, Icon, Placeholder, Trigger } from './DropdownTrigger';
 import { BaseComponentRef, ComponentProps } from '@components/types/ComponentProps';
 import useBaseComponent from '@components/BaseComponent/BaseComponent';
 import { waitForFrames } from '@components/utils/waitForFrames';
+import { NavigationContext } from '@components/Navigation/Navigation/Navigation';
+import resolveAnchor from '@components/utils/resolveFocusAnchor';
+//@ts-ignore
+import { actions, keyboard, spatialNavigation } from 'coherent-gameface-interaction-manager';
+import eventBus from '@components/tools/EventBus';
 
 export interface CommonDropdownSlotProps {
     style?: JSX.CSSProperties,
@@ -34,6 +39,7 @@ interface DropdownProps extends ComponentProps {
     disabled?: boolean
     'class-disabled'?: string
     onChange?: (value: string) => void;
+    anchor?: string | HTMLElement
 }
 
 const Dropdown: ParentComponent<DropdownProps> = (props) => {
@@ -115,7 +121,37 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
         if (totalHeight > allowedHeight) setIsInverted(true);
     } 
 
+    const setupNavigation = () => {
+        const Navigation = useContext(NavigationContext);
+        if (!Navigation) return;
+        
+        let focusAnchor: null | Element;
+        waitForFrames(() => focusAnchor = resolveAnchor(props.anchor));
+
+        const openDropdown = () => {
+            if (open()) collapseDropdown()
+            
+            if (document.activeElement === focusAnchor || document.activeElement === element) {
+                toggle(true);
+
+                spatialNavigation.add([{ area: 'dropdown-area', elements: [`.${style['dropdown-option']}`] }]);
+                spatialNavigation.focusFirst('dropdown-area');
+                eventBus.on('back', () => collapseDropdown())
+            }
+        }
+
+        const collapseDropdown = () => {
+            spatialNavigation.remove('dropdown-area');
+            spatialNavigation.focusFirst('content'); // here it will be the last area
+            toggle(false);
+        }
+
+        eventBus.on('select', () => openDropdown())
+        // eventBus.on('move-right', () => handleMove('next'))
+    }
+
     onMount(() => {
+        setupNavigation();
         waitForFrames(handlePosition);
         if (!props.ref || !element) return;
         (props.ref as unknown as (ref: any) => void)({

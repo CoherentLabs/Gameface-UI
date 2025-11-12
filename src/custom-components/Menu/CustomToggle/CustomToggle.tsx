@@ -4,6 +4,7 @@ import { emitChange } from "../../../views/menu/util";
 interface CustomToggleProps {
     checked: boolean,
     onChange?: (checked: boolean) => void,
+    anchor?: string,
 }
 
 const CustomToggle = (props: CustomToggleProps) => {
@@ -12,7 +13,7 @@ const CustomToggle = (props: CustomToggleProps) => {
         emitChange();
     }
     return (
-        <ToggleButton checked={props.checked} onChange={handleChange} >
+        <ToggleButton anchor={props.anchor} checked={props.checked} onChange={handleChange} >
             <ToggleButton.LabelLeft>OFF</ToggleButton.LabelLeft>
             <ToggleButton.LabelRight>ON</ToggleButton.LabelRight>
             <ToggleButton.Control style={{'margin': '0 1vmax'}} />
