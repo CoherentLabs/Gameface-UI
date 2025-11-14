@@ -9,7 +9,7 @@ import Top from '@components/Layout/Top/Top';
 import Content from '@components/Layout/Content/Content';
 import Bottom from '@components/Layout/Bottom/Bottom';
 import Scroll from '@components/Layout/Scroll/Scroll';
-import { Accessor, batch, createContext, createMemo, createSignal, For, JSX, onMount, Setter, Show } from 'solid-js';
+import { Accessor, batch, createContext, createMemo, createSignal, For, onMount, Setter, Show } from 'solid-js';
 import Gameplay from '@custom-components/Menu/Options/Gameplay/Gameplay';
 import styles from './Menu.module.scss';
 import { Column12, Column4, Column8 } from '@components/Layout/Column/Column';
@@ -99,11 +99,11 @@ const Menu = () => {
         if (tutorialRef?.current() === TutorialSteps.Interactive.order) {
             if (interactiveTutorials().subtitles) return;
 
-            tutorialRef.pause();
+            tutorialRef?.pause();
             const subtitlesToggle = document.getElementById('subtitles')
             subtitlesToggle?.addEventListener('click', () => {
                 setInteractiveTutorials((prev) => ({...prev, subtitles: true}))
-                tutorialRef.resume(true);
+                tutorialRef?.resume(true);
             }, { once: true });
 
             return;
@@ -112,11 +112,11 @@ const Menu = () => {
         if (tutorialRef?.current() === TutorialSteps.InteractiveTwo.order) {
             if (interactiveTutorials().color) return;
 
-            tutorialRef.pause();
+            tutorialRef?.pause();
             const colorPicker = document.getElementById('subtitleColor')
             colorPicker?.addEventListener('mousedown', () => {
                 setInteractiveTutorials((prev) => ({...prev, color: true}))
-                setTimeout(() => tutorialRef.resume(true), 2000)
+                setTimeout(() => tutorialRef?.resume(true), 2000)
             }, { once: true });
 
             return;

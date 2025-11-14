@@ -161,7 +161,7 @@ describe('Tutorial', function () {
     })
 
     describe("Rect", function () {
-        it('Should match the wrapped element\s dimensions', async () => {
+        it('Should match the wrapped element\'s dimensions', async () => {
             const tutorial = await gf.get(`.${selectors.tutorial}`);
             const isSameSize = (rect1, rect2) => rect1.x === rect2.x && rect1.y === rect2.y; 
             const isSamePos = (rect1, rect2) => rect1.width === rect2.width && rect1.height === rect2.height; 

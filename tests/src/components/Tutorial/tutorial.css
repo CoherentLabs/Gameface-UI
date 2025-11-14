@@ -27,7 +27,7 @@
 }
 
 .tutorial-tooltip {
-    color: white;;
+    color: white;
     background-color: #303030;
     padding: 1vmax;
     border-radius: 1vmax;
@@ -51,5 +51,5 @@
     border-color: white;
 }
 .tutorial-tooltip-progress-fill {
-    background-color: #00DA9A
+    background-color: #00DA9A;
 }

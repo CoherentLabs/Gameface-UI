@@ -1,5 +1,5 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, Component, createEffect, createMemo, createSignal, JSX, on, Show, useContext } from "solid-js";
+import { Accessor, Component, createEffect, createMemo, createSignal, JSX, on, useContext } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { TutorialContext } from "./Tutorial";
 import Controls from "./Controls";

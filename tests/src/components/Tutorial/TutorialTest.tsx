@@ -112,7 +112,7 @@ const TutorialTest = () => {
                                         <div class={selectors["card-text"]}>
                                             GamefaceUI is a comprehensive collection of components designed to simplify the prototyping of game user interfaces.
                                             <Show when={dynamicElement()}>
-                                            {/* Not adding dynamic step to the json to keep length predicatble */}
+                                            {/* Not adding dynamic step to the json to keep length predictable */}
                                                 <Tutorial.Step order={6} title="Step 6" content="Dynamic step">
                                                     <div>Dynamic element</div>
                                                 </Tutorial.Step>

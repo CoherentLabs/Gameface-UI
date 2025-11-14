@@ -9,7 +9,7 @@ Each `Tutorial.Step` wraps real elements, highlights them, and displays a toolti
 
 ## Usage
 
-To use the Tutorial component, wrap your existing UI with it and wrap every elemnt you wish to be part of the tutorial with the `Tutorial.Step` component and provide it with an order.
+To use the Tutorial component, wrap your existing UI with it and wrap every element you wish to be part of the tutorial with the `Tutorial.Step` component and provide it with an `order` prop.
 
 :::note
 For detailed usage instructions, examples, and customization options, refer to the [Guide](/components/complex/tutorial#guide) section.
@@ -122,9 +122,9 @@ If a step is repeated, it may cause unexpected behavior.
 | Prop Name  | Type              | Default  | Description                                                              |
 | ---------- | ----------------- | -------- | ------------------------------------------------------------------------ |
 | `order`    | `number`          | —        | Required. Controls the order in which the step is shown.                 |
-| `title`    | `string`          | inherits | Tooltip title. If omitted, the previous step's title is reused.          |
-| `content`  | `string`          | inherits | Tooltip content. If omitted, the previous step's content is reused.      |
-| `outset`   | `number`          | global   | Per-step offset. Overrides the `Tutorial`'s `outset` for this step only. |
+| `title`    | `string` \| `undefined`          | "" | Tooltip title. If omitted, an empty string is used for the step.          |
+| `content`  | `string` \| `undefined`          | "" | Tooltip content. If omitted, an empty string is used for the step.      |
+| `outset`   | `number`          | 0   | Per-step offset. Overrides the `Tutorial`'s `outset` for this step only. |
 | `position` | `top` \| `left` \| `right` \| `bottom` | `auto`   | Tooltip placement relative to the target.                                |
 
 ### Custom Tooltip
@@ -136,8 +136,8 @@ This prop accepts a **custom component** or a **function that returns JSX**, all
 
 | Prop Name  | Type                                 | Description                                                                             |
 | ---------- | ------------------------------------ | --------------------------------------------------------------------------------------- |
-| `title`    | `string \| undefined`                | The current step's title. Falls back to the previous step's title if omitted.           |
-| `content`  | `string \| JSX.Element \| undefined` | The tooltip's main content. Falls back to the previous step's content if omitted.       |
+| `title`    | `string` \| `undefined`                | The current step's title. Falls back to `''` if omitted.           |
+| `content`  | `string` \| `JSX.Element` \| `undefined` | The tooltip's main content. Falls back to `''` if omitted.       |
 | `step`     | `Accessor<number>`                   | The current **1-based** step index.                                                     |
 | `progress` | `Accessor<number>`                   | Current tutorial progress (0-100). Useful for showing a progress bar.                   |
 | `Next`     | `Component<ComponentProps>`          | Prebuilt “Next” button component. When clicked on the final step, it ends the tutorial. |
@@ -383,7 +383,7 @@ export default App;
 ```
 
 :::tip
-The `outset` also accept negative values, allowing you tho "shrink" the highlight rectangle around the target element.
+The `outset` also accept negative values, allowing you to "shrink" the highlight rectangle around the target element.
 :::
 
 ### Customizing your tooltip's behavior (Examples)
@@ -402,7 +402,7 @@ import Flex from "@components/Layout/Flex/Flex";
 
 const MyTooltip: TooltipType = (props) => {
     return (
-        <div style={props.step() === 2 ? {position: 'relative', top: '10%%'} : {}}>
+        <div style={props.step() === 2 ? {position: 'relative', top: '10%'} : {}}> 
             <div>{props.title}</div>
             <div>{props.content}</div>
             <Flex>

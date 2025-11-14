@@ -1,5 +1,5 @@
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
-import { ParentComponent, useContext } from "solid-js";
+import { useContext } from "solid-js";
 import { TutorialContext } from "./Tutorial";
 import { ComponentProps } from "@components/types/ComponentProps";
 

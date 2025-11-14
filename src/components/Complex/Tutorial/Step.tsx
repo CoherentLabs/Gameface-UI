@@ -1,4 +1,4 @@
-import { children, createEffect, createMemo, on, onCleanup, onMount, ParentComponent, Show, useContext } from "solid-js"
+import { children, createEffect, createMemo, onCleanup, onMount, ParentComponent, useContext } from "solid-js"
 import { TutorialContext } from "./Tutorial";
 import { waitForFrames } from "@components/utils/waitForFrames";
 import { TooltipPosition } from "./TutorialTooltip";
@@ -47,11 +47,11 @@ const Step: ParentComponent<StepProps> = (props) => {
 
     const updateTooltipContent = () => {
         ctx.setOutset(props.outset ?? null);
-        ctx.setTooltipData((prev) => ({
-            title: props.title || prev.title,
-            content: props.content || prev.content,
+        ctx.setTooltipData({
+            title: props.title || "",
+            content: props.content || "",
             position: props.position || null
-        }))
+        })
     }
 
     onMount(() => ctx.setCount(prev => prev + 1))
