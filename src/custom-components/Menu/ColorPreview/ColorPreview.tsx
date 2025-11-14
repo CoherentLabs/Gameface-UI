@@ -21,6 +21,7 @@ const ColorPreview = (props: {id: string}) => {
             <Block style={{"background-color": color()}} class={styles['color-block']} />
             <ExtraContent id={props.id}>
                 <MenuColorPicker 
+                        attr:id={props.id}
                         size="L"
                         onChange={handleChange} 
                         value={color()} 

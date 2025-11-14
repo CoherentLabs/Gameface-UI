@@ -1,0 +1,7 @@
+[
+  { "order": 1, "title": "Step 1", "content": "Test content", "element": "@card" },
+  { "order": 2, "title": "Step 2", "content": "Test content 2", "element": "@card-image", "position": "right" },
+  { "order": 3, "title": "Step 3", "content": "Test content 3", "element": "@card-content", "position": "top" },
+  { "order": 4, "title": "Step 4", "content": "Test content 4", "element": "@card-heading", "position": "left" },
+  { "order": 5, "title": "Step 5", "content": "Test content 5", "element": "@card-text", "position": "bottom" }
+]

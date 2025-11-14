@@ -1,0 +1,112 @@
+.tutorial {
+    position: absolute;
+    background-color: transparent;
+    width: 0;
+    height: 0;
+    z-index: 9999998;
+    border: 2px solid white;
+    box-shadow: 0 0 5px 100vmax rgba(0, 0, 0, 0.394);
+    transition: width 0.3s ease-in, height 0.3s ease-in, left 0.3s ease-in, top 0.3s ease-in, opacity 0.3s ease-in;
+    opacity: 0;
+    visibility: hidden;
+
+    &-visible {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    opacity: 0;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.tooltip {
+    background-color: $primaryColor;
+    border: 0.1vmax solid $secondaryColor;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0.75vmax 1vmax;
+    border-radius: 0.5vmax;
+    color: white;
+
+    &-reference {
+        position: absolute;
+        z-index: 9999999; /* ABOVE tutorial */
+        visibility: hidden;
+        pointer-events: auto
+    }
+    
+    &-wrapper {
+        position: absolute;
+        visibility: hidden;
+    }
+
+    &-visible {
+        visibility: visible;
+    }
+
+    &-bottom {
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    &-top {
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    &-left {
+        right: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    &-right {
+        left: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    &-heading {
+        margin: 0;
+        margin-bottom: 0.25vmax;
+    }
+
+    &-content {
+        margin: 0.75vmax 0;
+    }
+
+    &-control {
+        padding: 0.5vmax 0.75vmax;
+        border: 0.1vmax solid $secondaryColor;
+        background-color: $primaryColor;
+        transition: background-color 0.2s ease-in-out;
+        border-radius: 0.2vmax;
+
+        &-first {
+            margin-right: 0.5vmax;
+        }
+
+        &:hover {
+            background-color: $secondaryColor;
+        }
+    }
+
+    &-progress {
+        background-color: #b8b8b8;
+        margin-bottom: 0.5vmax;
+        border-radius: 0.35vmax;
+        overflow: hidden;
+        width: 100%;
+    }
+}

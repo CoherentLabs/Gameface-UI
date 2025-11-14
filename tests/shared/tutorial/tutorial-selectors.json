@@ -1,0 +1,19 @@
+{
+  "assertionElement": "assertion-element",
+  "scenarioBtn": "scenario-btn",
+  "tutorial": "tutorial",
+  "card-wrapper": "wrapper",
+  "card": "tutorial-card",
+  "card-image": "tutorial-card-image",
+  "card-content": "tutorial-card-content",
+  "card-heading": "tutorial-card-heading",
+  "card-text": "tutorial-card-text",
+  "tooltip": "tutorial-tooltip",
+  "tooltip-title": "tutorial-tooltip-title",
+  "tooltip-content": "tutorial-tooltip-content",
+  "tooltip-prev": "tutorial-tooltip-prev",
+  "tooltip-next": "tutorial-tooltip-next",
+  "tooltip-progress": "tutorial-tooltip-progress",
+  "tooltip-progress-fill": "tutorial-tooltip-progress-fill",
+  "reactive": "reactive"
+}

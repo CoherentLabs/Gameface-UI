@@ -6,6 +6,7 @@ import { DropdownTrigger, Icon, Placeholder, Trigger } from './DropdownTrigger';
 import { BaseComponentRef, ComponentProps } from '@components/types/ComponentProps';
 import useBaseComponent from '@components/BaseComponent/BaseComponent';
 import { waitForFrames } from '@components/utils/waitForFrames';
+import getScrollableParent from '@components/utils/getScrollableParent';
 
 export interface CommonDropdownSlotProps {
     style?: JSX.CSSProperties,
@@ -96,17 +97,9 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
     props.componentClasses = () => dropdownClasses();
     const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
-    function getClipper(el: HTMLElement) {
-        for (let n = el.parentElement; n; n = n.parentElement) {
-            const s = getComputedStyle(n);
-            if (s.overflowY !== "visible" || s.overflowX !== "visible") return n;
-        }
-        return window;
-    }
-
     function handlePosition() {
-        const clipParent = getClipper(element);
-        const clipRect = clipParent instanceof Window ? { top: 0, height: window.innerHeight } : clipParent.getBoundingClientRect();
+        const clipParent = getScrollableParent(element);
+        const clipRect = !clipParent ? { top: 0, height: window.innerHeight } : clipParent.getBoundingClientRect();
         const dropdownRect = element.getBoundingClientRect();
         const optionsEl = (element.children[1] as HTMLDivElement);
 

@@ -1,0 +1,11 @@
+{
+    "start": "Start Tutorial",
+    "end": "End Tutorial",
+    "pause": "Pause Tutorial",
+    "resume": "Resume Tutorial",
+    "resume-from-next": "Resume Tutorial From Next Step",
+    "custom-tooltip": "Add Custom Tooltip",
+    "dynamic-element": "Add Dynamic Element",
+    "change-step": "Change step to",
+    "change-styles": "Change styles"
+}

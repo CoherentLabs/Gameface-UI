@@ -1,0 +1,55 @@
+.tutorial {
+    transition: none;
+}
+
+.wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tutorial-card {
+    width: 30vmax;
+    font-size: 1vmax;
+    border: 0.2vmax solid #00DA9A;
+}
+
+.tutorial-card-image {
+    width: 100%;
+    height: 10vmax;
+}
+
+.tutorial-card-content {
+    background-color: #D9D9D9;
+    color: #303030;
+    padding: 1vmax 2vmax;
+}
+
+.tutorial-tooltip {
+    color: white;
+    background-color: #303030;
+    padding: 1vmax;
+    border-radius: 1vmax;
+}
+
+.tutorial-tooltip-prev,
+.tutorial-tooltip-next {
+    padding: 0.5vmax;
+    border-radius: 0.75vmax;
+    border: 0.15vmax solid #00DA9A;
+    margin-top: 1vmax;
+    margin-right: 0.5vmax;
+}
+
+.tutorial-tooltip-prev:hover,
+.tutorial-tooltip-next:hover {
+    background-color: #00DA9A;
+}
+
+.tutorial-tooltip-progress {
+    border-color: white;
+}
+.tutorial-tooltip-progress-fill {
+    background-color: #00DA9A;
+}

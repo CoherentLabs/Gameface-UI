@@ -50,6 +50,24 @@ Creates a new tooltip component with customizable options.
 | `position`  | `'top' \| 'bottom' \| 'left' \| 'right' \| 'auto'`| `bottom` | Defines the position of the tooltip relative to the target element. If set to `auto`, the tooltip will automatically choose the best placement based on available space. |
 | `action`   | `'hover' \| 'click' \| 'focus'` | `hover`           | Determines the user interaction that triggers the tooltip.<br/>`hover`: shows on mouse hover and hides on mouse leave.<br/>`click`: toggles visibility when the target is clicked.<br/>`focus`: shows when the target gains focus (e.g., via keyboard) and hides when it loses focus. |
 
+## Ref API
+
+To interact with the `Tooltip` programmatically, you can use the `TooltipRef` interface. This interface provides properties and methods to access and manipulate the component's state.
+
+### Properties
+
+| Property   | Type             | Description                                                                 |
+|------------|------------------|-----------------------------------------------------------------------------|
+| `element`  | `HTMLDivElement` | A reference to the Tooltip's wrapper root HTML element, useful for DOM access or styling. |
+
+### Methods
+
+| Method         | Parameters         | Return Value | Description                                                                                   |
+|----------------|--------------------|--------------|-----------------------------------------------------------------------------------------------|
+| `show`         | none               | `void`       | Shows the tooltip if it's hidden.                                                             |
+| `hide`         | none               | `void`       | Hides the tooltip if it's visible.                                                            |
+
+
 ## Guide
 
 ### Customizing tooltip content and appearance
@@ -332,3 +350,5 @@ export default App;
 :::caution
 When using the `auto` position, adding an arrow is not currently supported because the tooltip's position is determined dynamically at runtime based on available space in the viewport.
 :::
+
+### Using the tooltip with an absolutely positioned element

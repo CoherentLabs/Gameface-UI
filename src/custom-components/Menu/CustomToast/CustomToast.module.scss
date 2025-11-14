@@ -1,0 +1,44 @@
+.toast {
+    background-color: $background-soft-solid;
+    padding: 0.75vmax 1.25vmax;
+    color: $textColor;
+    font-size: 1.25vmax;
+    border: 0.15vmax solid $secondaryColor;
+    margin-top: 2vmax;
+    text-align: center;
+    opacity: 0;
+    border-radius: $borderRadius;
+    animation: fade-in 0.5s ease-out forwards;
+    animation-delay: 0.3s;
+
+    &-button {
+        padding: 0.5vmax;
+        background-color: $primaryColor;
+        margin: 0.25vmax;
+        color: white;
+        font-size: 0.75em;
+        border-color: $secondaryColor;
+        cursor: pointer;
+        transition: 0.3s ease-in-out background-color;
+
+        &:hover {
+            background-color: $secondaryColor;
+        }
+
+        &-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 0.5vmax;
+        }
+    }
+}
+
+@keyframes fade-in {
+    from {
+        transform: translateY(-5vmax);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
