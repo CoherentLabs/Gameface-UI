@@ -26,7 +26,7 @@ export const DEFAULT_ACTIONS: ActionMap = {
         global: true
     },
     'select': {
-        key: {binds: ['Enter'], type: ['press']},
+        key: {binds: ['ENTER'], type: ['press']},
         button: {binds: ['face-button-down'], type: 'press'},
         callback: undefined as any,
         global: true
