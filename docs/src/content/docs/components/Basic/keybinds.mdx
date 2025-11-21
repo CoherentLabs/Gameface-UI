@@ -4,6 +4,8 @@ tableOfContents:
   maxHeadingLevel: 4
 ---
 
+import { Badge } from '@astrojs/starlight/components'
+
 The `Keybinds` component is an easy way to set up keyboard + mouse binding logic in your UI.
 It works together with the `Keybind` component, which represents a single action slot. `Keybinds` provides context, conflict handling, and programmatic control.
 
@@ -93,6 +95,8 @@ The `value` prop can be omitted since it will be seeded from `defaults`.
 | `ref`            | `(ref: KeybindsRef) => void`                                            | `undefined`          | Exposes programmatic methods and the current bindings.                                                                |
 | `onConflict`     | `(action: string, key: string \| null, conflictAction: string) => void` | `undefined`          | Called when a conflict happens under any policy.                                                                      |
 | `onChange`       | `(prev: string \| null, next: string \| null, action: string) => void`                         | `undefined`          | Called when a bind or unbind operation succeeds.                                                  |
+| `mode`       | `gamepad` \| `keyboard`                         | `keyboard`          | Sets the mode for the input. Use `gamepad` in order to accept and display gamepad buttons.                                                  |
+| `glyphOverrides`       | `Partial<Record<GamepadBindingCode, Component<any> \| JSX.Element>>`  | `{}`          | Object of custom display glyph overrides. Include only the gamepad values you want to change (e.g., `0`, `1`, `left.joystick`). [See Glyphs Object](#glyphs-object)                                               |
 
 ### Ref API
 
@@ -135,7 +139,142 @@ it starts to listen for the user to press a key or mouse button to bind the asso
 | Prop name | Type | Default | Description |
 | --------- | ---- | ------- | ----------- |
 | `action`  | `string` | `undefined` | The action that will have a key bound to it. |
-| `value`   | `string \| undefined` | `undefined` | The value associated with the keybind by default. If omitted, it will be null. The string provided must match the label from the [mappings object](#mappings-object), unless overridden. |
+| `value`   | `string \| undefined` | `undefined` | The value associated with the keybind by default. If omitted, it will be `null`. The string provided must match the label from the [mappings object](#mappings-object), unless overridden. If the `mode` prop is set to `gamepad` the value must match any of the values or aliases from the [Glyph Object](#glyphs-object) |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the keybind. See [Implemented Navigation Actions](#implemented-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, the button's actions will execute. Can be a CSS selector or HTMLElement. |
+
+### Implemented Navigation Actions
+
+The `Keybind` component implements the following navigation actions by default:
+
+| Action Name | Behavior                          |
+|-------------|-----------------------------------|
+| `select`    | Begin listening for gamepad input |
+
+You can extend the `Keybind` with additional navigation actions or override the default behavior using the `onAction` prop:
+
+```tsx
+import Keybind from '@components/Basic/Keybinds/Keybind';
+
+<Keybind action={'forward'} value={'xbox.a'} onAction={{'back': () => console.log('custom action')}}/>
+```
+
+For more information about navigation actions, see the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions).
+
+## Gamepad Support :badge[2.0.0]{variant=note}
+
+With the introduction of the [Navigation component](/components/utility/navigation/), the `Keybinds` component now supports gamepad input as well.
+
+To enable gamepad support, set the `mode` prop to `gamepad`. 
+When in gamepad mode, the component will listen for gamepad button presses instead of keyboard/mouse input.
+
+Internally, the gamepad buttons are identified and stored by the [Gamepad API standard button indices](https://developer.mozilla.org/en-US/docs/Web/API/Gamepad/buttons), 
+while the axes are identified by custom aliases (e.g., `left.joystick.up`, `right.joystick.left`, etc.). 
+See the [Glyphs object](#glyphs-object) table for the full list of supported gamepad button codes and axis aliases.
+
+For easier readability, you can use the same button codes and axis aliases used by the [Interaction Manager Gamepad Class](https://frontend-tools.coherent-labs.com/interaction-manager/features/gamepad/#options).
+These will resolve to the correct button indices internally.
+
+### Usage
+
+In order for the `Keybind` component to listen for a gamepad button press, the `Keybind` component must be focused via the `Navigation` component system. The easiest way is to wrap the `Keybind` components with 
+a `Navigation.Area` component.
+
+```tsx
+import Keybinds from '@components/Basic/Keybinds/Keybinds';
+import Keybind from '@components/Basic/Keybinds/Keybind';
+import Navigation from '@components/Utility/Navigation/Navigation';
+
+const App = () => {
+    return (
+        <Keybinds mode="gamepad">
+            <Navigation.Area name="keybinds" focused>
+                <Keybind action="forward" value="xbox.d-pad-up" />
+                <Keybind action="backward" value="xbox.d-pad-down" />
+                <Keybind action="left" value="xbox.d-pad-left" />
+                <Keybind action="right" value="xbox.d-pad-right" />
+                <Keybind action="jump" value="xbox.a" /> 
+            </Navigation.Area>
+        </Keybinds>
+    );
+};
+
+export default App;
+```
+
+:::caution[Duplicate bindings]
+Binding a value of `xbox.a` and `face-button-down` or even `0` will result in the same button trying to be bound. In which case it will be treated as a conflict.
+:::
+
+### Displayed glyphs
+
+When displaying the bound keys, the component will render the corresponding glyphs for the gamepad buttons. The default glyphs are based on the standard Xbox controller layout and are displayed by the 
+[Icon](/components/media/icon/) component.
+
+You can override the default glyphs by providing a custom `glyphOverrides` prop to the `Keybinds` component and providing your own components or elements for the desired buttons. 
+
+```tsx {"You can pass overrides in the form of:": 5} {"- Component reference": 7-8} {"- Calling the component directly to be able to provide custom props such as styles,": 10-11} {" - HTML element such as an image": 12-13}
+import Keybinds from '@components/Basic/Keybinds/Keybinds';
+import Keybind from '@components/Basic/Keybinds/Keybind';
+
+const App = () => {
+    
+    const GLYPHS: GlyphOverrides = {
+        
+        '0': Icon.gamepad.ps5.cross,
+        '1': Icon.gamepad.ps5.circle,
+
+        '2': <Icon.gamepad.ps5.square style={{width: '5vmax', height: '5vmax'}} />,
+
+        '3': <img src={customGlyphIcon} />,
+    }
+
+    return (
+        <Keybinds mode="gamepad" glyphOverrides={GLYPHS}>
+            <Keybind action="forward" value="xbox.d-pad-up" />
+            <Keybind action="backward" value="xbox.d-pad-down" />
+            <Keybind action="left" value="xbox.d-pad-left" />
+            <Keybind action="right" value="xbox.d-pad-right" />
+            <Keybind action="jump" value="xbox.a" /> 
+        </Keybinds>
+    );
+};
+
+export default App;
+```
+
+Now the `Keybind` component with `xbox.a` value will display the ps5 cross glyph instead of the default xbox a glyph.
+
+:::note
+When overriding glyphs, make sure to use the exact same gamepad button codes and axis aliases as specified in the [Glyphs object](#glyphs-object) table.
+:::
+
+### Styling the gamepad glyphs
+
+If you wish to provide custom styling to the displayed glyphs such as changing the `width/height` of the displayed image, 
+you can do so by overriding the glyph via the `glyphOverrides` prop and providing your own component or element with the desired styles.
+
+For example, to keep the default xbox glyphs but change their size, you can do the following:
+
+```css title="index.css"
+.gamepad-glyph {
+    width: 5vmax;
+    height: 5vmax;
+}
+```
+
+```tsx
+const GLYPHS: GlyphOverrides = {
+    '0': <Icon.gamepad.xbox.a class="gamepad-glyph" />,
+    '1': <Icon.gamepad.xbox.b class="gamepad-glyph" />,
+    '2': <Icon.gamepad.xbox.x class="gamepad-glyph" />,
+    '3': <Icon.gamepad.xbox.y class="gamepad-glyph" />,
+}
+```
+
+:::tip
+We recommend using the [Icon](/components/media/icon/) component for rendering the glyphs.
+:::
 
 ## Guide
 
@@ -546,3 +685,49 @@ The object is located at `src/components/Basic/Keybinds/mappings.ts`.
 |-------------------|----------------|
 | WheelUp           | Wheel Up       |
 | WheelDown         | Wheel Down     |
+
+### Glyphs object
+
+The `Keybinds` component comes with a default glyphs object that maps gamepad button codes to their corresponding glyph components for display purposes.
+
+The glyphs object is located at `src/components/Basic/Keybinds/glyphs.ts`.
+
+You can override the glyphs you want to display custom `Components` or `HTMLElements` by providing a custom `glyphOverrides` prop to the `Keybinds` component. 
+Keep in mind that you should use the exact same gamepad button codes and axis aliases as specified below.
+
+#### Buttons (Indices)
+
+| Code | Standard Xbox | Standard PlayStation |
+|------|---------------|----------------------|
+| 0 | A | Cross |
+| 1 | B | Circle |
+| 2 | X | Square |
+| 3 | Y | Triangle |
+| 4 | LB (Bumper) | L1 |
+| 5 | RB (Bumper) | R1 |
+| 6 | LT (Trigger) | L2 |
+| 7 | RT (Trigger) | R2 |
+| 8 | View (Back) | Create/Share |
+| 9 | Menu (Start) | Options |
+| 10 | Left Stick Press (L3) | L3 |
+| 11 | Right Stick Press (R3) | R3 |
+| 12 | D-Pad Up | D-Pad Up |
+| 13 | D-Pad Down | D-Pad Down |
+| 14 | D-Pad Left | D-Pad Left |
+| 15 | D-Pad Right | D-Pad Right |
+| 16 | Guide / Share | PS Button |
+
+#### Joysticks aliases
+
+| Code | Description |
+| :--- | :--- |
+| `left.joystick` | The entire Left Analog Stick |
+| `left.joystick.up` | Left Stick Up direction |
+| `left.joystick.down` | Left Stick Down direction |
+| `left.joystick.left` | Left Stick Left direction |
+| `left.joystick.right` | Left Stick Right direction |
+| `right.joystick` | The entire Right Analog Stick |
+| `right.joystick.up` | Right Stick Up direction |
+| `right.joystick.down` | Right Stick Down direction |
+| `right.joystick.left` | Right Stick Left direction |
+| `right.joystick.right` | Right Stick Right direction |

@@ -1,4 +1,4 @@
-import { createMemo, JSX, ParentComponent, ParentProps, useContext } from "solid-js";
+import { createMemo, JSX, onMount, ParentComponent, ParentProps, useContext } from "solid-js";
 import { RadioContext } from "./Radio";
 import { ComponentProps } from "@components/types/ComponentProps";
 import styles from './Radio.module.scss';
@@ -56,6 +56,10 @@ export const RadioButton: ParentComponent<{ button: RadioButtonProps }> = (props
         radio?.changeOption(props.button.value);
         props.button.click?.(e as MouseEvent);
     }
+
+    onMount(() => {
+        radio?.radioOptions.push(props.button.value);
+    })
 
     return (
         <div

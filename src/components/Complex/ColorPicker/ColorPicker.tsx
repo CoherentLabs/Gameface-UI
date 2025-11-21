@@ -2,10 +2,12 @@ import { createMemo, createSignal, onMount, ParentComponent } from "solid-js";
 import XYSlider, { XYSliderRef, XYSliderValue } from "@components/Basic/XYSlider/XYSlider";
 import Slider, { SliderRef } from "@components/Basic/Slider/Slider";
 import Segment from "@components/Basic/Segment/Segment";
-import styles from './ColorPicker.module.scss';
+import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
 import { ComponentProps } from "@components/types/ComponentProps";
 import { parseHSVAColor, RGBAOrHEXToHSVA } from "./colorPickerUtils";
-import baseComponent from "@components/BaseComponent/BaseComponent";
+import TextInput from "@components/Basic/Input/TextInput/TextInput";
+import styles from './ColorPicker.module.scss';
+
 export interface ColorData {
     h: number;
     s: number;
@@ -112,6 +114,10 @@ const ColorPicker: ParentComponent<ColorPickerProps> = (props) => {
     return (
         <div ref={element}
             use:baseComponent={props}
+            use:navigationActions={{
+                anchor: props.anchor,
+                ...props.onAction,
+            }}
         >
             {/**
              * XYSlider component is used for selecting color based on saturation and value.
@@ -156,7 +162,7 @@ const ColorPicker: ParentComponent<ColorPickerProps> = (props) => {
                 <div class={styles['color-preview']}>
                     <div class={styles['color-preview-box']} style={{ 'background-color': selectedColor() }}></div>
                 </div>
-                <input readOnly class={styles['color-preview-text']} value={colorTextValue()} />
+                <TextInput class={styles['color-preview-text']} readonly value={colorTextValue()} />
             </div>
         </div >
     );

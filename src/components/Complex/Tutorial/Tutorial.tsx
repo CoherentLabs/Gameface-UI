@@ -7,7 +7,7 @@ import TutorialTooltip, { ToolTipData, TooltipType } from "./TutorialTooltip";
 import { clamp } from "@components/utils/clamp";
 import getScrollableParent from "@components/utils/getScrollableParent";
 import { waitForFrames } from "@components/utils/waitForFrames";
-import baseComponent from "@components/BaseComponent/BaseComponent";
+import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
 
 export type HighlightRect = Omit<DOMRect, 'bottom' | 'right' | 'x' | 'y' | 'toJSON'>;
 
@@ -15,6 +15,8 @@ interface TutorialProps<T extends Record<string, any> = {}> extends ComponentPro
     outset?: number
     tooltip?: TooltipType<T>,
     onChange?: (step: number) => void,
+    onStart?: () => void,
+    onEnd?: () => void,
 }
 
 interface TutorialContextType {
@@ -65,6 +67,7 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
             return console.warn("Trying to start a new tour while another one is already in progress.");
         }
         setCurrentStep(changeStep(from || 1))
+        props.onStart?.();
     };
 
     // Cancels the tour and resets to initial state
@@ -72,16 +75,13 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
         setCurrentStep(0);
         setTargetElement(null);
         setPausedAt(null);
+        props.onEnd?.();
     }
 
     const pause = () => {
         const current = currentStep();
         if (current === 0) {
             return console.warn("First start the tutorial in order to pause it.");
-        }
-
-        if (current === count()) {
-            return console.warn("Cannot pause on the last step. The tour is complete.");
         }
 
         setCurrentStep(0);
@@ -102,7 +102,7 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
         }
 
         setPausedAt(null);
-        tour(next ? resumeStep + 1 : resumeStep);
+        setCurrentStep(changeStep(next ? resumeStep + 1 : resumeStep))
     }
 
     // Clamps provided step to valid range (1 to total step count)
@@ -233,7 +233,10 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
                 <div
                     ref={element}
                     use:baseComponent={props}
-                >
+                    use:navigationActions={{
+                        anchor: props.anchor,
+                        ...props.onAction,
+                    }}>
                 </div>
                 <Show when={targetElement()}>
                     <div class={styles.overlay}></div>

@@ -35,13 +35,15 @@ export default App;
 |---|---|---|---|
 | `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
 | `class` | `string` | `""` | Additional CSS classes to apply to the component |
-| `ref` | `BaseComponentRef` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
+| `ref` | `HTMLDivElement` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. |
 | `translate` | `{ x?: number; y?: number; z?: number; }` | `undefined` | Moves the element along the x, y, or z axis in `pixels`. For example, `{ x: 50 }` translates the element 50px to the right. |
 | `rotate` | `{ x?: number; y?: number; z?: number; }` | `undefined` | Rotates the element around the x, y, or z axis in `degrees`. For example, `{ z: 45 }` rotates the element 45° around the z-axis. |
 | `scale` | `{ x?: number; y?: number; z?: number; }` | `undefined` | Scales the element along the x, y, or z axis. For example, `{ x: 1.5 }` increases the width of the element by 50%. |
 | `skew` | `{ x?: number; y?: number; }` | `undefined` | Skews the element along the x or y axis in degrees. For example, `{ x: 15 }` skews the element 15° along the x-axis. |
 | `matrix` | `{ translate?: {...}; rotate?: {...}; scale?: {...}; skew?: {...}; }` | `undefined` | Defines a custom transformation matrix as a combination of multiple transformations. |
 | `origin` | `"top"`, `"center"`, `"bottom"`, `"right"`, `"left"`, `{ x?: string; y?: string; z?: string }` | `undefined` | Defines the `transform-origin` property, specifying the point of origin for transformations. It can accept preset values, combination of 2 values like: `top left`, `top right`, etc.  or custom coordinates as an object (e.g., `{ x: '50%', y: '50%', z: '0' }`). |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the component. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, this component's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Guide
 
@@ -119,7 +121,7 @@ The second origin is almost the same as the first one, with the difference being
 To access the HTML DOM element of the `Transform` component.
 
 1. Declare a variable to hold the ref but don't initialize it with a value
-2. The declared value should have a type of `BaseComponentRef`, which you need to import
+2. The declared value should have a type of `HTMLDivElement`.
 3. Set the declared variable as the value of the `ref` prop of the `Transform` component
 
 #### Example
@@ -127,10 +129,9 @@ To access the HTML DOM element of the `Transform` component.
 ```tsx
 import Transform from '@components/Layout/Transform/Transform';
 import Block from '@components/Layout/Block/Block';
-import { BaseComponentRef } from '@components/types/ComponentProps';
 
 const App = () => {
-    let transformRef!: BaseComponentRef;
+    let transformRef!: HTMLDivElement;
 
     return (
         <Transform ref={transformRef} translate={{ x: 100 }}>
@@ -142,4 +143,4 @@ const App = () => {
 export default App;
 ```
 
-Now you can access the HTML element of `transformRef` with `transformRef.element` and make modifications to it if needed.
+Now you can access the HTML element of `Transform` with `transformRef` and make modifications to it if needed.

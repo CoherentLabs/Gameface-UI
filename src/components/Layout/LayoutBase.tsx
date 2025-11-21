@@ -1,8 +1,16 @@
 import { ParentComponent } from 'solid-js';
 import { ComponentProps } from '../types/ComponentProps';
-import baseComponent from '@components/BaseComponent/BaseComponent';
+import baseComponent, { navigationActions } from '@components/BaseComponent/BaseComponent';
 
 const LayoutBase: ParentComponent<ComponentProps> = (props) => {
+    const navConfig = () => {
+        if (!props.onAction && !props.anchor) return undefined;
+        return {
+            anchor: props.anchor,
+            ...props.onAction
+        };
+    };
+
     return (
         <div
             ref={(el) => {
@@ -14,6 +22,7 @@ const LayoutBase: ParentComponent<ComponentProps> = (props) => {
                 }
             }}
             use:baseComponent={props}
+            use:navigationActions={navConfig()}
         >
             {props.children}
         </div>

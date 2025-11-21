@@ -7,7 +7,7 @@ import { CarouselPrev } from "./CarouselPrev";
 import { waitForFrames } from "@components/utils/waitForFrames";
 import { ComponentProps } from "@components/types/ComponentProps";
 import styles from './Carousel.module.scss';
-import baseComponent from "@components/BaseComponent/BaseComponent";
+import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
 
 export interface CarouselRef {
     element: HTMLDivElement;
@@ -287,7 +287,10 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
     }}>
         <div ref={carouselRef}
             use:baseComponent={props}
-        >
+            use:navigationActions={{
+                anchor: props.anchor,
+                ...props.onAction,
+            }}>
             {props.children}
         </div>
     </CarouselContext.Provider>

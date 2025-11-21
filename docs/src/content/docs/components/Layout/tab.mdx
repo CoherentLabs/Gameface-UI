@@ -43,9 +43,11 @@ export default App;
 |---|---|---|---|
 | `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
 | `class` | `string` | `""` | Additional CSS classes to apply to the component |
-| `ref` | `BaseComponentRef` | `undefined` | A reference to the component that gives you access to its methods and the underlying HTML element. Useful if you need to control scrolling programmatically. |
+| `ref` | `HTMLDivElement` | `undefined` | A reference to the component that gives you access to the underlying HTML element. |
 | `location` | `string` | `undefined` | A unique identifier for the tab. This value must match the `location` prop of a corresponding `TabLink` component to correctly associate the tab with its trigger. Only the `Tab` with a `location` matching the active tab state in the `Tabs` component will be displayed. |
 | `keepInMemory` | `boolean` | `false` | A `boolean`  flag specifying whether the content of the Tab should be preserved in memory. Use this option if you want to improve scripting performance at the cost of increased memory usage and initial load time. Keep in mind that when this option is set to true, the content of the Tab will be initialized in memory upon component mount, even if the Tab is never rendered. |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the component. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, this component's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Guide
 

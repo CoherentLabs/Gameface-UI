@@ -38,12 +38,14 @@ export default App;
 |---|---|---|---|
 | `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
 | `class` | `string` | `""` | Additional CSS classes to apply to the component |
-| `ref` | `BaseComponentRef` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
+| `ref` | `HTMLDivElement` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. |
 | `direction` | `"row"`, `"row-reverse"`, `"column"`, `"column-reverse"` | `"row"` | Specifies the CSS `flex-direction` property, which determines the main axis direction (horizontal or vertical) and the order of items. For example, `"row"` arranges items left-to-right, while `"column-reverse"` arranges them bottom-to-top. |
 | `wrap` | `"nowrap"`, `"wrap-reverse"`, `"wrap"` | `"nowrap"` | Specifies the CSS `wrap` property, which controls whether flex items wrap onto multiple lines. For example, `"wrap"` allows items to flow onto new rows or columns, while `"nowrap"` keeps them on a single line. |
 | `justify-content` | `"start"`, `"center"`, `"end"`, `"space-between"`, `"space-around"` | `"start"` | Specifies the CSS `justify-content` property, which aligns items along the main axis (horizontal in row and vertical in column). Options like `"space-between"` distribute items with equal gaps, while `"center"` centers them. |
 | `align-items` | `"start"`, `"center"`, `"end"`, `"stretch"` | `"stretch"` | Specifies the CSS `align-items` property, which controls the alignment of items along the cross axis (perpendicular to the main axis). For example, `"stretch"` makes all items stretch to fill the container, while `"center"` aligns them in the middle. |
 | `align-content` | `"start"`, `"center"`, `"end"`, `"stretch"` | `"stretch"` | Specifies the CSS `align-content` property, which controls the spacing between rows or columns in a multi-line flex container. For example, `"space-between"` evenly distributes rows, while `"center"` aligns them in the middle of the container. |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the component. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, this component's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Guide
 
@@ -133,7 +135,7 @@ export default App;
 To access the HTML DOM element of the `Flex` component.
 
 1. Declare a variable to hold the ref but don't initialize it with a value
-2. The declared value should have a type of `BaseComponentRef`, which you need to import
+2. The declared value should have a type of `HTMLDivElement`.
 3. Set the declared variable as the value of the `ref` prop of the `Flex` component
 
 #### Example
@@ -141,10 +143,9 @@ To access the HTML DOM element of the `Flex` component.
 ```tsx
 import Flex from '@components/Layout/Flex/Flex';
 import Block from '@components/Layout/Block/Block';
-import { BaseComponentRef } from '@components/types/ComponentProps';
 
 const App = () => {
-    let flexRef!: BaseComponentRef
+    let flexRef!: HTMLDivElement
 
     return (
         <Flex ref={flexRef} wrap="wrap" justify-content="space-between" align-items="center">
@@ -156,5 +157,5 @@ const App = () => {
 };
 ```
 
-Now you can access the HTML element of `Flex` with `flexRef.element` and make modifications to it if needed. 
+Now you can access the HTML element of `Flex` with `flexRef` and make modifications to it if needed.
 

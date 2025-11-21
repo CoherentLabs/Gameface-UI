@@ -5,7 +5,7 @@ import { Accessor, createContext, createEffect, createMemo, createSignal, For, J
 import MenuItem from './MenuItem';
 import MenuCenter from './MenuCenter';
 import { angleToSlice, mouseToStick, Stick, stickToPolar } from './utils';
-import baseComponent from '@components/BaseComponent/BaseComponent';
+import baseComponent, { navigationActions } from '@components/BaseComponent/BaseComponent';
 
 export interface ItemTokenProps extends TokenBase {
     id?: string,
@@ -181,6 +181,10 @@ const RadialMenu: ParentComponent<RadialMenuProps> = (props) => {
             <div
                 ref={element!}
                 use:baseComponent={props}
+                use:navigationActions={{
+                    anchor: props.anchor,
+                    ...props.onAction,
+                }}
             >
                 {/* Content */}
                 <MenuCenter parentChildren={props.children} />

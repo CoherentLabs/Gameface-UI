@@ -1,7 +1,7 @@
 import { ParentComponent, createMemo, mergeProps } from "solid-js";
 import { ComponentProps } from "../../types/ComponentProps";
 import styles from './Button.module.scss';
-import baseComponent from "@components/BaseComponent/BaseComponent";
+import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
 
 export interface ButtonProps extends ComponentProps {
     disabled?: boolean
@@ -29,7 +29,10 @@ const Button: ParentComponent<ButtonProps> = (props) => {
     return <button
         ref={props.ref as HTMLButtonElement}
         use:baseComponent={props}
-    >
+        use:navigationActions={{
+            anchor: props.anchor,
+            ...props.onAction,
+        }}>
         {props.children}
     </button>
 }

@@ -12,8 +12,9 @@ const CustomToggle = (props: CustomToggleProps) => {
         props.onChange?.(checked);
         emitChange();
     }
+
     return (
-        <ToggleButton attr:id={props.id} checked={props.checked} onChange={handleChange} >
+        <ToggleButton checked={props.checked} onChange={handleChange} anchor={`#${props.id}`}>
             <ToggleButton.LabelLeft>OFF</ToggleButton.LabelLeft>
             <ToggleButton.LabelRight>ON</ToggleButton.LabelRight>
             <ToggleButton.Control style={{'margin': '0 1vmax'}} />

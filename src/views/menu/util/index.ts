@@ -1,4 +1,4 @@
-import eventBus from "@components/tools/EventBus";
+import eventBus from "@components/Utility/EventBus";
 import { OPTIONS } from "../Menu";
 
 export const getFirstOptionOfTab = (tab: string) => {

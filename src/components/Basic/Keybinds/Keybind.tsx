@@ -1,13 +1,17 @@
-import { createMemo, createSignal, onMount, useContext } from "solid-js";
-import { KeybindsContext } from "./Keybinds";
+import { createMemo, createSignal, JSX, onMount, useContext } from "solid-js";
+import { KeybindsContext, KeyCode } from "./Keybinds";
 import { ComponentProps } from "@components/types/ComponentProps";
 import style from './Keybinds.module.scss'
 import { BindingCode, BindingLabel } from "./util/mappings";
-import baseComponent from "@components/BaseComponent/BaseComponent";
+import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
+import { gamepad, GamepadInput, GamepadMappings } from "coherent-gameface-interaction-manager";
+import { GamepadBindingCode } from "./util/glyphs";
+import mergeNavigationActions from "@components/utils/mergeNavigationActions";
+import { useNavigation } from "@components/Utility/Navigation/Navigation";
 
 interface KeyBindProps extends ComponentProps {
     action: string,
-    value?: BindingLabel | (string & {}),
+    value?: BindingLabel | GamepadInput | (string & {}),
 }
 
 const Keybind = (props: KeyBindProps) => {
@@ -19,15 +23,29 @@ const Keybind = (props: KeyBindProps) => {
 
     const [listening, setListening] = createSignal(false);
     let el!: HTMLDivElement;
+    const nav = useNavigation();
 
     const label = createMemo(() => {
         if (listening()) return context.listeningText?.() ?? 'Press any key...';
 
-        return context.bindings[props.action] || (context.placeholder?.() ?? '');
+        const currentValue = context.bindings[props.action];
+        if (!currentValue) return context.placeholder?.() ?? '';
+
+        if (context.mode === 'gamepad') {
+            const DisplayValue = context.GLYPHS[currentValue as GamepadBindingCode];
+            if (typeof DisplayValue === 'function') {
+                return DisplayValue({});
+            }
+            return DisplayValue as JSX.Element;
+        }
+        
+        return currentValue;
     })
 
     const startListening = () => {
-        setListening(true);
+        if (context.mode === 'gamepad') return;
+        
+        setListening(true)
         el.focus();
         window.addEventListener("keydown", onKeyDown, true);
         window.addEventListener("mousedown", onMousedown, true);
@@ -42,6 +60,80 @@ const Keybind = (props: KeyBindProps) => {
         window.removeEventListener("mouseup", stopListening, true);
         setListening(false);
     };
+
+    const startListeningGamepad = () => {
+        if (context.mode !== 'gamepad') {
+            startListening()
+            return;
+        }
+
+        setListening(true);
+        // pause all actions
+        nav?.pauseInput();
+
+        let isFinished = false;
+        // axis callbacks references
+        const registeredCallbacks: Record<string, () => void> = {};
+
+        const stopAllListeners = () => {
+            clearInterval(pollInterval);
+            // remove axes callbacks
+            for (const alias in registeredCallbacks) {
+                gamepad.off([alias as GamepadInput], registeredCallbacks[alias]);
+            }
+        };
+
+        const bindAndCleanup = (inputCode: KeyCode, isButton: boolean = false, pressedBtnObj?: GamepadButton) => {
+            if (isFinished) return;
+            isFinished = true;
+
+            stopAllListeners();
+            
+            const prevKey = context.bindings[props.action] || null;
+            const success = context.bind(props.action, inputCode);
+            
+            if (success) context.onChange?.(prevKey, String(inputCode), props.action);
+            setListening(false);
+
+            if (isButton && pressedBtnObj) {
+                const releaseInterval = setInterval(() => {
+                    if (!pressedBtnObj.pressed) {
+                        clearInterval(releaseInterval);
+                        nav?.resumeInput();
+                    }
+                }, 500);
+            } else {
+                nav?.resumeInput();
+            }
+        };
+
+        // Stick logic
+        GamepadMappings.axisAliases.forEach((alias, index) => {
+            if (index <= 1) return;
+            // Create the specific reference
+            const callback = () => bindAndCleanup(alias as KeyCode);
+            // Save it for later
+            registeredCallbacks[alias] = callback;
+            // Register it
+            gamepad.on({ actions: [alias], callback });
+        });
+
+        // Button logic
+        const pollInterval = setInterval(() => {
+            const gamepad = navigator.getGamepads()[0];
+            if (!gamepad || isFinished) return;
+            
+            let buttonIdx = -1;
+            const pressedButton = gamepad?.buttons.find((btn, idx) => {
+                if (btn.pressed) {
+                    buttonIdx = idx;
+                    return btn
+                }
+            })
+
+            if (pressedButton) bindAndCleanup(buttonIdx as any as KeyCode, true, pressedButton);
+        }, 150)
+    }
 
     const eatEvent = (e: Event) => {
         e.preventDefault();
@@ -85,6 +177,7 @@ const Keybind = (props: KeyBindProps) => {
         <div
             ref={el}
             use:baseComponent={props}
+            use:navigationActions={mergeNavigationActions(props, {'select': startListeningGamepad})}
             onmouseup={startListening}>
             {label()}
         </div>

@@ -60,7 +60,9 @@ export default App;
 |---|---|---|---|
 | `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
 | `class` | `string` | `""` | Additional CSS classes to apply to the component |
-| `ref` | `BaseComponentRef` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
+| `ref` | `HTMLDivElement` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the component. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, this component's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Guide
 
@@ -99,21 +101,20 @@ export default App;
 
 ### Accessing the HTML element
 
-To access the HTML DOM element of the `Row` component.
+To access the HTML DOM element of the `Column` component.
 
 1. Declare a variable to hold the ref but don't initialize it with a value
-2. The declared value should have a type of `BaseComponentRef`, which you need to import
-3. Set the declared variable as the value of the `ref` prop of the `Row` component
+2. The declared value should have a type of `HTMLDivElement`.
+3. Set the declared variable as the value of the `ref` prop of the `Column` component
 
 #### Example
 
 ```tsx
-import { BaseComponentRef } from '@components/types/ComponentProps';
 import Row from '@components/Layout/Row/Row';
 import { Column } from '@components/Layout/Column/Column'
 
 const App = () => {
-    let columnRef!: BaseComponentRef
+    let columnRef!: HTMLDivElement
 
     return (
         <Row>
@@ -125,4 +126,4 @@ const App = () => {
 export default App;
 ```
 
-Now you can access the HTML element of `columnRef` with `columnRef.element` and make modifications to it if needed. 
+Now you can access the HTML element of `Column` with `columnRef` and make modifications to it if needed.

@@ -1,5 +1,5 @@
 export const PRESETS = {
-  PC: {
+  Default: {
     moveForward: "W", moveBackward: "S", moveLeft: "A", moveRight: "D",
     jump: "Space", crouch: "L Ctrl", prone: "Z", sprint: "L Shift", walkHold: "L Alt",
     fire: "Mouse Left", aimDownSights: "Mouse Right", reload: "R", nextWeapon: "Wheel Down", prevWeapon: "Wheel Up",
@@ -25,6 +25,36 @@ export const PRESETS = {
     interact: "'", ability1: "U", ability2: "O", ultimateAbility: "\\",
     openInventory: "Y", quickSlot1: "9", quickSlot2: "0", quickSlot3: "-", quickSlot4: "=", dropItem: "H",
     pushToTalk: "T", ping: "MMB", chat: "Enter", scoreboard: "Tab", map: "M", pauseMenu: "Esc",
+  },
+};
+
+export const PRESETS_GAMEPAD = {
+  Default: {
+    moveForward: "left.joystick.up", moveBackward: "left.joystick.down", moveLeft: "left.joystick.left", moveRight: "left.joystick.right",
+    jump: "xbox.a", crouch: "xbox.b", prone: "xbox.d-pad-down", sprint: "xbox.left-thumbstick", walkHold: null,
+    fire: "xbox.rt", aimDownSights: "xbox.lt", reload: "xbox.x", nextWeapon: "xbox.y", prevWeapon: "xbox.d-pad-up",
+    primaryWeapon: null, secondaryWeapon: null, quickMelee: "xbox.right-thumbstick", throwGrenade: "xbox.lb", toggleFireMode: "xbox.d-pad-left", inspectWeapon: null,
+    interact: "xbox.x", ability1: "xbox.rb", ability2: "xbox.lb", ultimateAbility: null,
+    openInventory: "xbox.view", quickSlot1: null, quickSlot2: null, quickSlot3: null, quickSlot4: null, dropItem: null,
+    pushToTalk: null, ping: "xbox.d-pad-right", chat: null, scoreboard: "xbox.view", map: "xbox.view", pauseMenu: "xbox.menu",
+  },
+  Tactical: {
+    moveForward: "left.joystick.up", moveBackward: "left.joystick.down", moveLeft: "left.joystick.left", moveRight: "left.joystick.right",
+    jump: "xbox.a", crouch: "xbox.right-thumbstick", prone: "xbox.d-pad-down", sprint: "xbox.left-thumbstick", walkHold: null,
+    fire: "xbox.rt", aimDownSights: "xbox.lt", reload: "xbox.x", nextWeapon: "xbox.y", prevWeapon: "xbox.d-pad-up",
+    primaryWeapon: null, secondaryWeapon: null, quickMelee: "xbox.b", throwGrenade: "xbox.lb", toggleFireMode: "xbox.d-pad-left", inspectWeapon: null,
+    interact: "xbox.x", ability1: "xbox.rb", ability2: "xbox.lb", ultimateAbility: null,
+    openInventory: "xbox.view", quickSlot1: null, quickSlot2: null, quickSlot3: null, quickSlot4: null, dropItem: null,
+    pushToTalk: null, ping: "xbox.d-pad-right", chat: null, scoreboard: "xbox.view", map: "xbox.view", pauseMenu: "xbox.menu",
+  },
+  "Left-Handed": {
+    moveForward: "left.joystick.up", moveBackward: "left.joystick.down", moveLeft: "left.joystick.left", moveRight: "left.joystick.right",
+    jump: "xbox.lb", crouch: "xbox.b", prone: "xbox.d-pad-down", sprint: "xbox.left-thumbstick", walkHold: null,
+    fire: "xbox.rt", aimDownSights: "xbox.lt", reload: "xbox.x", nextWeapon: "xbox.y", prevWeapon: "xbox.d-pad-up",
+    primaryWeapon: null, secondaryWeapon: null, quickMelee: "xbox.right-thumbstick", throwGrenade: "xbox.a", toggleFireMode: "xbox.d-pad-left", inspectWeapon: null,
+    interact: "xbox.x", ability1: "xbox.rb", ability2: "xbox.a", ultimateAbility: null,
+    openInventory: "xbox.view", quickSlot1: null, quickSlot2: null, quickSlot3: null, quickSlot4: null, dropItem: null,
+    pushToTalk: null, ping: "xbox.d-pad-right", chat: null, scoreboard: "xbox.view", map: "xbox.view", pauseMenu: "xbox.menu",
   },
 };
 

@@ -4,7 +4,10 @@ import Slider, { SliderRef } from "@components/Basic/Slider/Slider";
 import styles from '@components/Complex/ColorPicker/ColorPicker.module.scss';
 import { ComponentProps } from "@components/types/ComponentProps";
 import { parseHSVAColor, RGBAOrHEXToHSVA } from "@components/Complex/ColorPicker/colorPickerUtils";
-import baseComponent from "@components/BaseComponent/BaseComponent";
+import mergeNavigationActions from "@components/utils/mergeNavigationActions";
+import { useNavigation } from "@components/Utility/Navigation/Navigation";
+import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
+
 export interface ColorData {
     h: number;
     s: number;
@@ -22,6 +25,7 @@ interface ColorPickerProps extends ComponentProps {
     value?: string;
     size?: 'S' | 'M' | 'L' | 'XL'
     onChange?: (value: ColorData) => void;
+    areaName: string,
 }
 
 const MenuColorPicker: ParentComponent<ColorPickerProps> = (props) => {
@@ -30,6 +34,7 @@ const MenuColorPicker: ParentComponent<ColorPickerProps> = (props) => {
     let hueSliderRef!: SliderRef;
     let alphaSliderRef!: SliderRef;
     let changingColorFromRef = false;
+    const nav = useNavigation();
 
     const initialValue = RGBAOrHEXToHSVA(props.value ?? 'rgba(255, 0, 0, 1)');
     const [color, setColor] = createSignal(initialValue);
@@ -104,6 +109,9 @@ const MenuColorPicker: ParentComponent<ColorPickerProps> = (props) => {
     return (
         <div ref={element}
             use:baseComponent={props}
+            use:navigationActions={mergeNavigationActions(props, {
+                'back': () => nav?.switchArea('menu'),
+            })}
         >
             <XYSlider ref={xySliderRef} value={{ x: initialValue.s, y: 100 - initialValue.v }} class={styles.XYSlider} onChange={handleXYChange}>
                 <XYSlider.Background style={XYSliderBackground()} />

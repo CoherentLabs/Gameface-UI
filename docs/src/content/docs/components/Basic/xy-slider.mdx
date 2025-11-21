@@ -36,7 +36,10 @@ export default App;
 | `minY`         | `number`                            | `0`   | The minimum value that the slider can select on the Y-axis.|
 | `maxX`         | `number`                            | `100`   | The maximum value that the slider can select on the X-axis. |
 | `maxY`         | `number`                            | `100`   | The maximum value that the slider can select on the Y-axis. |
+| `step`         | `number`                            | `1`   | The base unit for value changes. Used primarily for gamepad inputs to calculate movement speed and precision. |
 | `onChange` | `(value: {x:number, y: number}) => void`              | `undefined` | A function that is called every time the slider's value has changed. It can be used to retrieve the up to date value of the slider. |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Extends or overrides the component's default navigation action handlers. See [Implemented Navigation Actions](#implemented-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, the stepper's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Ref API
 
@@ -117,6 +120,34 @@ const App = () => {
 export default App;
 ```
 
+## Implemented Navigation Actions
+
+The `XYSlider` component implements the following navigation actions by default:
+
+| Action Name  | Behavior                                      |
+|--------------|-----------------------------------------------|
+| `pan`  | Moves the slider handle based on 2D axis input. Includes acceleration and smoothing logic. |
+
+:::note
+The XYSlider uses the `step` prop to determine base movement speed. It employs a dynamic acceleration system where pushing the 
+stick further increases the speed multiplier, allowing for both precise adjustments (slight tilt) and rapid movement (full tilt). 
+[Read more here](#adjusting-gamepad-movement-speed-and-precision)
+:::
+
+You can extend the XYSlider with additional navigation actions or override the default behavior using the `onAction` prop:
+
+```tsx
+import XYSlider from '@components/Basic/XYSlider/XYSlider';
+
+<XYSlider 
+    onAction={{
+        'select': () => console.log('Selecting XYSlider'),
+        'pan': (_, axis: [number, number]) => console.log(`x: ${axis[0]}, y: ${axis[1]}`),
+    }} />
+```
+
+For more information about navigation actions, see the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions).
+
 ## Guide
 
 ### Retrieve and use the slider value
@@ -176,3 +207,20 @@ const App = () => {
 
 export default App;
 ```
+
+### Adjusting gamepad movement speed and precision
+
+The `XYSlider` is designed to work out-of-the-box with the `pan` action of the `Navigation` component which uses the right analogue stick of the gamepad.
+
+To tune the feel of the gamepad control, adjust the step prop.
+
+- A smaller step (e.g., 1) allows for pixel-perfect precision but might be slow on large ranges.
+- A larger step (e.g., 10) makes the slider faster but less precise.
+
+```ts
+<XYSlider maxX={1000} step={5} /> // Increases base speed for large range 
+```
+
+:::note
+If you are working with very small values (e.g., 0.0 to 1.0), consider using a smaller step (e.g., 0.1) to maintain precision.
+:::

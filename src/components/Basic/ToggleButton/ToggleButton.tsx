@@ -5,7 +5,8 @@ import { Control, ToggleButtonControl } from "./ToggleButtonControl";
 import { Indicator } from "./ToggleButtonIndicator";
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 import { Handle } from "./ToggleButtonHandle";
-import baseComponent from "@components/BaseComponent/BaseComponent";
+import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
+import mergeNavigationActions from "@components/utils/mergeNavigationActions";
 
 export const LabelLeft = createTokenComponent();
 export const LabelRight = createTokenComponent();
@@ -34,6 +35,12 @@ const ToggleButton: ParentComponent<ToggleButtonProps> = (props) => {
     const [checked, setChecked] = createSignal(props.checked ?? false);
     let element!: HTMLDivElement;
 
+    createEffect(() => {
+        if (props.checked !== undefined) {
+            setChecked(props.checked);
+        }
+    });
+
     const toggleButtonClasses = createMemo(() => {
         const classes = [styles['toggle-button']];
 
@@ -52,7 +59,7 @@ const ToggleButton: ParentComponent<ToggleButtonProps> = (props) => {
 
     props.componentClasses = () => toggleButtonClasses();
 
-    const toggle = (e?: MouseEvent) => {
+    const toggle = () => {
         if (props.disabled) return;
 
         setChecked(prev => !prev);
@@ -79,6 +86,7 @@ const ToggleButton: ParentComponent<ToggleButtonProps> = (props) => {
             <div
                 ref={element!}
                 use:baseComponent={props}
+                use:navigationActions={mergeNavigationActions(props, {'select': toggle})}
                 onclick={toggle}>
 
                 <Show when={LabelLeftToken()}>

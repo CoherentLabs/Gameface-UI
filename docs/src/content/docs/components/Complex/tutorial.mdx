@@ -55,6 +55,10 @@ export default App;
 | `outset`   | `number`                         | `0`         | Extra offset (in px) applied between the tooltip/highlight and the target element. Useful when the target has shadows/borders or sits inside tight layouts. |
 | `tooltip`  | [`TooltipType<T>`](#provided-props)                 | `undefined` | Custom tooltip component to render instead of the default one. Receives the provided tutorial props (title, content, step, controls).                       |
 | `onChange` | `(step: number) => void`         | `undefined` | Fired whenever the active tutorial step changes. The callback receives the **1-based** step index.                                                          |
+| `onStart` | `() => void`         | `undefined` | Fired whenever the tutorial starts.                                                         |
+| `onEnd` | `() => void`         | `undefined` | Fired whenever the tutorial ends.                                                         |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the tutorial. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, the tutorial's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Ref API
 
@@ -495,3 +499,147 @@ const App = () => {
 
 export default App;
 ```
+
+### Extending the Tutorial With Navigation :badge[2.0.0]{variant=note}
+
+Integrating it with the `Navigation` system allows players to progress using gamepad buttons and enables the tutorial to react dynamically to game state changes.
+We will cover two scenarios for using the `Navigation` system with the `Tutorial` component:
+
+#### 1. Standard Button Navigation
+
+Most tutorials allow the player to move to the next step using the "primary" button. We can map the `Next` and `Prev` buttons so the player doesn't have to use a mouse to navigate through the tutorial.
+
+We can bind the "Enter" key and the gamepad "A" button to the `Next` action, and the "Backspace" key and the gamepad "B" button to the `Previous` action. 
+Additionally, we can bind the "Escape" key and the gamepad "Y" button to an `Exit` action that ends the tutorial immediately.
+
+```tsx {"1":6,7} {"2":9-37} {"3": 40-42}
+import Navigation from '@components/Utility/Navigation/Navigation';
+import { ActionMap } from '@components/Utility/Navigation/types';
+import Tutorial, { TutorialRef } from '@components/Complex/Tutorial/Tutorial';
+
+const App = () => {
+    // Declare tutorial ref to gain access to the component's methods
+    let tutorialRef!: TutorialRef;
+
+    // Define custom actions for tutorial navigation
+    const customActions: ActionMap = {
+        'tutorial-next': {
+            // Map 'Enter' or Gamepad 'A' to advance
+            key: { binds: ['ENTER'], type: ['press'] },
+            button: { binds: ['face-button-down'], type: 'press' },
+            callback: () => {
+                if (tutorialRef.current() === 0) {
+                    tutorialRef.tour();
+                    return;
+                } else if (tutorialRef.progress() === 100) {
+                    tutorialRef.exit();
+                    return;
+                }
+
+                tutorialRef.next()
+            }
+        },
+        'tutorial-prev': {
+            key: {binds: ['BACKSPACE'], type: ['press', 'hold']},
+            button: {binds: ['face-button-right'], type: 'press'},
+            callback: () => tutorialRef.previous()
+        },
+        'end-tutorial': {
+            key: {binds: ['ESC'], type: ['press', 'hold']},
+            button: {binds: ['face-button-top'], type: 'press'},
+            callback: () => tutorialRef.exit()
+        }
+    };
+
+    return (
+        // Pass actions and attach ref to the Tutorial component
+        <Navigation actions={customActions}>
+            <Tutorial ref={tutorialRef}>
+                {/* Steps */}
+            </Tutorial>
+        </Navigation>
+    );
+};
+```
+
+:::caution[Handling Input Conflicts]
+If you have keys or buttons that are used for other actions in your UI, you can use the `pauseAction` method from the `Navigation` component 
+to pause the actions that have key/button conflicts while the tutorial is active, and resume them when it's not. This way you can ensure that the tutorial navigation doesn't interfere with other interactions in your UI.
+
+You can see an example of how to pause and resume actions in the [Navigation documentation](/components/utility/navigation/#action-states-pauseresume).
+:::
+
+:::note[Default Actions]
+Alternatively, you can use the default `select` and `back` actions provided by the `Navigation` system, which are already mapped to common keys and buttons.
+In such case you will need to make sure that the `tutorialRef.element` is focused when the tutorial starts to ensure the actions are triggered correctly.
+:::
+
+#### 2. Interactive Steps
+
+Sometimes you don't want the player to just click "Next"; you want them to perform an action (e.g., "Open the Inventory"). 
+In this case, you can `pause()` the tutorial and use a `Navigation` action to `resume()` it.
+
+```tsx {"1":6-8} {"2":10-11} {"3": 13-20} {"4": 22-25} {"5": 27-32} ins={"6": 36-42} ins={"7": 50-55}
+import Navigation, { NavigationRef } from '@components/Utility/Navigation/Navigation';
+import { ActionMap } from '@components/Utility/Navigation/types';
+import Tutorial, { TutorialRef } from '@components/Complex/Tutorial/Tutorial';
+
+const InventoryTutorial = () => {
+    // Declare refs for both Tutorial and Navigation components
+    let tutorialRef!: TutorialRef;
+    let navigationRef!: NavigationRef;
+
+    // Provide a signal for showing the inventory step
+    const [inventoryOpened, setInventoryOpened] = createSignal(false);
+
+    // Define a method that will add the custom action to open inventory
+    const addCustomAction = () => {
+        navigationRef.addAction('open-inventory', {
+            key: { binds: ['I'], type: ['press'] },
+            button: { binds: ['playstation.options'], type: 'press' },
+            callback: onTutorialInventoryOpen
+        })
+    }
+
+    // Define a method that will remove the custom action once it's used
+    const removeCustomAction = () => {
+        navigationRef.removeAction('open-inventory');
+    }
+    
+    // When the inventory is opened, resume the tutorial, move to the next step and remove the action.
+    const onTutorialInventoryOpen = () => {
+        setInventoryOpened(true);
+        tutorialRef.resume(true); // resume and move to next step
+        removeCustomAction();
+    };
+
+    return (
+        <Navigation ref={navigationRef} actions={customActions}>
+            { /* When reaching the inventory step, add the custom action and pause the tutorial */}
+            <Tutorial ref={tutorialRef} onChange={(step) => {
+                    if (step === 2) {
+                        addCustomAction();
+                        setTimeout(() => tutorialRef.pause(), 2000)
+                    }
+                }}>
+                <Tutorial.Step order={1} title="Health" content="Watch your HP bar.">
+                    <div class="hp-bar"></div>
+                </Tutorial.Step>
+                <Tutorial.Step order={2} title="Inventory" content="Press 'I' to open your bags.">
+                    <div class="inventory-icon"></div>
+                </Tutorial.Step>
+
+                { /* Wrap the inventory with a signal to make it able to be shown/hidden */}
+                <Show when={inventoryOpened()}>
+                    <Tutorial.Step order={3} title="Items" content="You can use potions here." >
+                        <div class="inventory"></div>
+                    </Tutorial.Step>
+                </Show>
+            </Tutorial>
+        </Navigation>
+    );
+};
+```
+
+In this example, when the user reaches step 2 of the tutorial, a custom action "open-inventory" is added to the `Navigation` system, allowing the user to open the inventory by pressing "I" or the corresponding gamepad button.
+The tutorial is paused to wait for the user's interaction. Once the inventory is opened, the tutorial resumes and advances to the next step, while the custom action is removed to prevent further triggers.

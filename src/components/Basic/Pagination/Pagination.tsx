@@ -4,7 +4,7 @@ import { createTokenComponent, TokenBase } from "@components/utils/tokenComponen
 import PaginationItem from "./PaginationItem";
 import { Control, PaginationControl } from "./PaginationControl";
 import styles from './Pagination.module.scss';
-import baseComponent from "@components/BaseComponent/BaseComponent";
+import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
 
 export interface PaginationRef {
     element: HTMLDivElement,
@@ -106,7 +106,10 @@ const Pagination: ParentComponent<PaginationProps> = (props) => {
             <div
                 ref={element!}
                 use:baseComponent={props}
-            >
+                use:navigationActions={{
+                    anchor: props.anchor,
+                    ...props.onAction,
+                }}>
                 <PaginationControl direction="prev" parentChildren={props.children} visible={showLeftArrow()} />
                 <For each={items()}>
                     {(i) =>
