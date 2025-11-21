@@ -40,7 +40,7 @@ const Navigation: ParentComponent<NavigationProps> = (props) => {
         scope: props.scope ?? "",
     })
     const areas = new Set<string>();
-    const { addAction, executeAction, registerAction, removeAction, unregisterAction, updateAction, getScope } = createActionMethods(config, setConfig)
+    const { addAction, executeAction, registerAction, removeAction, unregisterAction, updateAction, getScope, getAction, getActions } = createActionMethods(config, setConfig)
     const areaMethods = createAreaMethods(areas, setConfig);
 
     const navigationAPI = {
@@ -49,6 +49,8 @@ const Navigation: ParentComponent<NavigationProps> = (props) => {
         executeAction,
         updateAction,
         getScope,
+        getAction,
+        getActions,
         ...areaMethods,
     }
 

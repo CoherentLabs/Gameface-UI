@@ -1,4 +1,4 @@
-import { ActionName, ActionCfg } from '../types';
+import { ActionName, ActionCfg, ActionMap } from '../types';
 
 /**
  * Interface defining all action-related navigation methods
@@ -55,4 +55,17 @@ export interface ActionMethods {
      * @returns The current scope identifier (typically the name of the active navigation area)
      */
     getScope: () => string;
+
+    /**
+     * Gets a specific action configuration by name
+     * @param name - The action name to retrieve
+     * @returns The action configuration if it exists, undefined otherwise
+     */
+    getAction: (name: ActionName) => ActionCfg | undefined;
+
+    /**
+     * Gets all currently registered actions
+     * @returns Record of all action names and their configurations
+     */
+    getActions: () => ActionMap;
 }

@@ -1,5 +1,6 @@
 import { JSX, ParentProps } from "solid-js";
 import Events from "./BaseComponent";
+import { ActionName } from "@components/Navigation/Navigation/types";
 
 type ExcludedEvents =
     | "abort"
@@ -37,6 +38,13 @@ export interface TokenComponentProps {
     parentChildren: JSX.Element,
 }
 
+type NavigationActionHandler = (scope?: string) => void; 
+export type NavigationActionsConfig = {
+    anchor?: HTMLElement | string;
+} & {
+    [K in ActionName]?: NavigationActionHandler | HTMLElement | string | undefined;
+}
+
 declare module "solid-js" {
     namespace JSX {
         interface IntrinsicElements {
@@ -46,6 +54,7 @@ declare module "solid-js" {
         interface Directives {
             forwardEvents: ComponentProps<any>;
             forwardAttrs:  ComponentProps<any>;
+            navigationActions: NavigationActionsConfig;
         }
     }
 }
