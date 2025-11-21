@@ -1,5 +1,8 @@
-import { ComponentProps } from "@components/types/ComponentProps";
-import { createEffect } from "solid-js";
+import { useNavigation } from "@components/Navigation/Navigation/Navigation";
+import eventBus from "@components/tools/EventBus";
+import { ComponentProps, NavigationActionsConfig } from "@components/types/ComponentProps";
+import { Accessor, createEffect } from "solid-js";
+import { waitForFrames } from "@components/utils/waitForFrames";
 
 const baseEventsSet = new Set([
     "abort",
@@ -83,6 +86,54 @@ function forwardEvents(el: HTMLElement, getData: () => Record<string, any>) {
     }
 }
 
+function navigationActions(el: HTMLElement, accessor: Accessor<NavigationActionsConfig>) {
+    const nav = useNavigation();
+    if (!nav) return;
+
+    const config = accessor();
+    const { anchor, ...actionHandlers } = config;
+
+    el.setAttribute('tabindex', '0');
+
+    let anchorElement: HTMLElement | null = null;
+    if (anchor) {
+        if (typeof anchor === 'string') {
+            waitForFrames(() => anchorElement = document.querySelector(anchor));
+        } else {
+            anchorElement = anchor;
+        }
+    }
+
+    const isFocused = () => {
+        const active = document.activeElement;
+        return active === el ||
+            (anchorElement && active === anchorElement) ||
+            el.contains(active);
+    };
+
+    const listeners: Array<[string, (args: any) => void]> = [];
+    for (const [name, func] of Object.entries(actionHandlers)) {
+        const action = nav.getAction(name);
+        if (!action) {
+            console.warn(`Action "${name}" is not registered in Navigation`);
+            continue;
+        }
+
+        const handler = (args: any) => {
+            if (isFocused()) (func as Function)(args);
+        };
+
+        eventBus.on(name, handler);
+        listeners.push([name, handler]);
+    }
+
+    return () => {
+        for (const [name, handler] of listeners) {
+            eventBus.off(name, handler);
+        }
+    };
+}
+
 export function useBaseComponent(props: ComponentProps) {
     const className = () => {
         const classes = (typeof props.componentClasses === "function" ? props.componentClasses() : props.componentClasses || '') + " " + (props.class || '');
@@ -94,7 +145,7 @@ export function useBaseComponent(props: ComponentProps) {
         ...props.style
     });
 
-    return { className, inlineStyles, forwardAttrs, forwardEvents };
+    return { className, inlineStyles, forwardAttrs, forwardEvents, navigationActions };
 }
 
 export default useBaseComponent;

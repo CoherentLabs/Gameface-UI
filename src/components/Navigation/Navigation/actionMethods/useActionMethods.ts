@@ -11,7 +11,7 @@ export default function createActionMethods(
     setConfig: SetStoreFunction<NavigationConfigType>
 ): ActionMethods {
     const registerAction = (actionName: ActionName) => {
-        const {key, button, callback, global} = config.actions[actionName]!;
+        const {key, button, callback, global} = getAction(actionName)!;
 
         const shouldEmitGlobally = DEFAULT_ACTION_NAMES.has(actionName as DefaultActions) || global;
 
@@ -38,7 +38,7 @@ export default function createActionMethods(
     }
 
     const unregisterAction = (actionName: ActionName) => {
-        const {key, button} = config.actions[actionName]!;
+        const {key, button} = getAction(actionName)!;
 
         if (config.keyboard && key) keyboard.off(key.binds, actionName)
         if (config.gamepad && button) gamepad.off(button.binds, actionName)
@@ -46,7 +46,7 @@ export default function createActionMethods(
     }
 
     const addAction = (name: ActionName, data: ActionCfg) => {
-        if (config.actions[name]) {
+        if (getAction(name)) {
             return console.warn(`Action ${name} is already registered! If you wish to update it's data use updateAction() instead.`)
         }
         setConfig('actions', name, data);
@@ -54,7 +54,7 @@ export default function createActionMethods(
     }
 
     const removeAction = (name: ActionName) => {
-        if (!config.actions[name]) {
+        if (!getAction(name)) {
             return console.warn('Trying to remove a non existing action!')
         }
 
@@ -70,7 +70,7 @@ export default function createActionMethods(
     }
 
     const updateAction = (name: ActionName, data: ActionCfg) => {
-        if (!config.actions[name]) {
+        if (!getAction(name)) {
             return console.warn('Trying to update a non existing action!')
         }
 
@@ -80,7 +80,7 @@ export default function createActionMethods(
     }
 
     const executeAction = (name: ActionName) => {
-        if (!config.actions[name]) {
+        if (!getAction(name)) {
             return console.warn('Trying to execute a non existing action!')
         }
 
@@ -88,6 +88,8 @@ export default function createActionMethods(
     }
 
     const getScope = () => config.scope;
+    const getAction = (name: ActionName) => config.actions[name];
+    const getActions = () => config.actions;
 
     return {
         addAction,
@@ -96,6 +98,8 @@ export default function createActionMethods(
         executeAction,
         registerAction,
         unregisterAction,
-        getScope
+        getScope,
+        getAction,
+        getActions,
     };
 }
