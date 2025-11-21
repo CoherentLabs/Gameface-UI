@@ -1,8 +1,10 @@
+import { KeyBinding, GamepadButton } from './keybindings/keybindings.types';
+
 type ActionType = 'press' | 'hold' | 'lift';
 
 export type ActionCfg = {
-    key?: {binds: string[], type?: ActionType[]}; // replace with key map
-    button?: {binds: string[], type?: Exclude<ActionType, 'lift'>} // replace with button map
+    key?: {binds: KeyBinding[], type?: ActionType[]};
+    button?: {binds: GamepadButton[], type?: Exclude<ActionType, 'lift'>}
     callback: (scope?: string, ...args: any[]) => void
     global?: boolean
 };
