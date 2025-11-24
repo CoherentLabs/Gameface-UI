@@ -16,6 +16,7 @@ export default function createActionMethods(
         const shouldEmitGlobally = DEFAULT_ACTION_NAMES.has(actionName as DefaultActions) || global;
 
         actions.register(actionName, () => {
+            if (isPaused(actionName)) return;
             callback && callback(config.scope);
             if (shouldEmitGlobally) eventBus.emit(actionName, config.scope);
         })
@@ -91,6 +92,26 @@ export default function createActionMethods(
     const getAction = (name: ActionName) => config.actions[name];
     const getActions = () => config.actions;
 
+    const pauseAction = (name: ActionName) => {
+        if (!getAction(name)) {
+            return console.warn('Action not found');
+        }
+
+        setConfig('actions', name, 'paused', true);
+    };
+
+    const resumeAction = (name: ActionName) => {
+        const action = getAction(name);
+        if (!action) return console.warn('Action not found');
+        if (!action.paused) return;
+
+        setConfig('actions', name, 'paused', false);
+    };
+
+    const isPaused = (name: ActionName) => {
+        return getAction(name)?.paused ?? false;
+    };
+
     return {
         addAction,
         removeAction,
@@ -101,5 +122,8 @@ export default function createActionMethods(
         getScope,
         getAction,
         getActions,
+        pauseAction,
+        resumeAction,
+        isPaused,
     };
 }

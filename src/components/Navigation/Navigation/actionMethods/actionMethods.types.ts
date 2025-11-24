@@ -68,4 +68,23 @@ export interface ActionMethods {
      * @returns Record of all action names and their configurations
      */
     getActions: () => ActionMap;
+
+    /**
+     * Pauses an action, preventing its callback from executing
+     * @param action - The name of the action to pause
+     */
+    pauseAction: (action: ActionName) => void;
+
+    /**
+     * Resumes a paused action, allowing its callback to execute again
+     * @param action - The name of the action to resume
+     */
+    resumeAction: (action: ActionName) => void;
+
+    /**
+     * Checks if an action is currently paused
+     * @param action - The name of the action to check
+     * @returns True if the action is paused, false otherwise
+     */
+    isPaused: (action: ActionName) => boolean;
 }
