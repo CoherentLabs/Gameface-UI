@@ -6,7 +6,8 @@ export type ActionCfg = {
     key?: {binds: KeyBinding[], type?: ActionType[]};
     button?: {binds: GamepadButton[], type?: Exclude<ActionType, 'lift'>}
     callback: (scope?: string, ...args: any[]) => void
-    global?: boolean
+    global?: boolean,
+    paused?: boolean,
 };
 
 export type DefaultActions = 'move-left' | 'move-right' | 'move-up' | 'move-down' | 'select' | 'back';
