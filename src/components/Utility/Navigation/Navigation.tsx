@@ -76,7 +76,7 @@ const Navigation: ParentComponent<NavigationProps> = (props) => {
             gamepad.pollingInterval = props.pollingInterval ?? 200;
         }
         initActions()
-        eventBus.on('select', (scope: string) => console.log(scope))
+
         if (!props.ref) return;
         (props.ref as unknown as (ref: NavigationRef) => void)(navigationAPI);
     })

@@ -1,0 +1,340 @@
+---
+title: Navigation
+tableOfContents:
+  maxHeadingLevel: 4
+---
+import { Steps } from '@astrojs/starlight/components';
+
+The `Navigation` component is a comprehensive navigation system designed for game UIs. 
+It provides keyboard and gamepad input handling, spatial navigation between UI areas, and a flexible action system for mapping inputs to callbacks. 
+Built on top of the [Coherent Gameface Interaction Manager](https://frontend-tools.coherent-labs.com/interaction-manager/getting-started/), 
+it enables seamless navigation across complex menu systems and HUD elements.
+
+This component provides:
+
+- Keyboard and gamepad input management with customizable bindings
+- Spatial navigation with multiple navigation areas
+- Action system for mapping inputs to game-specific callbacks
+- Scope-based context awareness for different UI sections
+- Pause/resume functionality for navigation state
+- Integration with components via context and navigation actions directive
+
+## Usage
+
+To use the `Navigation` component, wrap your UI with the it and define navigation areas for different sections of your UI. You can configure default actions and provide custom input bindings for your game.
+
+:::tip
+For detailed usage instructions, examples, and advanced features, refer to the [Guide](/components/utility/navigation#guide) section.
+:::
+
+```tsx
+import Navigation from '@components/Navigation/Navigation/Navigation';
+import { ActionMap } from '@components/Navigation/Navigation/types';
+
+const App = () => {
+    const defaultActions: ActionMap = {
+        'tab-left': {key: {binds: ['Q'], type: ['press']}, button: {binds: ['left-shoulder'], type: 'press'}, callback: menuLeft, global: true},
+        'tab-right': {key: {binds: ['E'], type: ['press']}, button: {binds: ['right-shoulder'], type: 'press'}, callback: menuRight, global: true},
+        'select': {key: {binds: ['SPACE'], type: ['press']}, button: {binds: ['face-button-left'], type: 'press'}},
+        'back': {key: {binds: ['BACKSPACE'], type: ['press']}},
+    }
+    return (
+        <Navigation scope="main-menu" actions={defaultActions} pollingInterval={150} >
+            <Navigation.Area name="main-menu" focused>
+                <button>Start Game</button>
+                <button>Settings</button>
+                <button>Quit</button>
+            </Navigation.Area>
+        </Navigation>
+    );
+};
+
+export default App;
+```
+
+## Default Actions
+
+The Navigation component comes with six pre-configured default actions that handle common navigation patterns in game UIs. These actions are automatically registered when the Navigation component mounts and emit globally, making them accessible to any component within your application.
+
+Default actions are constant, pre-defined actions that provide standard input mappings for navigation and interaction. 
+These actions are recognized across the entire Gameface UI component library, enabling preset components to work seamlessly with the Navigation system out of the box.
+
+Each default action has:
+- **Keyboard bindings** - One or more keyboard keys
+- **Gamepad bindings** - One or more gamepad buttons
+- **Global emission** - They emit events via the [event bus](/concepts/ui-communication/), allowing any component to respond
+- **No default callbacks** - They don't execute callbacks by default, only emit events. However they can be extended to execute callback as well.
+- **Library-wide recognition** - Preset components like Dropdown, Stepper, Checkbox, and others automatically listen to these actions
+
+### Available Default Actions
+
+| Action Name   | Keyboard Binding | Gamepad Binding      | Purpose                                                                          |
+|---------------|------------------|----------------------|----------------------------------------------------------------------------------|
+| `move-left`   | `ARROW_LEFT`     | `pad-left` (D-Pad)   | Directional input left (used by components Stepper)           |
+| `move-right`  | `ARROW_RIGHT`    | `pad-right` (D-Pad)  | Directional input right (used by components Stepper)          |
+| `move-up`     | `ARROW_UP`       | `pad-up` (D-Pad)     | Directional input up (used by components like Dropdown)             |
+| `move-down`   | `ARROW_DOWN`     | `pad-down` (D-Pad)   | Directional input down (used by components like Dropdown)           |
+| `select`      | `ENTER`          | `face-button-down`   | Confirm selection or activate the currently focused element                     |
+| `back`        | `ESC`            | `face-button-right`  | Cancel current operation or navigate back to the previous screen                |
+
+:::caution[Reserved Action Names]
+Avoid creating custom actions with names starting with `move-focus-*` (e.g., `move-focus-left`, `move-focus-right`, etc.). These names are reserved and used internally by the spatial navigation system for managing focus between UI elements.
+:::
+
+### Customizing Default Actions
+
+Default actions can be customized by updating their configuration. This is useful when you want to:
+- Change keyboard/gamepad bindings to match your game's control scheme
+- Add custom callbacks to default actions
+- Modify input types (press, hold, lift)
+
+You can customize default actions either through the `actions` prop or programmatically using `updateAction()`:
+
+**Via props:**
+```tsx
+import Navigation from '@components/Navigation/Navigation/Navigation';
+import { ActionMap } from '@components/Navigation/Navigation/types';
+
+const customActions: ActionMap = {
+    // Customize the 'select' action to use SPACE instead of ENTER
+    'select': {
+        key: {binds: ['SPACEBAR'], type: ['press']},
+        button: {binds: ['face-button-down'], type: 'press'},
+        callback: (scope) => console.log('Selected in', scope),
+    },
+    // Customize 'back' to add a callback
+    'back': {
+        key: {binds: ['ESC'], type: ['press']},
+        button: {binds: ['face-button-right'], type: 'press'},
+        callback: () => handleBack(),
+    }
+};
+
+<Navigation actions={customActions}>
+    {/* Your UI */}
+</Navigation>
+```
+
+**Programmatically:**
+```tsx
+const nav = useNavigation();
+
+// Update the select action at runtime
+nav.updateAction('select', {
+    key: {binds: ['SPACEBAR'], type: ['press']},
+    button: {binds: ['face-button-down'], type: 'press'},
+    callback: (scope) => handleSelection(scope),
+    global: true
+});
+```
+
+### Adding Custom Actions
+
+Beyond the default actions, you can add your own custom actions for game-specific inputs:
+
+```tsx
+import Navigation from '@components/Navigation/Navigation/Navigation';
+import { ActionMap } from '@components/Navigation/Navigation/types';
+
+const customActions: ActionMap = {
+    // Custom action for opening inventory
+    'open-inventory': {
+        key: {binds: ['I'], type: ['press']},
+        button: {binds: ['face-button-top'], type: 'press'},
+        callback: () => openInventory(),
+        global: true
+    },
+    // Custom action for opening map
+    'open-map': {
+        key: {binds: ['M'], type: ['press']},
+        button: {binds: ['face-button-left'], type: 'press'},
+        callback: (scope) => openMap(scope),
+        global: false  // Only emit locally, not globally
+    }
+};
+
+<Navigation actions={customActions}>
+    {/* Your UI */}
+</Navigation>
+```
+
+Or add them programmatically:
+
+```tsx
+const nav = useNavigation();
+
+nav.addAction('toggle-menu', {
+    key: {binds: ['TAB'], type: ['press']},
+    button: {binds: ['START'], type: 'press'},
+    callback: () => toggleMenu(),
+    global: true
+});
+```
+
+### Subscribing to Actions in Custom Components
+
+Custom components can respond to navigation actions using the `navigationActions` directive from `BaseComponent`.
+This directive automatically listens for action events and executes callbacks when the component (or its anchor) is focused.
+
+To subscribe your component to an action, follow these steps:
+
+<Steps>
+
+1. Import the `useBaseComponent` hook in your component
+
+2. Extract the `navigationActions` method from the hook
+
+3. Add the `navigationActions` method as an attribute to the element you wish to subscribe, and prefix it with the `use:` keyword
+
+4. Provide the names of the actions you wish to subscribe to and their corresponding callbacks (what will happen when they're triggered)
+
+</Steps>
+
+```tsx
+import { useBaseComponent } from '@components/BaseComponent/BaseComponent';
+const MyComponent = (props) => {
+    const { navigationActions } = useBaseComponent(props);
+    return (
+        <div use:navigationActions={{
+            select: () => console.log('Item selected'),
+            back: () => console.log('Going back')
+        }}>
+        </div>
+    );
+};
+```
+
+:::caution
+Only actions with `global: true` (including all default actions) can be subscribed to using the `navigationActions` directive. Actions with `global: false` only execute their callbacks and don't emit events for components to listen to.
+:::
+
+**With an anchor element:**
+
+Sometimes you want a component to respond to actions when a different element is focused (like a child button):
+
+```tsx
+const Card = (props) => {
+    let buttonRef;
+    const { navigationActions } = useBaseComponent(props);
+
+    return (
+        <div
+            use:navigationActions={{
+                anchor: buttonRef,  // Respond when button is focused
+                select: () => handleCardSelect(),
+                'custom-action': () => handleCustomAction()
+            }}
+        >
+            <button ref={buttonRef}>Select</button>
+            <div>Card content</div>
+        </div>
+    );
+};
+```
+
+:::tip
+The `navigationActions` directive only triggers callbacks when the component or its anchor is focused. This ensures actions are contextual and don't fire globally for all components.
+:::
+
+### Action Configuration Reference (ActionCfg)
+
+When defining actions, you can configure the following properties:
+
+| Property   | Type                                      | Description                                                                                                                                                                                                 |
+|------------|-------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `key`      | `{binds: KeyBinding[], type?: ActionType[]}` | Keyboard configuration. `binds` specifies which keys trigger the action. `type` specifies when to trigger: `'press'` (default), `'hold'`, or `'lift'`.                                                     |
+| `button`   | `{binds: GamepadButton[], type?: ActionType}` | Gamepad configuration. `binds` specifies which buttons trigger the action. `type` specifies when to trigger: `'press'` (default) or `'hold'`.                                                              |
+| `callback` | `(scope?: string, ...args: any[]) => void`   | Function to execute when the action is triggered. Receives the current navigation scope as the first parameter.                                                                                            |
+| `global`   | `boolean`                                    | When `true`, the action emits globally via the [eventBus](/concepts/ui-communication/), allowing any component to listen. When `false`, only the callback is executed. Default actions have this set to `true`.                          |
+
+## API
+
+### Props
+
+| Prop Name         | Type                          | Default     | Description                                                                                                                                                                                                 |
+|-------------------|-------------------------------|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `gamepad`         | `boolean`                     | `true`      | Enables gamepad input handling for navigation and actions.                                                                                                                                                  |
+| `keyboard`        | `boolean`                     | `true`      | Enables keyboard input handling for navigation and actions.                                                                                                                                                 |
+| `actions`         | `ActionMap`                   | `{}`        | Custom action configurations to register in addition to default actions. Each action can define keyboard/gamepad bindings and callbacks.                                                                    |
+| `scope`           | `string`                      | `""`        | The initial navigation scope. When a `Navigation.Area` with a matching name is registered, it will be auto-focused.                                                                                           |
+| `pollingInterval` | `number`                      | `200`       | Gamepad polling interval in milliseconds. Determines how frequently the system checks for gamepad input.                                                                                                     |
+| `ref`             | `NavigationRef`               | `undefined` | A reference to the component, providing access to all navigation methods via the [NavigationRef](/components/utility/navigation#contextref-api) interface.                                                                                                   |
+| `overlap`         | `number`                      | `undefined` | Overlap threshold for spatial navigation. Determines how much elements can overlap before being considered in different navigation paths.                                                                    |
+
+## UseNavigation hook & Ref API
+
+The `Navigation` component exposes a comprehensive API through the `useNavigation()` hook (via context) or through a `ref`. This API provides methods for managing navigation areas, handling actions, and controlling navigation state.
+
+### Action Methods
+
+| Method Name     | Parameters                   | Return Value | Description                                                                                                                                                                                                 |
+|-----------------|------------------------------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `addAction`     | `name: ActionName, config:` [ActionCfg](/components/utility/navigation#action-configuration-reference-actioncfg) | `void` | Adds a new `Navigation` action and registers it with the interaction manager. |
+| `removeAction`  | `name: ActionName`           | `void`       | Removes a registered `Navigation` action and unregisters it from the interaction manager.                                                                                                                     |
+| `updateAction`  | `name: ActionName, config:` [ActionCfg](/components/utility/navigation#action-configuration-reference-actioncfg) | `void` | Updates an existing action's configuration. Default actions can be updated as well. Accepts the same config properties as `addAction`.                                                                      |
+| `executeAction` | `name: ActionName`           | `void`       | Executes a registered action by name, triggering its callback and event emission.                                                                                                                          |
+| `pauseAction`   | `action: ActionName`         | `void`       | Pauses an action, preventing its callback from executing.                                                                                                              |
+| `resumeAction`  | `action: ActionName`         | `void`       | Resumes a paused action, allowing its callback to execute again.                                                                                                                                           |
+| `isPaused`      | `action: ActionName`         | `boolean`    | Checks if an action is currently paused. Returns true if paused, false otherwise.                                                                                                                          |
+| `getScope`      | None                         | `string`     | Gets the current navigation scope (typically the name of the active navigation area).                                                                                                                       |
+| `getAction`     | `name: ActionName`           | `ActionCfg \| undefined` | Gets a specific action configuration by name. Returns undefined if the action doesn't exist.                                                                                                    |
+| `getActions`    | None                         | `ActionMap`  | Gets all currently registered actions.                                                                                                                                                                      |
+
+### Area Methods
+
+| Method Name            | Parameters                                                           | Return Value | Description                                                                                                                                                                                                 |
+|------------------------|----------------------------------------------------------------------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `registerArea`         | `area: string, elements: string[] \| HTMLElement[], focused?: boolean` | `void`    | Registers a navigation area with focusable elements. If `focused` is true, automatically focuses the first element in the area.                                                                            |
+| `unregisterArea`       | `area: string`                                                       | `void`       | Unregisters a navigation area and removes it from spatial navigation.                                                                                                                                       |
+| `focusFirst`           | `area: string`                                                       | `void`       | Focuses the first focusable element in the specified area and updates the navigation `scope`.                                                                                                                |
+| `focusLast`            | `area: string`                                                       | `void`       | Focuses the last focusable element in the specified area and updates the navigation `scope`.                                                                                                                 |
+| `switchArea`           | `area: string`                                                       | `void`       | Switches the active navigation to the specified area by focusing the first element in it and updating the navigation `scope`.                                                                                |
+| `clearFocus`           | None                                                                 | `void`       | Clears the current focus from all navigation areas.                                                                                                                                                         |
+| `changeNavigationKeys` | `keys: { up?: string, down?: string, left?: string, right?: string }, clearCurrent?: boolean` | `void` | Changes the navigation keys for spatial navigation. If `clearCurrent` is true, clears current active keys before setting new ones.                                                                         |
+| `resetNavigationKeys`  | None                                                                 | `void`       | Resets navigation keys to their default values.                                                                                                                                                             |
+| `pauseNavigation`      | None                                                                 | `void`       | Pauses spatial navigation by deinitializing it. Saves the currently focused element for restoration on resume.                                                                                             |
+| `resumeNavigation`     | None                                                                 | `void`       | Resumes spatial navigation by re-enabling it. Attempts to restore focus to the previously focused element, or focuses the first element of the current `scope` if restoration fails.                         |
+
+## Slots
+
+The `Navigation` component exposes subcomponents that allow you to structure your navigation:
+
+- [**Navigation.Area**](/components/utility/navigation/#navigationarea) - Defines a navigation area with focusable elements.
+
+### Navigation.Area
+
+`Navigation.Area` registers a section of your UI as a navigable area. Elements within the area can be navigated using keyboard/gamepad inputs. Areas can be switched programmatically.
+
+When a `Navigation.Area` mounts:
+- It registers itself with the spatial navigation system
+- If its `name` matches the parent Navigation's `scope` prop or if `focused={true}`, it auto-focuses
+- It automatically handles cleanup on unmount
+- It re-registers when navigation is resumed after being paused
+
+#### Navigation.Area Props
+
+| Prop Name  | Type                                   | Default     | Description                                                                                                                                                                                  |
+| ---------- | -------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`     | `string`                               | *required*  | The unique name identifier for this navigation area. Used to reference the area in methods like `focusFirst`, `switchArea`, and for `scope` tracking.                                         |
+| `selector` | `string`                               | `undefined` | CSS class selector for navigable elements. If provided, only elements matching this selector will be navigable. If omitted, all child elements are considered navigable.                    |
+| `focused`  | `boolean`                              | `false`     | When true, this area will automatically receive focus when it mounts, focusing its first navigable element.                                                                                 |
+
+#### Usage
+
+```tsx
+<Navigation scope="settings">
+    <Navigation.Area name="settings" focused>
+        <button>Graphics</button>
+        <button>Audio</button>
+        <button>Controls</button>
+    </Navigation.Area>
+
+    <Navigation.Area name="graphics-settings" selector="setting-option">
+        <div class="setting-option">Resolution</div>
+        <div class="setting-option">Quality</div>
+        <div class="setting-option">V-Sync</div>
+    </Navigation.Area>
+</Navigation>
+```
+
+## Guide
