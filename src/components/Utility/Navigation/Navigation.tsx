@@ -2,7 +2,7 @@ import { Accessor, createContext, onCleanup, onMount, ParentComponent, useContex
 // @ts-ignore
 import { gamepad } from 'coherent-gameface-interaction-manager';
 import NavigationArea from "./NavigationArea";
-import eventBus from "@components/tools/EventBus";
+import eventBus from "@components/Utility/EventBus";
 import { createStore } from "solid-js/store";
 import { ActionMap, NavigationConfigType } from "./types";
 import { DEFAULT_ACTIONS } from "./defaults";

@@ -3,7 +3,7 @@ import { actions, keyboard, gamepad } from 'coherent-gameface-interaction-manage
 import { SetStoreFunction } from 'solid-js/store';
 import { ActionName, ActionCfg, DefaultActions, NavigationConfigType } from '../types';
 import { DEFAULT_ACTION_NAMES } from '../defaults';
-import eventBus from '@components/tools/EventBus';
+import eventBus from '@components/Utility/EventBus';
 import { ActionMethods } from './actionMethods.types';
 
 export default function createActionMethods(
