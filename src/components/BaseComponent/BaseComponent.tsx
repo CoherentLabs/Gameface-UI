@@ -1,5 +1,5 @@
 import { useNavigation } from "@components/Utility/Navigation/Navigation";
-import eventBus from "@components/tools/EventBus";
+import eventBus from "@components/Utility/EventBus";
 import { ComponentProps, NavigationActionsConfig } from "@components/types/ComponentProps";
 import { Accessor, createEffect } from "solid-js";
 import { waitForFrames } from "@components/utils/waitForFrames";

@@ -98,7 +98,7 @@ const Stepper: ParentComponent<StepperProps> = (props) => {
     }
 
     props.componentClasses = () => stepperClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
+    const { className, inlineStyles, forwardEvents, forwardAttrs, navigationActions } = useBaseComponent(props);
 
     const setOption = (value: string) => {
         if (props.disabled) return;
@@ -154,6 +154,11 @@ const Stepper: ParentComponent<StepperProps> = (props) => {
                 style={inlineStyles()}
                 use:forwardEvents={props}
                 use:forwardAttrs={props}
+                use:navigationActions={{
+                    anchor: props.anchor,
+                    'move-left': () => changeSelected('prev'),
+                    'move-right': () => changeSelected('next')
+                }}
             >
                 <Show when={!props["controls-position"] || controlsBefore()}>
                     <StepperControl direction='prev' visible={showPrevControl()} parentChildren={props.children} />
