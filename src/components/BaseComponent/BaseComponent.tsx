@@ -1,8 +1,10 @@
-import { useNavigation } from "@components/Navigation/Navigation/Navigation";
+import { useNavigation } from "@components/Utility/Navigation/Navigation";
 import eventBus from "@components/tools/EventBus";
 import { ComponentProps, NavigationActionsConfig } from "@components/types/ComponentProps";
 import { Accessor, createEffect } from "solid-js";
 import { waitForFrames } from "@components/utils/waitForFrames";
+import { DEFAULT_ACTION_NAMES } from "@components/Utility/Navigation/defaults";
+import { DefaultActions } from "@components/Utility/Navigation/types";
 
 const baseEventsSet = new Set([
     "abort",
@@ -115,7 +117,12 @@ function navigationActions(el: HTMLElement, accessor: Accessor<NavigationActions
     for (const [name, func] of Object.entries(actionHandlers)) {
         const action = nav.getAction(name);
         if (!action) {
-            console.warn(`Action "${name}" is not registered in Navigation`);
+            console.warn(`Action "${name}" is not registered in Navigation.`);
+            continue;
+        }
+
+        if (!action.global && !DEFAULT_ACTION_NAMES.has(name as DefaultActions)) {
+            console.warn(`Action "${name}" is not global. To subscribe components to it, please make it global.`);
             continue;
         }
 

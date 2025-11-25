@@ -111,23 +111,6 @@ export type KeyBinding =
  * Based on coherent-gameface-interaction-manager gamepad-key-codes
  */
 export type GamepadButton =
-    | 'FACE_BUTTON_DOWN'
-    | 'FACE_BUTTON_RIGHT'
-    | 'FACE_BUTTON_LEFT'
-    | 'FACE_BUTTON_TOP'
-    | 'LEFT_SHOULDER'
-    | 'RIGHT_SHOULDER'
-    | 'LEFT_SHOULDER_BOTTOM'
-    | 'RIGHT_SHOULDER_BOTTOM'
-    | 'SELECT'
-    | 'START'
-    | 'LEFT_ANALOGUE_STICK'
-    | 'RIGHT_ANALOGUE_STICK'
-    | 'PAD_UP'
-    | 'PAD_DOWN'
-    | 'PAD_LEFT'
-    | 'PAD_RIGHT'
-    | 'CENTER_BUTTON'
     | 'face-button-down'
     | 'face-button-left'
     | 'face-button-right'

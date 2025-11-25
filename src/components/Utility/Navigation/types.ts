@@ -1,4 +1,3 @@
-import { Accessor } from 'solid-js';
 import { KeyBinding, GamepadButton } from './keybindings/keybindings.types';
 
 type ActionType = 'press' | 'hold' | 'lift';

@@ -1,6 +1,6 @@
 import { JSX, ParentProps } from "solid-js";
 import Events from "./BaseComponent";
-import { ActionName } from "@components/Navigation/Navigation/types";
+import { ActionName } from "@components/Utility/Navigation/types";
 
 type ExcludedEvents =
     | "abort"
