@@ -17,8 +17,8 @@ export default function createActionMethods(
 
         actions.register(actionName, () => {
             if (isPaused(actionName)) return;
-            callback && callback(config.scope);
-            if (shouldEmitGlobally) eventBus.emit(actionName, config.scope);
+            callback && callback(getScope());
+            if (shouldEmitGlobally) eventBus.emit(actionName, getScope());
         })
 
         if (config.keyboard && key) {

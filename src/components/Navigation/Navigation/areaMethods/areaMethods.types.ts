@@ -53,4 +53,20 @@ export interface AreaMethods {
      * Resets navigation keys to their default values
      */
     resetNavigationKeys: () => void;
+
+    /**
+     * Checks if spatial navigation is currently enabled
+     * @returns True if navigation is enabled, false otherwise
+     */
+    isEnabled: () => boolean;
+
+    /**
+     * Pauses spatial navigation by deinitializing it
+     */
+    pauseNavigation: () => void;
+
+    /**
+     * Resumes spatial navigation by re-enabling it
+     */
+    resumeNavigation: () => void;
 }

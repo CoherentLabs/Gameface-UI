@@ -1,3 +1,4 @@
+import { Accessor } from 'solid-js';
 import { KeyBinding, GamepadButton } from './keybindings/keybindings.types';
 
 type ActionType = 'press' | 'hold' | 'lift';
@@ -22,5 +23,6 @@ export interface NavigationConfigType {
     gamepad: boolean,
     keyboard: boolean,
     actions: ActionMap,
-    scope: string
+    scope: string,
+    navigationEnabled: boolean
 }
