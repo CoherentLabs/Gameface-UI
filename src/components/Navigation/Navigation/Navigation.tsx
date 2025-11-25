@@ -1,4 +1,4 @@
-import { createContext, onCleanup, onMount, ParentComponent, useContext } from "solid-js"
+import { Accessor, createContext, onCleanup, onMount, ParentComponent, useContext } from "solid-js"
 // @ts-ignore
 import { gamepad } from 'coherent-gameface-interaction-manager';
 import NavigationArea from "./NavigationArea";
@@ -11,8 +11,11 @@ import createActionMethods from "./actionMethods/useActionMethods";
 import { AreaMethods } from "./areaMethods/areaMethods.types";
 import { ActionMethods } from "./actionMethods/actionMethods.types";
 
-type ExcludedAPIMethods = 'registerAction' | 'unregisterAction'
-interface NavigationContextType extends AreaMethods, Omit<ActionMethods, ExcludedAPIMethods> {}
+type ExcludedActionMethods = 'registerAction' | 'unregisterAction'
+type ExcludedAreaMethods = 'isEnabled'
+interface NavigationContextType extends Omit<AreaMethods, ExcludedAreaMethods>, Omit<ActionMethods, ExcludedActionMethods> {
+    _navigationEnabled: Accessor<boolean>
+}
 export interface NavigationRef extends NavigationContextType {}
 
 export const NavigationContext = createContext<NavigationContextType>();
@@ -27,9 +30,9 @@ interface NavigationProps {
     keyboard?: boolean,
     actions?: ActionMap,
     scope?: string,
-    pollingInterval?: number
-    ref?: NavigationContextType;
-    overlap?: number
+    pollingInterval?: number,
+    ref?: NavigationRef,
+    overlap?: number,
 }
 
 const Navigation: ParentComponent<NavigationProps> = (props) => {
@@ -38,36 +41,21 @@ const Navigation: ParentComponent<NavigationProps> = (props) => {
         keyboard: props.keyboard ?? true,
         actions: {...DEFAULT_ACTIONS, ...props.actions},
         scope: props.scope ?? "",
+        navigationEnabled: false
     })
     const areas = new Set<string>();
-    const { 
-        addAction, 
-        executeAction, 
-        registerAction, 
-        removeAction, 
-        unregisterAction, 
-        updateAction, 
-        getScope, 
-        getAction, 
-        getActions,
-        isPaused,
-        pauseAction,
-        resumeAction
-     } = createActionMethods(config, setConfig)
-    const areaMethods = createAreaMethods(areas, setConfig);
 
+    // Create action methods and extract internal-only methods
+    const { registerAction, unregisterAction, ...publicActionMethods } = createActionMethods(config, setConfig);
+
+    // Create area methods and extract internal-only methods
+    const { isEnabled, ...publicAreaMethods } = createAreaMethods(areas, config, setConfig);
+
+    // Compose public API
     const navigationAPI = {
-        addAction,
-        removeAction,
-        executeAction,
-        updateAction,
-        getScope,
-        getAction,
-        getActions,
-        isPaused,
-        pauseAction,
-        resumeAction,
-        ...areaMethods,
+        ...publicActionMethods,
+        ...publicAreaMethods,
+        _navigationEnabled: isEnabled
     }
 
     const initActions = () => {
@@ -90,7 +78,7 @@ const Navigation: ParentComponent<NavigationProps> = (props) => {
         initActions()
         eventBus.on('select', (scope: string) => console.log(scope))
         if (!props.ref) return;
-        (props.ref as unknown as (ref: NavigationContextType) => void)(navigationAPI);
+        (props.ref as unknown as (ref: NavigationRef) => void)(navigationAPI);
     })
 
     onCleanup(() => deInitActions())

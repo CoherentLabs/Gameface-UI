@@ -7,24 +7,62 @@ import { AreaMethods } from './areaMethods.types';
 
 export default function createAreaMethods(
     areas: Set<string>,
+    config: NavigationConfigType,
     setConfig: SetStoreFunction<NavigationConfigType>
 ): AreaMethods {
+    let lastActive: Element | null = null;
+    let lastArea: string | null = null;
+
     const registerArea = (area: string, elements: string[] | HTMLElement[], focused?: boolean) => {
+        const enabled = spatialNavigation.enabled;
+        if (!enabled) setConfig('navigationEnabled', true)
+
         waitForFrames(() => {
-            const enabled = spatialNavigation.enabled;
             spatialNavigation[enabled ? 'add' : 'init']([
                 { area: area, elements: elements },
             ]);
             areas.add(area);
             focused && focusFirst(area);
-        })
+        }, enabled ? 0 : 3)
     }
 
     const unregisterArea = (area: string) => {
         spatialNavigation.remove(area)
         areas.delete(area);
-        if (areas.size === 0) spatialNavigation.deinit();
+        if (areas.size === 0) {
+            spatialNavigation.deinit();
+            setConfig('navigationEnabled', false)
+        }
     }
+
+    const pauseNavigation = () => {
+        if (!isEnabled()) {
+            return console.warn('Spatial Navigation is not currently active!')
+        }
+        
+        lastActive = document.activeElement;
+        lastArea = config.scope;
+        spatialNavigation.deinit();
+        setConfig('navigationEnabled', false)
+    }
+
+    const resumeNavigation = () => {
+        if (isEnabled()) {
+            return console.warn('Spatial Navigation is already active!')
+        }
+
+        setConfig('navigationEnabled', true)
+        waitForFrames(() => {
+            if (lastActive && spatialNavigation.isElementInGroup(lastActive)) {
+                (lastActive as HTMLElement).focus();
+                setConfig('scope', lastArea!);
+            } else {
+                focusFirst(config.scope)
+            }
+        })
+    }
+
+    const isEnabled = () => config.navigationEnabled
 
     const focusFirst = (area: string) => {
         if (!areas.has(area)) {
@@ -72,6 +110,9 @@ export default function createAreaMethods(
         switchArea,
         clearFocus,
         changeNavigationKeys,
-        resetNavigationKeys
+        resetNavigationKeys,
+        isEnabled,
+        pauseNavigation,
+        resumeNavigation
     };
 }
