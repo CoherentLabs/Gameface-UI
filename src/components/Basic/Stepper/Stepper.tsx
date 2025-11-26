@@ -157,7 +157,8 @@ const Stepper: ParentComponent<StepperProps> = (props) => {
                 use:navigationActions={{
                     anchor: props.anchor,
                     'move-left': () => changeSelected('prev'),
-                    'move-right': () => changeSelected('next')
+                    'move-right': () => changeSelected('next'),
+                    ...props['navigation-actions']
                 }}
             >
                 <Show when={!props["controls-position"] || controlsBefore()}>

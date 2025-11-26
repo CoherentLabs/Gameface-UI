@@ -236,6 +236,56 @@ const Card = (props) => {
 The `navigationActions` directive only triggers callbacks when the component or its anchor is focused. This ensures actions are contextual and don't fire globally for all components.
 :::
 
+### Extending Component Navigation Actions
+
+Many preset components in the Gameface UI library (such as [Stepper](/components/basic/stepper), Dropdown, etc.) come with predefined navigation action handlers. For example, the Stepper component responds to `move-left` and `move-right` actions by default.
+
+You can extend or override these default behaviors using the `navigation-actions` prop available on all components that extend `ComponentProps`. This allows you to:
+
+- Add additional action handlers to components (e.g., adding a `select` action to a Stepper)
+- Override the component's default action behavior
+- Customize how components respond to navigation inputs
+
+**Example - Adding a select action to a Stepper:**
+
+```tsx
+import Stepper from '@components/Basic/Stepper/Stepper';
+
+<Stepper
+    navigation-actions={{
+        'select': () => console.log('Stepper item confirmed!')
+    }}
+>
+    <Stepper.Items>
+        <Stepper.Item value="option1">Option 1</Stepper.Item>
+        <Stepper.Item value="option2">Option 2</Stepper.Item>
+    </Stepper.Items>
+</Stepper>
+```
+
+**Example - Overriding default behavior:**
+
+```tsx
+<Stepper
+    navigation-actions={{
+        'move-left': () => customPreviousLogic(),  // Overrides default
+        'select': () => handleSelection()          // Extends default
+    }}
+>
+    {/* ... */}
+</Stepper>
+```
+
+:::caution[Overriding Component Actions]
+When you provide an action that a component already implements (like `move-left` for Stepper), your handler will **override** the component's default behavior. This gives you full control but can break expected component functionality if not used carefully.
+
+Each component's documentation lists which navigation actions it implements by default. Always check the component's documentation before overriding actions.
+:::
+
+:::tip
+The `navigation-actions` prop uses object spreading, so user-provided actions are merged with component defaults. Actions you define will take precedence over the component's predefined actions.
+:::
+
 ### Action Configuration Reference (ActionCfg)
 
 When defining actions, you can configure the following properties:

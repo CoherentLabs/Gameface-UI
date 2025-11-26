@@ -136,7 +136,7 @@ const Menu = () => {
     const defaultActions: ActionMap = {
         'tab-left': {key: {binds: ['Q'], type: ['press']}, button: {binds: ['left-sholder'], type: 'press'}, callback: menuLeft, global: true},
         'tab-right': {key: {binds: ['E'], type: ['press']}, button: {binds: ['right-sholder'], type: 'press'}, callback: menuRight, global: true},
-        'select': {key: {binds: ['E'], type: ['press']}, callback: () => console.log('ndasd'), },
+        'select': {key: {binds: ['SPACEBAR'], type: ['press']}, callback: () => console.log('ndasd'), },
     }
 
     const addMoreActions = () => {
