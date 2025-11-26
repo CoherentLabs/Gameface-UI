@@ -5,7 +5,7 @@ import ExtraContent from "@custom-components/Menu/SidePanel/ExtraContent";
 import CustomList from "@custom-components/Menu/CustomList/CustomList";
 import { keybindPresetContent } from "@custom-components/Menu/SidePanel/keybindsPanelContent";
 import KeyBind from "@custom-components/Menu/KeyBind/KeyBind";
-import eventBus from "@components/tools/EventBus";
+import eventBus from "@components/Utility/EventBus";
 import { SegmentRef } from "@components/Basic/Segment/Segment";
 import Dropdown from "@components/Basic/Dropdown/Dropdown";
 import Checkbox from "@components/Basic/Checkbox/Checkbox";

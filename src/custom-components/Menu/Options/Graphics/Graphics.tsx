@@ -7,6 +7,7 @@ import CustomDropdown from "@custom-components/Menu/CustomDropdown/CustomDropdow
 import CustomSegment from "@custom-components/Menu/CustomSegment/CustomSegment";
 import CustomNumberInput from "@custom-components/Menu/CustomNumberInput/CustomNumberInput";
 import GraphicsPreset from "./GraphicsPreset";
+import Navigation from "@components/Utility/Navigation/Navigation";
 
 const RESOLUTIONS = [
   { value: "1280x720",  label: "1280x720 (HD)" },
@@ -23,7 +24,7 @@ const RESOLUTIONS = [
 
 const Graphics: ParentComponent = () => {
     return (
-        <>
+        <Navigation.Area name="graphics" focused>
             <MenuItem id="resolution" name='Resolution'>
                 <CustomDropdown values={RESOLUTIONS} default={"1920x1080"} />
             </MenuItem>
@@ -48,7 +49,7 @@ const Graphics: ParentComponent = () => {
                 <CustomNumberInput min={0} max={100} value={100} />
             </MenuItem>
             <GraphicsPreset />
-        </>
+        </Navigation.Area>
     )
 }
 
