@@ -240,7 +240,7 @@ The `navigationActions` directive only triggers callbacks when the component or 
 
 Many preset components in the Gameface UI library (such as [Stepper](/components/basic/stepper), Dropdown, etc.) come with predefined navigation action handlers. For example, the Stepper component responds to `move-left` and `move-right` actions by default.
 
-You can extend or override these default behaviors using the `navigation-actions` prop available on all components that extend `ComponentProps`. This allows you to:
+You can extend or override these default behaviors using the `onAction` prop available on all components that extend `ComponentProps`. This allows you to:
 
 - Add additional action handlers to components (e.g., adding a `select` action to a Stepper)
 - Override the component's default action behavior
@@ -252,7 +252,7 @@ You can extend or override these default behaviors using the `navigation-actions
 import Stepper from '@components/Basic/Stepper/Stepper';
 
 <Stepper
-    navigation-actions={{
+    onAction={{
         'select': () => console.log('Stepper item confirmed!')
     }}
 >
@@ -267,7 +267,7 @@ import Stepper from '@components/Basic/Stepper/Stepper';
 
 ```tsx
 <Stepper
-    navigation-actions={{
+    onAction={{
         'move-left': () => customPreviousLogic(),  // Overrides default
         'select': () => handleSelection()          // Extends default
     }}
@@ -283,7 +283,7 @@ Each component's documentation lists which navigation actions it implements by d
 :::
 
 :::tip
-The `navigation-actions` prop uses object spreading, so user-provided actions are merged with component defaults. Actions you define will take precedence over the component's predefined actions.
+The `onAction` prop uses object spreading, so user-provided actions are merged with component defaults. Actions you define will take precedence over the component's predefined actions.
 :::
 
 ### Action Configuration Reference (ActionCfg)

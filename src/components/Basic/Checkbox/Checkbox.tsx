@@ -5,6 +5,7 @@ import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { Control, CheckboxControl } from "./CheckboxControl";
 import { Indicator } from "./CheckboxIndicator";
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
+import mergeNavigationActions from "@components/utils/mergeNavigationActions";
 
 const Label = createTokenComponent<{ before?: boolean }>();
 
@@ -51,9 +52,9 @@ const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
 
 
     props.componentClasses = () => checkboxClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
+    const { className, inlineStyles, forwardEvents, forwardAttrs, navigationActions } = useBaseComponent(props);
 
-    const toggle = (e?: MouseEvent) => {
+    const toggle = () => {
         if (props.disabled) return;
 
         setChecked(prev => !prev);
@@ -83,6 +84,7 @@ const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
                 style={inlineStyles()}
                 use:forwardEvents={props}
                 use:forwardAttrs={props}
+                use:navigationActions={mergeNavigationActions(props, {'select': toggle})}
                 onclick={toggle}>
 
                 <Show when={isBefore()}>

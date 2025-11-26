@@ -37,6 +37,7 @@ export default App;
 | `class-disabled`| `string`                   | `""`        | Additional CSS classes applied when the toggle button is disabled.                                                  |
 | `checked`       | `boolean`                  | `false`     | Specifies the initial checked state of the toggle button.                                                           |
 | `onChange`      | `(checked: boolean) => void`| `undefined` | Callback function triggered whenever the toggle button is toggled, providing the current checked state.             |
+| `onAction` | `Record<string, () => void>` | `undefined` | Extends or overrides the component's default navigation action handlers. See [Implemented Navigation Actions](#implemented-navigation-actions) for details. |
 
 ## Ref API
 
@@ -218,6 +219,32 @@ const App = () => {
 
 export default App;
 ```
+
+## Implemented Navigation Actions
+
+The ToggleButton component implements the following navigation actions by default:
+
+| Action Name | Behavior                          |
+|-------------|-----------------------------------|
+| `select`    | Toggles the button on/off         |
+
+You can extend the ToggleButton with additional navigation actions or override the default behavior using the `onAction` prop:
+
+```tsx
+import ToggleButton from '@components/Basic/ToggleButton/ToggleButton';
+
+<ToggleButton
+    onAction={{
+        'back': () => console.log('Going back from toggle button'),
+        'select': () => console.log('Custom toggle logic') // Overrides default
+    }}
+>
+    <ToggleButton.LabelLeft>Off</ToggleButton.LabelLeft>
+    <ToggleButton.LabelRight>On</ToggleButton.LabelRight>
+</ToggleButton>
+```
+
+For more information about navigation actions, see the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions).
 
 ## Guide
 

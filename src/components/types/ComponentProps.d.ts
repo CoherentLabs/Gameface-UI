@@ -33,7 +33,7 @@ export interface ComponentProps<T extends Record<string, any> = {}> extends Comp
     ref?: unknown | ((ref: BaseComponentRef & T) => void);
     refObject?: T;
     anchor?: HTMLElement | string;
-    'navigation-actions'?: NavigationActionsConfig
+    onAction?: NavigationActionsConfig
 }
 
 export interface TokenComponentProps {

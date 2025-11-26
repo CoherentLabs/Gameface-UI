@@ -38,6 +38,7 @@ export default App;
 | `value`    | `any`                                  | `''`        | The value associated with the checkbox component. |
 | `checked`  | `boolean`                              | `false`     | Specify if the checkbox is checked initially. |
 | `onChange` | `(checked: boolean) => void`           | `undefined` | A function that is called every time the checkbox is toggled. It can be used to retrieve whether the checkbox is checked. |
+| `onAction` | `Record<string, () => void>` | `undefined` | Extends or overrides the component's default navigation action handlers. See [Implemented Navigation Actions](#implemented-navigation-actions) for details. |
 
 ## Ref API
 
@@ -175,6 +176,32 @@ const App = () => {
 
 export default App;
 ```
+
+## Implemented Navigation Actions
+
+The Checkbox component implements the following navigation actions by default:
+
+| Action Name | Behavior                          |
+|-------------|-----------------------------------|
+| `select`    | Toggles the checkbox on/off       |
+
+You can extend the Checkbox with additional navigation actions or override the default behavior using the `onAction` prop:
+
+```tsx
+import Checkbox from '@components/Basic/Checkbox/Checkbox';
+
+<Checkbox
+    value="v-sync"
+    onAction={{
+        'back': () => console.log('Going back from checkbox'),
+        'select': () => console.log('Custom toggle logic') // Overrides default
+    }}
+>
+    Enable V-Sync
+</Checkbox>
+```
+
+For more information about navigation actions, see the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions).
 
 ## Guide
 

@@ -20,7 +20,7 @@ const Gameplay: ParentComponent = () => {
     return (
         <Navigation.Area name="menu" selector="menu-item" focused>
             <MenuItem id="difficulty" name='Difficulty'>
-                <Stepper anchor=".menu-item" onChange={emitChange} style={{width: '15vmax'}} navigation-actions={{select: () => console.log('custom select implementation')}}>
+                <Stepper anchor=".menu-item" onChange={emitChange} style={{width: '15vmax'}} onAction={{select: () => console.log('custom select implementation')}}>
                     <Stepper.Items>
                         <Stepper.Item value='Easy'>Easy</Stepper.Item>
                         <Stepper.Item value='Normal' selected>Normal</Stepper.Item>
