@@ -1,4 +1,4 @@
-import { Accessor, createContext, createEffect, createMemo, createSignal, DEV, JSX, onMount, ParentComponent } from 'solid-js';
+import { Accessor, createContext, createEffect, createMemo, createSignal, createUniqueId, DEV, JSX, onMount, ParentComponent } from 'solid-js';
 import style from './Dropdown.module.scss';
 import { DropdownOptions, Handle, Options, Track } from './DropdownOptions';
 import { Option } from './DropdownOption';
@@ -7,6 +7,8 @@ import { BaseComponentRef, ComponentProps } from '@components/types/ComponentPro
 import useBaseComponent from '@components/BaseComponent/BaseComponent';
 import { waitForFrames } from '@components/utils/waitForFrames';
 import getScrollableParent from '@components/utils/getScrollableParent';
+import mergeNavigationActions from '@components/utils/mergeNavigationActions';
+import { useNavigation } from '@components/Utility/Navigation/Navigation';
 
 export interface CommonDropdownSlotProps {
     style?: JSX.CSSProperties,
@@ -43,6 +45,9 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
     const [firstRender, setFirstRender] = createSignal(true);
     const [open, setOpen] = createSignal(false);
     const [isInverted, setIsInverted] = createSignal(false);
+    const [anchorEl, setAnchorEl] = createSignal<HTMLElement | null>(null);
+    const nav = useNavigation();
+    let areaID = nav && `dropdown-area-${createUniqueId()}`;
     const options = new Map<string, any>();
     const registerOption = (value: string, label: any, selected?: boolean) => {
         options.set(value, label);
@@ -95,7 +100,7 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
     };
 
     props.componentClasses = () => dropdownClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
+    const { className, inlineStyles, forwardEvents, forwardAttrs, navigationActions } = useBaseComponent(props);
 
     function handlePosition() {
         const clipParent = getScrollableParent(element);
@@ -106,17 +111,25 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
         const allowedHeight = clipRect.top + clipRect.height;
         const totalHeight = dropdownRect.top + optionsEl.offsetHeight;
         if (totalHeight > allowedHeight) setIsInverted(true);
-    } 
+    }
 
     onMount(() => {
-        waitForFrames(handlePosition);
+        waitForFrames(() => {
+            handlePosition()
+            if (props.anchor) {
+                const el = typeof props.anchor === 'string'
+                  ? document.querySelector(props.anchor)
+                  : props.anchor;
+                setAnchorEl(el as HTMLElement);
+            }
+        });
         if (!props.ref || !element) return;
+
         (props.ref as unknown as (ref: any) => void)({
             selected,
             selectOption,
             element,
         });
-        
     });
 
     const DropdownContextValue = {
@@ -130,6 +143,32 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
         isInverted
     }
 
+    const openDropdown = () => {
+        if (!nav || !areaID) return;
+        if (open()) return collapseDropdown();
+
+        toggle(true);
+        nav.registerArea(areaID, [`.${style['dropdown-option']}`], true)
+    }
+
+    const collapseDropdown = () => {
+        if (!nav || !areaID) return;
+
+        nav.unregisterArea(areaID);
+        toggle(false);
+
+        // focus back
+        setTimeout(() => {
+            const anchor = anchorEl();
+            anchor ? (anchor as HTMLElement).focus() : element.focus();
+        })
+    }
+
+    const defaultActions = {
+        'select': openDropdown,
+        'back': collapseDropdown,
+    }
+
     return (
         <DropdownContext.Provider value={DropdownContextValue}>
             <div ref={element}
@@ -137,6 +176,7 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
                 style={inlineStyles()}
                 use:forwardEvents={props}
                 use:forwardAttrs={props}
+                use:navigationActions={mergeNavigationActions(props, defaultActions)}
             >
                 <DropdownTrigger parentChildren={props.children} />
                 <DropdownOptions parentChildren={props.children}></DropdownOptions>

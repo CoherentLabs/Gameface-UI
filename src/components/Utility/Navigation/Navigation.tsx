@@ -21,8 +21,7 @@ export interface NavigationRef extends NavigationContextType {}
 export const NavigationContext = createContext<NavigationContextType>();
 export const useNavigation = () => {
     const context = useContext(NavigationContext);
-    if (!context) throw new Error('useNavigation must be used within Navigation');
-    return context;
+    if (context) return context
 }
 
 interface NavigationProps {

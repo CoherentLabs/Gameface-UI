@@ -2,6 +2,7 @@ import { ParentComponent, useContext, ParentProps, onCleanup, onMount, Show } fr
 import { CommonDropdownSlotProps, DropdownContext } from './Dropdown';
 import style from './Dropdown.module.scss';
 import { createTokenComponent } from '@components/utils/tokenComponents';
+import useBaseComponent from '@components/BaseComponent/BaseComponent';
 
 export interface OptionTokenProps extends CommonDropdownSlotProps {
     value: string;
@@ -46,10 +47,16 @@ export const DropdownOption: ParentComponent<{ option: ParentProps<OptionTokenPr
         return classes.join(' ');
     }
 
+    const { navigationActions } = useBaseComponent(props);
+
     return <div
         onclick={() => onClickOption(props.option)}
         class={optionClasses(props.option)}
         style={props.option.style}
+        use:navigationActions={{'select': () => {
+            if (dropdown?.open()) return; // it's backawrds because this method executes when the dropdown is already toggled off
+            dropdown?.selectOption(props.option.value)
+        }}}
     >
         <Show when={props.option.children}>
             {props.option.children}

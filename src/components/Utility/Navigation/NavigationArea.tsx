@@ -8,6 +8,7 @@ interface NavigationAreaProps {
 
 const NavigationArea: ParentComponent<NavigationAreaProps> = (props) => {
     const nav = useNavigation();
+    if (!nav) throw new Error('useNavigation must be used within Navigation');
     const cachedChildren = children(() => props.children);
     const navigatableElements = props.selector ? [`.${props.selector}`] : cachedChildren();
     let hasRegistered = false;

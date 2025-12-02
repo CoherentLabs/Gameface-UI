@@ -39,6 +39,7 @@ export default App;
 | `disabled`        | `boolean`            | `false`     | Disables the dropdown when set to `true`.                                                                      |
 | `class-disabled`  | `string`             | `""`        | Additional CSS classes to apply when the dropdown is disabled.                                                 |
 | `onChange`        | `(value: string) => void` | `undefined` | Callback function triggered whenever the selected option changes, providing the selected option's value.        |
+| `onAction` | `Record<string, () => void>` | `undefined` | Extends or overrides the component's default navigation action handlers. See [Implemented Navigation Actions](#implemented-navigation-actions) for details. |
 
 ## Ref API
 
@@ -267,6 +268,36 @@ To hide the `Dropdown.Handle`, set its `display` style to `none`:
 ```
 
 :::
+
+## Implemented Navigation Actions
+
+The `Dropdown` component implements the following navigation actions by default:
+
+| Action Name  | Behavior                                                                                      |
+|--------------|-----------------------------------------------------------------------------------------------|
+| `select`     | Opens the dropdown when closed. When open, collapses the dropdown (options handle selection) |
+| `back`       | Closes the dropdown and returns focus to the trigger or anchor element                        |
+
+You can extend the `Dropdown` with additional navigation actions or override the default behavior using the `onAction` prop:
+
+```tsx
+import Dropdown from '@components/Basic/Dropdown/Dropdown';
+
+<Dropdown
+    onAction={{
+        'select': () => console.log('Custom select behavior!'),
+        'back': () => console.log('Custom back behavior!')
+    }}
+>
+    <Dropdown.Options>
+        <Dropdown.Option value="red">red</Dropdown.Option>
+        <Dropdown.Option value="green">green</Dropdown.Option>
+        <Dropdown.Option value="blue">blue</Dropdown.Option>
+    </Dropdown.Options>
+</Dropdown>
+```
+
+For more information about navigation actions, see the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions).
 
 ## Guide
 
