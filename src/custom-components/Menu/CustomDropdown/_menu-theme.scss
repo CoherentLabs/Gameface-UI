@@ -13,7 +13,7 @@
             transition: background-color .15s ease, color .15s ease, border-color .15s ease;
 
             &:hover {
-            background-color: $background-soft-hover;
+                background-color: $background-soft-hover;
             }
         }
 
@@ -30,6 +30,16 @@
         &-option {
             border-radius: 0;
             transition: background-color .15s ease, color .15s ease;
+        }
+
+        &-option:focus,
+        &-option:hover {
+            background-color: rgba($primaryColor, 0.5);
+        }
+
+        &-option-selected:focus,
+        &-option-selected:hover {
+            background-color: $primaryColor;
         }
 
         &-icon path {

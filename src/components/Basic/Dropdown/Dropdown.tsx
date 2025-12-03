@@ -1,5 +1,4 @@
-import { Accessor, createContext, createEffect, createMemo, createSignal, createUniqueId, DEV, JSX, onMount, ParentComponent } from 'solid-js';
-import style from './Dropdown.module.scss';
+import { Accessor, createContext, createMemo, createSignal, createUniqueId, DEV, JSX, onMount, ParentComponent } from 'solid-js';
 import { DropdownOptions, Handle, Options, Track } from './DropdownOptions';
 import { Option } from './DropdownOption';
 import { DropdownTrigger, Icon, Placeholder, Trigger } from './DropdownTrigger';
@@ -9,7 +8,7 @@ import { waitForFrames } from '@components/utils/waitForFrames';
 import getScrollableParent from '@components/utils/getScrollableParent';
 import mergeNavigationActions from '@components/utils/mergeNavigationActions';
 import { useNavigation } from '@components/Utility/Navigation/Navigation';
-
+import style from './Dropdown.module.scss';
 export interface CommonDropdownSlotProps {
     style?: JSX.CSSProperties,
     class?: string,
@@ -27,9 +26,10 @@ interface DropdownContextValue {
     selectOption: (value: string) => void
     open: Accessor<boolean>;
     toggle: (isOpened: boolean) => void;
-    registerOption: (value: string, label: any, selected?: boolean) => void
+    registerOption: (value: string, label: string | JSX.Element, element: HTMLElement, selected?: boolean) => void
     unregisterOption: (value: string) => void,
-    options: Map<string, any>,
+    handleNavigationClose: () => void,
+    options: Map<string, {label: string | JSX.Element, element: HTMLElement}>,
     isInverted: Accessor<boolean>
 }
 
@@ -45,12 +45,15 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
     const [firstRender, setFirstRender] = createSignal(true);
     const [open, setOpen] = createSignal(false);
     const [isInverted, setIsInverted] = createSignal(false);
+    
     const [anchorEl, setAnchorEl] = createSignal<HTMLElement | null>(null);
     const nav = useNavigation();
     let areaID = nav && `dropdown-area-${createUniqueId()}`;
-    const options = new Map<string, any>();
-    const registerOption = (value: string, label: any, selected?: boolean) => {
-        options.set(value, label);
+
+    const options = new Map<string, {label: string | JSX.Element, element: HTMLElement}>();
+
+    const registerOption = (value: string, label: string | JSX.Element, element: HTMLElement, selected?: boolean) => {
+        options.set(value, {label, element});
         if (selected) selectOption(value);
     };
     const unregisterOption = (value: string) => options.delete(value);
@@ -76,6 +79,11 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
             if (props['class-disabled']) classes.push(`${props['class-disabled']}`);
         }
 
+        if (!nav) {
+            classes.push(style['hover-only']);
+            console.log('eo')
+        }
+
         return classes.join(' ');
     });
 
@@ -84,12 +92,14 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
 
         if (isOpened) {
             document.addEventListener('click', closeDropdown);
+            initOptionsArea();
             setOpen(true);
             return;
         }
 
         setOpen(false);
         document.removeEventListener('click', closeDropdown);
+        deinitOptionsArea();
     }
 
     const closeDropdown = (e: MouseEvent) => {
@@ -111,6 +121,30 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
         const allowedHeight = clipRect.top + clipRect.height;
         const totalHeight = dropdownRect.top + optionsEl.offsetHeight;
         if (totalHeight > allowedHeight) setIsInverted(true);
+    }
+
+    const initOptionsArea = () => {
+        if (!nav || !areaID ) return;
+        setTimeout(() => nav.registerArea(areaID, [...options.values()].map(o => o.element) , true))
+    }
+
+    const deinitOptionsArea = () => {
+        if (!nav || !areaID) return;
+        nav.unregisterArea(areaID);
+    }
+
+    const handleNavigationOpen = () => {
+        if (!open()) toggle(true);
+    }
+
+    const handleNavigationClose = () => {
+        if (!open()) return;
+        
+        toggle(false);
+
+        // focus back
+        const anchor = anchorEl();
+        anchor ? (anchor as HTMLElement).focus() : element.focus();
     }
 
     onMount(() => {
@@ -138,35 +172,15 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
         open, 
         toggle, 
         registerOption, 
-        unregisterOption, 
+        unregisterOption,
+        handleNavigationClose,
         options, 
         isInverted
     }
 
-    const openDropdown = () => {
-        if (!nav || !areaID) return;
-        if (open()) return collapseDropdown();
-
-        toggle(true);
-        nav.registerArea(areaID, [`.${style['dropdown-option']}`], true)
-    }
-
-    const collapseDropdown = () => {
-        if (!nav || !areaID) return;
-
-        nav.unregisterArea(areaID);
-        toggle(false);
-
-        // focus back
-        setTimeout(() => {
-            const anchor = anchorEl();
-            anchor ? (anchor as HTMLElement).focus() : element.focus();
-        })
-    }
-
     const defaultActions = {
-        'select': openDropdown,
-        'back': collapseDropdown,
+        'select': handleNavigationOpen,
+        'back': handleNavigationClose,
     }
 
     return (

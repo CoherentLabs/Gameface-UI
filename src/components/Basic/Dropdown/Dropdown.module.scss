@@ -19,8 +19,12 @@
         }
 
         &-selected {
-            background-color: $primaryColor;
-            color: $textColor;
+            &,
+            &:hover,
+            &:focus {
+                background-color: $primaryColor;
+                color: $textColor;
+            }
         }
 
         &-disabled {
@@ -95,4 +99,8 @@
         justify-content: center;
         align-items: center;
     }
+}
+
+.pointer-events-none {
+    pointer-events: none;
 }

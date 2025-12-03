@@ -1,8 +1,8 @@
 import { ParentComponent, useContext, ParentProps, onCleanup, onMount, Show } from 'solid-js';
 import { CommonDropdownSlotProps, DropdownContext } from './Dropdown';
-import style from './Dropdown.module.scss';
 import { createTokenComponent } from '@components/utils/tokenComponents';
 import useBaseComponent from '@components/BaseComponent/BaseComponent';
+import style from './Dropdown.module.scss';
 
 export interface OptionTokenProps extends CommonDropdownSlotProps {
     value: string;
@@ -16,6 +16,7 @@ export const Option = createTokenComponent<OptionTokenProps>();
 
 export const DropdownOption: ParentComponent<{ option: ParentProps<OptionTokenProps> }> = (props) => {
     const dropdown = useContext(DropdownContext);
+    let element: HTMLDivElement | undefined
 
     const onClickOption = (option: ParentProps<OptionTokenProps>) => {
         dropdown?.selectOption(option.value);
@@ -23,7 +24,7 @@ export const DropdownOption: ParentComponent<{ option: ParentProps<OptionTokenPr
     }
 
     onMount(() => {
-        dropdown?.registerOption(props.option.value, props.option.children, props.option.selected);
+        dropdown?.registerOption(props.option.value, props.option.children, element!, props.option.selected);
     })
 
     onCleanup(() => {
@@ -36,7 +37,6 @@ export const DropdownOption: ParentComponent<{ option: ParentProps<OptionTokenPr
         if (option.class) classes.push(option.class);
         if (option.value === dropdown?.selected()) {
             classes.push(style['dropdown-option-selected']);
-            classes.push('selected');
             if (option['class-selected']) classes.push(option['class-selected']);
         }
         if (option.disabled) {
@@ -50,12 +50,16 @@ export const DropdownOption: ParentComponent<{ option: ParentProps<OptionTokenPr
     const { navigationActions } = useBaseComponent(props);
 
     return <div
+        ref={element}
+        //@ts-ignore
+        attr:disabled={props.option.disabled || undefined}
         onclick={() => onClickOption(props.option)}
+        onMouseOver={(e: MouseEvent) => (e.currentTarget as HTMLElement).focus()}
         class={optionClasses(props.option)}
-        style={props.option.style}
+        style={{...props.option.style, color: "initial"}}
         use:navigationActions={{'select': () => {
-            if (dropdown?.open()) return; // it's backawrds because this method executes when the dropdown is already toggled off
             dropdown?.selectOption(props.option.value)
+            dropdown?.handleNavigationClose();
         }}}
     >
         <Show when={props.option.children}>
