@@ -342,8 +342,8 @@ The `Navigation` component exposes a comprehensive API through the `useNavigatio
 | `clearFocus`           | None                                                                 | `void`       | Clears the current focus from all navigation areas.                                                                                                                                                         |
 | `changeNavigationKeys` | `keys: { up?: string, down?: string, left?: string, right?: string }, clearCurrent?: boolean` | `void` | Changes the navigation keys for spatial navigation. If `clearCurrent` is true, clears current active keys before setting new ones.                                                                         |
 | `resetNavigationKeys`  | None                                                                 | `void`       | Resets navigation keys to their default values.                                                                                                                                                             |
-| `pauseNavigation`      | None                                                                 | `void`       | Pauses spatial navigation by deinitializing it. Saves the currently focused element for restoration on resume.                                                                                             |
-| `resumeNavigation`     | None                                                                 | `void`       | Resumes spatial navigation by re-enabling it. Attempts to restore focus to the previously focused element, or focuses the first element of the current `scope` if restoration fails.                         |
+| `pauseNavigation`      | None                                                                 | `void`       | Pauses navigation, preventing spatial navigation actions from executing.                                                                                             |
+| `resumeNavigation`     | None                                                                 | `void`       | Resumes navigation, allowing spatial navigation actions to execute again.                         |
 
 ## Slots
 
@@ -359,7 +359,6 @@ When a `Navigation.Area` mounts:
 - It registers itself with the spatial navigation system
 - If its `name` matches the parent Navigation's `scope` prop or if `focused={true}`, it auto-focuses
 - It automatically handles cleanup on unmount
-- It re-registers when navigation is resumed after being paused
 
 #### Navigation.Area Props
 

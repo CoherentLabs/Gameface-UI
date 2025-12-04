@@ -55,18 +55,12 @@ export interface AreaMethods {
     resetNavigationKeys: () => void;
 
     /**
-     * Checks if spatial navigation is currently enabled
-     * @returns True if navigation is enabled, false otherwise
-     */
-    isEnabled: () => boolean;
-
-    /**
-     * Pauses spatial navigation by deinitializing it
+     * Pauses navigation, preventing spatial navigation actions from executing
      */
     pauseNavigation: () => void;
 
     /**
-     * Resumes spatial navigation by re-enabling it
+     * Resumes navigation, allowing spatial navigation actions to execute again
      */
     resumeNavigation: () => void;
 }
