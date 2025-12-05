@@ -81,7 +81,6 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
 
         if (!nav) {
             classes.push(style['hover-only']);
-            console.log('eo')
         }
 
         return classes.join(' ');

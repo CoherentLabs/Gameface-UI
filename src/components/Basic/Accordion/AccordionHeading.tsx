@@ -6,10 +6,10 @@ import { CommonAccordionSlotProps, PanelChildrenComponentProps } from "./Accordi
 import { AccordionContext } from "./Accordion";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
-import { NavigationActionsConfig } from "@components/types/ComponentProps";
+import { ComponentNavigationActions } from "@components/types/ComponentProps";
 
 interface AccordionHeadingProps extends CommonAccordionSlotProps {
-    onAction?: NavigationActionsConfig,
+    onAction?: ComponentNavigationActions,
     anchor?: string | HTMLElement,
 }
 

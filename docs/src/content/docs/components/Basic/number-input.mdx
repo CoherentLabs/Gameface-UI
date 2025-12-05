@@ -40,7 +40,8 @@ export default App;
 | `class-disabled`         | `string`                    | `undefined`   | Optional class to apply when the input is disabled. |
 | `readonly`         | `boolean`                         | `false`   | Specifies if the input is only able to be read. If set to true, the input will not accept values. |
 | `onChange` | `(value: string \| number) => void`  | `undefined` | A function that is called every time the input's value has changed. It can be used to retrieve the up to date value of the input. |
-| `onAction` | `Record<string, () => void>` | `undefined` | Extends or overrides the component's default navigation action handlers. See [Implemented Navigation Actions](#implemented-navigation-actions) for details. |
+| `onAction` | `Record<string, (scope?: string) => void>` | `undefined` | Extends or overrides the component's default navigation action handlers. See [Implemented Navigation Actions](#implemented-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, the input's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Ref API
 

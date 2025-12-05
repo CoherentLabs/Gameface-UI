@@ -37,7 +37,8 @@ export default App;
 | `class-disabled`| `string`                   | `""`        | Additional CSS classes applied when the toggle button is disabled.                                                  |
 | `checked`       | `boolean`                  | `false`     | Specifies the initial checked state of the toggle button.                                                           |
 | `onChange`      | `(checked: boolean) => void`| `undefined` | Callback function triggered whenever the toggle button is toggled, providing the current checked state.             |
-| `onAction` | `Record<string, () => void>` | `undefined` | Extends or overrides the component's default navigation action handlers. See [Implemented Navigation Actions](#implemented-navigation-actions) for details. |
+| `onAction` | `Record<string, (scope?: string) => void>` | `undefined` | Extends or overrides the component's default navigation action handlers. See [Implemented Navigation Actions](#implemented-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, the toggle button's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Ref API
 

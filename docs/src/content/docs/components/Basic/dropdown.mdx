@@ -39,7 +39,8 @@ export default App;
 | `disabled`        | `boolean`            | `false`     | Disables the dropdown when set to `true`.                                                                      |
 | `class-disabled`  | `string`             | `""`        | Additional CSS classes to apply when the dropdown is disabled.                                                 |
 | `onChange`        | `(value: string) => void` | `undefined` | Callback function triggered whenever the selected option changes, providing the selected option's value.        |
-| `onAction` | `Record<string, () => void>` | `undefined` | Extends or overrides the component's default navigation action handlers. See [Implemented Navigation Actions](#implemented-navigation-actions) for details. |
+| `onAction` | `Record<string, (scope?: string) => void>` | `undefined` | Extends or overrides the component's default navigation action handlers. See [Implemented Navigation Actions](#implemented-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, the dropdown's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Ref API
 
