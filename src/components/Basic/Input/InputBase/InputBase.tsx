@@ -8,7 +8,7 @@ interface InputComponentProps extends TokenComponentProps {
     value: Accessor<string | number>,
     handleChange: (e: InputEvent) => void,
     type: 'text' | 'password' | 'number',
-    ref: HTMLInputElement;
+    ref: HTMLInputElement | ((el: HTMLInputElement) => void);
     hasBefore: boolean,
     hasAfter: boolean,
 }

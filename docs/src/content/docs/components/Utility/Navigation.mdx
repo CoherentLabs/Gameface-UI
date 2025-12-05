@@ -240,7 +240,7 @@ The `navigationActions` directive only triggers callbacks when the component or 
 
 Many preset components in the Gameface UI library (such as [Stepper](/components/basic/stepper), Dropdown, etc.) come with predefined navigation action handlers. For example, the Stepper component responds to `move-left` and `move-right` actions by default.
 
-You can extend or override these default behaviors using the `navigation-actions` prop available on all components that extend `ComponentProps`. This allows you to:
+You can extend or override these default behaviors using the `onAction` prop available on all components that extend `ComponentProps`. This allows you to:
 
 - Add additional action handlers to components (e.g., adding a `select` action to a Stepper)
 - Override the component's default action behavior
@@ -252,7 +252,7 @@ You can extend or override these default behaviors using the `navigation-actions
 import Stepper from '@components/Basic/Stepper/Stepper';
 
 <Stepper
-    navigation-actions={{
+    onAction={{
         'select': () => console.log('Stepper item confirmed!')
     }}
 >
@@ -267,7 +267,7 @@ import Stepper from '@components/Basic/Stepper/Stepper';
 
 ```tsx
 <Stepper
-    navigation-actions={{
+    onAction={{
         'move-left': () => customPreviousLogic(),  // Overrides default
         'select': () => handleSelection()          // Extends default
     }}
@@ -283,7 +283,7 @@ Each component's documentation lists which navigation actions it implements by d
 :::
 
 :::tip
-The `navigation-actions` prop uses object spreading, so user-provided actions are merged with component defaults. Actions you define will take precedence over the component's predefined actions.
+The `onAction` prop uses object spreading, so user-provided actions are merged with component defaults. Actions you define will take precedence over the component's predefined actions.
 :::
 
 ### Action Configuration Reference (ActionCfg)
@@ -342,8 +342,8 @@ The `Navigation` component exposes a comprehensive API through the `useNavigatio
 | `clearFocus`           | None                                                                 | `void`       | Clears the current focus from all navigation areas.                                                                                                                                                         |
 | `changeNavigationKeys` | `keys: { up?: string, down?: string, left?: string, right?: string }, clearCurrent?: boolean` | `void` | Changes the navigation keys for spatial navigation. If `clearCurrent` is true, clears current active keys before setting new ones.                                                                         |
 | `resetNavigationKeys`  | None                                                                 | `void`       | Resets navigation keys to their default values.                                                                                                                                                             |
-| `pauseNavigation`      | None                                                                 | `void`       | Pauses spatial navigation by deinitializing it. Saves the currently focused element for restoration on resume.                                                                                             |
-| `resumeNavigation`     | None                                                                 | `void`       | Resumes spatial navigation by re-enabling it. Attempts to restore focus to the previously focused element, or focuses the first element of the current `scope` if restoration fails.                         |
+| `pauseNavigation`      | None                                                                 | `void`       | Pauses navigation, preventing spatial navigation actions from executing.                                                                                             |
+| `resumeNavigation`     | None                                                                 | `void`       | Resumes navigation, allowing spatial navigation actions to execute again.                         |
 
 ## Slots
 
@@ -359,7 +359,6 @@ When a `Navigation.Area` mounts:
 - It registers itself with the spatial navigation system
 - If its `name` matches the parent Navigation's `scope` prop or if `focused={true}`, it auto-focuses
 - It automatically handles cleanup on unmount
-- It re-registers when navigation is resumed after being paused
 
 #### Navigation.Area Props
 

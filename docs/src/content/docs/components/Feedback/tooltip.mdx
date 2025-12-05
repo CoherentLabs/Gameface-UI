@@ -49,6 +49,8 @@ Creates a new tooltip component with customizable options.
 | `content`   | `JSX.Element` | `(props: { message: string }) => JSX.Element`| The content of the tooltip message. Can be a JSX element. If not specified, the `message` prop will be used to display a simple text message. |
 | `position`  | `'top' \| 'bottom' \| 'left' \| 'right' \| 'auto'`| `bottom` | Defines the position of the tooltip relative to the target element. If set to `auto`, the tooltip will automatically choose the best placement based on available space. |
 | `action`   | `'hover' \| 'click' \| 'focus'` | `hover`           | Determines the user interaction that triggers the tooltip.<br/>`hover`: shows on mouse hover and hides on mouse leave.<br/>`click`: toggles visibility when the target is clicked.<br/>`focus`: shows when the target gains focus (e.g., via keyboard) and hides when it loses focus. |
+| `onAction` | `Record<string, (scope?: string) => void>` | `undefined` | Extends or overrides the component's default navigation action handlers. See [Implemented Navigation Actions](#implemented-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, the tooltip's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Ref API
 
@@ -67,6 +69,36 @@ To interact with the `Tooltip` programmatically, you can use the `TooltipRef` in
 | `show`         | none               | `void`       | Shows the tooltip if it's hidden.                                                             |
 | `hide`         | none               | `void`       | Hides the tooltip if it's visible.                                                            |
 
+## Implemented Navigation Actions
+
+The `Tooltip` component implements the following navigation action by default:
+
+| Action Name | Behavior                                    |
+|-------------|---------------------------------------------|
+| `back`      | Dismisses the visible tooltip               |
+
+This allows users to dismiss tooltips using keyboard or gamepad navigation when the tooltip's target element is focused.
+
+```tsx
+import createTooltip from '@components/Feedback/Tooltip/tooltip';
+
+const App = () => {
+    // Tooltip with default back action - dismisses on back button press
+    const Tooltip = createTooltip({ action: 'focus' });
+
+    return (
+        <Tooltip message="Press back/ESC to dismiss">
+            <div tabindex={1}>Focus me and press ESC</div>
+        </Tooltip>
+    );
+};
+```
+
+:::caution[Navigation Actions Requirements]
+For navigation actions to work, the tooltip must use `action: 'focus'` and the wrapped element must be focusable (set `tabindex={0}` or higher on the wrapped element).
+:::
+
+For more information about navigation actions, see the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions).
 
 ## Guide
 

@@ -23,5 +23,4 @@ export interface NavigationConfigType {
     keyboard: boolean,
     actions: ActionMap,
     scope: string,
-    navigationEnabled: boolean
 }
