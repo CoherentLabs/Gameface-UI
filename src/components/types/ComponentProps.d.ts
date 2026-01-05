@@ -1,5 +1,6 @@
 import { JSX, ParentProps } from "solid-js";
 import Events from "./BaseComponent";
+import { ActionName } from "@components/Utility/Navigation/types";
 
 type ExcludedEvents =
     | "abort"
@@ -31,11 +32,25 @@ export interface ComponentProps<T extends Record<string, any> = {}> extends Comp
     componentClasses?: string | (() => string)
     ref?: unknown | ((ref: BaseComponentRef & T) => void);
     refObject?: T;
+    anchor?: HTMLElement | string;
+    onAction?: ComponentNavigationActions
 }
 
 export interface TokenComponentProps {
     parentChildren: JSX.Element,
 }
+
+type NavigationActionHandler = (scope?: string) => void;
+
+// Full config for the navigationActions directive (includes anchor)
+export type NavigationActionsConfig = {
+    anchor?: HTMLElement | string;
+} & {
+    [K in ActionName]?: NavigationActionHandler | HTMLElement | string | undefined;
+}
+
+// Component prop type (excludes anchor - use the top-level anchor prop instead)
+export type ComponentNavigationActions = Omit<NavigationActionsConfig, 'anchor'>;
 
 declare module "solid-js" {
     namespace JSX {
@@ -46,6 +61,7 @@ declare module "solid-js" {
         interface Directives {
             forwardEvents: ComponentProps<any>;
             forwardAttrs:  ComponentProps<any>;
+            navigationActions: NavigationActionsConfig;
         }
     }
 }

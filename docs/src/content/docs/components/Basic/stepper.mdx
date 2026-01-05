@@ -41,6 +41,8 @@ export default App;
 | `controls-position` | `'before' \| 'after'` | `''`        | Determines the position of the control arrows. If not set, the selected option appears between the arrows. If set to `'before'`, the arrows appear before the selected option; if `'after'`, they appear after it. |
 | `loop`            | `boolean`            | `false`     | Enables looping through options when navigating past the first or last option using the controls.              |
 | `onChange`        | `(value: string) => void` | `undefined` | Callback function triggered whenever the selected option changes, providing the selected option's value.        |
+| `onAction` | `Record<string, (scope?: string) => void>` | `undefined` | Extends or overrides the component's default navigation action handlers. See [Implemented Navigation Actions](#implemented-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, the stepper's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Ref API
 
@@ -149,6 +151,36 @@ const App = () => {
     );
 };
 ```
+
+## Implemented Navigation Actions
+
+The Stepper component implements the following navigation actions by default:
+
+| Action Name  | Behavior                                      |
+|--------------|-----------------------------------------------|
+| `move-left`  | Moves to the previous option in the stepper   |
+| `move-right` | Moves to the next option in the stepper       |
+
+You can extend the Stepper with additional navigation actions or override the default behavior using the `onAction` prop:
+
+```tsx
+import Stepper from '@components/Basic/Stepper/Stepper';
+
+<Stepper
+    onAction={{
+        'select': () => console.log('Current option selected!'),
+        'back': () => console.log('Going back from stepper')
+    }}
+>
+    <Stepper.Items>
+        <Stepper.Item value="red">red</Stepper.Item>
+        <Stepper.Item value="green">green</Stepper.Item>
+        <Stepper.Item value="blue">blue</Stepper.Item>
+    </Stepper.Items>
+</Stepper>
+```
+
+For more information about navigation actions, see the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions).
 
 ## Guide
 

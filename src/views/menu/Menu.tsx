@@ -20,13 +20,15 @@ import Audio from '@custom-components/Menu/Options/Audio/Audio';
 import Credits from '@custom-components/Menu/Options/Credits/Credits';
 import CustomModal from '@custom-components/Menu/CustomModal/CustomModal';
 import { ModalRef } from '@components/Feedback/Modal/Modal';
-import eventBus from '@components/tools/EventBus';
+import eventBus from '@components/Utility/EventBus';
 import KeyBindsTab from '@custom-components/Menu/Options/KeyBindsTab/KeyBindsTab';
 import useToast from '@components/Feedback/Toast/toast';
 import Tutorial, { TutorialRef } from '@components/Complex/Tutorial/Tutorial';
 import CustomToast from '@custom-components/Menu/CustomToast/CustomToast';
 import CustomTooltip from '@custom-components/Menu/CustomTooltip/CustomTooltip';
 import { TutorialSteps } from './util/tutorialSteps';
+import Navigation, { NavigationRef } from '@components/Utility/Navigation/Navigation';
+import { ActionMap } from '@components/Utility/Navigation/types';
 
 interface MenuContextValue {
     currentOption: Accessor<string>,
@@ -42,6 +44,7 @@ export const OPTIONS = ['Gameplay', 'Graphics', 'Keybinds', 'Audio', 'Credits'] 
 const Menu = () => {
     let modalRef!: ModalRef;
     let tutorialRef: TutorialRef | undefined
+    let navigationRef: NavigationRef | undefined;
     const [Toaster, createToast] = useToast();
     const [currentOption, setCurrentOption] = createSignal('difficulty');
     const [hasChanges, setHasChanges] = createSignal(false);
@@ -123,106 +126,137 @@ const Menu = () => {
         }
     }
 
+    const menuRight = () => tabsRef.changeTab('Graphics'); // currently no way to "cycle" tabs
+    const menuLeft = () => tabsRef.changeTab('Gameplay');
+    const testFunc = (arg1: number, arg2: number) => {
+        console.log(arg1, arg2);
+    } 
+
+    // User added 
+    const defaultActions: ActionMap = {
+        'tab-left': {key: {binds: ['Q'], type: ['press']}, button: {binds: ['left-sholder'], type: 'press'}, callback: menuLeft, global: true},
+        'tab-right': {key: {binds: ['E'], type: ['press']}, button: {binds: ['right-sholder'], type: 'press'}, callback: menuRight, global: true},
+        'select': {key: {binds: ['SPACEBAR'], type: ['press']}, callback: () => console.log('ndasd'), },
+    }
+
+    const addMoreActions = () => {
+        navigationRef?.addAction('yabadabado', {key: {binds: ['ARROW_UP'], type: ['press']}, callback: () => console.log('yabadadabadoo'), paused: true})
+        navigationRef?.addAction('test', {key: {binds: ['W']}, callback: (scope, customArg) => {console.log(scope, customArg)}})
+        navigationRef?.addAction('test2', {key: {binds: ['S']}, callback: () => testFunc(1,2)})
+    }
+
+    const updateAction = () => {
+        navigationRef?.updateAction('select', {
+            key: {binds: ['SPACEBAR'], type: ['press']},
+            button: {binds: ['face-button-down']},
+            callback: () => console.log('yabadadabadoo')
+        });
+    }
+
     return (
         <MenuContext.Provider value={MenuContextValue}>
-            <Tutorial click={handleClick} ref={tutorialRef} outset={5} tooltip={(props) => <CustomTooltip {...props} exit={() => tutorialRef?.exit()} />} >
-                <Toaster /> 
-                <Tutorial.Step title={TutorialSteps.End.title} content={TutorialSteps.End.content} order={TutorialSteps.End.order} outset={-10} position={"top"}>
-                    <div class={styles.Menu}>
-                        <Tabs ref={tabsRef} onBeforeTabChange={handleBeforeTabChange} onTabChanged={handleTabChange} default={OPTIONS[0]}>
-                            <Layout>
-                                <Tutorial.Step 
-                                    order={TutorialSteps.Intro.order}
-                                    content={TutorialSteps.Intro.content}
-                                    title={TutorialSteps.Intro.title}
-                                    outset={-5}>
-                                    <Top class={styles.top}>
-                                        <Flex>
-                                            <h2 style={{ 'text-transform': 'uppercase' }}>Options</h2>
-                                        </Flex>
-                                        <Tutorial.Step order={TutorialSteps.Tabs.order} content={TutorialSteps.Tabs.content} title={TutorialSteps.Tabs.title}>
-                                            <Flex direction='row'>
-                                                <For each={OPTIONS}>
-                                                    {(tab) => {
-                                                        return <TabLink class={styles.link} location={tab} activeClass={styles.active}>
-                                                            <Flex align-items="center" justify-content='center'>{tab}</Flex>
-                                                        </TabLink>
-                                                    }}
-                                                </For>
+            <button onclick={addMoreActions}>Test</button>
+            <button onclick={updateAction}>Update</button>
+            <Navigation ref={navigationRef} actions={defaultActions} pollingInterval={100} >
+                <Tutorial click={handleClick} ref={tutorialRef} outset={5} tooltip={(props) => <CustomTooltip {...props} exit={() => tutorialRef?.exit()} />} >
+                    <Toaster /> 
+                    <Tutorial.Step title={TutorialSteps.End.title} content={TutorialSteps.End.content} order={TutorialSteps.End.order} outset={-10} position={"top"}>
+                        <div class={styles.Menu}>
+                            <Tabs ref={tabsRef} onBeforeTabChange={handleBeforeTabChange} onTabChanged={handleTabChange} default={OPTIONS[0]}>
+                                <Layout>
+                                    <Tutorial.Step 
+                                        order={TutorialSteps.Intro.order}
+                                        content={TutorialSteps.Intro.content}
+                                        title={TutorialSteps.Intro.title}
+                                        outset={-5}>
+                                        <Top class={styles.top}>
+                                            <Flex>
+                                                <h2 style={{ 'text-transform': 'uppercase' }}>Options</h2>
                                             </Flex>
-                                        </Tutorial.Step>
-                                    </Top>
-                                    <Content basis={70} class={styles.content}>
-                                        <Tutorial.Step order={TutorialSteps.Structure.order} content={TutorialSteps.Structure.content} title={TutorialSteps.Structure.title} position="top">
-                                            <Row>
-                                                <Show when={!isCredits()}>
-                                                    <Tutorial.Step order={TutorialSteps.Scroll.order} content={TutorialSteps.Scroll.content} title={TutorialSteps.Scroll.title} position='right'>
-                                                        <Column8>
-                                                            <Scroll style={{ width: '100%' }}>
-                                                                <Scroll.Content class={styles['scroll-content']}>
-                                                                    <Tab location={OPTIONS[0]}>
-                                                                        <Gameplay />
-                                                                    </Tab>
-                                                                    <Tab location={OPTIONS[1]}>
-                                                                        <Graphics />
-                                                                    </Tab>
-                                                                    <Tab location={OPTIONS[2]}>
-                                                                        <KeyBindsTab />
-                                                                    </Tab>
-                                                                    <Tab location={OPTIONS[3]}>
-                                                                        <Audio />
-                                                                    </Tab>
-                                                                </Scroll.Content>
-                                                                <Scroll.Bar class={styles['scroll-bar']}>
-                                                                    <Scroll.Handle class={styles['scroll-handle']} />
-                                                                </Scroll.Bar>
-                                                            </Scroll>
-                                                        </Column8>
-                                                    </Tutorial.Step>
-                                                    <Tutorial.Step 
-                                                        order={TutorialSteps.InfoPanel.order} 
-                                                        content={TutorialSteps.InfoPanel.content} 
-                                                        title={TutorialSteps.InfoPanel.title}
-                                                        position={'left'} >
-                                                        <Column4>
-                                                            <SidePanel option={currentOption()} />
-                                                        </Column4>
-                                                    </Tutorial.Step>
-                                                </Show>
-                                                <Show when={isCredits()}>
-                                                    <Column12>
-                                                        <Tab location={OPTIONS[4]}>
-                                                            <Credits />
-                                                        </Tab>
-                                                    </Column12>
-                                                </Show>
-                                            </Row>
-                                        </Tutorial.Step>
-                                    </Content>
-                                    <Bottom>
-                                        <Show when={!isCredits()}>
-                                            <Tutorial.Step order={TutorialSteps.Footer.order} content={TutorialSteps.Footer.content} title={TutorialSteps.Footer.title} outset={-15}>
-                                                <Row class={styles['button-wrapper']}>
-                                                    <Flex align-items="center">
-                                                        <Block class={styles.button}>Escape</Block> Exit
-                                                    </Flex>
-                                                    <Flex align-items="center">
-                                                        <Block class={styles.button}>Enter</Block> Select
-                                                    </Flex>
-                                                    <Flex align-items="center">
-                                                        <Block class={styles.button}>E</Block> Defaults
-                                                    </Flex>
+                                            <Tutorial.Step order={TutorialSteps.Tabs.order} content={TutorialSteps.Tabs.content} title={TutorialSteps.Tabs.title}>
+                                                <Flex direction='row'>
+                                                    <For each={OPTIONS}>
+                                                        {(tab) => {
+                                                            return <TabLink class={styles.link} location={tab} activeClass={styles.active}>
+                                                                <Flex align-items="center" justify-content='center'>{tab}</Flex>
+                                                            </TabLink>
+                                                        }}
+                                                    </For>
+                                                </Flex>
+                                            </Tutorial.Step>
+                                        </Top>
+                                        <Content basis={70} class={styles.content}>
+                                            <Tutorial.Step order={TutorialSteps.Structure.order} content={TutorialSteps.Structure.content} title={TutorialSteps.Structure.title} position="top">
+                                                <Row>
+                                                    <Show when={!isCredits()}>
+                                                        <Tutorial.Step order={TutorialSteps.Scroll.order} content={TutorialSteps.Scroll.content} title={TutorialSteps.Scroll.title} position='right'>
+                                                            <Column8>
+                                                                <Scroll style={{ width: '100%' }}>
+                                                                    <Scroll.Content class={styles['scroll-content']}>
+                                                                        <Tab location={OPTIONS[0]}>
+                                                                            <Gameplay />
+                                                                        </Tab>
+                                                                        <Tab location={OPTIONS[1]}>
+                                                                            <Graphics />
+                                                                        </Tab>
+                                                                        <Tab location={OPTIONS[2]}>
+                                                                            <KeyBindsTab />
+                                                                        </Tab>
+                                                                        <Tab location={OPTIONS[3]}>
+                                                                            <Audio />
+                                                                        </Tab>
+                                                                    </Scroll.Content>
+                                                                    <Scroll.Bar class={styles['scroll-bar']}>
+                                                                        <Scroll.Handle class={styles['scroll-handle']} />
+                                                                    </Scroll.Bar>
+                                                                </Scroll>
+                                                            </Column8>
+                                                        </Tutorial.Step>
+                                                        <Tutorial.Step 
+                                                            order={TutorialSteps.InfoPanel.order} 
+                                                            content={TutorialSteps.InfoPanel.content} 
+                                                            title={TutorialSteps.InfoPanel.title}
+                                                            position={'left'} >
+                                                            <Column4>
+                                                                <SidePanel option={currentOption()} />
+                                                            </Column4>
+                                                        </Tutorial.Step>
+                                                    </Show>
+                                                    <Show when={isCredits()}>
+                                                        <Column12>
+                                                            <Tab location={OPTIONS[4]}>
+                                                                <Credits />
+                                                            </Tab>
+                                                        </Column12>
+                                                    </Show>
                                                 </Row>
                                             </Tutorial.Step>
-                                        </Show>
-                                    </Bottom>
-                                </Tutorial.Step>
-                            </Layout>
-                        </Tabs>
-                    </div>
-                </Tutorial.Step> 
-            </Tutorial>
-            <CustomModal ref={modalRef} onClose={handleModalClose} />
+                                        </Content>
+                                        <Bottom>
+                                            <Show when={!isCredits()}>
+                                                <Tutorial.Step order={TutorialSteps.Footer.order} content={TutorialSteps.Footer.content} title={TutorialSteps.Footer.title} outset={-15}>
+                                                    <Row class={styles['button-wrapper']}>
+                                                        <Flex align-items="center">
+                                                            <Block class={styles.button}>Escape</Block> Exit
+                                                        </Flex>
+                                                        <Flex align-items="center">
+                                                            <Block class={styles.button}>Enter</Block> Select
+                                                        </Flex>
+                                                        <Flex align-items="center">
+                                                            <Block class={styles.button}>E</Block> Defaults
+                                                        </Flex>
+                                                    </Row>
+                                                </Tutorial.Step>
+                                            </Show>
+                                        </Bottom>
+                                    </Tutorial.Step>
+                                </Layout>
+                            </Tabs>
+                        </div>
+                    </Tutorial.Step> 
+                </Tutorial>
+                <CustomModal ref={modalRef} onClose={handleModalClose} />
+            </Navigation>
         </MenuContext.Provider>
     );
 };

@@ -13,12 +13,17 @@ const MenuItem: ParentComponent<MenuItemsProps> = (props) => {
     const menuContext = useContext(MenuContext)
 
     const isActive = createMemo(() => menuContext?.currentOption() === props.id); 
-    const handleMouseEnter = () => {
+    const handleFocus = () => {
         menuContext?.setCurrentOption(props.id);
     }
 
+    const handleMouseEnter = (event: MouseEvent) => {
+        const element = event.currentTarget;
+        (element as HTMLDivElement).focus();
+    }
+
     return (
-        <Block class={`${styles['item-container']} ${isActive() ? styles.active : ''}`} mouseenter={handleMouseEnter}>
+        <Block class={`${styles['item-container']} ${isActive() ? styles.active : ''} menu-item`} focus={handleFocus} mouseenter={handleMouseEnter}>
             <Flex class={styles.item} justify-content="space-between" align-items="center">
                 {props.name}
                 <Flex align-items="center" style={{ height: '100%', padding: '0 3vmax' }}>

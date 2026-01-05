@@ -6,6 +6,7 @@ import { Control, ToggleButtonControl } from "./ToggleButtonControl";
 import { Indicator } from "./ToggleButtonIndicator";
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 import { Handle } from "./ToggleButtonHandle";
+import mergeNavigationActions from "@components/utils/mergeNavigationActions";
 
 export const LabelLeft = createTokenComponent();
 export const LabelRight = createTokenComponent();
@@ -51,9 +52,9 @@ const ToggleButton: ParentComponent<ToggleButtonProps> = (props) => {
 
 
     props.componentClasses = () => toggleButtonClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
+    const { className, inlineStyles, forwardEvents, forwardAttrs, navigationActions } = useBaseComponent(props);
 
-    const toggle = (e?: MouseEvent) => {
+    const toggle = () => {
         if (props.disabled) return;
 
         setChecked(prev => !prev);
@@ -83,6 +84,7 @@ const ToggleButton: ParentComponent<ToggleButtonProps> = (props) => {
                 style={inlineStyles()}
                 use:forwardEvents={props}
                 use:forwardAttrs={props}
+                use:navigationActions={mergeNavigationActions(props, {'select': toggle})}
                 onclick={toggle}>
 
                 <Show when={LabelLeftToken()}>
