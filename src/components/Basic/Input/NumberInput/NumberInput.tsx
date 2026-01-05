@@ -142,7 +142,15 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
         <InputWrapper 
             props={props} 
             inputRef={inputRef}
-            refObject={refObject}>
+            refObject={refObject}
+            navActions={{
+                'move-up': () => {
+                    document.activeElement === inputRef.current && increaseValue()
+                },
+                'move-down': () => {
+                    document.activeElement === inputRef.current && decreaseValue()
+                }
+            }}>
 
             <Show when={showIncreaseBefore() || showDecreaseBefore()}>
                 <div class={styles['button-container']}>

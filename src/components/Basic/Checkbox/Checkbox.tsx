@@ -84,7 +84,7 @@ const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
                 style={inlineStyles()}
                 use:forwardEvents={props}
                 use:forwardAttrs={props}
-                use:navigationActions={mergeNavigationActions(props, {'select': toggle})}
+                use:navigationActions={mergeNavigationActions(props, { 'select': toggle })}
                 onclick={toggle}>
 
                 <Show when={isBefore()}>

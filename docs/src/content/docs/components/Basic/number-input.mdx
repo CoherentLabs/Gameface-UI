@@ -187,9 +187,10 @@ The `NumberInput` component implements the following navigation actions by defau
 |-------------|---------------------------------------------------------|
 | `select`    | Focuses the input element, making it ready for typing   |
 | `back`      | Blurs the input element, exiting typing mode            |
+| `move-up`   | Increases the value of the input by the `step` prop's value |
+| `move-down` | Increases the value of the input by the `step` prop's value |
 
-You can extend the `NumberInput` with additional navigation actions or override the default behavior using the `onAction` prop. 
-For example, you can bind the `increaseValue()` and `decreaseValue()` methods to existing or custom actions:
+You can extend the `NumberInput` with additional navigation actions or override the default behavior using the `onAction` prop:
 
 ```tsx
 import NumberInput, { NumberInputRef } from '@components/Basic/NumberInput/NumberInput';
@@ -201,8 +202,8 @@ const App = () => {
         <NumberInput
             ref={inputRef!}
             onAction={{
-                'move-up': () => inputRef.increaseValue(),
-                'move-down': () => inputRef.decreaseValue()
+                'select': () => console.log('Custom select action'),
+                'back': () => console.log('Custom back action'),
             }}
         />
     );

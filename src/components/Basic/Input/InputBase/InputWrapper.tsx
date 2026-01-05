@@ -2,15 +2,19 @@ import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions"
 import baseStyles from '../InputBase/InputBase.module.scss';
 import { createMemo, onMount, ParentComponent } from "solid-js";
+import { ComponentNavigationActions } from "@components/types/ComponentProps";
+import { useNavigation } from "@components/Utility/Navigation/Navigation";
 
 interface InputWrapperProps {
     props: any,
     refObject: any,
     inputRef: { current: HTMLInputElement | undefined };
+    navActions: ComponentNavigationActions
 }
 
 const InputWrapper: ParentComponent<InputWrapperProps> = (wrapperProps) => {
     let element!: HTMLDivElement;
+    const nav = useNavigation()
 
     const inputWrapperClasses = createMemo(() => {
         const classes = [baseStyles['input-wrapper']];
@@ -46,8 +50,15 @@ const InputWrapper: ParentComponent<InputWrapperProps> = (wrapperProps) => {
             use:forwardEvents={wrapperProps.props}
             use:forwardAttrs={wrapperProps.props}
             use:navigationActions={mergeNavigationActions(wrapperProps.props, {
-                'select': () => wrapperProps.inputRef.current!.focus(),
-                'back': () => wrapperProps.inputRef.current!.blur(),
+                'select': () => {
+                    nav?.pauseNavigation();
+                    wrapperProps.inputRef.current?.focus();
+                },
+                'back': () => {
+                    nav?.resumeNavigation();
+                     wrapperProps.inputRef.current?.blur()
+                },
+                ...wrapperProps.navActions
             })}>
             {wrapperProps.children}
         </div>

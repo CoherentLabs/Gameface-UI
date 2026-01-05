@@ -56,7 +56,7 @@ export const DropdownOption: ParentComponent<{ option: ParentProps<OptionTokenPr
         onclick={() => onClickOption(props.option)}
         onMouseOver={(e: MouseEvent) => (e.currentTarget as HTMLElement).focus()}
         class={optionClasses(props.option)}
-        style={{...props.option.style, color: "initial"}}
+        style={{...props.option.style}}
         use:navigationActions={{'select': () => {
             dropdown?.selectOption(props.option.value)
             dropdown?.handleNavigationClose();

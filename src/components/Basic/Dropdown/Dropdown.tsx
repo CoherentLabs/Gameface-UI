@@ -48,7 +48,7 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
     
     const [anchorEl, setAnchorEl] = createSignal<HTMLElement | null>(null);
     const nav = useNavigation();
-    let areaID = nav && `dropdown-area-${createUniqueId()}`;
+    const areaID = nav && `dropdown-area-${createUniqueId()}`;
 
     const options = new Map<string, {label: string | JSX.Element, element: HTMLElement}>();
 
@@ -77,10 +77,6 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
             classes.push(style['dropdown-disabled']);
 
             if (props['class-disabled']) classes.push(`${props['class-disabled']}`);
-        }
-
-        if (!nav) {
-            classes.push(style['hover-only']);
         }
 
         return classes.join(' ');
