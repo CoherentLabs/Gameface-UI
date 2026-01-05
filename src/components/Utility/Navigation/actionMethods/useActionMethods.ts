@@ -1,4 +1,3 @@
-// @ts-ignore
 import { actions, keyboard, gamepad } from 'coherent-gameface-interaction-manager';
 import { SetStoreFunction } from 'solid-js/store';
 import { ActionName, ActionCfg, DefaultActions, NavigationConfigType } from '../types';
@@ -31,7 +30,7 @@ export default function createActionMethods(
 
         if (config.gamepad && button) {
             gamepad.on({
-                actions: button.binds,
+                actions: button.binds as any,
                 callback: actionName,
                 type: button.type
             });

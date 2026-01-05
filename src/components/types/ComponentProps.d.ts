@@ -33,19 +33,24 @@ export interface ComponentProps<T extends Record<string, any> = {}> extends Comp
     ref?: unknown | ((ref: BaseComponentRef & T) => void);
     refObject?: T;
     anchor?: HTMLElement | string;
-    'navigation-actions'?: NavigationActionsConfig
+    onAction?: ComponentNavigationActions
 }
 
 export interface TokenComponentProps {
     parentChildren: JSX.Element,
 }
 
-type NavigationActionHandler = (scope?: string) => void; 
+type NavigationActionHandler = (scope?: string) => void;
+
+// Full config for the navigationActions directive (includes anchor)
 export type NavigationActionsConfig = {
     anchor?: HTMLElement | string;
 } & {
     [K in ActionName]?: NavigationActionHandler | HTMLElement | string | undefined;
 }
+
+// Component prop type (excludes anchor - use the top-level anchor prop instead)
+export type ComponentNavigationActions = Omit<NavigationActionsConfig, 'anchor'>;
 
 declare module "solid-js" {
     namespace JSX {

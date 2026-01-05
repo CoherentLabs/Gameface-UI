@@ -12,14 +12,19 @@
         display: flex;
         border-radius: 0.3vmax;
 
-        &:hover {
+        &:hover,
+        &:focus {
             background-color: $primaryColor;
             color: $textColor;
         }
 
         &-selected {
-            background-color: $primaryColor;
-            color: $textColor;
+            &,
+            &:hover,
+            &:focus {
+                background-color: $primaryColor;
+                color: $textColor;
+            }
         }
 
         &-disabled {

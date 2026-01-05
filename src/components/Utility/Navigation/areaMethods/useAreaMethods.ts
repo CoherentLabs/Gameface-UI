@@ -1,68 +1,45 @@
 import { waitForFrames } from '@components/utils/waitForFrames';
-// @ts-ignore
-import { spatialNavigation } from 'coherent-gameface-interaction-manager';
 import { SetStoreFunction } from 'solid-js/store';
 import { NavigationConfigType } from '../types';
 import { AreaMethods } from './areaMethods.types';
+import { spatialNavigation } from 'coherent-gameface-interaction-manager';
+import { KeyName } from 'coherent-gameface-interaction-manager/dist/types/utils/keyboard-mappings';
 
 export default function createAreaMethods(
     areas: Set<string>,
-    config: NavigationConfigType,
     setConfig: SetStoreFunction<NavigationConfigType>
 ): AreaMethods {
-    let lastActive: Element | null = null;
-    let lastArea: string | null = null;
 
     const registerArea = (area: string, elements: string[] | HTMLElement[], focused?: boolean) => {
-        const enabled = spatialNavigation.enabled;
-        if (!enabled) setConfig('navigationEnabled', true)
-
         waitForFrames(() => {
-            spatialNavigation[enabled ? 'add' : 'init']([
+            spatialNavigation[spatialNavigation.enabled ? 'add' : 'init']([
                 { area: area, elements: elements },
             ]);
             areas.add(area);
             focused && focusFirst(area);
-        }, enabled ? 0 : 3)
+        }, spatialNavigation.enabled ? 1 : 3)
     }
 
     const unregisterArea = (area: string) => {
         spatialNavigation.remove(area)
         areas.delete(area);
-        if (areas.size === 0) {
-            spatialNavigation.deinit();
-            setConfig('navigationEnabled', false)
-        }
     }
 
     const pauseNavigation = () => {
-        if (!isEnabled()) {
-            return console.warn('Spatial Navigation is not currently active!')
+        if (spatialNavigation.paused) {
+            return console.warn('Navigation is already paused!')
         }
-        
-        lastActive = document.activeElement;
-        lastArea = config.scope;
-        spatialNavigation.deinit();
-        setConfig('navigationEnabled', false)
+
+        spatialNavigation.pause();
     }
 
     const resumeNavigation = () => {
-        if (isEnabled()) {
-            return console.warn('Spatial Navigation is already active!')
+        if (!spatialNavigation.paused) {
+            return console.warn('Navigation is not paused!')
         }
 
-        setConfig('navigationEnabled', true)
-        waitForFrames(() => {
-            if (lastActive && spatialNavigation.isElementInGroup(lastActive)) {
-                (lastActive as HTMLElement).focus();
-                setConfig('scope', lastArea!);
-            } else {
-                focusFirst(config.scope)
-            }
-        })
+        spatialNavigation.resume();
     }
-
-    const isEnabled = () => config.navigationEnabled
 
     const focusFirst = (area: string) => {
         if (!areas.has(area)) {
@@ -96,7 +73,7 @@ export default function createAreaMethods(
 
     const clearFocus = () => spatialNavigation.clearFocus();
 
-    const changeNavigationKeys = (keys: { up?: string, down?: string, left?: string, right?: string}, clearCurrent = false) => {
+    const changeNavigationKeys = (keys: { up?: KeyName | KeyName[], down?: KeyName | KeyName[], left?: KeyName | KeyName[], right?: KeyName | KeyName[]}, clearCurrent = false) => {
         spatialNavigation.changeKeys(keys, { clearCurrentActiveKeys: clearCurrent });
     }
 
@@ -111,7 +88,6 @@ export default function createAreaMethods(
         clearFocus,
         changeNavigationKeys,
         resetNavigationKeys,
-        isEnabled,
         pauseNavigation,
         resumeNavigation
     };

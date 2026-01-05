@@ -1,14 +1,16 @@
 import { createMemo, createSignal, JSX, onCleanup, onMount, ParentComponent, Show, splitProps } from "solid-js";
 import styles from './Tooltip.module.scss';
-import { BaseComponentRef } from "@components/types/ComponentProps";
+import { BaseComponentRef, ComponentProps } from "@components/types/ComponentProps";
 import { getSafePosition } from "@components/utils/getSafePosition";
+import useBaseComponent from "@components/BaseComponent/BaseComponent";
+import mergeNavigationActions from "@components/utils/mergeNavigationActions";
 
 export interface TooltipRef extends BaseComponentRef {
     show: () => void,
     hide: () => void
 }
 
-interface TooltipOptions<T extends Record<string, any> = { message: string }> {
+interface TooltipOptions<T extends Record<string, any> = { message: string }> extends Pick<ComponentProps, 'onAction'> {
     content?: (props: T) => JSX.Element
     position?: 'top' | 'bottom' | 'left' | 'right' | 'auto'
     action?: 'hover' | 'click' | 'focus' | 'none'
@@ -111,10 +113,16 @@ const createTooltip = <T extends Record<string, any> = { message: string }>(opti
             return classes.join(' ');
         });
 
+        const { navigationActions } = useBaseComponent(props);
+
         return (
             <div class={tooltipWrapperClasses()} style={others.style} ref={wrapperRef}>
                 <Show when={options.action !== 'none'} fallback={props.children}>
-                    <div ref={tooltipChildrenRef}>
+                    <div 
+                        ref={tooltipChildrenRef}
+                        use:navigationActions={mergeNavigationActions(options as ComponentProps, {
+                            'back': () => visible() && hideTooltip()
+                        })}>
                         {props.children}
                     </div>
                 </Show>

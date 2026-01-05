@@ -1,8 +1,6 @@
-import { Accessor, createContext, onCleanup, onMount, ParentComponent, useContext } from "solid-js"
-// @ts-ignore
+import { createContext, onCleanup, onMount, ParentComponent, useContext } from "solid-js"
 import { gamepad } from 'coherent-gameface-interaction-manager';
 import NavigationArea from "./NavigationArea";
-import eventBus from "@components/Utility/EventBus";
 import { createStore } from "solid-js/store";
 import { ActionMap, NavigationConfigType } from "./types";
 import { DEFAULT_ACTIONS } from "./defaults";
@@ -10,19 +8,17 @@ import createAreaMethods from "./areaMethods/useAreaMethods";
 import createActionMethods from "./actionMethods/useActionMethods";
 import { AreaMethods } from "./areaMethods/areaMethods.types";
 import { ActionMethods } from "./actionMethods/actionMethods.types";
+import { spatialNavigation } from 'coherent-gameface-interaction-manager';
 
 type ExcludedActionMethods = 'registerAction' | 'unregisterAction'
 type ExcludedAreaMethods = 'isEnabled'
-interface NavigationContextType extends Omit<AreaMethods, ExcludedAreaMethods>, Omit<ActionMethods, ExcludedActionMethods> {
-    _navigationEnabled: Accessor<boolean>
-}
+interface NavigationContextType extends Omit<AreaMethods, ExcludedAreaMethods>, Omit<ActionMethods, ExcludedActionMethods> {}
 export interface NavigationRef extends NavigationContextType {}
 
 export const NavigationContext = createContext<NavigationContextType>();
 export const useNavigation = () => {
     const context = useContext(NavigationContext);
-    if (!context) throw new Error('useNavigation must be used within Navigation');
-    return context;
+    if (context) return context
 }
 
 interface NavigationProps {
@@ -41,7 +37,6 @@ const Navigation: ParentComponent<NavigationProps> = (props) => {
         keyboard: props.keyboard ?? true,
         actions: {...DEFAULT_ACTIONS, ...props.actions},
         scope: props.scope ?? "",
-        navigationEnabled: false
     })
     const areas = new Set<string>();
 
@@ -49,13 +44,12 @@ const Navigation: ParentComponent<NavigationProps> = (props) => {
     const { registerAction, unregisterAction, ...publicActionMethods } = createActionMethods(config, setConfig);
 
     // Create area methods and extract internal-only methods
-    const { isEnabled, ...publicAreaMethods } = createAreaMethods(areas, config, setConfig);
+    const areaMethods = createAreaMethods(areas, setConfig);
 
     // Compose public API
     const navigationAPI = {
         ...publicActionMethods,
-        ...publicAreaMethods,
-        _navigationEnabled: isEnabled
+        ...areaMethods,
     }
 
     const initActions = () => {
@@ -81,7 +75,10 @@ const Navigation: ParentComponent<NavigationProps> = (props) => {
         (props.ref as unknown as (ref: NavigationRef) => void)(navigationAPI);
     })
 
-    onCleanup(() => deInitActions())
+    onCleanup(() => {
+         deInitActions()
+         spatialNavigation.deinit();
+    })
 
     return (
         <NavigationContext.Provider value={navigationAPI}>

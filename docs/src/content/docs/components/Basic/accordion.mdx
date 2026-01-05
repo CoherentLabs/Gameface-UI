@@ -124,6 +124,8 @@ It displays the panel's title or label and handles user interaction for expandin
 | `style`     | `JSX.CSSProperties` | `{}`      | Inline styles to apply to the heading element.                                               |
 | `class`     | `string`            | `""`      | Additional CSS classes for the heading element.                                              |
 | `children`  | `JSX.Element`       | `""`      | Content of the heading, used to render text, HTML, or JSX elements within the heading.       |
+| `onAction`  | `Record<string, (scope: string) => void>` | `undefined` | Extends or overrides the heading's default navigation action handlers. See [Implemented Navigation Actions](#implemented-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, the heading's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ### `Accordion.Icon`
 
@@ -184,6 +186,37 @@ It displays the main content associated with the panel.
 | `style`     | `JSX.CSSProperties` | `{}`      | Inline styles to apply to the body element.                                                  |
 | `class`     | `string`            | `""`      | Additional CSS classes for the body element.                                                 |
 | `children`  | `JSX.Element`       | `""`      | Content of the body, used to render text, HTML, or JSX elements within the body.             |
+
+## Implemented Navigation Actions
+
+The `Accordion.Heading` component slot implements the following navigation action by default:
+
+| Action Name  | Behavior                                                                                      |
+|--------------|-----------------------------------------------------------------------------------------------|
+| `select`     | Toggles the accordion panel (expands if collapsed, collapses if expanded)                     |
+
+You can extend the `Accordion.Heading` with additional navigation actions or override the default behavior using the `onAction` prop:
+
+```tsx
+import Accordion from '@components/Basic/Accordion/Accordion';
+
+<Accordion>
+    <Accordion.Panel>
+        <Accordion.Heading
+            class="navigable"
+            onAction={{
+                'select': () => console.log('Custom select behavior!'),
+                'info': () => console.log('Show panel info')
+            }}
+        >
+            Heading 1
+        </Accordion.Heading>
+        <Accordion.Body>Accordion content</Accordion.Body>
+    </Accordion.Panel>
+</Accordion>
+```
+
+For more information about navigation actions, see the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions).
 
 ## Guide
 
@@ -262,4 +295,140 @@ const App = () => {
 };
 
 export default App;
+```
+
+### Making accordion headings navigable
+
+The `Accordion.Heading` needs to be focused in order to respond to the `select` action.
+
+To enable gamepad/keyboard navigation for accordion headings, add them to a navigation area by assigning a CSS class and registering them with `Navigation.Area` or `navigationRef.registerArea()`.
+
+#### Steps
+
+1. Wrap your `Accordion` inside a `Navigation` component
+2. Assign a CSS class to each `Accordion.Heading` you want to be navigable
+3. Register the headings as a navigation area using either:
+   - `navigationRef.registerArea()` with the class selector
+   - Or wrap the accordion in `Navigation.Area` with the appropriate selector
+
+```tsx
+import Navigation, { NavigationRef } from '@components/Utility/Navigation/Navigation';
+import Accordion from '@components/Basic/Accordion/Accordion';
+
+const App = () => {
+    let navigationRef: NavigationRef | undefined;
+
+    // Register accordion headings as a navigation area
+    onMount(() => {
+        navigationRef?.registerArea('accordion-headers', ['.accordion-heading']);
+    });
+
+    return (
+        <Navigation ref={navigationRef}>
+            <Accordion>
+                <Accordion.Panel title="panel-1">
+                    <Accordion.Heading class="accordion-heading">
+                        Settings
+                    </Accordion.Heading>
+                    <Accordion.Body>Settings content</Accordion.Body>
+                </Accordion.Panel>
+                <Accordion.Panel title="panel-2">
+                    <Accordion.Heading class="accordion-heading">
+                        Audio
+                    </Accordion.Heading>
+                    <Accordion.Body>Audio content</Accordion.Body>
+                </Accordion.Panel>
+            </Accordion>
+        </Navigation>
+    );
+};
+
+export default App;
+```
+
+### Navigating accordion body content
+
+<video src="/video/accordion/header-navigation.webm" autoplay loop muted></video>
+
+For more complex accordion implementations where the body contains navigable elements (like form inputs, buttons, or lists), you can create a `Navigation.Area` inside the `Accordion.Body` and automatically focus it when the panel expands.
+
+#### Steps
+
+1. Wrap the elements you wish to be navigable inside `Accordion.Body` with `Navigation.Area`
+2. Use the `onChange` callback to detect when the panel expands
+3. Call `navigationRef.focusFirst()` or `navigationRef.switchArea()` to focus the body's navigation area
+4. Optionally set up a `back` action to return focus to the accordion headings
+
+```tsx
+import Navigation, { NavigationRef } from '@components/Utility/Navigation/Navigation';
+import Accordion from '@components/Basic/Accordion/Accordion';
+
+const App = () => {
+    let navigationRef: NavigationRef | undefined;
+
+    // Handle accordion panel changes
+    const handleAccordionChange = (title: string) => {
+        if (title === 'settings-panel') {
+            // Focus the navigation area inside the expanded panel
+            navigationRef?.focusFirst('settings-area');
+        }
+    };
+
+    onMount(() => {
+        // Register accordion headings as an area and focus it.
+        navigationRef?.registerArea('accordion-headers', ['.accordion-heading'], true);
+        
+        // Configure back action to return to accordion headers
+        navigationRef?.updateAction('back', {
+            key: { binds: ['ESC'], type: ['press'] },
+            button: { binds: ['face-button-right'] },
+            callback: (scope) => {
+                if (scope === 'settings-area') {
+                    navigationRef?.focusFirst('accordion-headers');
+                }
+            }
+        });
+    });
+
+    return (
+        <Navigation ref={navigationRef}>
+            <Accordion onChange={handleAccordionChange}>
+                <Accordion.Panel title="settings-panel">
+                    <Accordion.Heading class="accordion-heading">
+                        Settings
+                    </Accordion.Heading>
+                    <Accordion.Body>
+                        <Navigation.Area name="settings-area">
+                            <div class="menu-item">Graphics Quality</div>
+                            <div class="menu-item">Resolution</div>
+                            <div class="menu-item">V-Sync</div>
+                        </Navigation.Area>
+                    </Accordion.Body>
+                </Accordion.Panel>
+                <Accordion.Panel title="audio-panel">
+                    <Accordion.Heading class="accordion-heading">
+                        Audio
+                    </Accordion.Heading>
+                    <Accordion.Body>Audio settings content</Accordion.Body>
+                </Accordion.Panel>
+            </Accordion>
+        </Navigation>
+    );
+};
+
+export default App;
+```
+
+CSS for `.menu-item`:
+
+```css
+.menu-item {
+    padding: 1vmax;
+    border-bottom: 1px solid #232323;
+    background-color: #cecece;
+}
+
+.menu-item:focus {
+    background-color: #b1b1b1;
+}
 ```

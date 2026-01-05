@@ -1,5 +1,7 @@
-import { children, createEffect, on, onCleanup, onMount, ParentComponent, useContext } from "solid-js"
-import { NavigationContext, useNavigation } from "./Navigation";
+import { children, createEffect, on, onCleanup, onMount, ParentComponent } from "solid-js"
+import { useNavigation } from "./Navigation";
+//@ts-ignore
+import { spatialNavigation } from 'coherent-gameface-interaction-manager';
 interface NavigationAreaProps {
     name: string,
     selector?: string,
@@ -8,12 +10,12 @@ interface NavigationAreaProps {
 
 const NavigationArea: ParentComponent<NavigationAreaProps> = (props) => {
     const nav = useNavigation();
+    if (!nav) throw new Error('useNavigation must be used within Navigation');
     const cachedChildren = children(() => props.children);
     const navigatableElements = props.selector ? [`.${props.selector}`] : cachedChildren();
-    let hasRegistered = false;
 
     const refresh = () => {
-        if (!nav._navigationEnabled()) return;
+        if (!spatialNavigation.enabled) return;
         deinit();
         init(false);
     }
@@ -28,10 +30,6 @@ const NavigationArea: ParentComponent<NavigationAreaProps> = (props) => {
     
     // Refresh whenever children change
     createEffect(on(cachedChildren, refresh, { defer: true }))
-    createEffect(on(nav!._navigationEnabled, (v) => {
-        if (v && hasRegistered) init(false);
-        hasRegistered = true;
-    }, { defer: true }))
 
     onMount(() => {
         const shouldFocus = props.focused || props.name === nav.getScope();

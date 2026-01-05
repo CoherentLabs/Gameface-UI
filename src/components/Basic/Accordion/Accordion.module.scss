@@ -33,6 +33,10 @@
     &-content {
         flex: 1;
     }
+
+    &:focus {
+        background-color: #dcdcdc
+    }
 }
 
 
