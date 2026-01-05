@@ -1,3 +1,5 @@
+import { KeyName } from "coherent-gameface-interaction-manager/dist/types/utils/keyboard-mappings";
+
 /**
  * Interface defining all area-related navigation methods
  */
@@ -45,7 +47,7 @@ export interface AreaMethods {
      * @param clearCurrent - Whether to clear current active keys before setting new ones
      */
     changeNavigationKeys: (
-        keys: { up?: string; down?: string; left?: string; right?: string },
+        keys: { up?: KeyName | KeyName[], down?: KeyName | KeyName[], left?: KeyName | KeyName[], right?: KeyName | KeyName[]},
         clearCurrent?: boolean
     ) => void;
 

@@ -1,9 +1,9 @@
 import { waitForFrames } from '@components/utils/waitForFrames';
-// @ts-ignore
-import { spatialNavigation } from 'coherent-gameface-interaction-manager';
 import { SetStoreFunction } from 'solid-js/store';
 import { NavigationConfigType } from '../types';
 import { AreaMethods } from './areaMethods.types';
+import { spatialNavigation } from 'coherent-gameface-interaction-manager';
+import { KeyName } from 'coherent-gameface-interaction-manager/dist/types/utils/keyboard-mappings';
 
 export default function createAreaMethods(
     areas: Set<string>,
@@ -73,7 +73,7 @@ export default function createAreaMethods(
 
     const clearFocus = () => spatialNavigation.clearFocus();
 
-    const changeNavigationKeys = (keys: { up?: string, down?: string, left?: string, right?: string}, clearCurrent = false) => {
+    const changeNavigationKeys = (keys: { up?: KeyName | KeyName[], down?: KeyName | KeyName[], left?: KeyName | KeyName[], right?: KeyName | KeyName[]}, clearCurrent = false) => {
         spatialNavigation.changeKeys(keys, { clearCurrentActiveKeys: clearCurrent });
     }
 

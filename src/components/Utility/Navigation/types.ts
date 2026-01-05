@@ -1,10 +1,11 @@
-import { KeyBinding, GamepadButton } from './keybindings/keybindings.types';
+import { KeyName } from 'coherent-gameface-interaction-manager/dist/types/utils/keyboard-mappings';
+import { GamepadInput } from 'coherent-gameface-interaction-manager/dist/types/utils/gamepad-mappings';
 
 type ActionType = 'press' | 'hold' | 'lift';
 
 export type ActionCfg = {
-    key?: {binds: KeyBinding[], type?: ActionType[]};
-    button?: {binds: GamepadButton[], type?: Exclude<ActionType, 'lift'>}
+    key?: {binds: KeyName[], type?: ActionType[]};
+    button?: {binds: GamepadInput[], type?: Exclude<ActionType, 'lift'>}
     callback: (scope?: string, ...args: any[]) => void
     global?: boolean,
     paused?: boolean,

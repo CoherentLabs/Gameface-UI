@@ -1,8 +1,6 @@
-import { Accessor, createContext, onCleanup, onMount, ParentComponent, useContext } from "solid-js"
-// @ts-ignore
+import { createContext, onCleanup, onMount, ParentComponent, useContext } from "solid-js"
 import { gamepad } from 'coherent-gameface-interaction-manager';
 import NavigationArea from "./NavigationArea";
-import eventBus from "@components/Utility/EventBus";
 import { createStore } from "solid-js/store";
 import { ActionMap, NavigationConfigType } from "./types";
 import { DEFAULT_ACTIONS } from "./defaults";
@@ -10,7 +8,6 @@ import createAreaMethods from "./areaMethods/useAreaMethods";
 import createActionMethods from "./actionMethods/useActionMethods";
 import { AreaMethods } from "./areaMethods/areaMethods.types";
 import { ActionMethods } from "./actionMethods/actionMethods.types";
-//@ts-ignore
 import { spatialNavigation } from 'coherent-gameface-interaction-manager';
 
 type ExcludedActionMethods = 'registerAction' | 'unregisterAction'
