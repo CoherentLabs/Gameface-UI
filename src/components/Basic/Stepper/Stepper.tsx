@@ -5,6 +5,7 @@ import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { Control, StepperControl } from "./StepperControl";
 import { Item, StepperItem } from "./StepperItem";
 import { createTokenComponent, useToken, useTokens } from '@components/utils/tokenComponents';
+import mergeNavigationActions from "@components/utils/mergeNavigationActions";
 
 export interface StepperRef {
     selected?: Accessor<string>
@@ -146,6 +147,11 @@ const Stepper: ParentComponent<StepperProps> = (props) => {
     const controlsBefore = createMemo(() => props["controls-position"] === 'before');
     const controlsAfter = createMemo(() => props["controls-position"] === 'after');
 
+    const defaultActions = {
+        'move-left': () => changeSelected('prev'),
+        'move-right': () => changeSelected('next'),
+    }
+
     return (
         <StepperContext.Provider value={{ selected, registerOption, unregisterOption, changeSelected }}>
             <div
@@ -154,12 +160,7 @@ const Stepper: ParentComponent<StepperProps> = (props) => {
                 style={inlineStyles()}
                 use:forwardEvents={props}
                 use:forwardAttrs={props}
-                use:navigationActions={{
-                    anchor: props.anchor,
-                    'move-left': () => changeSelected('prev'),
-                    'move-right': () => changeSelected('next'),
-                    ...props['navigation-actions']
-                }}
+                use:navigationActions={mergeNavigationActions(props, defaultActions)}
             >
                 <Show when={!props["controls-position"] || controlsBefore()}>
                     <StepperControl direction='prev' visible={showPrevControl()} parentChildren={props.children} />

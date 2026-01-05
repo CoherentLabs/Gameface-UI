@@ -1,3 +1,5 @@
+import { KeyName } from "coherent-gameface-interaction-manager/dist/types/utils/keyboard-mappings";
+
 /**
  * Interface defining all area-related navigation methods
  */
@@ -45,7 +47,7 @@ export interface AreaMethods {
      * @param clearCurrent - Whether to clear current active keys before setting new ones
      */
     changeNavigationKeys: (
-        keys: { up?: string; down?: string; left?: string; right?: string },
+        keys: { up?: KeyName | KeyName[], down?: KeyName | KeyName[], left?: KeyName | KeyName[], right?: KeyName | KeyName[]},
         clearCurrent?: boolean
     ) => void;
 
@@ -55,18 +57,12 @@ export interface AreaMethods {
     resetNavigationKeys: () => void;
 
     /**
-     * Checks if spatial navigation is currently enabled
-     * @returns True if navigation is enabled, false otherwise
-     */
-    isEnabled: () => boolean;
-
-    /**
-     * Pauses spatial navigation by deinitializing it
+     * Pauses navigation, preventing spatial navigation actions from executing
      */
     pauseNavigation: () => void;
 
     /**
-     * Resumes spatial navigation by re-enabling it
+     * Resumes navigation, allowing spatial navigation actions to execute again
      */
     resumeNavigation: () => void;
 }

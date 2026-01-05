@@ -31,6 +31,8 @@ export default App;
 | `value`    | `string`                            | `undefined`   | The current value of the slider. Use this to control or set the slider's position. |
 | `values`   | `string[]`                            | `undefined`   | An array of options that can be selected by dragging the slider's handle. |
 | `onChange` | `(value: string) => void`              | `undefined` | A callback function triggered whenever the slider's value changes. It provides the updated value of the slider. |
+| `onAction` | `Record<string, (scope?: string) => void>` | `undefined` | Extends or overrides the component's default navigation action handlers. See [Implemented Navigation Actions](#implemented-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, the slider's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Ref API
 
@@ -49,6 +51,7 @@ To interact with the `TextSlider` programmatically, you can use the `TextSliderR
 | Method         | Parameters         | Return Value | Description                                      |
 |----------------|-------------------|--------------|--------------------------------------------------|
 | `changeValue`  | `newValue: string`| `void`       | Programmatically sets a new value for the text slider. |
+| `stepValue`    | `direction: 1 \| -1` | `string`   | Steps to the next (`1`) or previous (`-1`) value in the values array. |
 
 ## Slots
 
@@ -191,6 +194,32 @@ const App = () => {
 
 export default App;
 ```
+
+## Implemented Navigation Actions
+
+The `TextSlider` component implements the following navigation actions by default:
+
+| Action Name  | Behavior                                                    |
+|--------------|-------------------------------------------------------------|
+| `move-left`  | Moves to the previous value in the values array             |
+| `move-right` | Moves to the next value in the values array                 |
+
+You can extend the `TextSlider` with additional navigation actions or override the default behavior using the `onAction` prop:
+
+```tsx
+import TextSlider from '@components/Basic/TextSlider/TextSlider';
+
+<TextSlider
+    values={['Easy', 'Medium', 'Hard']}
+    value="Medium"
+    onAction={{
+        'select': () => console.log('Value selected!'),
+        'back': () => console.log('Going back')
+    }}
+/>
+```
+
+For more information about navigation actions, see the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions).
 
 ## Guide
 

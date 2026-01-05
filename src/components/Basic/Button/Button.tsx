@@ -26,14 +26,18 @@ const Button: ParentComponent<ButtonProps> = (props) => {
     const mergedProps = mergeProps({ textFit: true }, props);
     props.componentClasses = createMemo(() => getButtonClasses(mergedProps).join(' '))
 
-    const {className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
+    const {className, inlineStyles, forwardEvents, forwardAttrs, navigationActions } = useBaseComponent(props);
 
     return <button  
                 ref={props.ref as HTMLButtonElement}
                 class={className()}
                 style={inlineStyles()}
                 use:forwardEvents={props}
-                use:forwardAttrs={props}>
+                use:forwardAttrs={props}
+                use:navigationActions={{
+                    anchor: props.anchor,
+                    ...props.onAction,
+                }}>
                 {props.children}
             </button>
 }

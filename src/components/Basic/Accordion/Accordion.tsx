@@ -1,11 +1,11 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, createContext, createMemo, createSignal, createUniqueId, For, onMount, ParentComponent, Setter } from "solid-js";
-import styles from './Accordion.module.scss';
+import { Accessor, createContext, createMemo, createSignal, createUniqueId, For, onMount, ParentComponent } from "solid-js";
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { AccordionPanel, Panel, PanelTokenProps } from "./AccordionPanel";
 import { Heading, Icon } from "./AccordionHeading";
 import { Body } from "./AccordionBody";
 import { useTokens } from "@components/utils/tokenComponents";
+import styles from './Accordion.module.scss';
 
 export interface AccordionRef {
     element: HTMLDivElement,
@@ -20,7 +20,7 @@ export interface PanelData {
     id: string 
 }
 
-interface AccordionProps extends ComponentProps {
+interface AccordionProps extends Omit<ComponentProps, 'onAction' | 'anchor'> {
     multiple?: boolean;
     disabled?: boolean;
     'class-disabled'?: string;
@@ -167,7 +167,7 @@ const Accordion: ParentComponent<AccordionProps> = (props) => {
                 class={className()}
                 style={inlineStyles()}
                 use:forwardEvents={props}
-                use:forwardAttrs={props} >
+                use:forwardAttrs={props}>
                 <For each={panelData()}>
                     {(data) => <AccordionPanel id={data.id} panel={data.panel} />}
                 </For>
