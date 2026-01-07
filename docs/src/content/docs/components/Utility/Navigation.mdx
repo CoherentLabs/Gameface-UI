@@ -21,7 +21,7 @@ This component provides:
 
 ## Usage
 
-To use the `Navigation` component, wrap your UI with the it and define navigation areas for different sections of your UI. You can configure default actions and provide custom input bindings for your game.
+To use the `Navigation` component, wrap your UI with it and define navigation areas for different sections of your UI. You can configure default actions and provide custom input bindings for your game.
 
 :::tip
 For detailed usage instructions, examples, and advanced features, refer to the [Guide](/components/utility/navigation#guide) section.
@@ -33,8 +33,8 @@ import { ActionMap } from '@components/Navigation/Navigation/types';
 
 const App = () => {
     const defaultActions: ActionMap = {
-        'tab-left': {key: {binds: ['Q'], type: ['press']}, button: {binds: ['left-shoulder'], type: 'press'}, callback: menuLeft, global: true},
-        'tab-right': {key: {binds: ['E'], type: ['press']}, button: {binds: ['right-shoulder'], type: 'press'}, callback: menuRight, global: true},
+        'tab-left': {key: {binds: ['Q'], type: ['press']}, button: {binds: ['left-sholder'], type: 'press'}, callback: menuLeft, global: true},
+        'tab-right': {key: {binds: ['E'], type: ['press']}, button: {binds: ['right-sholder'], type: 'press'}, callback: menuRight, global: true},
         'select': {key: {binds: ['SPACE'], type: ['press']}, button: {binds: ['face-button-left'], type: 'press'}},
         'back': {key: {binds: ['BACKSPACE'], type: ['press']}},
     }
@@ -54,10 +54,9 @@ export default App;
 
 ## Default Actions
 
-The Navigation component comes with six pre-configured default actions that handle common navigation patterns in game UIs. These actions are automatically registered when the Navigation component mounts and emit globally, making them accessible to any component within your application.
+The Navigation component comes with six pre-configured default actions that handle common navigation patterns in game UIs. These actions are automatically registered when the `Navigation` component mounts and emit globally, making them accessible to any component within your application.
 
-Default actions are constant, pre-defined actions that provide standard input mappings for navigation and interaction. 
-These actions are recognized across the entire Gameface UI component library, enabling preset components to work seamlessly with the Navigation system out of the box.
+These actions are recognized across the entire Gameface UI component library, enabling preset components to work seamlessly with the navigation system out of the box.
 
 Each default action has:
 - **Keyboard bindings** - One or more keyboard keys
@@ -78,7 +77,8 @@ Each default action has:
 | `back`        | `ESC`            | `face-button-right`  | Cancel current operation or navigate back to the previous screen                |
 
 :::caution[Reserved Action Names]
-Avoid creating custom actions with names starting with `move-focus-*` (e.g., `move-focus-left`, `move-focus-right`, etc.). These names are reserved and used internally by the spatial navigation system for managing focus between UI elements.
+Avoid creating custom actions with names starting with `move-focus-direction` (e.g., `move-focus-left`, `move-focus-right`, etc.). These names are reserved and used internally by the spatial navigation system for managing focus between UI elements.
+[Read more here](https://frontend-tools.coherent-labs.com/interaction-manager/features/spatial-navigation/#actions)
 :::
 
 ### Customizing Default Actions
@@ -171,6 +171,38 @@ nav.addAction('toggle-menu', {
 });
 ```
 
+### Propagating Actions (anchor element)
+
+Some components may need to respond to actions when a different element is focused. 
+You can achieve this by specifying an `anchor` element in the action configuration. When the anchor element is focused, the action will trigger for the specified element.
+
+:::tip
+The `anchor` prop can accept either a CSS selector string or a direct reference to an `HTMLElement`.
+:::
+
+In the following example, the `Stepper` component will respond to navigation actions when the parent `.menu-item` div is focused.
+
+```tsx
+<div id="difficulty" class="menu-item">
+    <div>Select Difficulty:</div>
+    <Stepper anchor=".menu-item" onChange={emitChange}>
+        <Stepper.Items>
+            <Stepper.Item value='Easy'>Easy</Stepper.Item>
+            <Stepper.Item value='Normal' selected>Normal</Stepper.Item>
+            <Stepper.Item value='Hard'>Hard</Stepper.Item>
+            <Stepper.Item value='Nightmare'>Nightmare</Stepper.Item>
+        </Stepper.Items>
+        <Stepper.Control />
+    </Stepper>
+</MenuItem>
+```
+
+This functionality is especially useful for more complex component configurations where the component doesn't directly receive focus but still need to respond to navigation actions.
+
+:::note
+All GamefaceUI components that support navigation actions can utilize the `anchor` prop.
+:::
+
 ### Subscribing to Actions in Custom Components
 
 Custom components can respond to navigation actions using the `navigationActions` directive from `BaseComponent`.
@@ -210,8 +242,7 @@ Only actions with `global: true` (including all default actions) can be subscrib
 
 **With an anchor element:**
 
-Sometimes you want a component to respond to actions when a different element is focused (like a child button):
-
+Anchor can also be used when subscribing to actions in custom components.
 ```tsx
 const Card = (props) => {
     let buttonRef;
@@ -292,10 +323,11 @@ When defining actions, you can configure the following properties:
 
 | Property   | Type                                      | Description                                                                                                                                                                                                 |
 |------------|-------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `key`      | `{binds: KeyBinding[], type?: ActionType[]}` | Keyboard configuration. `binds` specifies which keys trigger the action. `type` specifies when to trigger: `'press'` (default), `'hold'`, or `'lift'`.                                                     |
-| `button`   | `{binds: GamepadButton[], type?: ActionType}` | Gamepad configuration. `binds` specifies which buttons trigger the action. `type` specifies when to trigger: `'press'` (default) or `'hold'`.                                                              |
+| `key`      | `{binds: KeyName[], type?: ActionType[]}` | Keyboard configuration. `binds` specifies which keys trigger the action. `type` specifies when to trigger: `'press'` (default), `'hold'`, or `'lift'`.                                                     |
+| `button`   | `{binds: GamepadInput[], type?: Exclude<ActionType, 'lift'>}` | Gamepad configuration. `binds` specifies which buttons trigger the action. `type` specifies when to trigger: `'press'` (default) or `'hold'`.                                                              |
 | `callback` | `(scope?: string, ...args: any[]) => void`   | Function to execute when the action is triggered. Receives the current navigation scope as the first parameter.                                                                                            |
 | `global`   | `boolean`                                    | When `true`, the action emits globally via the [eventBus](/concepts/ui-communication/), allowing any component to listen. When `false`, only the callback is executed. Default actions have this set to `true`.                          |
+| `paused`   | `boolean`                                    | When set to true the action will be paused by default. Useful for configuring actions that are not immediately needed.                          |
 
 ## API
 

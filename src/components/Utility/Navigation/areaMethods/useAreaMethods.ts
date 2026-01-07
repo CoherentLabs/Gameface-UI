@@ -41,31 +41,31 @@ export default function createAreaMethods(
         spatialNavigation.resume();
     }
 
+    const isAreaValid = (area: string) => {  
+        if (!areas.has(area)) {  
+            console.warn(`Area "${area}" not registered. Available areas:`, Array.from(areas));  
+            return false;  
+        }  
+
+        return true;  
+    } 
+
     const focusFirst = (area: string) => {
-        if (!areas.has(area)) {
-            console.warn(`Area "${area}" not registered. Available areas:`, Array.from(areas));
-            return;
-        }
+        if (!isAreaValid(area)) return;
 
         spatialNavigation.focusFirst(area);
         setConfig('scope', area);
     };
 
     const focusLast = (area: string) => {
-        if (!areas.has(area)) {
-            console.warn(`Area "${area}" not registered. Available areas:`, Array.from(areas));
-            return;
-        }
+        if (!isAreaValid(area)) return;
 
         spatialNavigation.focusLast(area);
         setConfig('scope', area);
     };
 
     const switchArea = (area: string) => {
-        if (!areas.has(area)) {
-            console.warn(`Area "${area}" not registered. Available areas:`, Array.from(areas));
-            return;
-        }
+        if (!isAreaValid(area)) return;
 
         spatialNavigation.switchArea(area);
         setConfig('scope', area);
