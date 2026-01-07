@@ -6,6 +6,7 @@ import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { SegmentButtons } from "./SegmentButtons";
 import { Button } from "./SegmentButton";
 import SegmentIndicator, { Indicator } from "./SegmentIndicator";
+import mergeNavigationActions from "@components/utils/mergeNavigationActions";
 
 export const SegmentContext = createContext<SegmentContextValue>();
 export interface SegmentIndicatorData {
@@ -45,15 +46,26 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
     });
     
     const options = new Map<string, HTMLDivElement>();
+    const orderedOptions: string[] = [];
     let element!: HTMLDivElement;
     let transitionTimeout: ReturnType<typeof setTimeout>
 
     const registerOption = (value: string, element: HTMLDivElement, selected?: boolean) => {
         options.set(value, element);
+        
+        if (!orderedOptions.includes(value)) {
+            orderedOptions.push(value); 
+        }
+
         if (selected) selectOption(value);
     };
 
-    const unregisterOption = (value: string) => options.delete(value);
+    const unregisterOption = (value: string) => {
+        options.delete(value);
+
+        const idx = orderedOptions.indexOf(value);
+        if (idx !== -1) orderedOptions.splice(idx, 1)
+    };
 
     const selectOption = (newOption: string) => {
         if (props.disabled) return;
@@ -94,6 +106,17 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
         if (!firstRender()) props.onChange?.(newOption);
     }
 
+    const changeSelected = (direction: 'prev' | 'next') => {
+        const curIdx = orderedOptions.indexOf(selected());
+        const targetIdx = direction === 'prev' ? curIdx - 1 : curIdx + 1;
+
+        console.log(curIdx)
+        console.log(targetIdx)
+        if (targetIdx >= 0 && targetIdx < orderedOptions.length) {
+            selectOption(orderedOptions[targetIdx])
+        }   
+    }
+
     const segmentClasses = createMemo(() => {
         const classes = [styles.segment];
 
@@ -106,7 +129,7 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
     });
 
     props.componentClasses = () => segmentClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
+    const { className, inlineStyles, forwardEvents, forwardAttrs, navigationActions } = useBaseComponent(props);
 
     onMount(() => {
         if (!props.ref || !element) return;
@@ -121,6 +144,11 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
     onCleanup(() => {
         window.clearTimeout(transitionTimeout);
     })
+    
+    const defaultActions = {
+        "move-left": () => changeSelected('prev'), 
+        'move-right': () => changeSelected('next')
+    }
 
     return (
         <SegmentContext.Provider value={{ selected, selectOption, registerOption, unregisterOption, firstRender }}>
@@ -129,7 +157,8 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
                     class={className()}
                     style={inlineStyles()}
                     use:forwardEvents={props}
-                    use:forwardAttrs={props}>
+                    use:forwardAttrs={props}
+                    use:navigationActions={mergeNavigationActions(props, defaultActions)}>
                     <SegmentButtons parentChildren={props.children} />
                     <Show when={!firstRender()}>
                         <SegmentIndicator data={indicator} parentChildren={props.children} />
