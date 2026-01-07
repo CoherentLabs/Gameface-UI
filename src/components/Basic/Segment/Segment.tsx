@@ -20,6 +20,7 @@ type selectOptionMethod = (newOption: string) => void;
 export interface SegmentRef extends BaseComponentRef {
     selected: Accessor<string>,
     selectOption: selectOptionMethod;
+    changeSelected: (direction: 'prev' | 'next') => void,
 }
 
 interface SegmentContextValue {
@@ -137,6 +138,7 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
         (props.ref as unknown as (ref: any) => void)({
             selected,
             selectOption,
+            changeSelected,
             element,
         });
     });
