@@ -1,4 +1,4 @@
-import { Accessor, createEffect, createMemo, JSX, ParentComponent, ParentProps, useContext } from "solid-js";
+import { createMemo, JSX, onMount, ParentComponent, ParentProps, useContext } from "solid-js";
 import { RadioContext } from "./Radio";
 import { ComponentProps } from "@components/types/ComponentProps";
 import styles from './Radio.module.scss';
@@ -59,13 +59,17 @@ export const RadioButton: ParentComponent<{ button: RadioButtonProps }> = (props
         props.button.click?.(e as MouseEvent);
     }
 
+    onMount(() => {
+        radio?.radioOptions.push(props.button.value);
+    })
+
     return (
         <div
             ref={props.button.ref as HTMLDivElement}
             class={className()}
             style={inlineStyles()}
-            use:forwardEvents={props}
-            use:forwardAttrs={props}
+            use:forwardEvents={props.button}
+            use:forwardAttrs={props.button}
             onclick={handleClick}>
 
             <Show when={LabelToken?.()?.before}>
