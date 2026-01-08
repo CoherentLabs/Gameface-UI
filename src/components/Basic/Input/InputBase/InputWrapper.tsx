@@ -9,7 +9,7 @@ interface InputWrapperProps {
     props: any,
     refObject: any,
     inputRef: { current: HTMLInputElement | undefined };
-    navActions: ComponentNavigationActions
+    navActions?: ComponentNavigationActions
 }
 
 const InputWrapper: ParentComponent<InputWrapperProps> = (wrapperProps) => {
