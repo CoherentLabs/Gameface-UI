@@ -45,7 +45,7 @@ export default App;
 
 | Prop Name       | Type                                                                                     | Default       | Description                                                                                                       |
 | --------------- | ---------------------------------------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `ref`           | `BaseComponentRef`                                                                       | `undefined`   | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
+| `ref`           | `HTMLDivElement`                                                                       | `undefined`   | Retrieves the component's DOM element and assigns it to a variable. |
 | `type`          | `'ordered' \| 'unordered'`                                                               | `'unordered'` | Controls whether the list is ordered (numbered) or unordered (bulleted). Automatically set to `'ordered'` when `bullet-type` is `"number"`. |
 | `bullet-type`   | `'disc' \| 'circle' \| 'square' \| 'number' \| 'none' \| string \| ImageMetadata`        | `'disc'` (unordered) / `'number'` (ordered) | Sets the bullet style for all items in the list. Can be a predefined style, or an image. |
 | `bullet-class`  | `string`                                                                                 | `""`          | Additional CSS classes to apply to all bullet elements.                                                        |
@@ -150,7 +150,7 @@ const App = () => {
 
 | Prop Name  | Type                | Default | Description                                                                                                        |
 | ---------- | ------------------- | ------- | ------------------------------------------------------------------------------------------------------------------ |
-| `ref`      | `BaseComponentRef`  | `undefined`   | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
+| `ref`      | `HTMLDivElement`  | `undefined`   | Retrieves the component's DOM element and assigns it to a variable. |
 | `class`    | `string`            | `""`    | Additional CSS classes for **this icon only**. Overrides `bullet-class` from `List` for this item.                 |
 | `style`    | `JSX.CSSProperties` | `{}`    | Inline styles for **this icon only**. Overrides styles from `List` for this item.                                  |
 | `children` | `JSX.Element`       | `""`    | Custom content to replace the bullet entirely for this item. If set, `bullet-type` and `bullet-class` are ignored. |
@@ -294,17 +294,16 @@ const App = () => {
 To access the HTML DOM element of the `List` component.
 
 1. Declare a variable to hold the ref but don't initialize it with a value
-2. The declared value should have a type of `BaseComponentRef`, which you need to import
+2. The declared value should have a type of `HTMLDivElement`.
 3. Set the declared variable as the value of the `ref` prop of the `List` component
 
 #### Example
 
 ```tsx
 import List from '@components/Layout/List/List';
-import { BaseComponentRef } from '@components/types/ComponentProps';
 
 const App = () => {
-    let listRef!: BaseComponentRef
+    let listRef!: HTMLDivElement
 
     return (
         <List ref={listRef}>
@@ -319,4 +318,4 @@ const App = () => {
 You can access the element of every `List.Item` component in the same way.
 :::
 
-Now you can access the HTML element of `List` with `listRef.element` and make modifications to it if needed. 
+Now you can access the HTML element of `List` with `listRef` and make modifications to it if needed.

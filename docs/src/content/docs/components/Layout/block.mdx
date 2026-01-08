@@ -30,7 +30,7 @@ export default App;
 |---|---|---|---|
 | `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
 | `class` | `string` | `""` | Additional CSS classes to apply to the component |
-| `ref` | `BaseComponentRef` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
+| `ref` | `HTMLDivElement` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. |
 
 ## Guide
 
@@ -39,7 +39,7 @@ export default App;
 To access the HTML DOM element of the `Block` component.
 
 1. Declare a variable to hold the ref but don't initialize it with a value
-2. The declared value should have a type of `BaseComponentRef`, which you need to import
+2. The declared value should have a type of `HTMLDivElement`
 3. Set the declared variable as the value of the `ref` prop of the `Block` component
 
 #### Example
@@ -47,17 +47,16 @@ To access the HTML DOM element of the `Block` component.
 ```tsx
 import Bottom from '@components/Layout/Bottom/Bottom';
 import Block from '@components/Layout/Block/Block';
-import { BaseComponentRef } from '@components/types/ComponentProps';
 
 const App = () => {
-    let BlockRef!: BaseComponentRef
+    let blockRef!: HTMLDivElement
 
     return (
-        <Block ref={BlockRef}>
+        <Block ref={blockRef}>
             <Bottom>Bottom Section</Bottom>
         </Block>
     );
 };
 ```
 
-Now you can access the HTML element of `Block` with `BlockRef.element` and make modifications to it if needed. 
+Now you can access the HTML element of `Block` with `blockRef` and make modifications to it if needed. 
