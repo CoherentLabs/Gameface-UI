@@ -97,20 +97,43 @@ function navigationActions(el: HTMLElement, accessor: Accessor<NavigationActions
 
     el.setAttribute('tabindex', '0');
 
+    let removeClickListener: (() => void) | null = null;
+
+    const setupClickRedirect = (targetContainer: HTMLElement) => {
+        const handleClick = (e: MouseEvent) => {
+            const target = e.target as HTMLElement;
+            // Prevent redirect if user clicked focusable element
+            if (target.hasAttribute('tabindex')) return;
+
+            if (anchorElement) anchorElement.focus();
+            else el.focus();
+        };
+        targetContainer.addEventListener('click', handleClick);
+        removeClickListener = () => targetContainer.removeEventListener('click', handleClick);
+    };
+
     let anchorElement: HTMLElement | null = null;
     if (anchor) {
         if (typeof anchor === 'string') {
             waitForFrames(() => anchorElement = document.querySelector(anchor));
-        } else {
+        } else if (anchor instanceof HTMLElement) {
             anchorElement = anchor;
         }
     }
 
+    if (anchorElement && !anchorElement.hasAttribute('tabindex')) {
+        setupClickRedirect(anchorElement);
+    } else {
+        setupClickRedirect(el);
+    }
+
     const isFocused = () => {
         const active = document.activeElement;
-        return active === el ||
-            (anchorElement && active === anchorElement) ||
-            el.contains(active);
+        return (
+            active === el || 
+            (anchorElement && active === anchorElement) || 
+            el.contains(active)
+        );
     };
 
     const listeners: Array<[string, (args: any) => void]> = [];
@@ -135,6 +158,7 @@ function navigationActions(el: HTMLElement, accessor: Accessor<NavigationActions
     }
 
     return () => {
+        if (removeClickListener) removeClickListener();
         for (const [name, handler] of listeners) {
             eventBus.off(name, handler);
         }

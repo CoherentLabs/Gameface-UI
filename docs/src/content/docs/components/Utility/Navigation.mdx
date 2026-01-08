@@ -199,6 +199,10 @@ In the following example, the `Stepper` component will respond to navigation act
 
 This functionality is especially useful for more complex component configurations where the component doesn't directly receive focus but still need to respond to navigation actions.
 
+:::caution[Using anchor with focusable elements]
+Ensure that the anchor element is focusable (e.g., has a `tabindex` attribute). If the anchor is not focusable, the anchor won't be registered.
+:::
+
 :::note
 All GamefaceUI components that support navigation actions can utilize the `anchor` prop.
 :::
