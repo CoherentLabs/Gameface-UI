@@ -7,11 +7,15 @@ const LayoutBase: ParentComponent<ComponentProps> = (props) => {
     const {className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     onMount(() => {
-        if (props.ref && element) {
-            (props.ref as (ref: any) => void)({
+        if (!props.ref || !element) return;
+
+        if (props.refObject) {
+            (props.ref as (arg: any) => void)({
                 ...props.refObject,
                 element,
             });
+        } else {
+            (props.ref as (arg: any) => void)(element);
         }
     });
 

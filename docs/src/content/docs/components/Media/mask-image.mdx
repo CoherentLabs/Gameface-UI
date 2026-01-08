@@ -35,7 +35,7 @@ In this example, the `MaskImage` component wraps the `<div>Masked content</div>`
 |---|---|---|---|
 | `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
 | `class` | `string` | `""` | Additional CSS classes to apply to the component. |
-| `ref` | `BaseComponentRef` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
+| `ref` | `HTMLDivElement` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. |
 | `src` | `string` | `undefined` | The URL source of the mask image. |
 | `fill` | `boolean` | `undefined` | Specifies if the component should fill its container by setting the `width` and `height` of the component to be 100%. |
 | `options` | `{ repeat?: ImageRepeat; size?: ImageSize; position?: ImagePosition; }` | `undefined` | Configures the mask image. You can set whether the mask repeats (default is no repeat), its size, and its position. For more information, check the [options object properties](#options-object-properties). |
@@ -238,16 +238,15 @@ export default App;
 To access the HTML DOM element of the `MaskImage` component:
 
 1. Declare a variable to hold the ref without initializing it.
-2. The variable should be of type `BaseComponentRef`, which you need to import.
+2. The variable should be of type `HTMLDivElement`.
 3. Set the declared variable as the value of the `ref` prop of the `MaskImage` component.
 
 ```tsx
 import MaskImage from '@components/Media/MaskImage/MaskImage';
 import Mask from '../../assets/mask.png';
-import { BaseComponentRef } from '@components/types/ComponentProps';
 
 const App = () => {
-    let ref!: BaseComponentRef;
+    let ref!: HTMLDivElement;
 
     return (
         <MaskImage src={Mask} ref={ref}>
@@ -259,4 +258,4 @@ const App = () => {
 export default App;
 ```
 
-You can now access the HTML element of `MaskImage` using `ref.element` and make modifications as needed.
+You can now access the HTML element of `MaskImage` using `ref` and make modifications as needed.
