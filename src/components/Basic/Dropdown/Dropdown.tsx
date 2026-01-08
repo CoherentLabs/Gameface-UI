@@ -100,7 +100,8 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
     const closeDropdown = (e: MouseEvent) => {
         if (!element.contains(e.target as Node)) {
             setOpen(false);
-            document.removeEventListener('mousedown', closeDropdown);
+            if (areaID) focusBackToAnchor();
+            document.removeEventListener('click', closeDropdown);
         }
     };
 
@@ -136,8 +137,10 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
         if (!open()) return;
         
         toggle(false);
+        focusBackToAnchor();
+    }
 
-        // focus back
+    const focusBackToAnchor = () => {
         const anchor = anchorEl();
         anchor ? (anchor as HTMLElement).focus() : element.focus();
     }
