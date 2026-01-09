@@ -149,8 +149,8 @@ function navigationActions(el: HTMLElement, accessor: Accessor<NavigationActions
             continue;
         }
 
-        const handler = (args: any) => {
-            if (isFocused()) (func as Function)(args);
+        const handler = (...args: any) => {
+            if (isFocused()) (func as Function)(...args);
         };
 
         eventBus.on(name, handler);

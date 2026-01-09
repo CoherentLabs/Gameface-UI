@@ -14,10 +14,13 @@ export default function createActionMethods(
 
         const shouldEmitGlobally = DEFAULT_ACTION_NAMES.has(actionName as DefaultActions) || global;
 
-        actions.register(actionName, () => {
+        actions.register(actionName, (...args: any[]) => {
             if (isPaused(actionName)) return;
-            callback && callback(getScope());
-            if (shouldEmitGlobally) eventBus.emit(actionName, getScope());
+            
+            const currentScope = getScope();
+            
+            callback && callback(currentScope, ...args);
+            if (shouldEmitGlobally) eventBus.emit(actionName, currentScope, ...args);
         })
 
         if (config.keyboard && key) {
