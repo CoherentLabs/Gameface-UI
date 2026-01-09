@@ -37,6 +37,11 @@ export const DEFAULT_ACTIONS: ActionMap = {
         callback: undefined as any,
         global: true
     },
+    'pan': {
+        button: {binds: ['right.joystick'], type: 'hold'},
+        callback: undefined as any,
+        global: true
+    },
 };
 
 export const DEFAULT_ACTION_NAMES = new Set(

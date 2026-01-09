@@ -19,6 +19,10 @@ This component provides:
 - Pause/resume functionality for navigation state
 - Integration with components via context and navigation actions directive
 
+:::tip
+For in-depth introduction to the interaction system provided by the `Navigation` component refer to the [Navigation System]() page.
+:::
+
 ## Usage
 
 To use the `Navigation` component, wrap your UI with it and define navigation areas for different sections of your UI. You can configure default actions and provide custom input bindings for your game.
@@ -54,7 +58,11 @@ export default App;
 
 ## Default Actions
 
-The Navigation component comes with six pre-configured default actions that handle common navigation patterns in game UIs. These actions are automatically registered when the `Navigation` component mounts and emit globally, making them accessible to any component within your application.
+The Navigation component comes with a couple of pre-configured default actions that handle common navigation patterns in game UIs. 
+These actions are automatically registered when the `Navigation` component mounts. However, components typically listen for these actions only when they are **focused**.
+
+For example, pressing Arrow Right emits a global `move-right` event, but only the currently focused `Stepper` will respond to it. 
+This ensures that you don't accidentally change settings in a background menu while navigating the main screen.
 
 These actions are recognized across the entire Gameface UI component library, enabling preset components to work seamlessly with the navigation system out of the box.
 
@@ -63,7 +71,7 @@ Each default action has:
 - **Gamepad bindings** - One or more gamepad buttons
 - **Global emission** - They emit events via the [event bus](/concepts/ui-communication/), allowing any component to respond
 - **No default callbacks** - They don't execute callbacks by default, only emit events. However they can be extended to execute callback as well.
-- **Library-wide recognition** - Preset components like Dropdown, Stepper, Checkbox, and others automatically listen to these actions
+- **Library-wide recognition** - Preset components like Dropdown, `Stepper`, `Checkbox`, and others automatically listen to these actions
 
 ### Available Default Actions
 
@@ -75,6 +83,7 @@ Each default action has:
 | `move-down`   | `ARROW_DOWN`     | `pad-down` (D-Pad)   | Directional input down (used by components like Dropdown)           |
 | `select`      | `ENTER`          | `face-button-down`   | Confirm selection or activate the currently focused element                     |
 | `back`        | `ESC`            | `face-button-right`  | Cancel current operation or navigate back to the previous screen                |
+| `pan`         | `none`           | `right.joystick`     | Continuous 2D input for manipulating values on two axes simultaneously                |
 
 :::caution[Reserved Action Names]
 Avoid creating custom actions with names starting with `move-focus-direction` (e.g., `move-focus-left`, `move-focus-right`, etc.). These names are reserved and used internally by the spatial navigation system for managing focus between UI elements.
@@ -273,7 +282,7 @@ The `navigationActions` directive only triggers callbacks when the component or 
 
 ### Extending Component Navigation Actions
 
-Many preset components in the Gameface UI library (such as [Stepper](/components/basic/stepper), Dropdown, etc.) come with predefined navigation action handlers. For example, the Stepper component responds to `move-left` and `move-right` actions by default.
+Many preset components in the Gameface UI library (such as [Stepper](/components/basic/stepper), [Dropdown](/components/basic/dropdown), etc.) come with predefined navigation action handlers. For example, the Stepper component responds to `move-left` and `move-right` actions by default.
 
 You can extend or override these default behaviors using the `onAction` prop available on all components that extend `ComponentProps`. This allows you to:
 

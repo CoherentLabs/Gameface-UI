@@ -40,7 +40,7 @@ export interface TokenComponentProps {
     parentChildren: JSX.Element,
 }
 
-type NavigationActionHandler = (scope?: string) => void;
+type NavigationActionHandler = (scope: string, args: any) => void;
 
 // Full config for the navigationActions directive (includes anchor)
 export type NavigationActionsConfig = {
