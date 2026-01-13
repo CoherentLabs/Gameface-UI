@@ -40,7 +40,8 @@ export const DEFAULT_ACTIONS: ActionMap = {
     'pan': {
         button: {binds: ['right.joystick'], type: 'hold'},
         callback: undefined as any,
-        global: true
+        global: true,
+        paused: true,
     },
 };
 

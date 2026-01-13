@@ -6,6 +6,7 @@ import { Background, XYSliderBackground } from "./XYSliderBackground";
 import { ComponentProps } from "@components/types/ComponentProps";
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
+import { useNavigation } from "@components/Utility/Navigation/Navigation";
 
 export type XYSliderValue = {
     x: number;
@@ -53,6 +54,7 @@ const XYSlider: ParentComponent<XYSliderProps> = (props) => {
     const maxBoost = createMemo(() => Math.max(maxX(), minX()) / 10 ); // 10% of max axis value
     const accelRate = createMemo(() => maxBoost() / 10);   // 10% of max boost
     let speedBoost = { x: 0, y: 0 };
+    const nav = useNavigation();
 
     const [position, setPosition] = createSignal({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = createSignal(false);
@@ -129,6 +131,8 @@ const XYSlider: ParentComponent<XYSliderProps> = (props) => {
     }
 
     onMount(() => {
+        if (nav && nav.isPaused('pan')) nav.resumeAction('pan');
+        
         if (!props.ref || !draggableArea) return;
 
         (props.ref as unknown as (ref: any) => void)({
