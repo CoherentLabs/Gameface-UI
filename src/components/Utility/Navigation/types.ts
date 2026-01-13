@@ -11,7 +11,7 @@ export type ActionCfg = {
     paused?: boolean,
 };
 
-export type DefaultActions = 'move-left' | 'move-right' | 'move-up' | 'move-down' | 'select' | 'back' | 'pan-up' | 'pan-down' | 'pan-left' | 'pan-right';
+export type DefaultActions = 'move-left' | 'move-right' | 'move-up' | 'move-down' | 'select' | 'back' | 'pan';
 export type ActionName = DefaultActions | (string & {});
 export type ActionMap = {
     [K in DefaultActions]?: ActionCfg;
