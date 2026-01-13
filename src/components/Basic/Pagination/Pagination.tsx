@@ -87,7 +87,7 @@ const Pagination: ParentComponent<PaginationProps> = (props) => {
     })
 
     props.componentClasses = styles.pagination;
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
+    const { className, inlineStyles, forwardEvents, forwardAttrs, navigationActions } = useBaseComponent(props);
 
     onMount(() => {
         if (!props.ref || !element) return;
@@ -109,7 +109,11 @@ const Pagination: ParentComponent<PaginationProps> = (props) => {
                 class={className()}
                 style={inlineStyles()}
                 use:forwardEvents={props}
-                use:forwardAttrs={props} >
+                use:forwardAttrs={props}
+                use:navigationActions={{
+                    anchor: props.anchor,
+                    ...props.onAction,
+                }}>
                 <PaginationControl direction="prev" parentChildren={props.children} visible={showLeftArrow()} />
                  <For each={items()}>
                     {(i) => 
