@@ -1,7 +1,7 @@
 import Tab from "@components/Layout/Tab/Tab";
 import { createSignal, createMemo, onMount, onCleanup, For } from "solid-js";
-import grandeImage from '@assets/grenade.png'
-import weaponImage from '@assets/weapon.png'
+import grandeImage from '@assets/icons/hud/grenade.png'
+import weaponImage from '@assets/icons/hud/weapon.png'
 import Image from "@components/Media/Image/Image";
 import BackgroundImage from "@components/Media/BackgroundImage/BackgroundImage";
 import MaskImage from "@components/Media/MaskImage/MaskImage";
