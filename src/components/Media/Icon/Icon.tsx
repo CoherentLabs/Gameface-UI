@@ -9,7 +9,7 @@ export interface IconProps {
 	[key: `attr:${string}`]: any;
 }
 
-const modules = import.meta.glob('@assets/icons/**/*.png', { eager: true }) as Record<string, { default: string }>
+const modules = import.meta.glob('@assets/icons/**/*.{png,svg}', { eager: true }) as Record<string, { default: string }>
 // Fallback Icon to prevent app crash when file has been deleted
 const MissingIcon: Component<IconProps> = (props) => (
 	<img src={fallbackImg} {...props} class={`${styles.fallback} ${props.class || ''}`} />

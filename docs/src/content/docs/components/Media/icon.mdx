@@ -1,0 +1,89 @@
+---
+title: Icon
+---
+import { FileTree } from '@astrojs/starlight/components';
+import { Steps } from '@astrojs/starlight/components';
+
+The `Icon` component provides a structured, auto-generated way to render your UI icons. Unlike standard images, 
+it maps your `src/assets/icons` directory into a nested component tree, allowing you to access icons via dot notation.
+
+## Usage
+
+The `Icon` component eliminates the need to manually import image files. Instead, it exposes your folder structure directly as a component object.
+
+It works by scanning your `src/assets/icons` directory and generating a matching TypeScript definition. This means the component structure you use in code exactly mirrors your file system.
+
+<FileTree>
+
+- src/assets/icons/
+    - gamepad
+        - xbox
+            - a.png
+            - b.png
+            - x.png
+            - y.png
+    - ui
+        - alert.png
+        - check.png
+        - close.png
+
+</FileTree>
+
+Because the component and types are auto-generated based on these files, you get full IntelliSense/Autocomplete support in your IDE. 
+As you type `Icon.`, your editor will suggest the available folders and images (e.g., suggesting `gamepad` then `xbox` then `a`), preventing typos and invalid paths.
+
+The above folder structure would be accessed like this:
+
+```tsx
+import { Icon } from '@components/Media/Icon/Icon';
+
+const App = () => {
+    return (
+        <div class="controls">
+            {/* Access icons directly via dot notation */}
+            <Icon.gamepad.xbox.a />
+            <Icon.gamepad.xbox.b class="icon-big" />
+            <Icon.gamepad.xbox.x class="icon-big" />
+            <Icon.gamepad.xbox.y style={{margin: '1vmax'}} />
+            <Icon.ui.alert />
+            <Icon.ui.check />
+            <Icon.ui.close />
+        </div>
+    );
+};
+
+export default App;
+```
+
+The `Icon` component renders a standard `<img>` element with the appropriate `src` attribute pointing to the image file.
+
+### Adding New Icons
+
+We have added some predefined icons (in the `src/assets/icons` directory) to get you started, but you can easily add your own custom icons.
+
+To add a new icon to the component:
+
+<Steps>
+
+1. Drop the image file into `src/assets/icons/` (organize into subfolders as needed).
+
+2. If you have an active development server, it should automatically detect the new file and typescript definitions will automatically update. If not, you can update the types manually by running the `npm run gen-icons` command in your terminal.
+
+3. That's it! The new icon will immediately be available to use within the `Icon` component and auto suggestions will appear in IntelliSense (e.g., `<Icon.newFolder.myIcon />`).
+
+</Steps>
+
+:::note
+It's possible that you don't see the new icon in Gameface immediately after adding it. If that happens, clear the cache (by pressing `ctrl + F5` in the Player) or restart the development server.
+:::
+
+:::caution[File names]
+You must use valid javascript naming convation for folder and file names (e.g., no spaces, dashes, or special characters). Example: `ui/hud/myIcon.png`, `userProfile.png`.
+:::
+
+### Handling Missing Icons (Fallback)
+
+If an image in the icons directory that is referenced by the `Icon` components
+gets suddenly deleted or moved, the `Icon` component will automatically render a fallback placeholder icon instead of crashing your application.
+
+However, if you directly reference a non-existent icon (e.g., `<Icon.nonExistent.icon />`), your application will fail. It's the same as trying to reference a non-existent component.

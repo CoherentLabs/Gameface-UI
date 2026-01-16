@@ -10,7 +10,7 @@ const OUTPUT_FILE = 'src/components/Media/Icon/IconTypes.ts';
 function generateIconTypes() {
     console.log('🔄 Detecting icon changes... Building types.');
     
-    const files = glob.globSync(`${ICONS_DIR}/**/*.png`);
+    const files = glob.globSync(`${ICONS_DIR}/**/*.{png,svg}`);
     const structure = {};
     
     files.forEach((file) => {
