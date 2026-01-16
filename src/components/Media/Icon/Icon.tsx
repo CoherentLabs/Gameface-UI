@@ -10,11 +10,10 @@ export interface IconProps {
 }
 
 const modules = import.meta.glob('@assets/icons/**/*.png', { eager: true }) as Record<string, { default: string }>
-
 // Fallback Icon to prevent app crash when file has been deleted
 const MissingIcon: Component<IconProps> = (props) => (
-	<img src={fallbackImg} class={styles.fallback} {...props} />
-);
+	<img src={fallbackImg} {...props} class={`${styles.fallback} ${props.class || ''}`} />
+ )
 
 const IconComponent = (src: string): Component<IconProps> => {
 	return (props) => {
@@ -46,18 +45,16 @@ const buildIconTree = (): IconMap => {
 
 		// Convert "./assets/icons/gamepad/xbox/a.png" -> "gamepad/xbox/a"
 		const cleanPath = path
-			.replace('../assets/icons/', '')
-			.replace(/\.[^/.]+$/, "");
+			.replace(/^.*\/assets\/icons\//, '') 
+    		.replace(/\.[^/.]+$/, "");
 
 		const keys = cleanPath.split('/');
 
 		let currentLevel = tree;
 		keys.forEach((key, index) => {
 			if (index === keys.length - 1) {
-				// Assign the component to the leaf node
 				currentLevel[key] = IconComponent(src);
 			} else {
-				// Create namespace if it doesn't exist
 				currentLevel[key] = currentLevel[key] || {};
 				currentLevel = currentLevel[key];
 			}

@@ -2,7 +2,7 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT.
 
 import { Component } from "solid-js";
-import { IconProps } from '@components/Basic/Icon/Icon';
+import { IconProps } from '@components/Media/Icon/Icon';
 
 export interface IconMap {
   hud: {
