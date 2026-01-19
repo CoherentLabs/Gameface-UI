@@ -42,6 +42,8 @@ export default App;
 | `skew` | `{ x?: number; y?: number; }` | `undefined` | Skews the element along the x or y axis in degrees. For example, `{ x: 15 }` skews the element 15° along the x-axis. |
 | `matrix` | `{ translate?: {...}; rotate?: {...}; scale?: {...}; skew?: {...}; }` | `undefined` | Defines a custom transformation matrix as a combination of multiple transformations. |
 | `origin` | `"top"`, `"center"`, `"bottom"`, `"right"`, `"left"`, `{ x?: string; y?: string; z?: string }` | `undefined` | Defines the `transform-origin` property, specifying the point of origin for transformations. It can accept preset values, combination of 2 values like: `top left`, `top right`, etc.  or custom coordinates as an object (e.g., `{ x: '50%', y: '50%', z: '0' }`). |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the component. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, this component's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Guide
 

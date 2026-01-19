@@ -25,6 +25,8 @@ export interface ComponentBaseProps extends ParentProps, Omit<Events, ExcludedEv
     style?: JSX.CSSProperties
     class?: string,
     [key: `attr:${string}`]: any;
+    anchor?: HTMLElement | string;
+    onAction?: ComponentNavigationActions
 }
 
 export interface ComponentProps<T extends Record<string, any> = {}> extends ComponentBaseProps {
@@ -32,8 +34,6 @@ export interface ComponentProps<T extends Record<string, any> = {}> extends Comp
     componentClasses?: string | (() => string)
     ref?: unknown | ((ref: BaseComponentRef & T) => void);
     refObject?: T;
-    anchor?: HTMLElement | string;
-    onAction?: ComponentNavigationActions
 }
 
 export interface TokenComponentProps {
