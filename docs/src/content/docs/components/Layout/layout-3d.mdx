@@ -36,6 +36,8 @@ export default App;
 | `class` | `string` | `""` | Additional CSS classes to apply to the component |
 | `ref` | `HTMLDivElement` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. |
 | `distance` | `string` | `0` | Defines the perspective distance (z-plane to user). Use valid CSS unit values (e.g., `px`, `em`, `%`). |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the component. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, this component's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Guide
 

@@ -27,7 +27,7 @@ interface NavigationProps {
     actions?: ActionMap,
     scope?: string,
     pollingInterval?: number,
-    ref?: NavigationRef,
+    ref?: NavigationRef | ((nav: NavigationRef) => void),
     overlap?: number,
 }
 
