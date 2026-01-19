@@ -111,8 +111,6 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
         const curIdx = orderedOptions.indexOf(selected());
         const targetIdx = direction === 'prev' ? curIdx - 1 : curIdx + 1;
 
-        console.log(curIdx)
-        console.log(targetIdx)
         if (targetIdx >= 0 && targetIdx < orderedOptions.length) {
             selectOption(orderedOptions[targetIdx])
         }   

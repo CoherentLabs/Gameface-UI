@@ -4,7 +4,7 @@ import useBaseComponent from '@components/BaseComponent/BaseComponent';
 
 const LayoutBase: ParentComponent<ComponentProps> = (props) => {
     let element: HTMLDivElement | undefined;
-    const {className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
+    const {className, inlineStyles, forwardEvents, forwardAttrs, navigationActions } = useBaseComponent(props);
 
     onMount(() => {
         if (!props.ref || !element) return;
@@ -26,6 +26,10 @@ const LayoutBase: ParentComponent<ComponentProps> = (props) => {
             style={inlineStyles()}
             use:forwardEvents={props}
             use:forwardAttrs={props}
+            use:navigationActions={{
+                anchor: props.anchor,
+                ...props.onAction,
+            }}
         >
             {props.children}
         </div>

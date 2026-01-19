@@ -61,6 +61,8 @@ export default App;
 | `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
 | `class` | `string` | `""` | Additional CSS classes to apply to the component |
 | `ref` | `HTMLDivElement` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the component. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, this component's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Guide
 

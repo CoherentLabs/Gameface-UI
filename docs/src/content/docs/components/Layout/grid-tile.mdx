@@ -36,6 +36,8 @@ export default App;
 | `ref` | `GridTileRef` | `undefined` | Retrieves the `GridTile`'s properties, methods and HTML element and assigns them to a local variable |
 | `row` | `number` | `Required` | The row index where the tile will be placed. |
 | `col` | `number` | `Required` | The column  index where the tile will be placed. |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the component. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, this component's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ### Methods
 |Method |Parameters |Return Value |Description |
@@ -85,4 +87,77 @@ const App = () => {
 };
 
 export default App;
+```
+
+### Making Grid Tiles navigable
+
+To make the `GridTile` component navigable via keyboard or gamepad, you can use the [Navigation](/components/utility/navigation/) component. There are two ways to achieve this.
+
+#### The Declarative Approach
+
+You can use the [Navigation.Area](/components/utility/navigation/#navigationarea) component to wrap your tiles, but you are required to use the `selector` prop.
+
+1. Assign a specific class name to your `GridTile` components.
+2. Pass that exact same class (without the dot) to the selector prop of the `Navigation.Area`.
+
+```tsx
+import { Navigation } from '@components/Utility/Navigation/Navigation';
+import Grid from '@components/Layout/Grid/Grid';
+import GridTile from '@components/Layout/Grid/GridTile';
+import Block from '@components/Layout/Block/Block';
+import styles from './MyPage.module.scss';
+
+const App = () => {
+    return (
+        <Grid rows={3} cols={3}>
+            <Navigation.Area name="grid-area" selector={styles.tile} focused>
+                
+                <GridTile row={1} col={1} class={styles.tile}>
+                    <Block>Item 1</Block>
+                </GridTile>
+
+                <GridTile row={1} col={2} class={styles.tile}>
+                    <Block>Item 2</Block>
+                </GridTile>
+
+                <GridTile row={2} col={1} class={styles.tile}>
+                    <Block>Item 3</Block>
+                </GridTile>
+
+            </Navigation.Area>
+        </Grid>
+    );
+};
+```
+
+:::danger[Selector is Mandatory] 
+Unlike standard components, you cannot omit the selector prop for Grids.
+:::
+
+#### Alternative: Manual Registration With Callback Ref
+
+You can manually register the tiles as a navigable area using the [registerArea](/components/utility/navigation/#area-methods) method.
+
+1. Wrap the `Grid` (or a parent) with the `Navigation` component.
+2. Use the `ref` callback to access the `Navigation` API immediately.
+3. Register the specific class name of your list items using `registerArea`.
+
+```tsx
+import { NavigationRef } from '@components/Utility/Navigation/Navigation';
+
+const App = () => {
+    const handleNavReady = (api: NavigationRef) => {
+        // Manually register the class used on the tiles
+        api.registerArea('grid-area', ['.my-grid-tile'], true);
+    };
+
+    return (
+        <Navigation ref={handleNavReady}>
+            <Grid rows={2} cols={2}>
+                 <GridTile row={1} col={1} class="my-grid-tile">...</GridTile>
+                 <GridTile row={1} col={2} class="my-grid-tile">...</GridTile>
+            </Grid>
+        </Navigation>
+    );
+}
 ```
