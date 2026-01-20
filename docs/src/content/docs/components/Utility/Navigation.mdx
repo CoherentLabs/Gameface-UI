@@ -437,3 +437,84 @@ When a `Navigation.Area` mounts:
 ```
 
 ## Guide
+
+### Getting access to the navigation API
+
+You can access the `Navigation` component's methods and properties from within your components in 2 ways:
+
+1. **Using the `useNavigation()` hook**
+
+This hook provides access to the navigation API via context. It is the recommended method for any child component nested inside `Navigation`.
+
+```tsx
+import { useNavigation } from "@components/Utility/Navigation/Navigation";
+import Button from '@components/Basic/Button/Button';
+
+const MyComponent = () => {
+    const navigation = useNavigation();
+
+    // Use navigation methods here
+    return (
+        <Button onAction={{'select': () => navigation.focusFirst('main-menu')}}>
+            Focus Main Menu
+        </Button>
+    );
+};
+```
+
+:::caution[Context Required]
+If `MyComponent` is not a child of `Navigation`, the `useNavigation()` hook will throw an error.
+:::
+
+2. **Using a `ref` to the `Navigation` component** 
+
+For components that use the `Navigation` directly in the return block, you cannot use the hook. Instead, you must attach a `ref`.
+
+**Option A: The Callback Ref (Recommended for Initialization)**
+
+If you need to execute logic immediately when the navigation mounts (e.g., registering default areas), use the callback pattern. This guarantees the API is ready before you use it.
+
+```tsx
+import Navigation, { NavigationRef } from "@components/Utility/Navigation/Navigation";
+
+const MyComponent = () => {
+    // 1. Store it if you need it for later (clicks/events)
+    let navigationRef: NavigationRef | undefined;
+    
+    // 2. Define the callback that runs immediately on mount
+    const handleNavReady = (api: NavigationRef) => {
+        navigationRef = api; // Save reference
+        
+        // Safe to use API immediately here
+        api.registerArea('main-menu', ['#start-button', '#settings-button'], true);
+    }
+    
+    return (
+        <Navigation ref={handleNavReady}>
+            {/* Your UI */}
+        </Navigation>
+    );
+};
+```
+
+**Option B: The Simple Ref (For Event Handlers Only)**
+
+If you only need the API for user interactions that happen after the page loads, you can use a simple variable assignment.
+
+```tsx
+import Navigation, { NavigationRef } from "@components/Utility/Navigation/Navigation";
+
+const MyComponent = () => {
+    let navigationRef: NavigationRef | undefined;
+    
+    const someHandler = () => {
+        navigationRef?.focusFirst('main-menu');
+    }
+
+    return (
+        <Navigation ref={navigationRef}>
+            {/* Your UI */}
+        </Navigation>
+    );
+};
+```
