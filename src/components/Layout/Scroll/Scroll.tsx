@@ -1,4 +1,4 @@
-import { Accessor, createContext, createEffect, createMemo, createSignal, onCleanup, onMount, ParentComponent, on } from 'solid-js';
+import { Accessor, createContext, createEffect, createMemo, createSignal, onCleanup, onMount, ParentComponent, on, mergeProps } from 'solid-js';
 import styles from './Scroll.module.scss';
 import LayoutBase from '../LayoutBase';
 import { clamp } from '@components/utils/clamp';
@@ -6,6 +6,7 @@ import { Content, ScrollContent } from './ScrollContent';
 import { Bar, ScrollBar } from './ScrollBar';
 import { BaseComponentRef, ComponentBaseProps } from '@components/types/ComponentProps';
 import { Handle } from './ScrollHandle';
+import { useNavigation } from '@components/Utility/Navigation/Navigation';
 
 export const ScrollContext = createContext<{
     scrollToMouseHandler: (event: MouseEvent) => void,
@@ -50,6 +51,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     let scrollStep = 100;
     let scrollToMouseInterval: NodeJS.Timeout;
     let scrollToMouseTimeout: NodeJS.Timeout;
+    const nav = useNavigation();
 
     function updateMeasurements() {
         const containerHeight = containerRef!.clientHeight;
@@ -245,19 +247,38 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
 
     createEffect(on(handleTop, handleOnScroll, {defer: true}))
 
+    const handleFocusIn = (e: FocusEvent) => {
+        if (props.focusin) return props.focusin(e);
+
+        if (nav) scrollIntoView(e.target as HTMLDivElement);
+    }
+
+    const defaultActions = {
+        'pan': (_: any,[x, y]: number[]) => {
+            if (y === 0) return;
+
+            console.log('executred')
+            y < 0 ? scrollUp() : scrollDown()
+        },
+    }
+
+    props.onAction = mergeProps(defaultActions, props.onAction) 
+
     onMount(() => {
         contentWrapperRef!.addEventListener('scroll', updateHandlePosition);
         contentWrapperRef!.addEventListener('property-scroll', updateHandlePosition)
+        if (nav) nav.resumeAction('pan');
     });
 
     onCleanup(() => {
         if (contentWrapperRef!) contentWrapperRef.removeEventListener('scroll', updateHandlePosition);
         stopScrollingToMouse();
+        if (nav) nav.pauseAction('pan');
     });
 
     return (
         <ScrollContext.Provider value={{ scrollToMouseHandler, stopScrollingToMouse, updateMeasurements, onHandleMouseDown, handleHeight, handleTop, overflow }}>
-            <LayoutBase {...props} refObject={scrollObjectRef}>
+            <LayoutBase focusin={handleFocusIn} {...props} refObject={scrollObjectRef} >
                 <div ref={containerRef!} class={styles.scroll}>
                     <ScrollContent ref={contentWrapperRef!} parentChildren={props.children} />
                     <ScrollBar parentChildren={props.children} />
