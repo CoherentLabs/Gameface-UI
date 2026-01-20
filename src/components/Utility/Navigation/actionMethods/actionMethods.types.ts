@@ -72,8 +72,9 @@ export interface ActionMethods {
     /**
      * Pauses an action, preventing its callback from executing
      * @param action - The name of the action to pause
+     * @param force - Whether to force pause the action, even if it has more than 1 subscribers
      */
-    pauseAction: (action: ActionName) => void;
+    pauseAction: (action: ActionName, force?: boolean) => void;
 
     /**
      * Resumes a paused action, allowing its callback to execute again

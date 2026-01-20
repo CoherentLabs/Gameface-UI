@@ -1,5 +1,5 @@
 import { clamp } from "@components/utils/clamp";
-import { Accessor, createContext, createEffect, createMemo, createSignal, on, onMount, ParentComponent } from "solid-js";
+import { Accessor, createContext, createEffect, createMemo, createSignal, on, onCleanup, onMount, ParentComponent } from "solid-js";
 import styles from './XYSlider.module.scss';
 import { Handle, XYSliderHandle } from "./XYSliderHandle";
 import { Background, XYSliderBackground } from "./XYSliderBackground";
@@ -131,7 +131,7 @@ const XYSlider: ParentComponent<XYSliderProps> = (props) => {
     }
 
     onMount(() => {
-        if (nav && nav.isPaused('pan')) nav.resumeAction('pan');
+        if (nav) nav.resumeAction('pan');
         
         if (!props.ref || !draggableArea) return;
 
@@ -141,6 +141,10 @@ const XYSlider: ParentComponent<XYSliderProps> = (props) => {
             changeValue
         });
     });
+
+    onCleanup(() => {
+        if (nav) nav.pauseAction('pan');
+    })
 
     const defaultActions = {
         'pan': (_: any, axes: [number, number]) => {
