@@ -24,7 +24,7 @@ describe('XYSlider', function () {
     it('Should change value with dragging', async () => {
         const assertionEl = await gf.get(`.${selectors.assertionElement}`);
         const handle = await gf.get(`.${selectors.sliderHandle}`);
-        await handle.drag(25, 0);
+        await handle.dragBy(-7, -50);
 
         assert.equal(await assertionEl.text(), 'x: 39 | y: 0', 'Slider\'s value should change to \'x: 39 | y: 0\'');
     })

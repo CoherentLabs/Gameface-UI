@@ -1,4 +1,7 @@
+/** @type {import('gameface-e2e').GamefaceE2EConfig} */
+
 module.exports = {
     tests: "tests/specs/**/*.spec.js",
-    gamefacePath: ""
+    gamefacePath: "",
+    specTimeout: 30000,
 }

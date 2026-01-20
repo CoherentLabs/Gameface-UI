@@ -1,17 +1,24 @@
 const assert = require('assert');
 const selectors = require('../shared/color-picker-selectors.json');
 const { navigateToPage } = require('../shared/utils');
+/** @typedef {import('gameface-e2e/dist/commands/dom-element').DOMElement} DOMElement*/
 
 const colorDragPositions = {
-    '#FFE6E6FF': { x: 25, y: 0 },
-    '#00FF3CFF': { x: 100, y: 250 },
-    '#FF00005E': { x: 100, y: 250 }
+    '#FFE6E6FF': { x: -231, y: 0 },
+    '#00FF3CFF': { x: 81, y: 0 },
+    '#FF00005E': { x: -137, y: 0 }
 }
 
+/**
+ * @param {string} color 
+ * @param {DOMElement} sliderEl
+ * @param {DOMElement} assertionEl
+ * @param {boolean} dragging2D 
+ */
 async function testColorPickerDrag(color, sliderEl, assertionEl, dragging2D = false) {
     const { x, y } = colorDragPositions[color];
     if (x === undefined || y === undefined) throw new Error(`No drag position defined for color ${color}`);
-    await sliderEl.drag(x, y);
+    await sliderEl.dragBy(x, y);
 
     assert.equal(await assertionEl.getValue(), color, `${dragging2D ? 'Color picker' : 'Slider'}\'s value should change to '${color}'`);
 }

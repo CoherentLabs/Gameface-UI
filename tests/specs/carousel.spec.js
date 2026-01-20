@@ -47,6 +47,7 @@ describe('Carousel', function () {
 
     it('Should change items width', async () => {
         const carouselItem = await gf.get(`.${selectors.carouselItem}`);
+        await gf.scrollToTop();
         await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
         const hasStyle = await carouselItem.waitForStyles({ width: '20%' });
         assert(hasStyle);

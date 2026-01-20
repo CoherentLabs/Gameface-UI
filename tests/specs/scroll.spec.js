@@ -51,12 +51,11 @@ describe('Scroll', function () {
         const contentChild = await content.find(`.${selectors.scrollChild}`);
         const handle = await gf.get(`.${selectors.handle}`);
 
-        await handle.drag(0, 500);
+        await handle.dragBy(0, 20);
         await gf.retryIfFails(async () => {
             assert.equal(await contentChild.isVisibleInScrollableArea(content), false, 'Element should not be visible in the area after scrolling down');
         })
-
-        await handle.drag(0, 0);
+        await handle.dragBy(0, -20);
         await gf.retryIfFails(async () => {
             assert.equal(await contentChild.isVisibleInScrollableArea(content), true, 'Element should be visible in the area after scrolling up');
         })

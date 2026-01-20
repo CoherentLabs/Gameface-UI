@@ -117,7 +117,7 @@ describe('Radial Menu', function () {
                 switch (cases[i]) {
                     case 'by mouse':
                         // move mouse to first item
-                        await gf.moveMouse(1000, 100);
+                        await gf.mouseMove(1000, 100);
                         break;
                     case 'by index':
                         await clickEventButton(events["select-item"]);
@@ -148,7 +148,7 @@ describe('Radial Menu', function () {
                 switch (cases[i]) {
                     case 'by mouse':
                         // move mouse to first item
-                        await gf.moveMouse(1000, 100);
+                        await gf.mouseMove(1000, 100);
                         break;
                     case 'by index':
                         await clickEventButton(events["select-item"]);

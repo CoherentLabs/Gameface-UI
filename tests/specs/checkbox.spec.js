@@ -88,7 +88,7 @@ describe('Checkbox', function () {
         const checkbox = await gf.get(`.${selectors.base}`);
         const position = await checkbox.getPositionOnScreen();
 
-        await gf.moveMouse(position.x, position.y + 5);
+        await gf.mouseMove(position.x, position.y + 5);
         assert.equal(await gf.isVisible(`.${selectors.assertionElement}`), true)
     })
 });
