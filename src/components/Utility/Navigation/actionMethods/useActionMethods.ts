@@ -94,20 +94,40 @@ export default function createActionMethods(
     const getAction = (name: ActionName) => config.actions[name];
     const getActions = () => config.actions;
 
-    const pauseAction = (name: ActionName) => {
+    const actionSubscribers = new Map<string, number>();
+
+    const pauseAction = (name: ActionName, force: boolean = false) => {
         if (!getAction(name)) {
             return console.warn('Action not found');
         }
 
-        setConfig('actions', name, 'paused', true);
+        if (force) {
+            actionSubscribers.set(name, 0);
+            setConfig('actions', name, 'paused', true);
+            return;
+        }
+
+        const currentCount = actionSubscribers.get(name) || 0;
+        if (currentCount === 0) return;
+
+        const newCount = currentCount - 1;
+        actionSubscribers.set(name, newCount);
+
+        if (newCount === 0) {
+            setConfig('actions', name, 'paused', true);
+        }
     };
 
     const resumeAction = (name: ActionName) => {
         const action = getAction(name);
         if (!action) return console.warn('Action not found');
-        if (!action.paused) return;
 
-        setConfig('actions', name, 'paused', false);
+        const currentCount = actionSubscribers.get(name) || 0;
+        actionSubscribers.set(name, currentCount + 1);
+
+        if (currentCount === 0 && action.paused) {
+            setConfig('actions', name, 'paused', false);
+        }
     };
 
     const isPaused = (name: ActionName) => {
