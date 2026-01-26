@@ -72,24 +72,31 @@ console.log(`👀 Watching for changes in ${ICONS_DIR}...`);
 const watcher = chokidar.watch(ICONS_DIR, { ignoreInitial: true, persistent: true });
 
 let bucket = {
-    added: null,
-    unlinked: null
+    added: [],
+    unlinked: []
 };
 let debounceTimer = null;
 
 const processBucket = () => {
-    if (bucket.added && bucket.unlinked) {
-        const oldName = path.basename(bucket.unlinked);
-        const newName = path.basename(bucket.added);
+    const addedCount = bucket.added.length;
+    const unlinkedCount = bucket.unlinked.length;
+
+    if (addedCount === 1 && unlinkedCount === 1) {
+        const oldName = path.basename(bucket.unlinked[0]);
+        const newName = path.basename(bucket.added[0]);
         console.log(`✏️  Renamed: ${oldName} -> ${newName}`);
-    } else if (bucket.added) {
-        console.log(`✨ Added: ${path.basename(bucket.added)}`);
-    } else if (bucket.unlinked) {
-        console.log(`🗑️  Deleted: ${path.basename(bucket.unlinked)}`);
+    }
+    else {
+        if (unlinkedCount > 0) {
+            bucket.unlinked.forEach(f => console.log(`🗑️  Deleted: ${path.basename(f)}`));
+        }
+        if (addedCount > 0) {
+            bucket.added.forEach(f => console.log(`✨ Added: ${path.basename(f)}`));
+        }
     }
 
     // Clear bucket and run generation once
-    bucket = { added: null, unlinked: null };
+    bucket = { added: [], unlinked: [] };
     generateIconTypes();
 };
 
@@ -100,11 +107,11 @@ const triggerUpdate = () => {
 
 watcher
     .on('add', (filePath) => {
-        bucket.added = filePath;
+        bucket.added.push(filePath);
         triggerUpdate();
     })
     .on('unlink', (filePath) => {
-        bucket.unlinked = filePath;
+        bucket.unlinked.push(filePath);
         triggerUpdate();
     })
     .on('change', (filePath) => {
