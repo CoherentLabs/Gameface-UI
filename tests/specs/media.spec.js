@@ -1,7 +1,6 @@
 const assert = require('assert');
 const selectors = require('../shared/media-selectors.json');
 const { navigateToPage } = require('../shared/utils');
-const { compileString } = require('sass');
 
 const normal = [selectors.image, selectors.liveView];
 const withOptions = [selectors.backgroundImage, selectors.maskImage];
@@ -79,7 +78,7 @@ describe('Media components', function () {
             assert.equal(attribute.includes('xbox'), true, 'An xbox icon has loaded');
         });
 
-        it ('Should render a valid image', async () => {
+        it ('Should render fallback image on error', async () => {
             const icon = await gf.get(`.${selectors.icon}`);
             await icon.setAttribute('src', 'invalid.png');
 

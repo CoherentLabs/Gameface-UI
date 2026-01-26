@@ -8,8 +8,6 @@ const OUTPUT_FILE = 'src/components/Media/Icon/IconTypes.ts';
 
 // Scans the folder and writes the TypeScript interface
 function generateIconTypes() {
-    console.log('🔄 Detecting icon changes... Building types.');
-    
     const files = glob.globSync(`${ICONS_DIR}/**/*.{png,svg}`);
     const structure = {};
     
@@ -65,19 +63,51 @@ ${generateTypeString(structure)}
 
 generateIconTypes();
 
-const isWatchMode = process.argv.includes('--watch');
-if (!isWatchMode) {
+if (!process.argv.includes('--watch')) {
     console.log('🚀 Generation complete.');
-    return;
+    process.exit(0);
 }
 
 console.log(`👀 Watching for changes in ${ICONS_DIR}...`);
-const watcher = chokidar.watch(ICONS_DIR, {
-    ignoreInitial: true,
-    persistent: true
-});
+const watcher = chokidar.watch(ICONS_DIR, { ignoreInitial: true, persistent: true });
+
+let bucket = {
+    added: null,
+    unlinked: null
+};
+let debounceTimer = null;
+
+const processBucket = () => {
+    if (bucket.added && bucket.unlinked) {
+        const oldName = path.basename(bucket.unlinked);
+        const newName = path.basename(bucket.added);
+        console.log(`✏️  Renamed: ${oldName} -> ${newName}`);
+    } else if (bucket.added) {
+        console.log(`✨ Added: ${path.basename(bucket.added)}`);
+    } else if (bucket.unlinked) {
+        console.log(`🗑️  Deleted: ${path.basename(bucket.unlinked)}`);
+    }
+
+    // Clear bucket and run generation once
+    bucket = { added: null, unlinked: null };
+    generateIconTypes();
+};
+
+const triggerUpdate = () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(processBucket, 100);
+};
 
 watcher
-    .on('add', () => generateIconTypes())
-    .on('unlink', () => generateIconTypes())
-    .on('change', () => generateIconTypes())
+    .on('add', (filePath) => {
+        bucket.added = filePath;
+        triggerUpdate();
+    })
+    .on('unlink', (filePath) => {
+        bucket.unlinked = filePath;
+        triggerUpdate();
+    })
+    .on('change', (filePath) => {
+        console.log(`🔄 Changed: ${path.basename(filePath)}`);
+        generateIconTypes();
+    });

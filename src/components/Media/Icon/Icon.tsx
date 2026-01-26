@@ -2,6 +2,7 @@ import { Component, createSignal, JSX } from "solid-js";
 import { IconMap } from "./IconTypes";
 import styles from './Icon.module.scss';
 import fallbackImg from './fallback.png?url';
+import useBaseComponent from "@components/BaseComponent/BaseComponent";
 
 export interface IconProps {
 	style?: JSX.CSSProperties
@@ -12,12 +13,13 @@ export interface IconProps {
 const modules = import.meta.glob('@assets/icons/**/*.{png,svg}', { eager: true }) as Record<string, { default: string }>
 // Fallback Icon to prevent app crash when file has been deleted
 const MissingIcon: Component<IconProps> = (props) => (
-	<img src={fallbackImg} {...props} class={`${styles.fallback} ${props.class || ''}`} />
+	<img {...props} src={fallbackImg} class={`${styles.fallback} ${props.class || ''}`} />
  )
 
 const IconComponent = (src: string): Component<IconProps> => {
 	return (props) => {
 		const [hasError, setHasError] = createSignal(false);
+		const {forwardAttrs} = useBaseComponent(props);
 
 		return (
 			<>
@@ -25,10 +27,11 @@ const IconComponent = (src: string): Component<IconProps> => {
 					<MissingIcon {...props} />
 				) : (
 					<img
+						{...props}
+						use:forwardAttrs={props}
 						src={src}
 						class={`${styles.icon} ${props.class || ''}`}
 						onError={() => setHasError(true)}
-						{...props}
 					/>
 				)}
 			</>
