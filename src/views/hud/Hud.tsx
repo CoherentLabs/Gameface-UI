@@ -2,13 +2,11 @@ import Block from '@components/Layout/Block/Block';
 import { Column4 } from '@components/Layout/Column/Column';
 import Flex from '@components/Layout/Flex/Flex';
 import Row from '@components/Layout/Row/Row';
-import Image from '@components/Media/Image/Image';
 import TopBar from '@custom-components/Hud/TopBar/TopBar';
 import KillsList from '@custom-components/Hud/KillsList/KillsList';
 import StatusBar from '@custom-components/Hud/StatusBar/StatusBar';
 import Weapons from '@custom-components/Hud/Weapons/Weapons';
 import styles from './Hud.module.css';
-import crosshair from '@assets/crosshair.png';
 import RadialMenu, { RadialMenuRef } from '@components/Complex/RadialMenu/RadialMenu';
 import { For, onCleanup, onMount } from 'solid-js';
 import Weapon1 from "@assets/wheel/weapon1.png";
@@ -19,6 +17,7 @@ import Weapon5 from "@assets/wheel/weapon5.png";
 import Weapon6 from "@assets/wheel/weapon6.png";
 import Center from "@assets/wheel/GameMessage_AchievmentIcon.png";
 import BackgroundImage from '@components/Media/BackgroundImage/BackgroundImage';
+import { Icon } from '@components/Media/Icon/Icon';
 
 const wheelItems = [
     { id: "shotgun", img: Weapon1 },
@@ -109,7 +108,7 @@ const Hud = () => {
                 <Column4></Column4>
                 <Column4>
                     <Flex style={{ width: '100%', height: '100%' }} align-items="center" justify-content="center">
-                        <Image style={{ width: '7vh', height: '7vh' }} src={crosshair}></Image>
+                        <Icon.hud.crosshair style={{ width: '7vh', height: '7vh' }} />
                     </Flex>
                 </Column4>
                 <Column4></Column4>

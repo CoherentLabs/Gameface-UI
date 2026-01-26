@@ -5,7 +5,7 @@ const { navigateToPage } = require('../shared/utils');
 const normal = [selectors.image, selectors.liveView];
 const withOptions = [selectors.backgroundImage, selectors.maskImage];
 
-describe('Media component', function () {
+describe('Media components', function () {
     this.beforeAll(async () => {
         await navigateToPage('.media-link');
     })
@@ -69,4 +69,32 @@ describe('Media component', function () {
         });
     })
 
+    describe('Icon', function () {
+        it ('Should render a valid image', async () => {
+            const icon = await gf.get(`.${selectors.icon}`);
+            const attribute = await icon.getAttribute('src');
+
+            assert.ok(attribute, 'Image element has loaded');
+            assert.equal(attribute.includes('xbox'), true, 'An xbox icon has loaded');
+        });
+
+        it ('Should render fallback image on error', async () => {
+            const icon = await gf.get(`.${selectors.icon}`);
+            await icon.setAttribute('src', 'invalid.png');
+
+            const newAttr = await gf.getAttribute(`.${selectors.icon}`, 'src'); 
+            assert.equal(newAttr.includes('fallback.png'), true, 'The fallback image has loaded');
+        });
+
+        it(`Should update styles & classes reactively on props change`, async () => {
+            const el = await gf.get(`.${selectors.icon}`);
+            await gf.click(`.${selectors.scenarioBtn}.scenario-3`);
+
+            const styles = await el.styles();
+            const classes = await el.classes();
+
+            assert.equal(styles['background-color'], 'rgba(0, 0, 255, 1)', 'background-color should update');
+            assert.ok(classes.includes(selectors.reactive), 'reactive class applied');
+        });
+    });
 });

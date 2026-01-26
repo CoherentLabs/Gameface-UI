@@ -1,8 +1,6 @@
 import Flex from "@components/Layout/Flex/Flex";
-import Image from "@components/Media/Image/Image";
 import InlineTextBlock from "@components/Basic/InlineTextBlock/InlineTextBlock";
-
-import placeholder from '@assets/placeholder.png';
+import { Icon } from "@components/Media/Icon/Icon";
 
 const KillsList = () => {
     return <Flex
@@ -20,7 +18,7 @@ const KillsList = () => {
             }}
         >
             <span style={{ color: 'lightcoral' }}>TestEnemy</span>
-            <Image style={{ width: '3vh', height: '3vh' }} src={placeholder}></Image>
+            <Icon.hud.placeholder style={{ width: '3vh', height: '3vh' }} />
             <span style={{ color: 'lightblue' }}>TestHero</span>
         </InlineTextBlock>
         <InlineTextBlock
@@ -32,7 +30,7 @@ const KillsList = () => {
             }}
         >
             <span style={{ color: 'lightblue' }}>TestHero</span>
-            <Image style={{ width: '3vh', height: '3vh' }} src={placeholder}></Image>
+            <Icon.hud.placeholder style={{ width: '3vh', height: '3vh' }} />
             <span style={{ color: 'lightcoral' }}>TestEnemy</span>
         </InlineTextBlock>
         <InlineTextBlock
@@ -44,7 +42,7 @@ const KillsList = () => {
             }}
         >
             <span style={{ color: 'lightblue' }}>TestHero</span>
-            <Image style={{ width: '3vh', height: '3vh' }} src={placeholder}></Image>
+            <Icon.hud.placeholder style={{ width: '3vh', height: '3vh' }} />
             <span style={{ color: 'lightcoral' }}>TestEnemy</span>
         </InlineTextBlock>
     </Flex>

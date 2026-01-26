@@ -1,13 +1,14 @@
 import Tab from "@components/Layout/Tab/Tab";
 import { createSignal, createMemo, onMount, onCleanup, For } from "solid-js";
-import grandeImage from '@assets/grenade.png'
-import weaponImage from '@assets/weapon.png'
+import grandeImage from '@assets/icons/hud/grenade.png'
+import weaponImage from '@assets/icons/hud/weapon.png'
 import Image from "@components/Media/Image/Image";
 import BackgroundImage from "@components/Media/BackgroundImage/BackgroundImage";
 import MaskImage from "@components/Media/MaskImage/MaskImage";
 import LiveView from "@components/Media/LiveView/LiveView";
 import './media.css';
 import selectors from "../../../shared/media-selectors.json";
+import { Icon } from "@components/Media/Icon/Icon";
 
 const MediaTest = () => {
     const [reactivity, setReactivity] = createSignal(false);
@@ -19,6 +20,7 @@ const MediaTest = () => {
         { label: "Change image", action: () => setSrc(weaponImage)},
         { label: "Change options", action: () => setOptions({position: "right", repeat: 'y', size: 'contain'})},
         { label: "Enable fill", action: () => setFill(true)},
+        { label: "Set reactivity to true", action: () => setReactivity(true)},
     ];
 
     const reset = () => {
@@ -59,6 +61,7 @@ const MediaTest = () => {
                 Masked content
               </div>
             </MaskImage>
+            <Icon.gamepad.xbox.a style={reactiveStyle()} class={`${selectors.icon} ${reactiveClass()}`} />
         </Tab> 
     )
 }
