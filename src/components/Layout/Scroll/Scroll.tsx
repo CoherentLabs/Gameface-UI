@@ -1,4 +1,4 @@
-import { Accessor, createContext, createEffect, createMemo, createSignal, onCleanup, onMount, ParentComponent, on, mergeProps } from 'solid-js';
+import { Accessor, createContext, createEffect, createSignal, onCleanup, onMount, ParentComponent, on, mergeProps } from 'solid-js';
 import styles from './Scroll.module.scss';
 import LayoutBase from '../LayoutBase';
 import { clamp } from '@components/utils/clamp';
@@ -257,7 +257,6 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
         'pan': (_: any,[x, y]: number[]) => {
             if (y === 0) return;
 
-            console.log('executred')
             y < 0 ? scrollUp() : scrollDown()
         },
     }

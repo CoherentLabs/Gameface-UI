@@ -101,7 +101,7 @@ You can use the [Navigation.Area](/components/utility/navigation/#navigationarea
 2. Pass that exact same class (without the dot) to the selector prop of the `Navigation.Area`.
 
 ```tsx
-import { Navigation } from '@components/Utility/Navigation/Navigation';
+import Navigation from '@components/Utility/Navigation/Navigation';
 import Grid from '@components/Layout/Grid/Grid';
 import GridTile from '@components/Layout/Grid/GridTile';
 import Block from '@components/Layout/Block/Block';
@@ -143,7 +143,7 @@ You can manually register the tiles as a navigable area using the [registerArea]
 3. Register the specific class name of your list items using `registerArea`.
 
 ```tsx
-import { NavigationRef } from '@components/Utility/Navigation/Navigation';
+import Navigation, { NavigationRef } from '@components/Utility/Navigation/Navigation';
 
 const App = () => {
     const handleNavReady = (api: NavigationRef) => {
