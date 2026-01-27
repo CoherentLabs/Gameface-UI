@@ -79,8 +79,9 @@ export interface ActionMethods {
     /**
      * Resumes a paused action, allowing its callback to execute again
      * @param action - The name of the action to resume
+     * @param force - Whether to force pause the action, even if it has more than 1 subscribers
      */
-    resumeAction: (action: ActionName) => void;
+    resumeAction: (action: ActionName, force?: boolean) => void;
 
     /**
      * Checks if an action is currently paused

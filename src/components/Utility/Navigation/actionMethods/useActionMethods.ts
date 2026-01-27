@@ -9,6 +9,11 @@ export default function createActionMethods(
     config: NavigationConfigType,
     setConfig: SetStoreFunction<NavigationConfigType>
 ): ActionMethods {
+    // For regular pause/unpause subscribers
+    const actionSubscribers = new Map<string, number>();
+    // For force paused actions
+    const forcePausedActions = new Set<string>();
+    
     const registerAction = (actionName: ActionName) => {
         const {key, button, callback, global} = getAction(actionName)!;
 
@@ -43,9 +48,11 @@ export default function createActionMethods(
     const unregisterAction = (actionName: ActionName) => {
         const {key, button} = getAction(actionName)!;
 
-        if (config.keyboard && key) keyboard.off(key.binds, actionName)
-        if (config.gamepad && button) gamepad.off(button.binds, actionName)
-        actions.remove(actionName)
+        if (config.keyboard && key) keyboard.off(key.binds, actionName);
+        if (config.gamepad && button) gamepad.off(button.binds, actionName);
+        actions.remove(actionName);
+        actionSubscribers.delete(actionName);
+        forcePausedActions.delete(actionName);
     }
 
     const addAction = (name: ActionName, data: ActionCfg) => {
@@ -94,15 +101,16 @@ export default function createActionMethods(
     const getAction = (name: ActionName) => config.actions[name];
     const getActions = () => config.actions;
 
-    const actionSubscribers = new Map<string, number>();
-
     const pauseAction = (name: ActionName, force: boolean = false) => {
-        if (!getAction(name)) {
-            return console.warn('Action not found');
+        if (!getAction(name)) return console.warn('Action not found');
+
+        if (forcePausedActions.has(name)) {
+            if (import.meta.env.DEV) console.log(`Action: ${name} has already been force paused!`);
+            return;
         }
 
         if (force) {
-            actionSubscribers.set(name, 0);
+            forcePausedActions.add(name);
             setConfig('actions', name, 'paused', true);
             return;
         }
@@ -118,12 +126,26 @@ export default function createActionMethods(
         }
     };
 
-    const resumeAction = (name: ActionName) => {
+    const resumeAction = (name: ActionName, force: boolean = false) => {
         const action = getAction(name);
         if (!action) return console.warn('Action not found');
 
+        // Increment subscibers even if force paused
         const currentCount = actionSubscribers.get(name) || 0;
         actionSubscribers.set(name, currentCount + 1);
+
+        if (force) {
+            forcePausedActions.delete(name);
+            setConfig('actions', name, 'paused', false);
+            return;
+        }
+
+        if (forcePausedActions.has(name)) {
+            if (import.meta.env.DEV) {
+                console.log(`Action: ${name} has been force paused! To resume it, use resumeAction(${name}, true)`);
+            }
+            return;
+        }
 
         if (currentCount === 0 && action.paused) {
             setConfig('actions', name, 'paused', false);

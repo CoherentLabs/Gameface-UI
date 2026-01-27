@@ -358,7 +358,7 @@ When defining actions, you can configure the following properties:
 | `actions`         | `ActionMap`                   | `{}`        | Custom action configurations to register in addition to default actions. Each action can define keyboard/gamepad bindings and callbacks.                                                                    |
 | `scope`           | `string`                      | `""`        | The initial navigation scope. When a `Navigation.Area` with a matching name is registered, it will be auto-focused.                                                                                           |
 | `pollingInterval` | `number`                      | `200`       | Gamepad polling interval in milliseconds. Determines how frequently the system checks for gamepad input.                                                                                                     |
-| `ref`             | `NavigationRef`               | `undefined` | A reference to the component, providing access to all navigation methods via the [NavigationRef](/components/utility/navigation#contextref-api) interface.                                                                                                   |
+| `ref`             | `NavigationRef` \| `((nav: NavigationRef) => void)` | `undefined` | A reference to the component, providing access to all navigation methods via the [NavigationRef](/components/utility/navigation#contextref-api) interface.                                                                                                   |
 | `overlap`         | `number`                      | `undefined` | Overlap threshold for spatial navigation. Determines how much elements can overlap before being considered in different navigation paths.                                                                    |
 
 ## UseNavigation hook & Ref API
@@ -373,8 +373,8 @@ The `Navigation` component exposes a comprehensive API through the `useNavigatio
 | `removeAction`  | `name: ActionName`           | `void`       | Removes a registered `Navigation` action and unregisters it from the interaction manager.                                                                                                                     |
 | `updateAction`  | `name: ActionName, config:` [ActionCfg](/components/utility/navigation#action-configuration-reference-actioncfg) | `void` | Updates an existing action's configuration. Default actions can be updated as well. Accepts the same config properties as `addAction`.                                                                      |
 | `executeAction` | `name: ActionName`           | `void`       | Executes a registered action by name, triggering its callback and event emission.                                                                                                                          |
-| `pauseAction`   | `action: ActionName`, `force?: boolean = false`         | `void`       | Pauses an action, preventing its callback from executing. Actions can be paused only when they don't have subscribers, to bypass that provide `true` as the second argument.                                                                                                              |
-| `resumeAction`  | `action: ActionName`         | `void`       | Resumes a paused action, allowing its callback to execute again.                                                                                                                                           |
+| `pauseAction`   | `action: ActionName`, `force?: boolean = false` | `void`       | Pauses an action, preventing its callback from executing. Actions can be paused only when they don't have subscribers, to bypass that provide `true` as the second argument.                                                                                                              |
+| `resumeAction`  | `action: ActionName`, `force?: boolean = false` | `void`       | Resumes a paused action, allowing its callback to execute again. If an action was force paused, you must resume it by providing `true` as a second argument when calling the function.                                                                                                                                           |
 | `isPaused`      | `action: ActionName`         | `boolean`    | Checks if an action is currently paused. Returns true if paused, false otherwise.                                                                                                                          |
 | `getScope`      | None                         | `string`     | Gets the current navigation scope (typically the name of the active navigation area).                                                                                                                       |
 | `getAction`     | `name: ActionName`           | `ActionCfg \| undefined` | Gets a specific action configuration by name. Returns undefined if the action doesn't exist.                                                                                                    |
@@ -518,3 +518,82 @@ const MyComponent = () => {
     );
 };
 ```
+
+:::note
+The `ref` prop accepts both a callback function with a `NavigationRef` argument and a direct variable assignment. If you need to immediately run some logic when the navigation mounts, 
+use the callback pattern to ensure the API is ready (Option A).
+:::
+
+### Action states (Pause/Resume)
+
+Actions can be paused and resumed to control when they are active. This is useful for optimizing performance or managing context-specific inputs.
+
+For example, you might want to pause a certain action to avoid a case where a button press triggers multiple actions in a specific context. 
+In such cases, you can pause the action when entering that context and resume it when exiting.
+
+```tsx
+import { useNavigation } from "@components/Utility/Navigation/Navigation";
+
+const MyComponent = () => {
+    const navigation = useNavigation();
+
+    const openMenu = () => {
+        // Pause the actions to prevent accidental component triggers
+        navigation.pauseAction('move-left');
+        navigation.pauseAction('move-right');
+    };
+
+    const closeMenu = () => {
+        // Resume the actions when leaving the menu
+        navigation.resumeAction('move-left');
+        navigation.resumeAction('move-right');
+    };
+
+    return (
+        <div>
+            <button onClick={openMenu}>Open Menu</button>
+            <button onClick={closeMenu}>Exit Menu</button>
+        </div>
+    );
+};
+```
+
+In this example, the `move-left` and `move-right` actions are paused when entering a specific context (e.g., a modal or special menu) and resumed when exiting that context.
+
+Internally `resumeAction` and `pauseAction` manage a counter that prevents desynchronization when multiple components try to pause/resume the same action.
+For example if **two** components pause the same action, it will require **two** calls to `resumeAction` to resume it.
+
+This is done to avoid cases where one component resumes an action that another component still needs paused. 
+Another common case is if you have two component that use the `pan` action - both will resume it when mounted and pause it when unmounted. 
+Without the counter, unmounting one component will pause the action even if the other component is still mounted, prevent it from reacting to the action.
+
+However, if you need to bypass this behavior, you can provide `true` as the second argument to both methods to **force** the action to pause or resume immediately.
+
+```tsx
+const MyComponent = () => {
+    const navigation = useNavigation();
+
+    const forcePause = () => {
+        // Force pause the 'select' action immediately
+        navigation.pauseAction('select', true);
+    };
+
+    const forceResume = () => {
+        // Force resume the 'select' action immediately
+        navigation.resumeAction('select', true);
+    };
+
+    return (
+        <div>
+            <button onClick={forcePause}>Force Pause Select</button>
+            <button onClick={forceResume}>Force Resume Select</button>
+        </div>
+    );
+};
+```
+
+:::note
+If an action has been force paused, you must also force resume it by providing `true` as the second argument when calling `resumeAction()`. Or vice versa.
+:::
+
+
