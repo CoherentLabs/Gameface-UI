@@ -32,7 +32,7 @@ describe('Slider', function () {
     it('Should change value', async () => {
         const handle = await gf.get(`.${selectors.sliderHandle}`);
         const thumb = await gf.get(`.${selectors.sliderThumb}`);
-        await handle.drag(1000, 0);
+        await handle.dragBy(1000, 0);
 
         assert.equal(await thumb.text(), 100, 'Slider\'s value should change to 100');
     })
@@ -47,7 +47,7 @@ describe('Slider', function () {
         const assertionEl = await gf.get(`.${selectors.assertionElement}`);
         const handle = await gf.get(`.${selectors.sliderHandle}`);
         const thumb = await gf.get(`.${selectors.sliderThumb}`);
-        await handle.drag(1000, 0);
+        await handle.dragBy(1000, 0);
 
         assert.equal(await assertionEl.text(), await thumb.text(), 'Assertion element\'s text should match the value of the slider');
     })

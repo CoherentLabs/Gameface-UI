@@ -1,11 +1,10 @@
 const assert = require('assert');
 const selectors = require('../../shared/progress-selectors.json');
+const { navigateToPage } = require('../../shared/utils');
 
 describe('Progress Bar', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.sleep(1000);
-        await gf.click('.progress-bar-link');
+        await navigateToPage('.progress-bar-link');
     })
 
     this.afterEach(async () => {
@@ -13,15 +12,15 @@ describe('Progress Bar', function () {
     })
 
     it('Should render itself and it\'s children correctly', async () => {
-        const progress= await gf.get(`.${selectors.base}`);
-        const fill= await progress.find(`.${selectors.fill}`);
+        const progress = await gf.get(`.${selectors.base}`);
+        const fill = await progress.find(`.${selectors.fill}`);
 
         assert.ok(progress, 'Progress bar should be in the DOM');
         assert.ok(fill, 'Progress bar fill should be in the DOM');
     })
-    
+
     it('Should load to 100%', async () => {
-        const fill= await gf.get(`.${selectors.fill}`);
+        const fill = await gf.get(`.${selectors.fill}`);
         await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
 
         const hasStyle = await fill.waitForStyles({ width: '100%' });
@@ -29,7 +28,7 @@ describe('Progress Bar', function () {
     })
 
     it('Should load to 50%', async () => {
-        const fill= await gf.get(`.${selectors.fill}`);
+        const fill = await gf.get(`.${selectors.fill}`);
         await gf.click(`.${selectors.scenarioBtn}.scenario-1`);
 
         const hasStyle = await fill.waitForStyles({ width: '50%' });
@@ -37,11 +36,11 @@ describe('Progress Bar', function () {
     })
 
     it('Should not load beyond 100%', async () => {
-        const fill= await gf.get(`.${selectors.fill}`);
+        const fill = await gf.get(`.${selectors.fill}`);
         await gf.click(`.${selectors.scenarioBtn}.scenario-2`);
 
-        await gf.sleep(1000)
-        const {width} = await fill.styles();
+        await gf.sleep(1000);
+        const { width } = await fill.styles();
         assert.notEqual(width, 120, 'Width should be 100%');
     })
 
