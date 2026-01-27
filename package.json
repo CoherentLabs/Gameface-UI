@@ -8,7 +8,7 @@
     "build": "npm run gen-icons && vite build",
     "run-test": "node ./scripts/test.js",
     "dev:host": "vite --host --mode test",
-    "build:test": "vite build --mode test",
+    "build:test": "npm run gen-icons&&vite build --mode test",
     "gen-icons": "node scripts/generate-icon-types.js",
     "preview": "vite preview --port 3000 --host",
     "test": "npm run build:test&&start-server-and-test preview http://localhost:3000/components-e2e/ run-test",

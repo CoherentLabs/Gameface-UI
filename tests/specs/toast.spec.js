@@ -1,5 +1,6 @@
 const assert = require('assert');
 const selectors = require('../shared/toast-selectors.json');
+const { navigateToPage } = require('../shared/utils');
 const TIMEOUT = 2000;
 const positions = [
     'top-left',
@@ -15,9 +16,7 @@ const positions = [
 
 describe('Toast', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.sleep(1000);
-        await gf.click('.toaster-link');
+        await navigateToPage('.toaster-link');
     });
 
     it('Should render toast', async () => {
@@ -147,35 +146,35 @@ describe('Toast', function () {
                 case 'top-center':
                     assert.ok(
                         toastLocation.x + toastSize.width / 2 === windowSize.width / 2 &&
-                            toastLocation.y <= windowSize.height / 3,
+                        toastLocation.y <= windowSize.height / 3,
                         'Toast should be in the top-center quadrant'
                     );
                     break;
                 case 'bottom-center':
                     assert.ok(
                         toastLocation.x + toastSize.width / 2 === windowSize.width / 2 &&
-                            toastLocation.y >= windowSize.height / 3,
+                        toastLocation.y >= windowSize.height / 3,
                         'Toast should be in the bottom-center quadrant'
                     );
                     break;
                 case 'middle-left':
                     assert.ok(
                         toastLocation.x <= windowSize.width / 3 &&
-                            toastLocation.y + toastSize.height / 2 === windowSize.height / 2,
+                        toastLocation.y + toastSize.height / 2 === windowSize.height / 2,
                         'Toast should be in the middle-left quadrant'
                     );
                     break;
                 case 'middle-right':
                     assert.ok(
                         toastLocation.x > windowSize.width / 2 &&
-                            toastLocation.y + toastSize.height / 2 === windowSize.height / 2,
+                        toastLocation.y + toastSize.height / 2 === windowSize.height / 2,
                         'Toast should be in the middle-right quadrant'
                     );
                     break;
                 case 'middle-center':
                     assert.ok(
                         toastLocation.x + toastSize.width / 2 === windowSize.width / 2 &&
-                            toastLocation.y + toastSize.height / 2 === windowSize.height / 2,
+                        toastLocation.y + toastSize.height / 2 === windowSize.height / 2,
                         'Toast should be in the middle-center quadrant'
                     );
                     break;

@@ -1,11 +1,10 @@
 const assert = require('assert');
 const selectors = require('../../shared/progress-selectors.json');
+const { navigateToPage } = require('../../shared/utils');
 
 describe('Progress Circle', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.sleep(1000);
-        await gf.click('.progress-circle-link');
+        await navigateToPage('.progress-circle-link');
     })
 
     this.afterEach(async () => {
@@ -13,7 +12,7 @@ describe('Progress Circle', function () {
     })
 
     it('Should render itself and it\'s children correctly', async () => {
-        const progress= await gf.get(`.${selectors.base}`);
+        const progress = await gf.get(`.${selectors.base}`);
         const fill = await progress.find(`.${selectors.fill}`);
         const outline = await progress.find(`.${selectors.outline}`);
         const text = await progress.find(`.${selectors.text}`);
@@ -23,10 +22,10 @@ describe('Progress Circle', function () {
         assert.ok(outline, 'Progress bar outline should be in the DOM');
         assert.ok(text, 'Progress bar text should be in the DOM');
     })
-    
+
     it('Should load to 100%', async () => {
-        const fill= await gf.get(`.${selectors.fill}`);
-        const text= await gf.get(`.${selectors.text}`);
+        const fill = await gf.get(`.${selectors.fill}`);
+        const text = await gf.get(`.${selectors.text}`);
         await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
 
         const hasAttribute = await fill.waitForAttributes({ 'stroke-dashoffset': '0' });
@@ -35,8 +34,8 @@ describe('Progress Circle', function () {
     })
 
     it('Should load to 50%', async () => {
-        const fill= await gf.get(`.${selectors.fill}`);
-        const text= await gf.get(`.${selectors.text}`);
+        const fill = await gf.get(`.${selectors.fill}`);
+        const text = await gf.get(`.${selectors.text}`);
         await gf.click(`.${selectors.scenarioBtn}.scenario-1`);
 
         const hasAttribute = await fill.waitForAttributes({ 'stroke-dashoffset': '50' });
@@ -45,10 +44,10 @@ describe('Progress Circle', function () {
     })
 
     it('Should not load beyond 100%', async () => {
-        const fill= await gf.get(`.${selectors.fill}`);
+        const fill = await gf.get(`.${selectors.fill}`);
         await gf.click(`.${selectors.scenarioBtn}.scenario-2`);
 
-        await gf.sleep(1000)
+        await gf.sleep(1000);
         const dashoffset = await fill.getAttribute('stroke-dashoffset');
         assert.notEqual(dashoffset, -20, 'Dashoffset should be 0');
     })

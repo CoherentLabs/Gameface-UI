@@ -3,12 +3,11 @@ const selectors = require('../shared/keybinds/keybinds-selectors.json');
 const DEFAULT_MAPPINGS = require('../shared/keybinds/default-mappings.json');
 const ALTERNATE_MAPPINGS = require('../shared/keybinds/alternate-mappings.json');
 const OVERRIDES = require('../shared/keybinds/overrides.json');
+const { navigateToPage } = require('../shared/utils');
 
 describe('Keybinds', function () {
     this.beforeAll(async () => {
-        await gf.navigate(`http://localhost:3000/components-e2e/`);
-        await gf.sleep(1000);
-        await gf.click('.keybinds-link');
+        await navigateToPage('.keybinds-link');
     })
 
     this.afterEach(async () => {

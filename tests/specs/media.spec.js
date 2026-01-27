@@ -75,7 +75,8 @@ describe('Media components', function () {
             const attribute = await icon.getAttribute('src');
 
             assert.ok(attribute, 'Image element has loaded');
-            assert.equal(attribute.includes('xbox'), true, 'An xbox icon has loaded');
+            assert.equal(attribute.includes('/a'), true, 'An xbox icon has loaded');
+            assert.equal(attribute.includes('.png'), true, 'An xbox icon has loaded');
         });
 
         it ('Should render fallback image on error', async () => {
@@ -83,7 +84,8 @@ describe('Media components', function () {
             await icon.setAttribute('src', 'invalid.png');
 
             const newAttr = await gf.getAttribute(`.${selectors.icon}`, 'src'); 
-            assert.equal(newAttr.includes('fallback.png'), true, 'The fallback image has loaded');
+            assert.equal(newAttr.includes('/fallback'), true, 'The fallback image has loaded');
+            assert.equal(newAttr.includes('.png'), true, 'The fallback image has loaded');
         });
 
         it(`Should update styles & classes reactively on props change`, async () => {
