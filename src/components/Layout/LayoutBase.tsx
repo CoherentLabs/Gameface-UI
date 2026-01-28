@@ -19,6 +19,14 @@ const LayoutBase: ParentComponent<ComponentProps> = (props) => {
         }
     });
 
+    const navConfig = () => {
+        if (!props.onAction && !props.anchor) return undefined;
+        return {
+            anchor: props.anchor,
+            ...props.onAction
+        };
+    };
+
     return (
         <div
             ref={element}
@@ -26,10 +34,7 @@ const LayoutBase: ParentComponent<ComponentProps> = (props) => {
             style={inlineStyles()}
             use:forwardEvents={props}
             use:forwardAttrs={props}
-            use:navigationActions={{
-                anchor: props.anchor,
-                ...props.onAction,
-            }}
+            use:navigationActions={navConfig()}
         >
             {props.children}
         </div>
