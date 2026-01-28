@@ -1,10 +1,10 @@
 import { ComponentProps } from "@components/types/ComponentProps";
 import { Accessor, createSignal, onMount, ParentComponent, Show, createContext, createMemo, For, DEV, JSX } from "solid-js";
 import styles from './Stepper.module.scss';
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { Control, StepperControl } from "./StepperControl";
 import { Item, StepperItem } from "./StepperItem";
 import { createTokenComponent, useToken, useTokens } from '@components/utils/tokenComponents';
+import baseComponent from "@components/BaseComponent/BaseComponent";
 
 export interface StepperRef {
     selected?: Accessor<string>
@@ -98,7 +98,6 @@ const Stepper: ParentComponent<StepperProps> = (props) => {
     }
 
     props.componentClasses = () => stepperClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     const setOption = (value: string) => {
         if (props.disabled) return;
@@ -150,10 +149,7 @@ const Stepper: ParentComponent<StepperProps> = (props) => {
         <StepperContext.Provider value={{ selected, registerOption, unregisterOption, changeSelected }}>
             <div
                 ref={element!}
-                class={className()}
-                style={inlineStyles()}
-                use:forwardEvents={props}
-                use:forwardAttrs={props}
+                use:baseComponent={props}
             >
                 <Show when={!props["controls-position"] || controlsBefore()}>
                     <StepperControl direction='prev' visible={showPrevControl()} parentChildren={props.children} />

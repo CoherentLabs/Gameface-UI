@@ -1,7 +1,6 @@
 import { ComponentProps } from "@components/types/ComponentProps";
 import { Accessor, createSignal, onMount, ParentComponent, createContext, createMemo } from "solid-js";
 import styles from '@components/Basic/Slider/Slider.module.scss';
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { clamp } from "@components/utils/clamp";
 import { TextSliderGrid } from "./TextSliderGrid";
 import { Fill, SliderFill } from "@components/Basic/Slider/SliderFill";
@@ -10,6 +9,7 @@ import { SliderThumb, Thumb } from "@components/Basic/Slider/SliderThumb";
 import { SliderTrack, Track } from "@components/Basic/Slider/SliderTrack";
 import { useToken } from "@components/utils/tokenComponents";
 import { Pol } from "./TextSliderPol";
+import baseComponent from "@components/BaseComponent/BaseComponent";
 
 export interface TextSliderRef {
     value: Accessor<string>,
@@ -131,7 +131,6 @@ const TextSlider: ParentComponent<TextSliderProps> = (props) => {
     }
 
     props.componentClasses = () => SliderClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     onMount(() => {
         if (!props.ref || !element) return;
@@ -148,10 +147,8 @@ const TextSlider: ParentComponent<TextSliderProps> = (props) => {
         <TextSliderContext.Provider value={{ values }}>
             <div
                 ref={element!}
-                class={className()}
-                style={inlineStyles()}
-                use:forwardEvents={props}
-                use:forwardAttrs={props}>
+                use:baseComponent={props}
+            >
                 <SliderTrack handleClick={handleTrackClick} ref={trackElement} parentChildren={props.children}>
                     <SliderHandle percent={percent} handleMouseDown={handleMouseDown} parentChildren={props.children} />
                     <SliderFill percent={percent} parentChildren={props.children} />

@@ -1,10 +1,10 @@
 import { ComponentProps } from "@components/types/ComponentProps";
 import { Accessor, createContext, createMemo, createSignal, For, onMount, ParentComponent } from "solid-js";
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { createTokenComponent, TokenBase } from "@components/utils/tokenComponents";
 import PaginationItem from "./PaginationItem";
 import { Control, PaginationControl } from "./PaginationControl";
 import styles from './Pagination.module.scss';
+import baseComponent from "@components/BaseComponent/BaseComponent";
 
 export interface PaginationRef {
     element: HTMLDivElement,
@@ -40,7 +40,7 @@ export const Item = createTokenComponent<PaginationItemToken>();
 const Pagination: ParentComponent<PaginationProps> = (props) => {
     const items = createMemo(() => Array.from({ length: props.pageSize }, (_, i) => i + 1));
     const [index, setIndex] = createSignal(props.pageIndex);
-    const length = createMemo(() => items().length); 
+    const length = createMemo(() => items().length);
     let element!: HTMLDivElement;
 
     const changePage = (index: number) => {
@@ -54,9 +54,9 @@ const Pagination: ParentComponent<PaginationProps> = (props) => {
     const nextPage = () => {
         const current = index();
         const isLastIndex = current === length();
-        
+
         if (isLastIndex && !props.loop) return;
-        
+
         changeIndex(isLastIndex ? 1 : current + 1)
     }
 
@@ -65,7 +65,7 @@ const Pagination: ParentComponent<PaginationProps> = (props) => {
         const isFirstIndex = current === 1;
 
         if (isFirstIndex && !props.loop) return;
-        
+
         changeIndex(isFirstIndex ? length() : current - 1)
     }
 
@@ -87,7 +87,6 @@ const Pagination: ParentComponent<PaginationProps> = (props) => {
     })
 
     props.componentClasses = styles.pagination;
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     onMount(() => {
         if (!props.ref || !element) return;
@@ -106,17 +105,15 @@ const Pagination: ParentComponent<PaginationProps> = (props) => {
         <PaginationContext.Provider value={{ current: index, changePage, nextPage, previousPage }}>
             <div
                 ref={element!}
-                class={className()}
-                style={inlineStyles()}
-                use:forwardEvents={props}
-                use:forwardAttrs={props} >
+                use:baseComponent={props}
+            >
                 <PaginationControl direction="prev" parentChildren={props.children} visible={showLeftArrow()} />
-                 <For each={items()}>
-                    {(i) => 
-                        <PaginationItem 
-                            hasNumbers={props.hasNumbers || false} 
-                            index={i} 
-                            max={length()} 
+                <For each={items()}>
+                    {(i) =>
+                        <PaginationItem
+                            hasNumbers={props.hasNumbers || false}
+                            index={i}
+                            max={length()}
                             parentChildren={props.children} />
                     }
                 </For>
@@ -126,4 +123,4 @@ const Pagination: ParentComponent<PaginationProps> = (props) => {
     )
 }
 
-export default Object.assign(Pagination, {Item, Control});
+export default Object.assign(Pagination, { Item, Control });

@@ -1,11 +1,11 @@
 import { ComponentProps } from "@components/types/ComponentProps";
 import { Accessor, createContext, createMemo, createSignal, createUniqueId, For, onMount, ParentComponent, Setter } from "solid-js";
 import styles from './Accordion.module.scss';
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { AccordionPanel, Panel, PanelTokenProps } from "./AccordionPanel";
 import { Heading, Icon } from "./AccordionHeading";
 import { Body } from "./AccordionBody";
 import { useTokens } from "@components/utils/tokenComponents";
+import baseComponent from "@components/BaseComponent/BaseComponent";
 
 export interface AccordionRef {
     element: HTMLDivElement,
@@ -15,9 +15,9 @@ export interface AccordionRef {
     collapse: (title: string) => void,
 }
 
-export interface PanelData { 
+export interface PanelData {
     panel: PanelTokenProps;
-    id: string 
+    id: string
 }
 
 interface AccordionProps extends ComponentProps {
@@ -41,7 +41,7 @@ function initPanels(panelData: PanelData[], multiple = false): string[] {
         if (multiple) {
             arr.push(id);
         } else {
-            return [id]; 
+            return [id];
         }
     }
 
@@ -146,7 +146,6 @@ const Accordion: ParentComponent<AccordionProps> = (props) => {
     });
 
     props.componentClasses = () => accordionClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     onMount(() => {
         if (!props.ref || !element) return;
@@ -164,10 +163,8 @@ const Accordion: ParentComponent<AccordionProps> = (props) => {
         <AccordionContext.Provider value={{ expandedPanels, toggle }}>
             <div
                 ref={element!}
-                class={className()}
-                style={inlineStyles()}
-                use:forwardEvents={props}
-                use:forwardAttrs={props} >
+                use:baseComponent={props}
+            >
                 <For each={panelData()}>
                     {(data) => <AccordionPanel id={data.id} panel={data.panel} />}
                 </For>

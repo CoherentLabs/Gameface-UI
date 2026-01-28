@@ -1,100 +1,169 @@
+import { createEffect, onCleanup } from "solid-js";
 import { ComponentProps } from "@components/types/ComponentProps";
-import { createEffect } from "solid-js";
 
 const baseEventsSet = new Set([
-    "abort",
-    "animationend",
-    "blur",
-    "click",
-    "dblclick",
-    "durationchange",
-    "ended",
-    "finish",
-    "focus",
-    "focusin",
-    "focusout",
-    "gamepadconnected",
-    "gamepaddisconnected",
-    "keydown",
-    "keypress",
-    "keyup",
-    "load",
-    "mousedown",
-    "mouseenter",
-    "mouseleave",
-    "mousemove",
-    "mouseout",
-    "mouseover",
-    "mouseup",
-    "popstate",
-    "readystatechange",
-    "resize",
-    "scroll",
-    "timeout",
-    "touchend",
-    "touchmove",
-    "touchstart",
-    "transitionend",
-    "volumechange",
-    "wheel",
+    "abort", "animationend", "blur", "click", "dblclick", "durationchange", "ended", "finish",
+    "focus", "focusin", "focusout", "gamepadconnected", "gamepaddisconnected", "keydown",
+    "keypress", "keyup", "load", "mousedown", "mouseenter", "mouseleave", "mousemove",
+    "mouseout", "mouseover", "mouseup", "popstate", "readystatechange", "resize", "scroll",
+    "timeout", "touchend", "touchmove", "touchstart", "transitionend", "volumechange", "wheel",
 ]);
 
-function forwardAttrs(el: HTMLElement, getData: () => Record<string, any>) {
-    let prev = new Set<string>();
+function handleClasses(el: Element, props: ComponentProps) {
+    let currentClass = "";
 
-    return createEffect(() => {
-        const data = getData();
-        const seen = new Set<string>();
+    createEffect(() => {
+        const rawBase = props.componentClasses;
+        const base = typeof rawBase === "function" ? rawBase() : rawBase;
 
-        for (const key in data) {
-            if (!key.startsWith("attr:")) continue;
+        const ext = props.class;
+        const finalClass = base ? (ext ? base + " " + ext : base) : (ext || "");
 
-            const name = key.slice(5);
-            const val = data[key];
-            seen.add(name);
-
-            if (val != null) el.setAttribute(name, String(val));
-            else el.removeAttribute(name);
+        if (currentClass !== finalClass) {
+            currentClass = finalClass;
+            el.className = currentClass;
         }
-
-        for (const old of prev) {
-            if (!seen.has(old)) el.removeAttribute(old);
-        }
-
-        prev = seen;
     });
 }
 
-function forwardEvents(el: HTMLElement, getData: () => Record<string, any>) {
-    const listeners: Array<[string, EventListener]> = [];
-    const data = getData();
+type StyleObject = Record<string, string | number | null | undefined>;
 
-    for (const name of baseEventsSet) {
-        const handler = data[name];
-        if (handler) {
-            el.addEventListener(name, handler as EventListener);
-            listeners.push([name, handler as EventListener]);
+function reconcileStyles(el: HTMLElement, next: any, prev: any) {
+    const style = el.style;
+
+    for (const key in prev) {
+        if (next[key] == null) {
+            if (key.indexOf("-") > -1) {
+                style.removeProperty(key);
+            } else {
+                // @ts-ignore
+                style[key] = "";
+            }
         }
     }
+
+    for (const key in next) {
+        const value = next[key];
+
+        if (prev[key] !== value) {
+            if (key.indexOf("-") > -1) {
+                style.setProperty(key, String(value));
+            } else {
+                // @ts-ignore
+                style[key] = value;
+            }
+        }
+    }
+}
+
+function handleStyles(el: HTMLElement, props: ComponentProps) {
+    let prevStyles: StyleObject = {};
+
+    createEffect(() => {
+        const compRaw = props.componentStyles;
+        const extStyles = props.style;
+
+        const compStyles = typeof compRaw === "function" ? compRaw() : compRaw;
+
+        if (!compStyles && !extStyles) {
+            if (Object.keys(prevStyles).length > 0) {
+                el.removeAttribute("style");
+                prevStyles = {};
+            }
+            return;
+        }
+
+        const isCompString = typeof compStyles === "string";
+        const isExtString = typeof extStyles === "string";
+
+        if (isCompString || isExtString) {
+            const compStr = isCompString ? compStyles : "";
+            const extStr = isExtString ? extStyles : "";
+            const finalString = `${compStr};${extStr}`;
+
+            if (el.style.cssText !== finalString) {
+                el.style.cssText = finalString;
+            }
+
+            prevStyles = {};
+            return;
+        }
+
+        const nextStyles: StyleObject = {
+            ...(compStyles as StyleObject || {}),
+            ...(extStyles as StyleObject || {})
+        };
+
+        reconcileStyles(el, nextStyles, prevStyles);
+
+        prevStyles = nextStyles;
+    });
+}
+
+function handleAttrs(el: Element, props: ComponentProps) {
+    let prevKeys: string[] = [];
+
+    createEffect(() => {
+        const currentKeys: string[] = [];
+
+        for (const key in props) {
+            if (!key.startsWith("attr:")) continue;
+
+            const name = key.slice(5);
+            const val = (props as any)[key];
+            currentKeys.push(name);
+
+            if (val != null) {
+                const strVal = String(val);
+                if (el.getAttribute(name) !== strVal) {
+                    el.setAttribute(name, strVal);
+                }
+            } else {
+                el.removeAttribute(name);
+            }
+        }
+
+        if (prevKeys.length > 0) {
+            for (let i = 0; i < prevKeys.length; i++) {
+                const oldName = prevKeys[i];
+                if (!(`attr:${oldName}` in props)) {
+                    el.removeAttribute(oldName);
+                }
+            }
+        }
+        prevKeys = currentKeys;
+    });
+}
+
+function handleEvents(el: Element, props: ComponentProps) {
+    const listeners: Array<[string, EventListener]> = [];
+
+    for (const key in props) {
+        if (baseEventsSet.has(key)) {
+            const handler = (props as any)[key];
+            if (typeof handler === 'function') {
+                el.addEventListener(key, handler as EventListener);
+                listeners.push([key, handler as EventListener]);
+            }
+        }
+    }
+
     return () => {
         for (const [eventName, fn] of listeners) {
             el.removeEventListener(eventName, fn);
         }
-    }
-}
-
-export function useBaseComponent(props: ComponentProps) {
-    const className = () => {
-        const classes = (typeof props.componentClasses === "function" ? props.componentClasses() : props.componentClasses || '') + " " + (props.class || '');
-        return classes.trim();
     };
-
-    const inlineStyles = () => ({
-        ...(typeof props.componentStyles === "function" ? props.componentStyles() : props.componentStyles),
-        ...props.style
-    });
-
-    return { className, inlineStyles, forwardAttrs, forwardEvents };
 }
 
-export default useBaseComponent;
+function baseComponent(el: Element, accessor: () => ComponentProps) {
+    const props = accessor();
+
+    handleClasses(el, props);
+    handleStyles(el as HTMLElement, props);
+    handleAttrs(el, props);
+
+    const cleanupEvents = handleEvents(el, props);
+    onCleanup(() => cleanupEvents());
+}
+
+export default baseComponent;

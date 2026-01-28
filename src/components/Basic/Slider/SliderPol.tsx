@@ -32,7 +32,7 @@ const SliderPol = (props: PolProps) => {
         <div style={props['pol-style']} class={polClasses()}>
             <div class={styles['grid-pol']}></div>
             <Show when={props.size === 'normal'}>
-                <div style={props['pol-value-style']} class={polValueClasses()}>{props.value}</div>
+                <div style={props['pol-value-style']} class={polValueClasses()} textContent={'1'}></div>
             </Show>
         </div>
     )

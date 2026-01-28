@@ -1,8 +1,8 @@
 import { createEffect, createMemo, onMount, ParentComponent } from "solid-js";
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { clampProgress, ProgressProps } from "./Progress";
 import styles from './Progress.module.scss';
+import baseComponent from "@components/BaseComponent/BaseComponent";
 
 const Fill = createTokenComponent<TokenBase>();
 const ProgressBar: ParentComponent<ProgressProps> = (props) => {
@@ -12,7 +12,7 @@ const ProgressBar: ParentComponent<ProgressProps> = (props) => {
     createEffect(() => {
         if (fillElement) fillElement.style.width = `${clampProgress(props.progress)}%`;
     })
-    
+
     const fillClasses = createMemo(() => {
         const classes = [styles['bar-fill']];
         classes.push(fillToken()?.class || "");
@@ -21,18 +21,15 @@ const ProgressBar: ParentComponent<ProgressProps> = (props) => {
     });
 
     props.componentClasses = styles.bar;
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     return (
         <div
             ref={props.ref as HTMLDivElement}
-            class={className()}
-            style={inlineStyles()}
-            use:forwardEvents={props}
-            use:forwardAttrs={props}>
-            <div 
+            use:baseComponent={props}
+        >
+            <div
                 ref={fillElement}
-                class={fillClasses()} 
+                class={fillClasses()}
                 style={fillToken()?.style} />
         </div>
     )

@@ -1,11 +1,11 @@
-import { Accessor, createEffect, createMemo, JSX, ParentComponent, ParentProps, useContext } from "solid-js";
+import { createMemo, JSX, ParentComponent, ParentProps, useContext } from "solid-js";
 import { RadioContext } from "./Radio";
 import { ComponentProps } from "@components/types/ComponentProps";
 import styles from './Radio.module.scss';
 import { RadioButtonControl } from "./RadioButtonControl";
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { Show } from "solid-js";
 import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
+import baseComponent from "@components/BaseComponent/BaseComponent";
 
 export interface CommonRadioButtonSlotProps {
     style?: JSX.CSSProperties,
@@ -50,8 +50,6 @@ export const RadioButton: ParentComponent<{ button: RadioButtonProps }> = (props
 
     props.button.componentClasses = () => buttonClasses();
 
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props.button);
-
     const handleClick = (e?: MouseEvent) => {
         if (props.button.disabled) return;
 
@@ -62,10 +60,7 @@ export const RadioButton: ParentComponent<{ button: RadioButtonProps }> = (props
     return (
         <div
             ref={props.button.ref as HTMLDivElement}
-            class={className()}
-            style={inlineStyles()}
-            use:forwardEvents={props}
-            use:forwardAttrs={props}
+            use:baseComponent={props.button}
             onclick={handleClick}>
 
             <Show when={LabelToken?.()?.before}>

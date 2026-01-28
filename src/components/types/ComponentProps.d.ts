@@ -1,5 +1,6 @@
 import { JSX, ParentProps } from "solid-js";
 import Events from "./BaseComponent";
+import baseComponent from "@components/BaseComponent/BaseComponent";
 
 type ExcludedEvents =
     | "abort"
@@ -42,10 +43,9 @@ declare module "solid-js" {
         interface IntrinsicElements {
             p: JSX.HTMLAttributes<HTMLParagraphElement> & { cohinline?: any };
         }
-        
-        interface Directives {
-            forwardEvents: ComponentProps<any>;
-            forwardAttrs:  ComponentProps<any>;
+
+        interface DirectiveFunctions {
+            baseComponent: typeof baseComponent;
         }
     }
 }

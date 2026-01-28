@@ -2,11 +2,11 @@ import { BaseComponentRef, ComponentProps } from "@components/types/ComponentPro
 import { Accessor, createMemo, onMount, ParentComponent } from "solid-js";
 import { createContext, createSignal } from "solid-js";
 import styles from './Radio.module.scss';
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { RadioButtons } from "./RadioButtons";
 import { Button, ButtonLabel } from "./RadioButton";
 import { ButtonControl } from "./RadioButtonControl";
 import { ButtonIndicator } from "./RadioButtonIndicator";
+import baseComponent from "@components/BaseComponent/BaseComponent";
 
 export const RadioContext = createContext<RadioContextValue>();
 
@@ -45,7 +45,6 @@ const Radio: ParentComponent<RadioProps> = (props) => {
 
 
     props.componentClasses = () => checkboxClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     const changeOption = (newOption: string) => {
         if (props.disabled) return;
@@ -67,10 +66,8 @@ const Radio: ParentComponent<RadioProps> = (props) => {
     return (
         <RadioContext.Provider value={{ selected, changeOption }}>
             <div ref={element}
-                class={className()}
-                style={inlineStyles()}
-                use:forwardEvents={props}
-                use:forwardAttrs={props}>
+                use:baseComponent={props}
+            >
                 <RadioButtons parentChildren={props.children} />
             </div>
         </RadioContext.Provider>

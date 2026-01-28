@@ -3,9 +3,10 @@ import styles from './RadialMenu.module.scss';
 import { ComponentProps } from '@components/types/ComponentProps';
 import { Accessor, createContext, createEffect, createMemo, createSignal, For, JSX, on, onCleanup, onMount, ParentComponent, Setter } from 'solid-js';
 import MenuItem from './MenuItem';
-import useBaseComponent from '@components/BaseComponent/BaseComponent';
 import MenuCenter from './MenuCenter';
 import { angleToSlice, mouseToStick, Stick, stickToPolar } from './utils';
+import baseComponent from '@components/BaseComponent/BaseComponent';
+
 export interface ItemTokenProps extends TokenBase {
     id?: string,
     offset?: string
@@ -20,9 +21,9 @@ export const Selector = createTokenComponent<Omit<ItemTokenProps, 'id' | 'offset
 
 interface RadialMenuContextType {
     clipPathValue: Accessor<string>,
-    degreesPerSlice: Accessor<number>, 
-    selected:  Accessor<number>,
-    rotation:  Accessor<number>,
+    degreesPerSlice: Accessor<number>,
+    selected: Accessor<number>,
+    rotation: Accessor<number>,
     onChange?: (id: string | number) => void;
 }
 export const RadialMenuContext = createContext<RadialMenuContextType>();
@@ -37,7 +38,7 @@ export interface RadialMenuRef {
     selectByVector: (x: number, y: number) => void;
 }
 interface RadialMenuProps extends ComponentProps {
-    gap?: number, 
+    gap?: number,
     opened?: boolean,
     selected?: number,
     onChange?: (id: string | number) => void;
@@ -50,7 +51,7 @@ const RadialMenu: ParentComponent<RadialMenuProps> = (props) => {
     const ItemTokens = useTokens(Item, props.children);
     let element: HTMLDivElement | undefined;
     let eventAttached = false;
-    
+
     const [selected, setSelected] = createSignal(props.selected ?? 0);
     const [rotation, setRotation] = createSignal(0);
     const [isOpen, setIsOpen] = createSignal(props.opened ?? false);
@@ -59,12 +60,12 @@ const RadialMenu: ParentComponent<RadialMenuProps> = (props) => {
 
     const length = createMemo(() => ItemTokens()?.length ?? 1);
     const degreesPerSlice = createMemo(() => 360 / length());
-    
+
     const clipPathValue = createMemo(() => {
         if (length() === 1) return "";
         if (length() === 2) return 'polygon(0% 50%, 0% 0%, 100% 0%, 100% 50%)'
 
-        
+
         const g = gap();
         const halfSliceDeg = degreesPerSlice() / 2;
         const halfSliceTan = Math.tan(halfSliceDeg * Math.PI / 180);
@@ -144,14 +145,14 @@ const RadialMenu: ParentComponent<RadialMenuProps> = (props) => {
 
     const removeEventListeners = () => {
         if (!eventAttached) return;
-        
+
         eventAttached = false;
         window.removeEventListener('mousemove', mouseMoveHandler)
     }
 
     onMount(() => {
         if (!props.ref || !element) return;
-    
+
         (props.ref as unknown as (ref: any) => void)({
             element: element,
             open: () => setIsOpen(true),
@@ -166,24 +167,21 @@ const RadialMenu: ParentComponent<RadialMenuProps> = (props) => {
     onCleanup(() => removeEventListeners());
 
     props.componentClasses = () => radialMenuClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     const ContextObj = {
-        clipPathValue, 
-        degreesPerSlice, 
-        selected, 
+        clipPathValue,
+        degreesPerSlice,
+        selected,
         rotation,
         onChange: props.onChange
     }
-    
+
     return (
         <RadialMenuContext.Provider value={ContextObj}>
-            <div 
+            <div
                 ref={element!}
-                class={className()}
-                style={inlineStyles()}
-                use:forwardEvents={props} 
-                use:forwardAttrs={props} >
+                use:baseComponent={props}
+            >
                 {/* Content */}
                 <MenuCenter parentChildren={props.children} />
                 {/* Items */}
@@ -195,4 +193,4 @@ const RadialMenu: ParentComponent<RadialMenuProps> = (props) => {
     )
 }
 
-export default Object.assign(RadialMenu, { Item, Content, Selector, Indicator: Object.assign(Indicator, {Icon}) });
+export default Object.assign(RadialMenu, { Item, Content, Selector, Indicator: Object.assign(Indicator, { Icon }) });

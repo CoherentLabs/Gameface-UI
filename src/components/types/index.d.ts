@@ -1,4 +1,4 @@
-declare module '*.module.css' 
+declare module '*.module.css'
 
 // Remove when scrollTop fix is applied
 declare global {
@@ -7,4 +7,4 @@ declare global {
   }
 }
 
-export {};
+export { };

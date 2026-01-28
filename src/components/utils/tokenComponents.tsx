@@ -31,8 +31,12 @@ export const useTokens = <T extends Record<string, any>>(tokenizer: TokenizerTyp
 
 export type TokenBase = { class?: string; style?: JSX.CSSProperties };
 
+const emptyToken = () => null;
+
 export const createTokenComponent = <T extends Record<string, any>>(withId = false) => {
     return createToken((props: ParentProps<T>) => {
+        if (!withId) return { props };
+
         return { props: mergeProps(props, { _id: withId ? createUniqueId() : undefined }) as ParentProps<T> & { _id?: string } };
-    }, () => null);
+    }, emptyToken);
 };

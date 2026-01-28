@@ -1,12 +1,12 @@
 import { Input, Placeholder } from "../shared/tokens";
 import { onMount, Show, createMemo, ParentComponent, createSignal } from "solid-js";
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
 import { InputBase } from "../InputBase/InputBase";
 import { TextInputProps, TextInputRef } from "../shared/types";
 import InputControlButton from "./InputControlButton";
 import baseStyles from '../InputBase/InputBase.module.scss';
 import styles from './NumberInput.module.scss';
+import baseComponent from "@components/BaseComponent/BaseComponent";
 
 type valueType = number | string;
 export interface NumberInputRef extends Omit<TextInputRef, "value" | "changeValue"> {
@@ -42,9 +42,9 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
         const newValue = value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');
         return isNegative ? '-' + newValue : newValue;
     }
- 
+
     const handleChange = (e: InputEvent) => {
-        if (!e.target ) return;
+        if (!e.target) return;
 
         const input = e.target as HTMLInputElement;
         const inputValue = transformValue(input.value);
@@ -53,7 +53,7 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
             input.value = value() as any as string;
             return
         }
-        
+
         if (inputValue === '') return clear()
 
         const parsed = Number(inputValue);
@@ -70,7 +70,7 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
             return console.error(`${value} is not a valid value! Please provide a number.`)
         }
 
-        const {newValue} = clampValue(value);
+        const { newValue } = clampValue(value);
         applyValue(newValue);
     }
 
@@ -94,7 +94,7 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
             inputElement.value = value() as any as string;
             return
         }
-        
+
         const currValue = Number(inputElement.value);
         const step = props.step || 1;
         const { newValue } = clampValue(currValue - step);
@@ -112,13 +112,13 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
         let newValue = value, hasClamped = false;
 
         if (props.max !== undefined && props.max < value) {
-                newValue = props.max;
-                hasClamped = true;
+            newValue = props.max;
+            hasClamped = true;
         }
 
         if (props.min !== undefined && props.min > value) {
-                newValue = props.min;
-                hasClamped = true;
+            newValue = props.min;
+            hasClamped = true;
         }
 
         return { newValue, hasClamped };
@@ -127,29 +127,28 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
     const increaseBtnPosition = createMemo(() => IncreaseControlToken()?.position ?? 'after');
     const decreaseBtnPosition = createMemo(() => DecreaseControlToken()?.position ?? 'after');
     const showIncreaseBefore = createMemo(() => !!IncreaseControlToken() && increaseBtnPosition() === 'before');
-    const showIncreaseAfter  = createMemo(() => !!IncreaseControlToken() && increaseBtnPosition() === 'after');
+    const showIncreaseAfter = createMemo(() => !!IncreaseControlToken() && increaseBtnPosition() === 'after');
     const showDecreaseBefore = createMemo(() => !!DecreaseControlToken() && decreaseBtnPosition() === 'before');
-    const showDecreaseAfter  = createMemo(() => !!DecreaseControlToken() && decreaseBtnPosition() === 'after');
+    const showDecreaseAfter = createMemo(() => !!DecreaseControlToken() && decreaseBtnPosition() === 'after');
 
-    
+
     const numberInputClasses = createMemo(() => {
         const classes = [baseStyles['input-wrapper']];
-        
+
         if (props.disabled) {
             classes.push(baseStyles.disabled);
-            
+
             if (props['class-disabled']) classes.push(`${props['class-disabled']}`);
         }
-        
+
         return classes.join(' ');
     });
-    
+
     props.componentClasses = () => numberInputClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
-    
+
     onMount(() => {
         if (!props.ref || !element) return;
-        
+
         (props.ref as unknown as (ref: any) => void)({
             element,
             input: inputElement,
@@ -160,31 +159,29 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
             clear
         });
     });
-    
+
     return (
-        <div 
+        <div
             ref={element!}
-            class={className()} 
-            style={inlineStyles()} 
-            use:forwardEvents={props}
-            use:forwardAttrs={props}>
+            use:baseComponent={props}
+        >
 
             <Show when={showIncreaseBefore() || showDecreaseBefore()}>
                 <div class={styles['button-container']}>
                     <Show when={showIncreaseBefore()}>
-                        <InputControlButton orientation="up" click={increaseValue} token={IncreaseControlToken} position="before"/>
+                        <InputControlButton orientation="up" click={increaseValue} token={IncreaseControlToken} position="before" />
                     </Show>
                     <Show when={showDecreaseBefore()}>
-                        <InputControlButton orientation="down" click={decreaseValue} token={DecreaseControlToken} position="before"/>
+                        <InputControlButton orientation="down" click={decreaseValue} token={DecreaseControlToken} position="before" />
                     </Show>
                 </div>
             </Show>
 
-            <InputBase 
+            <InputBase
                 type={'number'}
                 value={value}
                 ref={inputElement!}
-                handleChange={handleChange} 
+                handleChange={handleChange}
                 parentChildren={props.children}
                 hasBefore={showIncreaseBefore() || showDecreaseBefore()}
                 hasAfter={showIncreaseAfter() || showDecreaseAfter()}
@@ -193,10 +190,10 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
             <Show when={showIncreaseAfter() || showDecreaseAfter()}>
                 <div class={styles['button-container']}>
                     <Show when={showIncreaseAfter()}>
-                        <InputControlButton orientation="up" click={increaseValue} token={IncreaseControlToken} position="after"/>
+                        <InputControlButton orientation="up" click={increaseValue} token={IncreaseControlToken} position="after" />
                     </Show>
                     <Show when={showDecreaseAfter()}>
-                        <InputControlButton orientation="down" click={decreaseValue} token={DecreaseControlToken} position="after"/>
+                        <InputControlButton orientation="down" click={decreaseValue} token={DecreaseControlToken} position="after" />
                     </Show>
                 </div>
             </Show>

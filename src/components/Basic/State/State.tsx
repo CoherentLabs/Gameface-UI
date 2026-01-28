@@ -1,6 +1,6 @@
 import { Accessor, children, createSignal, JSX, onMount, ParentComponent, ParentProps } from "solid-js";
 import { BaseComponentRef, ComponentProps } from "../../types/ComponentProps";
-import { BaseComponent } from "../../BaseComponent/BaseComponent";
+import baseComponent from "@components/BaseComponent/BaseComponent";
 
 interface MatchProps extends ParentProps {
     name: string;
@@ -91,7 +91,9 @@ const State: ParentComponent<StateProps> = (props) => {
         });
     });
 
-    return <div ref={element!} {...BaseComponent(props).attributes} {...BaseComponent(props).eventHandlers} class={BaseComponent(props).className} style={BaseComponent(props).style}></div>
+    return <div ref={element!}
+        use:baseComponent={props}
+    ></div>
 }
 
 export default State;
