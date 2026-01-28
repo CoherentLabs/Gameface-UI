@@ -141,7 +141,7 @@ import XYSlider from '@components/Basic/XYSlider/XYSlider';
 
 <XYSlider 
     onAction={{
-        'select': () => console.log('Selecting XYSlider')
+        'select': () => console.log('Selecting XYSlider'),
         'pan': (_, axis: [number, number]) => console.log(`x: ${axis[0]}, y: ${axis[1]}`),
     }} />
 ```

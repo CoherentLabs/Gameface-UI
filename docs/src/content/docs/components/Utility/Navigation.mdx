@@ -83,7 +83,7 @@ Each default action has:
 | `move-down`   | `ARROW_DOWN`     | `pad-down` (D-Pad)   | Directional input down (used by components like Dropdown)           |
 | `select`      | `ENTER`          | `face-button-down`   | Confirm selection or activate the currently focused element                     |
 | `back`        | `ESC`            | `face-button-right`  | Cancel current operation or navigate back to the previous screen                |
-| `pan`         | `none`           | `right.joystick`     | Continuous 2D input for manipulating values on two axes simultaneously. Paused by defaultl                |
+| `pan`         | `none`           | `right.joystick`     | Continuous 2D input for manipulating values on two axes simultaneously. Paused by default                |
 
 :::caution[Reserved Action Names]
 Avoid creating custom actions with names starting with `move-focus-direction` (e.g., `move-focus-left`, `move-focus-right`, etc.). These names are reserved and used internally by the spatial navigation system for managing focus between UI elements.
@@ -91,7 +91,7 @@ Avoid creating custom actions with names starting with `move-focus-direction` (e
 :::
 
 :::caution[Paused default action]
-The `pan` action is pasued by default to save performance when there are no components listening to it. If a component that is subscribed to it gets initialized, the action will automatically unpause.
+The `pan` action is paused by default to save performance when there are no components listening to it. If a component that is subscribed to it gets initialized, the action will automatically unpause.
 If you wish to subscribe to the `pan` action in your custom component, make sure to unpause it first using the `resumeAction()` method from the `useNavigation()` hook.
 :::
 
@@ -195,6 +195,10 @@ The `anchor` prop can accept either a CSS selector string or a direct reference 
 :::
 
 In the following example, the `Stepper` component will respond to navigation actions when the parent `.menu-item` div is focused.
+
+:::caution[Unique CSS Selector]
+When using a CSS selector as an anchor, ensure that it uniquely identifies the desired element within the DOM to avoid unexpected behavior. The most robust method is to use an `id` selector.
+:::
 
 ```tsx
 <div id="difficulty" class="menu-item">

@@ -6,77 +6,45 @@ import { Badge } from '@astrojs/starlight/components'
 
 ## 2.0.0 :badge[Latest]{variant="note"}
 
-<Badge text="New" variant="tip" size="small" /> Added [Navigation](/components/utility/Navigation/) component.
+### ⚠️ Breaking Changes
 
-<Badge text="Feature" variant="success" size="small" /> Added `Navigation.Area` slot for the [Navigation](/components/utility/navigation/#navigationarea) component.
-
-<Badge text="Feature" variant="success" size="small" /> Added a way to subscribe custom components to the [Navigation actions](/components/utility/navigation/#navigationarea). 
-You can now subscribe custom components to navigation actions.
-
-<Badge text="Feature" variant="success" size="small" /> Extended [Button](/components/basic/button#props) and [RoundedButton](/components/basic/rounded-button#props) to support `onAction` and `anchor` props for setting up navigation actions
-when used within [Navigation](/components/utility/Navigation/).
-
-<Badge text="Feature" variant="success" size="small" /> Extended [Checkbox](/components/basic/checkbox/) to react to `select` action when used within [Navigation](/components/utility/Navigation/). 
-Added support for `onAction` and `anchor` props for setting up custom navigation actions. [Read more here](/components/basic/checkbox/#implemented-navigation-actions)
-
-<Badge text="Feature" variant="success" size="small" /> Extended [Accordion](/components/basic/accordion) to react to `select` action when used within [Navigation](/components/utility/Navigation/). 
-Added support for `onAction` and `anchor` props for setting up custom navigation actions. [Read more here](/components/basic/accordion/#implemented-navigation-actions)
-
-<Badge text="Feature" variant="success" size="small" /> Extended [Dropdown](/components/basic/dropdown) to react to `select` and `back` actions when used within [Navigation](/components/utility/Navigation/). 
-Added support for `onAction` and `anchor` props for setting up custom navigation actions. [Read more here](/components/basic/dropdown/#implemented-navigation-actions)
-
-<Badge text="Feature" variant="success" size="small" /> Extended [NumberInput](/components/basic/number-input/) to react to `select`, `back`, `move-up` and `move-down` actions when used within [Navigation](/components/utility/Navigation/). 
-Added support for `onAction` and `anchor` props for setting up custom navigation actions. [Read more here](/components/basic/number-input/#implemented-navigation-actions)
-
-<Badge text="Feature" variant="success" size="small" /> Extended [PasswordInput](/components/basic/password-input/) to react to `select` and `back` actions when used within [Navigation](/components/utility/Navigation/). 
-Added support for `onAction` and `anchor` props for setting up custom navigation actions. [Read more here](/components/basic/password-input/#implemented-navigation-actions)
-
-<Badge text="Feature" variant="success" size="small" /> Extended [PasswordInput](/components/basic/password-input/) to react to `select` and `back` actions when used within [Navigation](/components/utility/Navigation/). 
-Added support for `onAction` and `anchor` props for setting up custom navigation actions. [Read more here](/components/basic/password-input/#implemented-navigation-actions)
-
-<Badge text="Feature" variant="success" size="small" /> Extended [TextInput](/components/basic/text-input/) to react to `select` and `back` actions when used within [Navigation](/components/utility/Navigation/). 
-Added support for `onAction` and `anchor` props for setting up custom navigation actions. [Read more here](/components/basic/text-input/#implemented-navigation-actions)
-
-<Badge text="Feature" variant="success" size="small" /> Extended [Radio](/components/basic/radio/) to react to `move-left` and `move-right` actions when used within [Navigation](/components/utility/Navigation/). 
-Added support for `onAction` and `anchor` props for setting up custom navigation actions. [Read more here](/components/basic/radio/#implemented-navigation-actions)
-
-<Badge text="Feature" variant="success" size="small" /> Extended [Segment](/components/basic/segment/) to react to `move-left` and `move-right` actions when used within [Navigation](/components/utility/Navigation/). 
-Added support for `onAction` and `anchor` props for setting up custom navigation actions. [Read more here](/components/basic/segment/#implemented-navigation-actions)
-
-<Badge text="Feature" variant="success" size="small" /> Extended [Stepper](/components/basic/stepper/) to react to `move-left` and `move-right` actions when used within [Navigation](/components/utility/Navigation/). 
-Added support for `onAction` and `anchor` props for setting up custom navigation actions. [Read more here](/components/basic/stepper/#implemented-navigation-actions)
-
-<Badge text="Feature" variant="success" size="small" /> Extended [Slider](/components/basic/slider/) to react to `move-left` and `move-right` actions when used within [Navigation](/components/utility/Navigation/). 
-Added support for `onAction` and `anchor` props for setting up custom navigation actions. [Read more here](/components/basic/slider/#implemented-navigation-actions)
-
-<Badge text="Feature" variant="success" size="small" /> Extended [TextSlider](/components/basic/text-slider/) to react to `move-left` and `move-right` actions when used within [Navigation](/components/utility/Navigation/). 
-Added support for `onAction` and `anchor` props for setting up custom navigation actions. [Read more here](/components/basic/text-slider/#implemented-navigation-actions)
-
-<Badge text="Feature" variant="success" size="small" /> Extended [XYSlider](/components/basic/xy-slider/) to react to `pan` action when used within [Navigation](/components/utility/Navigation/). 
-Added support for `onAction` and `anchor` props for setting up custom navigation actions. [Read more here](/components/basic/xy-slider/#implemented-navigation-actions)
-
-<Badge text="Feature" variant="success" size="small" /> Extended [ToggleButton](/components/basic/toggle-button/) to react to `select` action when used within [Navigation](/components/utility/Navigation/). 
-Added support for `onAction` and `anchor` props for setting up custom navigation actions. [Read more here](/components/basic/toggle-button/#implemented-navigation-actions)
-
-<Badge text="Feature" variant="success" size="small" /> Extended [Tooltip](/components/feedbacl/tooltip/) to react to `back` action when used within [Navigation](/components/utility/Navigation/). 
-Added support for `onAction` and `anchor` props for setting up custom navigation actions. [Read more here](/components/feedback/tooltip/#implemented-navigation-actions)
-
-<Badge text="Feature" variant="success" size="small" /> Extended [TextBlock](/components/basic/text-block#props) and [InlineTextBlock](/components/basic/inline-text-block#props) to support `onAction` and `anchor` props for setting up navigation actions
-when used within [Navigation](/components/utility/Navigation/).
-
-<Badge text="Breaking Change" variant="note" size="small" /> The `ref` prop on layout components (Absolute, Flex, Block, etc.) that don't have any other methods or properties now exposes the DOM node directly. You no longer need to access the `.element` property. 
+- <Badge text="Breaking Change" variant="danger" size="small" /> The `ref` prop on layout components (Absolute, Flex, Block, etc.) that don't have any other methods or properties now exposes the DOM node directly. You no longer need to access the `.element` property. 
 <br/> Affected components: 
 [Absolute](/components/layout/absolute/), [Block](/components/layout/block/), [Bottom](/components/layout/bottom/), [Column](/components/layout/column/), [Content](/components/layout/content/), [Flex](/components/layout/flex/), 
 [Grid](/components/layout/grid/), [GridTile](/components/layout/grid-tile/), [Layout](/components/layout/layout/), [Layout3D](/components/layout/layout-3d/), [List](/components/layout/list/),
 [Relative](/components/layout/relative/), [Row](/components/layout/row/), [TabLink](/components/layout/tab-link/), [Tab](/components/layout/tab/), [Top](/components/layout/top/), [Transform](/components/layout/transform/),
 [BackgroundImage](/components/media/background-image/), [MaskImage](/components/media/mask-image/).
 
-<Badge text="New" variant="tip" size="small" /> [List](/components/layout/list) - Provide [a guide](/components/layout/list/#making-list-items-navigable) on how to initialize list items as navigable elements within a [Navigation](/components/utility/Navigation/) area.
+### ✨ New Features
 
-<Badge text="New" variant="tip" size="small" /> [GridTile](/components/layout/grid-tile) - Provide [a guide](/components/layout/grid-tile/#making-grid-tiles-navigable) on how to initialize grid tiles as navigable elements within a [Navigation](/components/utility/Navigation/) area.
+- <Badge text="New" variant="tip" size="small" /> [**Navigation**](/components/utility/navigation/) - Introduced a new utility component for handling spatial navigation, gamepad/keyboard interactions and focus management.
 
-<Badge text="New" variant="tip" size="small" />  [Scroll](/components/layout/scroll) to react to `pan` action when used within [Navigation](/components/utility/Navigation/). 
-Added support for `onAction` and `anchor` props for setting up custom navigation actions. [Read more here](/components/basic/scroll/#implemented-navigation-actions)
+- <Badge text="Feature" variant="success" size="small" /> **Added [Navigation.Area]((/components/utility/navigation/#navigationarea)) slot** for grouping navigable components within the [Navigation](/components/utility/navigation/) component.
+
+- <Badge text="Feature" variant="success" size="small" /> **Custom Component Action Subscriptions:** Custom components can now subscribe to [Navigation actions](/components/utility/navigation/#extending-component-navigation-actions). 
+
+### 🛠 Component Enhancements (Navigation Support)
+
+The following components have been extended to support onAction and anchor props. They now respond to specific spatial navigation actions when placed inside a Navigation area:
+
+| Component | Supported Actions / Props |
+| :--- | :--- |
+| [Button](/components/basic/button#props), [RoundedButton](/components/basic/rounded-button#props) | <Badge text="Props Only" variant="note" size="small" /> (`onAction`, `anchor`) |
+| [Checkbox](/components/basic/checkbox/#implemented-navigation-actions) | <Badge text="select" variant="success" size="small" />, <Badge text="Props" variant="note" size="small" /> |
+| [Accordion](/components/basic/accordion/#implemented-navigation-actions) | <Badge text="select" variant="success" size="small" />, <Badge text="Props" variant="note" size="small" /> |
+| [Dropdown](/components/basic/dropdown/#implemented-navigation-actions) | <Badge text="select" variant="success" size="small" /> <Badge text="back" variant="success" size="small" />, <Badge text="Props" variant="note" size="small" /> |
+| [NumberInput](/components/basic/number-input/#implemented-navigation-actions) | <Badge text="select" variant="success" size="small" /> <Badge text="back" variant="success" size="small" /> <Badge text="move-up/down" variant="success" size="small" />, <Badge text="Props" variant="note" size="small" /> |
+| [PasswordInput](/components/basic/password-input/#implemented-navigation-actions), [TextInput](/components/basic/text-input/#implemented-navigation-actions) | <Badge text="select" variant="success" size="small" /> <Badge text="back" variant="success" size="small" />, <Badge text="Props" variant="note" size="small" /> |
+| [Radio](/components/basic/radio/#implemented-navigation-actions), [Segment](/components/basic/segment/#implemented-navigation-actions), [Stepper](/components/basic/stepper/#implemented-navigation-actions), [Slider](/components/basic/slider/#implemented-navigation-actions), [TextSlider](/components/basic/text-slider/#implemented-navigation-actions) | <Badge text="move-left/right" variant="success" size="small" />, <Badge text="Props" variant="note" size="small" /> |
+| [XYSlider](/components/basic/xy-slider/#implemented-navigation-actions), [Scroll](/components/layout/scroll/#implemented-navigation-actions) | <Badge text="pan" variant="success" size="small" />, <Badge text="Props" variant="note" size="small" /> |
+| [Tooltip](/components/feedback/tooltip/#implemented-navigation-actions) | <Badge text="back" variant="success" size="small" />, <Badge text="Props" variant="note" size="small" /> |
+| [TextBlock](/components/basic/text-block#props), [InlineTextBlock](/components/basic/inline-text-block#props) | <Badge text="Props Only" variant="note" size="small" /> (`onAction`, `anchor`) |
+
+### 📖 New Guides
+
+- <Badge text="New" variant="tip" size="small" /> [List](/components/layout/list) - Provide [a guide](/components/layout/list/#making-list-items-navigable) on how to initialize list items as navigable elements within a [Navigation](/components/utility/Navigation/) area.
+
+- <Badge text="New" variant="tip" size="small" /> [GridTile](/components/layout/grid-tile) - Provide [a guide](/components/layout/grid-tile/#making-grid-tiles-navigable) on how to initialize grid tiles as navigable elements within a [Navigation](/components/utility/Navigation/) area.
 
 ## 1.2.0 :badge[Latest]{variant="note"}
 
