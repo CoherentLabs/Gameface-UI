@@ -2,24 +2,23 @@ import { Component, createSignal, JSX } from "solid-js";
 import { IconMap } from "./IconTypes";
 import styles from './Icon.module.scss';
 import fallbackImg from './fallback.png?url';
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
-
-export interface IconProps {
-	style?: JSX.CSSProperties
-	class?: string,
-	[key: `attr:${string}`]: any;
-}
+import baseComponent from "@components/BaseComponent/BaseComponent";
+import { ComponentProps } from "@components/types/ComponentProps";
 
 const modules = import.meta.glob('@assets/icons/**/*.{png,svg}', { eager: true }) as Record<string, { default: string }>
 // Fallback Icon to prevent app crash when file has been deleted
-const MissingIcon: Component<IconProps> = (props) => (
-	<img {...props} src={fallbackImg} class={`${styles.fallback} ${props.class || ''}`} />
- )
+const MissingIcon: Component<ComponentProps> = (props) => {
+	props.componentClasses = styles.fallback;
 
-const IconComponent = (src: string): Component<IconProps> => {
+	return <img use:baseComponent={props} src={fallbackImg} />;
+}
+
+
+const IconComponent = (src: string): Component<ComponentProps> => {
 	return (props) => {
 		const [hasError, setHasError] = createSignal(false);
-		const {forwardAttrs} = useBaseComponent(props);
+
+		props.componentClasses = styles.icon;
 
 		return (
 			<>
@@ -27,10 +26,8 @@ const IconComponent = (src: string): Component<IconProps> => {
 					<MissingIcon {...props} />
 				) : (
 					<img
-						{...props}
-						use:forwardAttrs={props}
+						use:baseComponent={props}
 						src={src}
-						class={`${styles.icon} ${props.class || ''}`}
 						onError={() => setHasError(true)}
 					/>
 				)}
@@ -48,8 +45,8 @@ const buildIconTree = (): IconMap => {
 
 		// Convert "./assets/icons/gamepad/xbox/a.png" -> "gamepad/xbox/a"
 		const cleanPath = path
-			.replace(/^.*\/assets\/icons\//, '') 
-    		.replace(/\.[^/.]+$/, "");
+			.replace(/^.*\/assets\/icons\//, '')
+			.replace(/\.[^/.]+$/, "");
 
 		const keys = cleanPath.split('/');
 

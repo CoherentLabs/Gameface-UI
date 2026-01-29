@@ -28,16 +28,14 @@ function handleClasses(el: Element, props: ComponentProps) {
 
 type StyleObject = Record<string, string | number | null | undefined>;
 
-function reconcileStyles(el: HTMLElement, next: any, prev: any) {
-    const style = el.style;
-
+function reconcileStyles(elStyle: CSSStyleDeclaration, next: any, prev: any) {
     for (const key in prev) {
         if (next[key] == null) {
             if (key.indexOf("-") > -1) {
-                style.removeProperty(key);
+                elStyle.removeProperty(key);
             } else {
                 // @ts-ignore
-                style[key] = "";
+                elStyle[key] = "";
             }
         }
     }
@@ -47,10 +45,10 @@ function reconcileStyles(el: HTMLElement, next: any, prev: any) {
 
         if (prev[key] !== value) {
             if (key.indexOf("-") > -1) {
-                style.setProperty(key, String(value));
+                elStyle.setProperty(key, String(value));
             } else {
                 // @ts-ignore
-                style[key] = value;
+                elStyle[key] = value;
             }
         }
     }
@@ -58,8 +56,9 @@ function reconcileStyles(el: HTMLElement, next: any, prev: any) {
 
 function handleStyles(el: HTMLElement, props: ComponentProps) {
     let prevStyles: StyleObject = {};
-
+    
     createEffect(() => {
+        const styles = el.style;
         const compRaw = props.componentStyles;
         const extStyles = props.style;
 
@@ -81,8 +80,8 @@ function handleStyles(el: HTMLElement, props: ComponentProps) {
             const extStr = isExtString ? extStyles : "";
             const finalString = `${compStr};${extStr}`;
 
-            if (el.style.cssText !== finalString) {
-                el.style.cssText = finalString;
+            if (styles.cssText !== finalString) {
+                styles.cssText = finalString;
             }
 
             prevStyles = {};
@@ -94,7 +93,7 @@ function handleStyles(el: HTMLElement, props: ComponentProps) {
             ...(extStyles as StyleObject || {})
         };
 
-        reconcileStyles(el, nextStyles, prevStyles);
+        reconcileStyles(styles, nextStyles, prevStyles);
 
         prevStyles = nextStyles;
     });
