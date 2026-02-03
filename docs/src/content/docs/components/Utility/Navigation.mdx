@@ -383,6 +383,8 @@ The `Navigation` component exposes a comprehensive API through the `useNavigatio
 | `getScope`      | None                         | `string`     | Gets the current navigation scope (typically the name of the active navigation area).                                                                                                                       |
 | `getAction`     | `name: ActionName`           | `ActionCfg \| undefined` | Gets a specific action configuration by name. Returns undefined if the action doesn't exist.                                                                                                    |
 | `getActions`    | None                         | `ActionMap`  | Gets all currently registered actions.                                                                                                                                                                      |
+| `pauseInput`    | None                         | `void`  | Snapshots current pause states and forcefully pauses all actions (ideal for stopping all action input). `resumeInput` must be used to unpause all actions.                                                                                                                                                                      |
+| `resumeInput`   | None                         | `void`  | Releases the global pause and restores actions to their state prior to the `pauseInput` call.                                                                                                                                                                      |
 
 ### Area Methods
 

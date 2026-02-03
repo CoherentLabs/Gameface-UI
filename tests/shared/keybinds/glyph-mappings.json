@@ -1,0 +1,12 @@
+[
+  { "action": "moveForward",  "key": "12", "glyph": "dpadUp" },
+  { "action": "moveBackward", "key": "13", "glyph": "dpadDown" },
+  { "action": "moveLeft",     "key": "14", "glyph": "dpadLeft" },
+  { "action": "moveRight",    "key": "15", "glyph": "dpadRight"  },
+  { "action": "jump",         "key": "0", "glyph": "a"  },
+  { "action": "crouch",       "key": "2", "glyph": "x"  },
+  { "action": "sprint",       "key": "10", "glyph": "leftStickPress"  },
+  { "action": "fire",         "key": "7", "glyph": "rt"  },
+  { "action": "aimDownSights","key": "6", "glyph": "lt"  },
+  { "action": "reload",       "key": "1", "glyph": "b"  }
+]

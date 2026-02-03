@@ -1,5 +1,4 @@
-import { KeyName } from 'coherent-gameface-interaction-manager/dist/types/utils/keyboard-mappings';
-import { GamepadInput } from 'coherent-gameface-interaction-manager/dist/types/utils/gamepad-mappings';
+import { KeyName, GamepadInput } from 'coherent-gameface-interaction-manager/dist/types/interaction-manager';
 
 type ActionType = 'press' | 'hold' | 'lift';
 

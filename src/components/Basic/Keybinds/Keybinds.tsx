@@ -2,11 +2,14 @@ import { BaseComponentRef } from "@components/types/ComponentProps";
 import { Accessor, batch, createContext, createEffect, createMemo, on, onMount, ParentComponent } from "solid-js";
 import { createStore, unwrap } from "solid-js/store";
 import {BindingCode, BindingLabel, MAPPINGS} from "./util/mappings";
+import { GlyphOverrides  } from "./util/glyphs";
+import { GLYPHS as DEFAULT_GLYPHS }  from "./util/glyphs";
+import { AxisInput, GamepadInput, GamepadMappings } from "coherent-gameface-interaction-manager";
 
 export type Action = string;
-export type KeyCode = BindingLabel | (string & {}) | null;
+export type KeyCode = BindingLabel | GamepadInput | (string & {}) | null;
 export type ConflictPolicy = 'block' | 'replace-existing' | 'swap' | 'allow-duplicates'
-type Bindings = Record<Action, KeyCode>;
+export type Bindings = Record<Action, KeyCode>;
 
 export interface KeybindsRef {
     bindings: Bindings,
@@ -17,32 +20,38 @@ export interface KeybindsRef {
     reset: () => void,
 }
 
-interface KeybindsContext {
+interface SharedProps {
+    onChange?:  (prev: KeyCode, next: KeyCode, action: Action) => void,
+    mode?: 'gamepad' | 'keyboard'
+}
+
+interface KeybindsContext extends SharedProps {
     KEYS: Record<BindingCode, string>,
+    GLYPHS: GlyphOverrides,
     bindings: Bindings,
     bind: (action: Action, newKey: KeyCode) => boolean,
     placeholder?: Accessor<string | undefined>,
     listeningText?: Accessor<string | undefined>,
-    useChars?: Accessor<boolean | undefined>
-    onChange?:  (prev: KeyCode, next: KeyCode, action: Action) => void,
+    useChars?: Accessor<boolean | undefined>,
 }
 
 export const KeybindsContext = createContext<KeybindsContext>();
 
-interface KeybindsProps {
+interface KeybindsProps extends SharedProps {
     defaults?: Bindings,
     overrides?: Partial<Record<BindingCode, string>>,
     placeholder?: string,
     listeningText?: string,
     conflictPolicy?: ConflictPolicy,
+    glyphOverrides?: GlyphOverrides;
     ref?: unknown | ((ref: BaseComponentRef) => void);
     onConflict?: (action: Action, key: KeyCode, conflictAction: Action) => void,
-    onChange?:  (prev: KeyCode, next: KeyCode, action: Action) => void,
 }
 
 const Keybinds: ParentComponent<KeybindsProps> = (props) => {
     const KEYS = {...MAPPINGS, ...props.overrides}; // { event.code: label }
     const DISPLAY_LABELS = new Set(Object.values(KEYS)); // Set of valid labels only
+    const GLYPHS = {... DEFAULT_GLYPHS, ...props.glyphOverrides };
 
     const [bindings, setBindings] = createStore<Bindings>({});
     let defaults = props.defaults ?? undefined;
@@ -54,6 +63,26 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
     createEffect(on(() => props.conflictPolicy, () => {
         mapBindings({...bindings})
     }, {defer: true}));
+
+    const sanitizeButtonInput = (input: string | number) => {
+        const num = Number(input);
+        if (!isNaN(num) || typeof input === 'number') {
+            if (0 <= num && num <= 16) return String(input);
+            else {
+                console.warn(`${input} is not a valid gamepad button. Please ensure the number is between 0 and 16`);
+                return null
+            }
+        }
+
+        const button = input.toLowerCase();
+        if ((GamepadMappings.axisAliases as readonly string[]).includes(button)) return button as AxisInput;
+        
+        const key = GamepadMappings.aliases[button as keyof typeof GamepadMappings.aliases];
+        if (key) return String(GamepadMappings[key]);
+
+        console.warn(`${input} is not a valid gamepad button.`);
+        return null;
+    }
 
     const verifyKey = (key: string | null) => {
         if (key === null) return null;
@@ -78,14 +107,17 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
         const prevKey = bindings[action];
         if (prevKey === newKey) return false;
 
+        newKey = props.mode === 'gamepad' 
+            ? sanitizeButtonInput(newKey as GamepadInput) 
+            : verifyKey(newKey as BindingLabel);
+
         const conflictAction = byKey.get(newKey);
 
         // no conflict -> just bind
         if (!conflictAction || conflictAction === action) {
             if (prevKey) byKey.delete(prevKey);
-            const verifiedKey = verifyKey(newKey);
-            setBindings(action, verifiedKey);
-            if (verifiedKey !== null) byKey.set(newKey, action);
+            setBindings(action, newKey);
+            if (newKey !== null) byKey.set(newKey, action);
             return true
         }
 
@@ -175,7 +207,9 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
         listeningText,
         placeholder,
         KEYS,
-        onChange: props.onChange
+        GLYPHS,
+        onChange: props.onChange,
+        mode: props.mode
     }
 
     return (

@@ -2,6 +2,7 @@ const assert = require('assert');
 const selectors = require('../shared/keybinds/keybinds-selectors.json');
 const DEFAULT_MAPPINGS = require('../shared/keybinds/default-mappings.json');
 const ALTERNATE_MAPPINGS = require('../shared/keybinds/alternate-mappings.json');
+const GAMEPAD_GLYPHS = require ("../shared/keybinds/glyph-mappings.json");
 const OVERRIDES = require('../shared/keybinds/overrides.json');
 const { navigateToPage } = require('../shared/utils');
 
@@ -255,5 +256,76 @@ describe('Keybinds', function () {
             assert.strictEqual(await keybinds[0].text(), keybind1InitialText, `Keybind should have its initial value`);
             assert.strictEqual(await keybinds[1].text(), keybind2InitialText, `Keybind should have its initial value`);
         });
+    })
+
+    describe('Keybinds - gamepad mode', function () {
+        this.beforeAll(async () => {
+            await gf.connectGamepad('gamepad')
+            await gf.click(`.${selectors.scenarioBtn}.scenario-12`)
+        })
+
+        async function getIconSource (keybind) {
+            const image = await keybind.find('img');
+            return await image.getAttribute('src');
+        }
+
+        it('Should render default gamepad glyphs', async () => {
+            const container = await gf.getAll(`.${selectors.keybindsContainer}`);
+            const keybinds = await container[2].findAll(`.${selectors.keybind}`);
+
+            let idx = 0;
+            for (const keybind of keybinds) {
+                const src = await getIconSource(keybind);
+
+                assert.equal(src.includes(`/${GAMEPAD_GLYPHS[idx].glyph}`), true, 'Correct icon is displayed');
+                idx++;
+            }
+        });
+
+        it('Should rebind a gamepad input', async () => {
+            const container = await gf.getAll(`.${selectors.keybindsContainer}`);
+            const keybind = await container[2].find(`.${selectors.keybind}`);
+            const gamepad = gf.getGamepad('gamepad')
+
+            await gamepad.sequence([
+                gf.GAMEPAD_BUTTONS.FACE_BUTTON_DOWN,
+                gf.GAMEPAD_BUTTONS.FACE_BUTTON_RIGHT,
+            ]);
+
+            const src = await getIconSource(keybind);
+            assert.equal(src.includes(`/b`), true, 'Correct icon is displayed');
+        })
+
+        it('Should prevent exection of any actions while listening for input', async () => {
+            const assertionEl = await gf.get(`.${selectors.actionTest}`)
+            const gamepad = gf.getGamepad('gamepad')
+
+            await gamepad.sequence([
+                gf.GAMEPAD_BUTTONS.FACE_BUTTON_DOWN,
+                gf.GAMEPAD_BUTTONS.RIGHT_SHOULDER,
+            ]);
+
+            assert.equal(await assertionEl.text(), 'test', 'Element\'s text should remain unchanged after action is bound')
+        })
+
+        it('Should render custom glyphs', async () => {
+            const container = await gf.getAll(`.${selectors.keybindsContainer}`);
+            const keybinds = await container[3].findAll(`.${selectors.keybind}`);
+
+            const NEW_GLYPHS_TEXT = ['up', 'down', 'left', 'right'];
+            let idx = 0;
+
+            for (const keybind of keybinds) {
+                if (idx === NEW_GLYPHS_TEXT.length) break;
+
+                const child = await keybind.find('div');
+                assert.equal(await child.text(), NEW_GLYPHS_TEXT[idx], 'Glyph text content should match structure.');
+                if (idx === NEW_GLYPHS_TEXT.length - 1) {
+                    const styles = await child.styles();
+                    assert.equal(styles['background-color'], 'rgba(0, 0, 255, 1)', 'Styles of glyphs changed');
+                }
+                idx++;
+            }
+        })
     })
 });

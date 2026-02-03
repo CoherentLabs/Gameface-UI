@@ -1,4 +1,4 @@
-import { KeyName } from "coherent-gameface-interaction-manager/dist/types/utils/keyboard-mappings";
+import { KeyName } from 'coherent-gameface-interaction-manager/dist/types/interaction-manager';
 
 /**
  * Interface defining all area-related navigation methods
