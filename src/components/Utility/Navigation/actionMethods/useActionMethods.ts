@@ -13,6 +13,8 @@ export default function createActionMethods(
     const actionSubscribers = new Map<string, number>();
     // For force paused actions
     const forcePausedActions = new Set<string>();
+    // For renenbering which already paused actions were affected in the pause input function
+    const inputCaptureSnapshot = new Set<string>();
     
     const registerAction = (actionName: ActionName) => {
         const {key, button, callback, global} = getAction(actionName)!;
@@ -156,6 +158,35 @@ export default function createActionMethods(
         return getAction(name)?.paused ?? false;
     };
 
+    const pauseInput = () => {
+        const allActions = getActions();
+        inputCaptureSnapshot.clear();
+
+        for (const actionName in allActions) {
+            if (isPaused(actionName)) {
+                inputCaptureSnapshot.add(actionName);
+            }
+
+            pauseAction(actionName, true);
+        }
+    };
+
+    const resumeInput = () => {
+        const allActions = getActions();
+
+        for (const actionName in allActions) {
+            if (inputCaptureSnapshot.has(actionName)) {
+                // remove the force flag only
+                forcePausedActions.delete(actionName);
+                continue;
+            }
+
+            resumeAction(actionName, true);
+        }
+
+        inputCaptureSnapshot.clear();
+    };
+
     return {
         addAction,
         removeAction,
@@ -168,6 +199,8 @@ export default function createActionMethods(
         getActions,
         pauseAction,
         resumeAction,
+        pauseInput,
+        resumeInput,
         isPaused,
     };
 }

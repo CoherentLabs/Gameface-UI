@@ -84,6 +84,16 @@ export interface ActionMethods {
     resumeAction: (action: ActionName, force?: boolean) => void;
 
     /**
+     * Snapshots current pause states and forcefully pauses all actions (ideal for stopping all action input). `resumeInput` must be used to unpause all actions. 
+     */
+    pauseInput: () => void;
+
+    /**
+     * Releases the global pause and restores actions to their state prior to the pauseInput call.
+     */
+    resumeInput: () => void;
+
+    /**
      * Checks if an action is currently paused
      * @param action - The name of the action to check
      * @returns True if the action is paused, false otherwise

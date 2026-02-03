@@ -30,7 +30,7 @@ const IconComponent = (src: string): Component<IconProps> => {
 						{...props}
 						use:forwardAttrs={props}
 						src={src}
-						class={`${styles.icon} ${props.class || ''}`}
+						class={`${styles.icon} ${props?.class || ''}`}
 						onError={() => setHasError(true)}
 					/>
 				)}
