@@ -1,8 +1,12 @@
-import { createSignal } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
 import { TextInputProps } from "./types";
 
 function useTextInput (props: TextInputProps) {
     const [value, setValue] = createSignal<string>(props.value ?? '');
+
+    createEffect(() => {
+        changeValue(props.value ?? "")
+    });
 
     const handleChange = (e: InputEvent) => {
         if (!e.target ) return;

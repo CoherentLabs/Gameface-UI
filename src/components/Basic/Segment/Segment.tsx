@@ -152,18 +152,16 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
 
     return (
         <SegmentContext.Provider value={{ selected, selectOption, registerOption, unregisterOption, firstRender }}>
-            <div class={styles['segment-wrapper']}>
-                <div ref={element}
-                    class={className()}
-                    style={inlineStyles()}
-                    use:forwardEvents={props}
-                    use:forwardAttrs={props}
-                    use:navigationActions={mergeNavigationActions(props, defaultActions)}>
-                    <SegmentButtons parentChildren={props.children} />
-                    <Show when={!firstRender()}>
-                        <SegmentIndicator data={indicator} parentChildren={props.children} />
-                    </Show>
-                </div>
+            <div ref={element}
+                class={className()}
+                style={inlineStyles()}
+                use:forwardEvents={props}
+                use:forwardAttrs={props}
+                use:navigationActions={mergeNavigationActions(props, defaultActions)}>
+                <SegmentButtons parentChildren={props.children} />
+                <Show when={!firstRender()}>
+                    <SegmentIndicator data={indicator} parentChildren={props.children} />
+                </Show>
             </div>
         </SegmentContext.Provider>
     );

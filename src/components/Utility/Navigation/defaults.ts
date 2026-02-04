@@ -2,26 +2,26 @@ import { ActionMap, DefaultActions } from "./types";
 
 export const DEFAULT_ACTIONS: ActionMap = {
     'move-left': {
-        key: {binds: ['ARROW_LEFT'], type: ['press']},
-        button: {binds: ['pad-left'], type: 'press'},
+        key: {binds: ['ARROW_LEFT'], type: ['press', 'hold']},
+        button: {binds: ['pad-left'], type: 'hold'},
         callback: undefined as any,
         global: true
     },
     'move-right': {
-        key: {binds: ['ARROW_RIGHT'], type: ['press']},
-        button: {binds: ['pad-right'], type: 'press'},
+        key: {binds: ['ARROW_RIGHT'], type: ['press', 'hold']},
+        button: {binds: ['pad-right'], type: 'hold'},
         callback: undefined as any,
         global: true
     },
     'move-up': {
-        key: {binds: ['ARROW_UP'], type: ['press']},
-        button: {binds: ['pad-up'], type: 'press'},
+        key: {binds: ['ARROW_UP'], type: ['press', 'hold']},
+        button: {binds: ['pad-up'], type: 'hold'},
         callback: undefined as any,
         global: true
     },
     'move-down': {
-        key: {binds: ['ARROW_DOWN'], type: ['press']},
-        button: {binds: ['pad-down'], type: 'press'},
+        key: {binds: ['ARROW_DOWN'], type: ['press', 'hold']},
+        button: {binds: ['pad-down'], type: 'hold'},
         callback: undefined as any,
         global: true
     },
