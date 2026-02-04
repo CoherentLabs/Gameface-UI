@@ -2,10 +2,11 @@ import { createMemo, createSignal, onMount, ParentComponent } from "solid-js";
 import XYSlider, { XYSliderRef, XYSliderValue } from "@components/Basic/XYSlider/XYSlider";
 import Slider, { SliderRef } from "@components/Basic/Slider/Slider";
 import Segment from "@components/Basic/Segment/Segment";
-import styles from './ColorPicker.module.scss';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { ComponentProps } from "@components/types/ComponentProps";
 import { parseHSVAColor, RGBAOrHEXToHSVA } from "./colorPickerUtils";
+import TextInput from "@components/Basic/Input/TextInput/TextInput";
+import styles from './ColorPicker.module.scss';
 
 export interface ColorData {
     h: number;
@@ -160,7 +161,7 @@ const ColorPicker: ParentComponent<ColorPickerProps> = (props) => {
                 <div class={styles['color-preview']}>
                     <div class={styles['color-preview-box']} style={{ 'background-color': selectedColor() }}></div>
                 </div>
-                <input readOnly class={styles['color-preview-text']} value={colorTextValue()} />
+                <TextInput class={styles['color-preview-text']} readonly value={colorTextValue()} />
             </div>
         </div >
     );
