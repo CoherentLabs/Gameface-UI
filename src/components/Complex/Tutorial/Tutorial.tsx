@@ -80,10 +80,6 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
             return console.warn("First start the tutorial in order to pause it.");
         }
 
-        if (current === count()) {
-            return console.warn("Cannot pause on the last step. The tour is complete.");
-        }
-
         setCurrentStep(0);
         setTargetElement(null);
         setPausedAt(current);
@@ -193,7 +189,7 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
 
     props.componentClasses = tutorialClasses;
     props.componentStyles = tutorialStyles;
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
+    const { className, inlineStyles, forwardEvents, forwardAttrs, navigationActions } = useBaseComponent(props);
 
     onMount(() => {
         if (!props.ref || !element) return;
@@ -236,7 +232,11 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
                     class={className()}
                     style={inlineStyles()}
                     use:forwardEvents={props}
-                    use:forwardAttrs={props}>
+                    use:forwardAttrs={props}
+                    use:navigationActions={{
+                        anchor: props.anchor,
+                        ...props.onAction,
+                    }}>
                 </div>
                 <Show when={targetElement()}>
                     <div class={styles.overlay}></div>

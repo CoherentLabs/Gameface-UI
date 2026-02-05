@@ -90,7 +90,7 @@ describe('Color Picker', function () {
 
         const assertionEl = await colorPickerElements.last().find('input');
         const segment = await colorPickerElements.nth(3);
-        await ((await segment.children()).last()).click();
+        await ((await segment.children())[1]).click();
 
         assert.equal(await assertionEl.getValue(), 'rgba(255, 0, 0, 1)', 'Slider\'s value should change to \'rgba(255, 0, 0, 1)\'');
     })
