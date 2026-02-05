@@ -20,8 +20,17 @@ function handleClasses(el: Element, props: ComponentProps) {
         const finalClass = base ? (ext ? base + " " + ext : base) : (ext || "");
 
         if (currentClass !== finalClass) {
+            const prevTokens = currentClass.trim() ? currentClass.trim().split(/\s+/) : [];
+            if (prevTokens.length) {
+                el.classList.remove(...prevTokens);
+            }
+
+            const nextTokens = finalClass.trim() ? finalClass.trim().split(/\s+/) : [];
+            if (nextTokens.length) {
+                el.classList.add(...nextTokens);
+            }
+
             currentClass = finalClass;
-            el.className = currentClass;
         }
     });
 }
@@ -56,7 +65,7 @@ function reconcileStyles(elStyle: CSSStyleDeclaration, next: any, prev: any) {
 
 function handleStyles(el: HTMLElement, props: ComponentProps) {
     let prevStyles: StyleObject = {};
-    
+
     createEffect(() => {
         const styles = el.style;
         const compRaw = props.componentStyles;
@@ -78,7 +87,7 @@ function handleStyles(el: HTMLElement, props: ComponentProps) {
         if (isCompString || isExtString) {
             const compStr = isCompString ? compStyles : "";
             const extStr = isExtString ? extStyles : "";
-            const finalString = `${compStr};${extStr}`;
+            const finalString = [compStr, extStr].filter(part => part && String(part).trim() !== "").join(";");
 
             if (styles.cssText !== finalString) {
                 styles.cssText = finalString;
