@@ -4,6 +4,8 @@ tableOfContents:
   maxHeadingLevel: 4
 ---
 
+import { Steps } from '@astrojs/starlight/components';
+
 The `RadialMenu` component is an interactive circular menu designed for quick selection among multiple options arranged radially around a center point. 
 It supports mouse and controller input, visual indicators, and customizable slice spacing, making it ideal for in-game weapon wheels, tool selectors, or compact UI menus.
 
@@ -600,3 +602,96 @@ const App = () => {
 
 export default App;
 ```
+
+### Extending the RadialMenu With Navigation :badge[2.0.0]{variant=note}
+
+The `RadialMenu` component integrates seamlessly with the `Navigation` system to create an intuitive keyboard and gamepad experience.
+
+The following example demonstrates an alternative, more robust approach to the
+[selecting an item with gamepad stick guide](#selecting-an-item-with-gamepad-stick-by-vector) and [opening and closing the menu guide](#opening-and-closing-the-menu) guides.
+
+We will use the `Navigation` component's actions system to:
+
+1. Open/close the menu using the SHIFT key (Keyboard) or LB button (Gamepad).
+2. Use the right joystick for item selection.
+3. Optimize performance by pausing input listeners when the menu is hidden.
+
+#### Implementation Steps
+
+<Steps>
+1. Make sure the `RadialMenu` is a descendant of a `Navigation` component in your component tree.
+2. Create custom set of actions for opening/closing the menu and selecting items.
+3. Pass the actions to the `Navigation` component via the `actions` prop.
+4. Use `resumeAction` and `pauseAction` to manage the joystick polling state.
+</Steps>
+
+```tsx
+import RadialMenu, { RadialMenuRef } from '@components/Complex/RadialMenu/RadialMenu';
+import Navigation, { NavigationRef } from '@components/Utility/Navigation/Navigation';
+import { ActionMap } from '@components/Utility/Navigation/types';
+
+const HUD = () => {
+    let navigationRef!: NavigationRef;
+    let radialMenuRef!: RadialMenuRef;
+    
+    const openRadialMenu = () => {
+        if (radialMenuRef?.opened()) return;
+    
+        radialMenuRef?.open();
+        navigationRef.resumeAction('radial-menu-select')
+    }
+    
+    const closeRadialMenu = () => {
+        radialMenuRef?.close();
+        navigationRef.pauseAction('radial-menu-select')
+    }
+    
+    const selectRadialMenuOptions = (scope = '', [x, y]: [number, number]) => {
+        radialMenuRef?.selectByVector(x, y)
+    }
+    
+    const customActions: ActionMap = {
+        'open-radial-menu': {
+            key: {binds: ['SHIFT'], type: ['press']},
+            button: {binds: ['left-shoulder'], type: 'hold'},
+            callback: openRadialMenu,
+        },
+    
+        'close-radial-menu': {
+            key: {binds: ['SHIFT'], type: ['lift']},
+            button: {binds: ['left-shoulder'], type: 'press'},
+            callback: closeRadialMenu,
+        },
+    
+        'radial-menu-select': {
+            button: {binds: ['right.joystick']},
+            callback: selectRadialMenuOptions,
+            paused: true, // Start paused to avoid unnecessary calculations
+        }
+    };
+
+    return (
+        <div class={styles.Hud}>
+            <Navigation actions={customActions} ref={navigationRef}>
+                <RadialMenu ref={radialMenuRef}>
+                    {/* RadialMenu content */}
+                </RadialMenu>
+            </Navigation>
+        </div>
+    )
+}
+```
+
+#### Few things to note
+
+- **The Release Mechanic**: To handle gamepad button releases, we use `hold` to open and `press` to close. 
+While it may seem counter-intuitive, the `press` type fires specifically when the button is released after being held, ensuring the menu stays visible exactly as long as the user maintains pressure on the shoulder button.
+
+- **Performance Optimization**: Since gamepad joysticks are polled very frequently, the `radial-menu-select` action is marked as `paused: true` by default. 
+We only resume it while the menu is active to eliminate unnecessary logic overhead when its not used.
+
+:::caution
+If your project already utilizes the `Navigation` system for UI focus and inputs, 
+it is highly recommended to use this action-based approach rather than manual event listeners to maintain a single source of truth for input handling.
+:::
+
