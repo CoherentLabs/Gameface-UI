@@ -270,7 +270,7 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
     }
 
     props.componentClasses = () => styles['carousel'];
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
+    const { className, inlineStyles, forwardEvents, forwardAttrs, navigationActions } = useBaseComponent(props);
 
     return <CarouselContext.Provider value={{
         setActivePage,
@@ -292,7 +292,10 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
             style={inlineStyles()}
             use:forwardEvents={props}
             use:forwardAttrs={props}
-        >
+            use:navigationActions={{
+                anchor: props.anchor,
+                ...props.onAction,
+            }}>
             {props.children}
         </div>
     </CarouselContext.Provider>

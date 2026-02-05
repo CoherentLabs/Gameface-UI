@@ -63,6 +63,8 @@ export default App;
 | `itemsAlignment`        | `'start' \| 'center' \| 'end'`| `start`     | Controls the alignment of items within the carousel. Options include `start`, `center`, and `end`, which determine how items are aligned along the main axis of the carousel.                               |
 | `groupItems`            | `boolean`                    | `false`     | When set to `true`, groups items together based on the `itemWidth` and `itemGap` values, enabling a page-like display where multiple items are shown at once.                                               |
 | `leadingAndTrailingSpaces` | `boolean`                 | `true`      | Determines whether to add leading and trailing spaces to the items. Setting this to `false` creates a more compact layout without extra padding on the sides.                                              |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the carousel. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, the carousel's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Ref API
 
@@ -632,3 +634,94 @@ const App = () => {
 
 export default App;
 ```
+
+### Extending the Carousel With Navigation :badge[2.0.0]{variant=note}
+
+The `Carousel` component is highly adaptable and can be integrated with the `Navigation` system to support various keyboard and button inputs. 
+Depending on your UI's depth, you might want the carousel to react globally to certain inputs or strictly only when it is in focus.
+
+The following examples demonstrate two common patterns for integrating the `Carousel` with the `Navigation` system.
+
+#### Pattern A: Tab-style
+
+This approach is perfect for "Top-level" carousels, such as main menu categories or shop tabs.
+In this scenario, we want specific buttons (like Shoulder Buttons or Q/E) to control the carousel regardless of where the focus is.
+
+```tsx {"1":6,7} {"2":9-21} {"3": 24-26}
+import Carousel, { CarouselRef } from '@components/Complex/Carousel/Carousel';
+import Navigation from '@components/Utility/Navigation/Navigation';
+import { ActionMap } from '@components/Utility/Navigation/types';
+
+const App = () => {
+    // Declare carousel ref
+    let carouselRef!: CarouselRef;
+
+    // Define actions for shifting tabs
+    const customActions: ActionMap = {
+        'carousel-prev': {
+            key: { binds: ['Q'], type: ['press', 'hold'] },
+            button: { binds: ['left-shoulder'], type: 'hold' },
+            callback: () => carouselRef.prev()
+        },
+        'carousel-next': {
+            key: { binds: ['E'], type: ['press', 'hold'] },
+            button: { binds: ['right-shoulder'], type: 'hold' },
+            callback: () => carouselRef.next()
+        },
+    };
+
+    return (
+        // Provide actions to the Navigation component and attach ref to carousel
+        <Navigation actions={customActions}>
+            <Carousel ref={carouselRef}>
+                {/* Carousel content */}
+            </Carousel>
+        </Navigation>
+    );
+}
+```
+
+#### Pattern B: Scoped Directional Control (onAction)
+
+This pattern is ideal for nested carousels or lists (like a character selection screen). By using the built-in `onAction` prop, 
+the carousel only responds to Arrow Keys or the D-Pad when its element is explicitly focused. This prevents "input bleeding," where one button press accidentally moves multiple menus on the same page.
+
+```tsx {"1":6,7} {"2":9-13} {"3": 17-24}
+import Carousel, { CarouselRef } from '@components/Complex/Carousel/Carousel';
+import Navigation from '@components/Utility/Navigation/Navigation';
+import { ActionMap } from '@components/Utility/Navigation/types';
+
+const App = () => {
+    // Declare carousel ref
+    let carouselRef!: CarouselRef;
+
+    // Initialize: Store the API and focus the element 
+    const initCarouselRef = (api: CarouselRef) => {
+        carouselRef = api;
+        api.element.focus(); // Must be focused to receive 'move' actions
+    }
+
+    return (
+        <Navigation>
+            <Carousel 
+                ref={initCarouselRef} 
+                // Use the onAction prop to handle directional input when the carousel is focused
+                onAction={{
+                    'move-left': () => carouselRef.prev(),
+                    'move-right': () => carouselRef.next(),
+                }}
+            >
+                {/* Carousel content */}
+            </Carousel>
+        </Navigation>
+    );
+}
+```
+
+#### Key Considerations
+
+- **Differences**: Custom actions (Pattern A) are excellent for high-level navigation that should always be available and doesn't rely on the element to be focused. 
+Scoped actions (Pattern B) provide finer control, ensuring that directional inputs only affect the carousel the user is currently interacting with.
+- **Managing Focus**: When using `onAction`, remember that the Carousel's element should be focused.
+- **Input Flexibility**: You are not limited to these two patterns. Because the `Navigation` system and the `CarouselRef` are decoupled, you can mix and match these approaches—for example,
+using LB/RB for fast-paging while using the D-Pad for precise single-item movement.

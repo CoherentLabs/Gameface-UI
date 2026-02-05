@@ -42,6 +42,8 @@ export default App;
 | `value` | `string`           | `rgba(255, 0, 0, 1)` | Initial value of the color picker. Accepts colors as strings in HEX or RGBA format. |
 | `size` | `'S' \| 'M' \| 'L' \| 'XL'` | `'L'` | Sets the size of the color picker. The size affects the overall dimensions and font sizes within the component. Ideal for quick customization. |
 | `onChange` | `(value: ColorData) => void`           | `undefined` | A callback function triggered whenever the color changes. It can be used to retrieve the updated color value. |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the color picker. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, the color picker's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Ref API
 

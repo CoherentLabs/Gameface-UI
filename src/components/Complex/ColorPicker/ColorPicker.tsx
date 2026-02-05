@@ -100,7 +100,7 @@ const ColorPicker: ParentComponent<ColorPickerProps> = (props) => {
     }
 
     props.componentClasses = () => colorPickerClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
+    const { className, inlineStyles, forwardEvents, forwardAttrs, navigationActions } = useBaseComponent(props);
 
     onMount(() => {
         if (!props.ref || !element) return;
@@ -117,7 +117,11 @@ const ColorPicker: ParentComponent<ColorPickerProps> = (props) => {
             class={className()}
             style={inlineStyles()}
             use:forwardEvents={props}
-            use:forwardAttrs={props}>
+            use:forwardAttrs={props}
+            use:navigationActions={{
+                anchor: props.anchor,
+                ...props.onAction,
+            }}>
             {/**
              * XYSlider component is used for selecting color based on saturation and value.
              * If you need to customize the XYSlider, you can pass additional styles or use its slots.

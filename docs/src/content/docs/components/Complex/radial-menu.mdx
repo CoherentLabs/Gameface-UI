@@ -74,6 +74,8 @@ export default App;
 | `selected`      | `number`                         | `0`         | The index of the initially selected item in the menu.                                         |
 | `onChange`      | `(id: string \| number) => void` | `undefined` | Callback triggered when a new item becomes selected. Returns either the item's `id` (if defined) or its index.                                                  |
 | `onItemChanged` | `() => void`                     | `undefined` | Callback executed when the number or order of menu items changes (e.g., due to re-rendering or dynamic updates).                                                |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the radial menu. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, the radial menu's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Ref API
 

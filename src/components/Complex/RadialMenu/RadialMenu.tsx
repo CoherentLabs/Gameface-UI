@@ -166,7 +166,7 @@ const RadialMenu: ParentComponent<RadialMenuProps> = (props) => {
     onCleanup(() => removeEventListeners());
 
     props.componentClasses = () => radialMenuClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
+    const { className, inlineStyles, forwardEvents, forwardAttrs, navigationActions } = useBaseComponent(props);
 
     const ContextObj = {
         clipPathValue, 
@@ -183,7 +183,11 @@ const RadialMenu: ParentComponent<RadialMenuProps> = (props) => {
                 class={className()}
                 style={inlineStyles()}
                 use:forwardEvents={props} 
-                use:forwardAttrs={props} >
+                use:forwardAttrs={props}
+                use:navigationActions={{
+                    anchor: props.anchor,
+                    ...props.onAction,
+                }}>
                 {/* Content */}
                 <MenuCenter parentChildren={props.children} />
                 {/* Items */}
