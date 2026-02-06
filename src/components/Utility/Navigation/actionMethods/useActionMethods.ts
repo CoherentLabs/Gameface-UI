@@ -13,7 +13,7 @@ export default function createActionMethods(
     const actionSubscribers = new Map<string, number>();
     // For force paused actions
     const forcePausedActions = new Set<string>();
-    // For renenbering which already paused actions were affected in the pause input function
+    // For remembering which already paused actions were affected in the pause input function
     const inputCaptureSnapshot = new Set<string>();
     
     const registerAction = (actionName: ActionName) => {

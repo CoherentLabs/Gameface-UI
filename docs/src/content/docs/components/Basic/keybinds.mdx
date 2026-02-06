@@ -161,7 +161,7 @@ import Keybind from '@components/Basic/Keybinds/Keybind';
 
 For more information about navigation actions, see the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions).
 
-## Gamepad Support <Badge text="2.0.0" variant="note" size="small" />
+## Gamepad Support :badge[2.0.0]{variant=note}
 
 With the introduction of the [Navigation component](/components/utility/navigation/), the `Keybinds` component now supports gamepad input as well.
 
@@ -172,8 +172,8 @@ Internally, the gamepad buttons are identified and stored by the [Gamepad API st
 while the axes are identified by custom aliases (e.g., `left.joystick.up`, `right.joystick.left`, etc.). 
 See the [Glyphs object](#glyphs-object) table for the full list of supported gamepad button codes and axis aliases.
 
-For easier readibility, you can use the same button codes and axis aliases used by the [Interaction Manager Gamepad Class](https://frontend-tools.coherent-labs.com/interaction-manager/features/gamepad/#options).
-The will resolve to the correct button indices internally.
+For easier readability, you can use the same button codes and axis aliases used by the [Interaction Manager Gamepad Class](https://frontend-tools.coherent-labs.com/interaction-manager/features/gamepad/#options).
+These will resolve to the correct button indices internally.
 
 ### Usage
 
@@ -208,20 +208,24 @@ Binding a value of `xbox.a` and `face-button-down` or even `0` will result in th
 
 ### Displayed glyphs
 
-When displaying the bound keys, the component will render the corresponding glyphs for the gamepad buttons. The default glpyhs are based on the standard Xbox controller layout and are displayed by the 
+When displaying the bound keys, the component will render the corresponding glyphs for the gamepad buttons. The default glyphs are based on the standard Xbox controller layout and are displayed by the 
 [Icon](/components/media/icon/) component.
 
 You can override the default glyphs by providing a custom `glyphOverrides` prop to the `Keybinds` component and providing your own components or elements for the desired buttons. 
 
-```tsx
+```tsx {"You can pass overrides in the form of:": 5} {"- Component reference": 7-8} {"- Calling the component directly to be able to provide custom props such as styles,": 10-11} {" - HTML element such as an image": 12-13}
 import Keybinds from '@components/Basic/Keybinds/Keybinds';
 import Keybind from '@components/Basic/Keybinds/Keybind';
 
 const App = () => {
+    
     const GLYPHS: GlyphOverrides = {
+        
         '0': Icon.gamepad.ps5.cross,
         '1': Icon.gamepad.ps5.circle,
+
         '2': <Icon.gamepad.ps5.square style={{width: '5vmax', height: '5vmax'}} />,
+
         '3': <img src={customGlyphIcon} />,
     }
 
@@ -247,7 +251,7 @@ When overriding glyphs, make sure to use the exact same gamepad button codes and
 
 ### Styling the gamepad glyphs
 
-If you wish to provide custom styling to the displayed glyphs such as changing the `wdith/height` of the displayed image, 
+If you wish to provide custom styling to the displayed glyphs such as changing the `width/height` of the displayed image, 
 you can do so by overriding the glyph via the `glyphOverrides` prop and providing your own component or element with the desired styles.
 
 For example, to keep the default xbox glyphs but change their size, you can do the following:
