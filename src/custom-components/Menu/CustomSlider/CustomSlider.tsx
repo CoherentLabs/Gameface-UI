@@ -10,6 +10,7 @@ interface CustomSliderProps {
     min: number;
     max: number;
     value: number;
+    id?: string;
     onChange?: (value: number) => void;
 }
 
@@ -28,7 +29,8 @@ const CustomSlider = (props: CustomSliderProps) => {
                 step={props.step} 
                 min={props.min} 
                 max={props.max} 
-                value={value()} 
+                value={value()}
+                anchor={`#${props.id}`}
                 class={style.slider}>
                     <Slider.Handle class={style['slider-handle']}></Slider.Handle>
                     <Slider.Fill class={style['slider-fill']}></Slider.Fill>

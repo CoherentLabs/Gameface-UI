@@ -62,6 +62,11 @@ const Keybind = (props: KeyBindProps) => {
     };
 
     const startListeningGamepad = () => {
+        if (context.mode !== 'gamepad') {
+            startListening()
+            return;
+        }
+
         setListening(true);
         // pause all actions
         nav?.pauseInput();

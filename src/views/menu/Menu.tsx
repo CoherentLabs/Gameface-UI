@@ -8,8 +8,8 @@ import Layout from '@components/Layout/Layout/Layout';
 import Top from '@components/Layout/Top/Top';
 import Content from '@components/Layout/Content/Content';
 import Bottom from '@components/Layout/Bottom/Bottom';
-import Scroll from '@components/Layout/Scroll/Scroll';
-import { Accessor, batch, createContext, createMemo, createSignal, For, onMount, Setter, Show } from 'solid-js';
+import Scroll, { OnScrollHandler, ScrollComponentRef } from '@components/Layout/Scroll/Scroll';
+import { Accessor, batch, createContext, createEffect, createMemo, createSignal, For, onMount, Setter, Show } from 'solid-js';
 import Gameplay from '@custom-components/Menu/Options/Gameplay/Gameplay';
 import styles from './Menu.module.scss';
 import { Column12, Column4, Column8 } from '@components/Layout/Column/Column';
@@ -29,6 +29,14 @@ import CustomTooltip from '@custom-components/Menu/CustomTooltip/CustomTooltip';
 import { TutorialSteps } from './util/tutorialSteps';
 import Navigation, { NavigationRef } from '@components/Utility/Navigation/Navigation';
 import { ActionMap } from '@components/Utility/Navigation/types';
+import GridTile from '@components/Layout/GridTile/GridTile';
+import Grid from '@components/Layout/Grid/Grid';
+import List from '@components/Layout/List/List';
+import ColorPicker from '@components/Complex/ColorPicker/ColorPicker';
+import Segment from '@components/Basic/Segment/Segment';
+import TextInput from '@components/Basic/Input/TextInput/TextInput';
+import RadialMenu from '@components/Complex/RadialMenu/RadialMenu';
+import BackgroundImage from '@components/Media/BackgroundImage/BackgroundImage';
 
 interface MenuContextValue {
     currentOption: Accessor<string>,
@@ -51,6 +59,7 @@ const Menu = () => {
     const [activeTab, setActiveTab] = createSignal<typeof OPTIONS[number]>(OPTIONS[0]);
     const [interactiveTutorials, setInteractiveTutorials] = createSignal({ subtitles: false, color: false })
     let nextTab: string | undefined;
+    let tabIndex = 0;
     let tabsRef!: TabsComponentRef;
     const MenuContextValue = {
         currentOption,
@@ -67,13 +76,14 @@ const Menu = () => {
         });
     }
 
-    const handleBeforeTabChange = (currentLocation: string, newLocation: string) => {
+    const handleBeforeTabChange = (_: string, newLocation: string) => {
         if (hasChanges()) {
             modalRef.open();
             setHasChanges(false);
             nextTab = newLocation;
             return false;
         }
+        tabIndex = OPTIONS.indexOf(newLocation as typeof OPTIONS[number]);
     }
 
     const handleModalClose = () => {
@@ -93,7 +103,7 @@ const Menu = () => {
 
     onMount(() => {
         eventBus.on('ui-change', () => setHasChanges(true))
-        showToast();
+        showToast();      
     })
 
     const isCredits = createMemo(() => activeTab() === OPTIONS[4])
@@ -126,38 +136,30 @@ const Menu = () => {
         }
     }
 
-    const menuRight = () => tabsRef.changeTab('Graphics'); // currently no way to "cycle" tabs
-    const menuLeft = () => tabsRef.changeTab('Gameplay');
-    const testFunc = (arg1: number, arg2: number) => {
-        console.log(arg1, arg2);
-    } 
+    const cycleTabs = (direction: 'prev' | 'next') => {
+        if (direction === 'next') {
+            const incremented = tabIndex + 1;
+            tabIndex = incremented >= OPTIONS.length ? 0 : incremented;
+        } else {
+            tabIndex = tabIndex - 1 < 0 ? OPTIONS.length - 1 : tabIndex - 1;
+        }
 
-    // User added 
+        tabsRef.changeTab(OPTIONS[tabIndex])
+    }
+
+    const tabNext = () => cycleTabs('next');
+    const tabPrev = () => cycleTabs('prev');
+
     const defaultActions: ActionMap = {
-        'tab-left': {key: {binds: ['Q'], type: ['press']}, button: {binds: ['left-sholder'], type: 'press'}, callback: menuLeft, global: true},
-        'tab-right': {key: {binds: ['E'], type: ['press']}, button: {binds: ['right-sholder'], type: 'press'}, callback: menuRight, global: true},
-        'select': {key: {binds: ['SPACEBAR'], type: ['press']}, callback: () => console.log('ndasd'), },
+        'tab-left': {key: {binds: ['Q'], type: ['press']}, button: {binds: ['left-shoulder'], type: 'press'}, callback: tabPrev, global: true},
+        'tab-right': {key: {binds: ['E'], type: ['press']}, button: {binds: ['right-shoulder'], type: 'press'}, callback: tabNext, global: true},
     }
 
-    const addMoreActions = () => {
-        navigationRef?.addAction('yabadabado', {key: {binds: ['ARROW_UP'], type: ['press']}, callback: () => console.log('yabadadabadoo'), paused: true})
-        navigationRef?.addAction('test', {key: {binds: ['W']}, callback: (scope, customArg) => {console.log(scope, customArg)}})
-        navigationRef?.addAction('test2', {key: {binds: ['S']}, callback: () => testFunc(1,2)})
-    }
-
-    const updateAction = () => {
-        navigationRef?.updateAction('select', {
-            key: {binds: ['SPACEBAR'], type: ['press']},
-            button: {binds: ['face-button-down']},
-            callback: () => console.log('yabadadabadoo')
-        });
-    }
+    let scrollRef!: ScrollComponentRef;
 
     return (
         <MenuContext.Provider value={MenuContextValue}>
-            <button onclick={addMoreActions}>Test</button>
-            <button onclick={updateAction}>Update</button>
-            <Navigation ref={navigationRef} actions={defaultActions} pollingInterval={100} >
+            <Navigation ref={(api) => navigationRef = api} actions={defaultActions} pollingInterval={100} >
                 <Tutorial click={handleClick} ref={tutorialRef} outset={5} tooltip={(props) => <CustomTooltip {...props} exit={() => tutorialRef?.exit()} />} >
                     <Toaster /> 
                     <Tutorial.Step title={TutorialSteps.End.title} content={TutorialSteps.End.content} order={TutorialSteps.End.order} outset={-10} position={"top"}>
@@ -191,7 +193,7 @@ const Menu = () => {
                                                     <Show when={!isCredits()}>
                                                         <Tutorial.Step order={TutorialSteps.Scroll.order} content={TutorialSteps.Scroll.content} title={TutorialSteps.Scroll.title} position='right'>
                                                             <Column8>
-                                                                <Scroll style={{ width: '100%' }}>
+                                                                <Scroll ref={scrollRef} style={{ width: '100%' }}>
                                                                     <Scroll.Content class={styles['scroll-content']}>
                                                                         <Tab location={OPTIONS[0]}>
                                                                             <Gameplay />
