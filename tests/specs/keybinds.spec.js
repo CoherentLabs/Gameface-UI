@@ -296,7 +296,7 @@ describe('Keybinds', function () {
             assert.equal(src.includes(`/b`), true, 'Correct icon is displayed');
         })
 
-        it('Should prevent exection of any actions while listening for input', async () => {
+        it('Should prevent execution of any actions while listening for input', async () => {
             const assertionEl = await gf.get(`.${selectors.actionTest}`)
             const gamepad = gf.getGamepad('gamepad')
 

@@ -1,5 +1,4 @@
 import { Icon } from "@components/Media/Icon/Icon";
-import { GamepadMappings } from "coherent-gameface-interaction-manager";
 import { Component, JSX } from "solid-js";
 
 /**

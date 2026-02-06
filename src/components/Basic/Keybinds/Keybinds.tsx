@@ -69,7 +69,7 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
         if (!isNaN(num) || typeof input === 'number') {
             if (0 <= num && num <= 16) return String(input);
             else {
-                console.warn(`${input} is not a valid gamepad button. Please ensure the number is between 0 and 16`);
+                console.warn(`${input} is not a valid gamepad button. Please ensure the number is between 0 and 16 inclusive`);
                 return null
             }
         }
