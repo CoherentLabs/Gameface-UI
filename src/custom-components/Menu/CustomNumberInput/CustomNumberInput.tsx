@@ -5,12 +5,13 @@ import { emitChange } from "../../../views/menu/util";
 interface CustomInputProps {
     min: number,
     max: number,
-    value: number
+    value: number,
+    id?: string,
 }
 
 const CustomNumberInput = (props: CustomInputProps) => {
     return (
-        <NumberInput onChange={emitChange} class={style.input} min={props.min} max={props.max} value={props.value} >
+        <NumberInput anchor={`#${props.id}`} onChange={emitChange} class={style.input} min={props.min} max={props.max} value={props.value} >
             <NumberInput.IncreaseControl class={style['input-button']}></NumberInput.IncreaseControl>
             <NumberInput.DecreaseControl class={style['input-button']}></NumberInput.DecreaseControl>
             <NumberInput.Input class={style['input-element']} />

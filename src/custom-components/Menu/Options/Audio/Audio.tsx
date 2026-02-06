@@ -1,52 +1,41 @@
 import MenuItem from "@custom-components/Menu/MenuItem/MenuItem";
-import { createSignal, For, onMount, ParentComponent} from "solid-js";
-import CustomSegment from "@custom-components/Menu/CustomSegment/CustomSegment";
-import ExtraContent from "@custom-components/Menu/SidePanel/ExtraContent";
-import CustomList from "@custom-components/Menu/CustomList/CustomList";
-import { keybindPresetContent } from "@custom-components/Menu/SidePanel/keybindsPanelContent";
-import KeyBind from "@custom-components/Menu/KeyBind/KeyBind";
-import eventBus from "@components/Utility/EventBus";
-import { SegmentRef } from "@components/Basic/Segment/Segment";
-import Dropdown from "@components/Basic/Dropdown/Dropdown";
-import Checkbox from "@components/Basic/Checkbox/Checkbox";
-import NumberInput from "@components/Basic/Input/NumberInput/NumberInput";
+import { ParentComponent} from "solid-js";
 import CustomSlider from "@custom-components/Menu/CustomSlider/CustomSlider";
 import CustomNumberInput from "@custom-components/Menu/CustomNumberInput/CustomNumberInput";
 import CustomDropdown from "@custom-components/Menu/CustomDropdown/CustomDropdown";
+import Navigation from "@components/Utility/Navigation/Navigation";
+import CustomCheckbox from "@custom-components/Menu/CustomCheckbox/CustomCheckbox";
 
 const Audio: ParentComponent = () => {
     return (
-        <>
-            {/* Levels */}
+        <Navigation.Area name="audio" focused>
             <MenuItem id="masterVolume" name="Master Volume">
-                <CustomSlider min={0} max={100} step={1} value={100} />
+                <CustomSlider id="masterVolume" min={0} max={100} step={1} value={100} />
             </MenuItem>
 
             <MenuItem id="musicVolume" name="Music Volume">
-                <CustomSlider min={0} max={100} step={1} value={60} />
+                <CustomSlider id="musicVolume" min={0} max={100} step={1} value={60} />
             </MenuItem>
 
             <MenuItem id="sfxVolume" name="SFX Volume">
-                <CustomSlider min={0} max={100} step={1} value={80} />
+                <CustomSlider id="sfxVolume" min={0} max={100} step={1} value={80} />
             </MenuItem>
 
             <MenuItem id="voiceChatVolume" name="Voice Chat Volume">
-                <CustomSlider min={0} max={100} step={1} value={70} />
+                <CustomSlider id="voiceChatVolume" min={0} max={100} step={1} value={70} />
             </MenuItem>
 
             <MenuItem id="muteAll" name="Mute All">
-                <Checkbox>
-                    <Checkbox.Label>On</Checkbox.Label>
-                </Checkbox>
+                <CustomCheckbox id="muteAll" />
             </MenuItem>
 
             <MenuItem id="voiceChatDelay" name="Voice Chat Delay (ms)">
-                <CustomNumberInput min={0} max={500} value={0} />
+                <CustomNumberInput id="voiceChatDelay" min={0} max={500} value={0} />
             </MenuItem>
 
-            {/* Devices / languages */}
             <MenuItem id="outputDevice" name="Output Device">
                 <CustomDropdown
+                    id="outputDevice"
                     values={[
                         { value: "system", label: "System Default" },
                         { value: "speakers-realtek", label: "Speakers (Realtek)" },
@@ -60,6 +49,7 @@ const Audio: ParentComponent = () => {
 
             <MenuItem id="audioLanguage" name="Audio Language">
                  <CustomDropdown
+                    id="audioLanguage"
                     values={[
                         { value: "system", label: "System Default" },
                         { value: "en", label: "English" },
@@ -70,7 +60,7 @@ const Audio: ParentComponent = () => {
                     default="system"
                 />
             </MenuItem>
-        </>
+        </Navigation.Area>
     );
 
 }

@@ -8,6 +8,7 @@ import { SegmentRef } from "@components/Basic/Segment/Segment";
 import { PRESETS, ROWS } from "./keybindPresets";
 import Keybinds, { KeybindsRef } from "@components/Basic/Keybinds/Keybinds";
 import Keybind from "@components/Basic/Keybinds/Keybind";
+import Navigation from "@components/Utility/Navigation/Navigation";
 
 const OPTIONS = ['PC', 'Tactical', 'Left-Handed', 'Custom'] as const;
 const KeyOverrides = {
@@ -24,9 +25,10 @@ const KeyBindsTab: ParentComponent = () => {
     } 
 
     return (
-        <>
+        <Navigation.Area name="keybinds" focused>
             <MenuItem id="keybindPreset" name="Keybind Preset">
                 <CustomSegment
+                    id="keybindPreset"
                     ref={segmentRef}
                     onChange={(v) => {
                         if (v === "Custom") return;  
@@ -50,12 +52,12 @@ const KeyBindsTab: ParentComponent = () => {
                 <For each={ROWS}>
                     {(row) => (
                         <MenuItem id={row.id} name={row.name}>
-                            <Keybind action={row.id} />
+                            <Keybind anchor={`#${row.id}`} action={row.id} />
                         </MenuItem>
                     )}
                 </For>
             </Keybinds>
-        </>
+        </Navigation.Area>
     )
 }
 

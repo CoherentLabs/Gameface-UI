@@ -20,7 +20,7 @@ const Gameplay: ParentComponent = () => {
     return (
         <Navigation.Area name="menu" selector="menu-item" focused>
             <MenuItem id="difficulty" name='Difficulty'>
-                <Stepper anchor=".menu-item" onChange={emitChange} style={{width: '15vmax'}} onAction={{select: () => console.log('custom select implementation')}}>
+                <Stepper anchor="#difficulty" onChange={emitChange} style={{width: '15vmax'}} >
                     <Stepper.Items>
                         <Stepper.Item value='Easy'>Easy</Stepper.Item>
                         <Stepper.Item value='Normal' selected>Normal</Stepper.Item>
@@ -56,6 +56,7 @@ const Gameplay: ParentComponent = () => {
                         </MenuItem>
                         <MenuItem id="subtitleLanguage" name="Subtitle Language">
                             <CustomDropdown
+                                id="subtitleLanguage"
                                 values={[
                                     { value: "en", label: "English" },
                                     { value: "de", label: "Deutsch" },
@@ -69,25 +70,24 @@ const Gameplay: ParentComponent = () => {
                 </Tutorial.Step>
             </Show>
             <MenuItem id="fov" name='Field of view'>
-                <CustomSlider min={1} max={10} step={0.1} value={3.5} />
+                <CustomSlider id="fov" min={1} max={10} step={0.1} value={3.5} />
             </MenuItem>
             <MenuItem id="mouseSensitivity" name='Mouse sensitivity'>
-                <CustomSlider step={0.1} min={1} max={10} value={3.3} />
+                <CustomSlider id="mouseSensitivity" step={0.1} min={1} max={10} value={3.3} />
             </MenuItem>
             <MenuItem id="tutorialHints" name='Tutorial Hints'>
-                <CustomToggle checked={true} />
+                <CustomToggle id="tutorialHints" checked={true} />
             </MenuItem>
             <MenuItem id="autoSave" name='Auto-Save'>
-                <CustomToggle checked={false} />
+                <CustomToggle id="autoSave" checked={false} />
             </MenuItem>
             <MenuItem id="aimAssist" name='Aim Assist'>
-                <CustomToggle checked={false} />
+                <CustomToggle id="aimAssist" checked={false} />
             </MenuItem>
             <MenuItem id="vibration" name='Controller Vibration'>
-                <CustomToggle checked={true} />
+                <CustomToggle id="vibration" checked={true} />
             </MenuItem>
         </Navigation.Area>
-
     )
 }
 
