@@ -24,7 +24,7 @@ const RESOLUTIONS = [
 
 const Graphics: ParentComponent = () => {
     return (
-        <Navigation.Area name="graphics" selector="menu-item" focused>
+        <Navigation.Area name="menu" selector="menu-item" focused>
             <MenuItem id="resolution" name='Resolution'>
                 <CustomDropdown id="resolution" values={RESOLUTIONS} default={"1920x1080"} />
             </MenuItem>

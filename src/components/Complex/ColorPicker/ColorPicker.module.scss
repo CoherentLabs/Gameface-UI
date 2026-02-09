@@ -10,6 +10,14 @@
     @if list.index($hide, 'preview') { .color-preview-wrapper { display: none; } }
 }
 
+@mixin handle-focus($slider-name) {
+    &:focus {
+        .#{$slider-name} {
+            border: 0.2vmax solid rgb(197, 197, 197);
+        }
+    }
+}
+
 .color-picker {
     display: flex;
     flex-direction: column;
@@ -42,6 +50,8 @@
     margin-bottom: 0.5em;
     height: 10em;
 
+    @include handle-focus('XYSlider-handle');
+
     &-handle {
         width: 1.5em;
         height: 1.5em;
@@ -57,6 +67,8 @@
     margin-top: 0.5em;
     margin-bottom: 0.5em;
     border-radius: 0.5em;
+
+    @include handle-focus('slider-handle');
 }
 
 .hue-slider-track {
@@ -80,6 +92,10 @@
 .segment {
     margin-top: 0.5em;
     margin-bottom: 0.5em;
+
+    &:focus {
+        box-shadow: 0 0 0.5vmax rgba(0, 0, 0, 0.2);
+    }
 }
 
 .color-preview {

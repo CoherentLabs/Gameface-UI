@@ -46,8 +46,8 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
     const [open, setOpen] = createSignal(false);
     const [isInverted, setIsInverted] = createSignal(false);
     
-    const [anchorEl, setAnchorEl] = createSignal<HTMLElement | null>(null);
     const nav = useNavigation();
+    let previousNavScope: string | undefined;
     const areaID = nav && `dropdown-area-${createUniqueId()}`;
 
     const options = new Map<string, {label: string | JSX.Element, element: HTMLElement}>();
@@ -100,7 +100,7 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
     const closeDropdown = (e: MouseEvent) => {
         if (!element.contains(e.target as Node)) {
             setOpen(false);
-            if (areaID) focusBackToAnchor();
+            if (areaID) nav?.switchArea(previousNavScope!);
             document.removeEventListener('click', closeDropdown);
         }
     };
@@ -130,30 +130,22 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
     }
 
     const handleNavigationOpen = () => {
-        if (!open()) toggle(true);
+        if (!open()) {
+            toggle(true);
+            previousNavScope = nav?.getScope();
+        }
     }
 
     const handleNavigationClose = () => {
         if (!open()) return;
         
         toggle(false);
-        focusBackToAnchor();
-    }
-
-    const focusBackToAnchor = () => {
-        const anchor = anchorEl();
-        anchor ? (anchor as HTMLElement).focus() : element.focus();
+        nav?.switchArea(previousNavScope!);
     }
 
     onMount(() => {
         waitForFrames(() => {
             handlePosition()
-            if (props.anchor) {
-                const el = typeof props.anchor === 'string'
-                  ? document.querySelector(props.anchor)
-                  : props.anchor;
-                setAnchorEl(el as HTMLElement);
-            }
         });
         if (!props.ref || !element) return;
 

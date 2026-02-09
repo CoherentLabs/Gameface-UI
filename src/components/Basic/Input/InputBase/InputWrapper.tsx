@@ -56,7 +56,7 @@ const InputWrapper: ParentComponent<InputWrapperProps> = (wrapperProps) => {
                 },
                 'back': () => {
                     nav?.resumeNavigation();
-                     wrapperProps.inputRef.current?.blur()
+                    wrapperProps.inputRef.current?.blur()
                 },
                 ...wrapperProps.navActions
             })}>

@@ -25,7 +25,7 @@ const KeyBindsTab: ParentComponent = () => {
     } 
 
     return (
-        <Navigation.Area name="keybinds" focused>
+        <Navigation.Area name="menu" focused>
             <MenuItem id="keybindPreset" name="Keybind Preset">
                 <CustomSegment
                     id="keybindPreset"

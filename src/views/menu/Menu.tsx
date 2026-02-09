@@ -98,6 +98,7 @@ const Menu = () => {
                 <CustomToast close={close} action={() => tutorialRef?.tour()} />
             ),
             position: 'top-center',
+            timeout: 5000
         });
     };
 
