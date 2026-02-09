@@ -6,10 +6,14 @@ import MenuColorPicker, { ColorData } from "./MenuColorPicker";
 import ExtraContent from "../SidePanel/ExtraContent";
 import { emitChange } from "../../../views/menu/util";
 import styles from './ColorPreview.module.scss';
+import { useNavigation } from "@components/Utility/Navigation/Navigation";
+
+const NAV_AREA_NAME = "menu-color-picker";
 
 const ColorPreview = (props: {id: string}) => {
     const [color, setColor] = createSignal('#868599');
     let colorPickerRef: ColorPickerRef;
+    const nav = useNavigation();
 
     const handleChange = (value: ColorData) => {
         setColor(parseHSVAColor(value).rgba)
@@ -17,11 +21,14 @@ const ColorPreview = (props: {id: string}) => {
     }
     
     return (
-        <Block class={styles.wrapper}>
+        <Block class={styles.wrapper} anchor={`#${props.id}`} onAction={{
+            'select': () => nav?.focusFirst(NAV_AREA_NAME)
+        }}>
             <Block style={{"background-color": color()}} class={styles['color-block']} />
             <ExtraContent id={props.id}>
                 <MenuColorPicker 
-                        attr:id={props.id}
+                        areaName={NAV_AREA_NAME}
+                        attr:id={`${props.id}-1`}
                         size="L"
                         onChange={handleChange} 
                         value={color()} 

@@ -7,10 +7,8 @@ interface CustomToggleProps {
 }
 
 const CustomCheckbox = (props: CustomToggleProps) => {
-    const handleChange = () => emitChange();
-
     return (
-        <Checkbox onChange={handleChange} anchor={`#${props.id}`} checked={props.checked ?? false}>
+        <Checkbox onChange={emitChange} anchor={`#${props.id}`} checked={props.checked ?? false}>
             <Checkbox.Label>On</Checkbox.Label>
         </Checkbox>
     )

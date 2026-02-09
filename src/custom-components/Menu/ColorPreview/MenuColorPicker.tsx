@@ -5,6 +5,8 @@ import styles from '@components/Complex/ColorPicker/ColorPicker.module.scss';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { ComponentProps } from "@components/types/ComponentProps";
 import { parseHSVAColor, RGBAOrHEXToHSVA } from "@components/Complex/ColorPicker/colorPickerUtils";
+import mergeNavigationActions from "@components/utils/mergeNavigationActions";
+import Navigation, { useNavigation } from "@components/Utility/Navigation/Navigation";
 
 export interface ColorData {
     h: number;
@@ -23,6 +25,7 @@ interface ColorPickerProps extends ComponentProps {
     value?: string;
     size?: 'S' | 'M' | 'L' | 'XL'
     onChange?: (value: ColorData) => void;
+    areaName: string,
 }
 
 const MenuColorPicker: ParentComponent<ColorPickerProps> = (props) => {
@@ -31,6 +34,7 @@ const MenuColorPicker: ParentComponent<ColorPickerProps> = (props) => {
     let hueSliderRef!: SliderRef;
     let alphaSliderRef!: SliderRef;
     let changingColorFromRef = false;
+    const nav = useNavigation();
 
     const initialValue = RGBAOrHEXToHSVA(props.value ?? 'rgba(255, 0, 0, 1)');
     const [color, setColor] = createSignal(initialValue);
@@ -91,7 +95,7 @@ const MenuColorPicker: ParentComponent<ColorPickerProps> = (props) => {
     }
 
     props.componentClasses = () => colorPickerClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
+    const { className, inlineStyles, forwardEvents, forwardAttrs, navigationActions } = useBaseComponent(props);
 
     onMount(() => {
         if (!props.ref || !element) return;
@@ -108,21 +112,26 @@ const MenuColorPicker: ParentComponent<ColorPickerProps> = (props) => {
             class={className()}
             style={inlineStyles()}
             use:forwardEvents={props}
-            use:forwardAttrs={props}>
-            <XYSlider ref={xySliderRef} value={{ x: initialValue.s, y: 100 - initialValue.v }} class={styles.XYSlider} onChange={handleXYChange}>
-                <XYSlider.Background style={XYSliderBackground()} />
-                <XYSlider.Handle class={styles['XYSlider-handle']} style={{ "background-color": selectedColorNonTransparent() }}></XYSlider.Handle>
-            </XYSlider>
-            <Slider ref={hueSliderRef} min={0} max={360} value={initialValue.h} onChange={handleHueChange} class={styles['hue-slider']}>
-                <Slider.Track class={styles['hue-slider-track']} />
-                <Slider.Fill class={styles['slider-fill']}></Slider.Fill>
-                <Slider.Handle class={styles['slider-handle']} style={{ background: selectedColorHue() }} />
-            </Slider>
-            <Slider ref={alphaSliderRef} value={initialValue.a * 100} onChange={handleAlphaChange} class={styles['alpha-slider']}>
-                <Slider.Track class={styles['alpha-slider-track']} style={{ 'background-image': `linear-gradient(to right,transparent 0% , ${selectedColorNonTransparent()} 100% )` }} />
-                <Slider.Fill class={styles['slider-fill']}></Slider.Fill>
-                <Slider.Handle class={styles['slider-handle']} style={{ background: selectedColor() }} />
-            </Slider>
+            use:forwardAttrs={props}
+            use:navigationActions={mergeNavigationActions(props, {
+                'back': () => nav?.switchArea('menu'),
+            })}>
+            <Navigation.Area name={props.areaName} focused={false}>
+                <XYSlider ref={xySliderRef} value={{ x: initialValue.s, y: 100 - initialValue.v }} class={styles.XYSlider} onChange={handleXYChange}>
+                    <XYSlider.Background style={XYSliderBackground()} />
+                    <XYSlider.Handle class={styles['XYSlider-handle']} style={{ "background-color": selectedColorNonTransparent() }}></XYSlider.Handle>
+                </XYSlider>
+                <Slider ref={hueSliderRef} min={0} max={360} value={initialValue.h} onChange={handleHueChange} class={styles['hue-slider']}>
+                    <Slider.Track class={styles['hue-slider-track']} />
+                    <Slider.Fill class={styles['slider-fill']}></Slider.Fill>
+                    <Slider.Handle class={styles['slider-handle']} style={{ background: selectedColorHue() }} />
+                </Slider>
+                <Slider ref={alphaSliderRef} value={initialValue.a * 100} onChange={handleAlphaChange} class={styles['alpha-slider']}>
+                    <Slider.Track class={styles['alpha-slider-track']} style={{ 'background-image': `linear-gradient(to right,transparent 0% , ${selectedColorNonTransparent()} 100% )` }} />
+                    <Slider.Fill class={styles['slider-fill']}></Slider.Fill>
+                    <Slider.Handle class={styles['slider-handle']} style={{ background: selectedColor() }} />
+                </Slider>
+            </Navigation.Area>
         </div >
     );
 };

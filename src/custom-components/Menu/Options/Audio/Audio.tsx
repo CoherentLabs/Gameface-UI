@@ -8,7 +8,7 @@ import CustomCheckbox from "@custom-components/Menu/CustomCheckbox/CustomCheckbo
 
 const Audio: ParentComponent = () => {
     return (
-        <Navigation.Area name="audio" focused>
+        <Navigation.Area name="menu" focused>
             <MenuItem id="masterVolume" name="Master Volume">
                 <CustomSlider id="masterVolume" min={0} max={100} step={1} value={100} />
             </MenuItem>
