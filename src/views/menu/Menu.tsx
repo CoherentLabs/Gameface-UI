@@ -8,8 +8,8 @@ import Layout from '@components/Layout/Layout/Layout';
 import Top from '@components/Layout/Top/Top';
 import Content from '@components/Layout/Content/Content';
 import Bottom from '@components/Layout/Bottom/Bottom';
-import Scroll, { OnScrollHandler, ScrollComponentRef } from '@components/Layout/Scroll/Scroll';
-import { Accessor, batch, createContext, createEffect, createMemo, createSignal, For, onMount, Setter, Show } from 'solid-js';
+import Scroll, { ScrollComponentRef } from '@components/Layout/Scroll/Scroll';
+import { Accessor, batch, createContext, createMemo, createSignal, For, Match, onMount, Setter, Show, Switch } from 'solid-js';
 import Gameplay from '@custom-components/Menu/Options/Gameplay/Gameplay';
 import styles from './Menu.module.scss';
 import { Column12, Column4, Column8 } from '@components/Layout/Column/Column';
@@ -29,21 +29,15 @@ import CustomTooltip from '@custom-components/Menu/CustomTooltip/CustomTooltip';
 import { TutorialSteps } from './util/tutorialSteps';
 import Navigation, { NavigationRef } from '@components/Utility/Navigation/Navigation';
 import { ActionMap } from '@components/Utility/Navigation/types';
-import GridTile from '@components/Layout/GridTile/GridTile';
-import Grid from '@components/Layout/Grid/Grid';
-import List from '@components/Layout/List/List';
-import ColorPicker from '@components/Complex/ColorPicker/ColorPicker';
-import Segment from '@components/Basic/Segment/Segment';
-import TextInput from '@components/Basic/Input/TextInput/TextInput';
-import RadialMenu from '@components/Complex/RadialMenu/RadialMenu';
-import BackgroundImage from '@components/Media/BackgroundImage/BackgroundImage';
+import { Icon } from '@components/Media/Icon/Icon';
 
 interface MenuContextValue {
     currentOption: Accessor<string>,
     setCurrentOption: Setter<string>,
     activeTab: Accessor<typeof OPTIONS[number]>,
     TutorialSteps: typeof TutorialSteps,
-    interactiveTutorials: Accessor<{subtitles: boolean; color: boolean; }>
+    interactiveTutorials: Accessor<{subtitles: boolean; color: boolean; }>,
+    inputType: Accessor<'gamepad' | 'keyboard'>,
 }
 
 export const MenuContext = createContext<MenuContextValue>();
@@ -52,12 +46,13 @@ export const OPTIONS = ['Gameplay', 'Graphics', 'Keybinds', 'Audio', 'Credits'] 
 const Menu = () => {
     let modalRef!: ModalRef;
     let tutorialRef: TutorialRef | undefined
-    let navigationRef: NavigationRef | undefined;
+    let navigationRef: NavigationRef;
     const [Toaster, createToast] = useToast();
     const [currentOption, setCurrentOption] = createSignal('difficulty');
     const [hasChanges, setHasChanges] = createSignal(false);
     const [activeTab, setActiveTab] = createSignal<typeof OPTIONS[number]>(OPTIONS[0]);
     const [interactiveTutorials, setInteractiveTutorials] = createSignal({ subtitles: false, color: false })
+    const [inputType, setInputType] = createSignal<'gamepad' | 'keyboard'>(navigator.getGamepads()[0] ? 'gamepad' : 'keyboard');
     let nextTab: string | undefined;
     let tabIndex = 0;
     let tabsRef!: TabsComponentRef;
@@ -66,7 +61,8 @@ const Menu = () => {
         setCurrentOption,
         activeTab,
         TutorialSteps,
-        interactiveTutorials
+        interactiveTutorials,
+        inputType
     }
 
     const handleTabChange = (newTab: string) => {
@@ -103,8 +99,10 @@ const Menu = () => {
     };
 
     onMount(() => {
-        eventBus.on('ui-change', () => setHasChanges(true))
+        eventBus.on('ui-change', () => setHasChanges(true));
         showToast();      
+        window.addEventListener('gamepadconnected', () => setInputType('gamepad'));
+        window.addEventListener('gamepaddisconnected', () => setInputType('keyboard'));
     })
 
     const isCredits = createMemo(() => activeTab() === OPTIONS[4])
@@ -152,8 +150,8 @@ const Menu = () => {
     const tabPrev = () => cycleTabs('prev');
 
     const defaultActions: ActionMap = {
-        'tab-left': {key: {binds: ['Q'], type: ['press']}, button: {binds: ['left-shoulder'], type: 'press'}, callback: tabPrev, global: true},
-        'tab-right': {key: {binds: ['E'], type: ['press']}, button: {binds: ['right-shoulder'], type: 'press'}, callback: tabNext, global: true},
+        'tab-left': {key: {binds: ['Q'], type: ['press']}, button: {binds: ['left-shoulder'], type: 'press'}, callback: tabPrev},
+        'tab-right': {key: {binds: ['E'], type: ['press']}, button: {binds: ['right-shoulder'], type: 'press'}, callback: tabNext},
     }
 
     let scrollRef!: ScrollComponentRef;
@@ -239,15 +237,48 @@ const Menu = () => {
                                             <Show when={!isCredits()}>
                                                 <Tutorial.Step order={TutorialSteps.Footer.order} content={TutorialSteps.Footer.content} title={TutorialSteps.Footer.title} outset={-15}>
                                                     <Row class={styles['button-wrapper']}>
-                                                        <Flex align-items="center">
-                                                            <Block class={styles.button}>Escape</Block> Exit
-                                                        </Flex>
-                                                        <Flex align-items="center">
-                                                            <Block class={styles.button}>Enter</Block> Select
-                                                        </Flex>
-                                                        <Flex align-items="center">
-                                                            <Block class={styles.button}>E</Block> Defaults
-                                                        </Flex>
+                                                        <Switch fallback={<div>Not Found</div>}>
+                                                            <Match when={inputType() === "keyboard"}>
+                                                                <Flex align-items="center">
+                                                                    <Block class={styles.button}>Escape</Block> Back
+                                                                </Flex>
+                                                                <Flex align-items="center">
+                                                                    <Block class={styles.button}>Enter</Block> Select
+                                                                </Flex>
+                                                                <Flex align-items="center">
+                                                                    <Block class={styles.button}>Q</Block> Tab left
+                                                                </Flex>
+                                                                <Flex align-items="center">
+                                                                    <Block class={styles.button}>E</Block> Tab Right
+                                                                </Flex>
+                                                            </Match>
+                                                            <Match when={inputType() === "gamepad"}>
+                                                                <Flex align-items="center">
+                                                                    <Block class={styles['button-glyph']}>
+                                                                        <Icon.gamepad.xbox.b />
+                                                                    </Block> 
+                                                                    Back
+                                                                </Flex>
+                                                                <Flex align-items="center">
+                                                                    <Block class={styles['button-glyph']}>
+                                                                        <Icon.gamepad.xbox.a />
+                                                                    </Block> 
+                                                                    Select
+                                                                </Flex>
+                                                                <Flex align-items="center">
+                                                                    <Block class={styles['button-glyph']}>
+                                                                        <Icon.gamepad.xbox.lb />
+                                                                    </Block>
+                                                                    Tab left
+                                                                </Flex>
+                                                                <Flex align-items="center">
+                                                                    <Block class={styles['button-glyph']}>
+                                                                        <Icon.gamepad.xbox.rb />
+                                                                    </Block>
+                                                                    Tab right
+                                                                </Flex>
+                                                            </Match>
+                                                        </Switch>
                                                     </Row>
                                                 </Tutorial.Step>
                                             </Show>

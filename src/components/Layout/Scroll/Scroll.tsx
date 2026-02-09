@@ -255,9 +255,12 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
 
     const defaultActions = {
         'pan': (_: any,[x, y]: number[]) => {
-            if (y === 0) return;
+            const value = Math.round(y * 100);
+            // TRESHOLD CHECK
+            if (Math.abs(value) < 10) return;
 
-            y < 0 ? scrollUp() : scrollDown()
+            const direction = value < 0 ? 0 : 1;
+            scrollWith(value, direction)
         },
     }
 

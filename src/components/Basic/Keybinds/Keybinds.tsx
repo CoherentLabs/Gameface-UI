@@ -64,7 +64,9 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
         mapBindings({...bindings})
     }, {defer: true}));
 
-    const sanitizeButtonInput = (input: string | number) => {
+    const sanitizeButtonInput = (input: string | number | null) => {
+        if (input === null) return null;
+        
         const num = Number(input);
         if (!isNaN(num) || typeof input === 'number') {
             if (0 <= num && num <= 16) return String(input);
