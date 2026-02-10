@@ -18,7 +18,7 @@ const Gameplay: ParentComponent = () => {
     const context = useContext(MenuContext);
 
     return (
-        <Navigation.Area name="menu" selector="menu-item" focused>
+        <Navigation.Area name="menu" selector="menu-item" >
             <MenuItem id="difficulty" name='Difficulty'>
                 <Stepper anchor="#difficulty" onChange={emitChange} style={{width: '15vmax'}} >
                     <Stepper.Items>

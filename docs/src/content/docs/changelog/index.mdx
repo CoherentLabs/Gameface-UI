@@ -23,7 +23,9 @@ import { Badge } from '@astrojs/starlight/components'
 
 - <Badge text="Feature" variant="success" size="small" /> **Custom Component Action Subscriptions:** Custom components can now subscribe to [Navigation actions](/components/utility/navigation/#extending-component-navigation-actions). 
 
-### 🛠 Component Enhancements (Navigation Support)
+### 🛠 Component Enhancements 
+
+#### Navigation Support
 
 The following components have been extended to support onAction and anchor props. They now respond to specific spatial navigation actions when placed inside a Navigation area:
 
@@ -42,6 +44,12 @@ The following components have been extended to support onAction and anchor props
 | [Keybind](/components/basic/keybinds#implemented-navigation-actions) | <Badge text="select" variant="success" size="small" />, <Badge text="Props" variant="note" size="small" /> |
 | [ColorPicker](/components/complex/color-picker#props), [RadialMenu](/components/complex/radial-menu#props), [Carousel](/components/complex/carousel#carousel-props), [Tutorial](/components/complex/carousel#tutorial-props) | <Badge text="Props Only" variant="note" size="small" /> (`onAction`, `anchor`) |
 
+#### Component improvements and fixes
+
+- <Badge text="New" variant="tip" size="small" /> [Toast](/components/feedback/toast): Added `dismiss` argument to the body function for programmatically closing a toast.
+
+- <Badge text="Fix" variant="danger" size="small" /> [Checkbox](/components/basic/checkbox): Fixed an issue where the `onChange` handler was called on component mount.
+
 ### 📖 New Guides
 
 - <Badge text="New" variant="tip" size="small" /> [List](/components/layout/list) - Provide [a guide](/components/layout/list/#making-list-items-navigable) on how to initialize list items as navigable elements within a [Navigation](/components/utility/Navigation/) area.
@@ -57,6 +65,8 @@ The following components have been extended to support onAction and anchor props
 - <Badge text="New" variant="tip" size="small" /> [Carousel](/components/complex/carousel) - Provide [a step by step guide](/components/complex/carousel/#extending-the-carousel-with-navigation) on different ways to enable navigation for the component.
 
 - <Badge text="New" variant="tip" size="small" /> [Tutorial](/components/complex/tutorial) - Provide [a step by step guide](/components/complex/tutorial/#extending-the-tutorial-with-navigation) on different ways to enable navigation for the component.
+
+- <Badge text="New" variant="tip" size="small" /> [Toast](/components/feedback/toast) - Provide [a guide](/components/feedback/toast/#programmatic-closing) on how to close a toast programmatically.
 
 ## 1.2.0
 
