@@ -23,16 +23,17 @@ const positions = [
 ] as const;
 
 type Position = (typeof positions)[number];
+type ToastBody = (close: (children: JSX.Element) => JSX.Element, progress: () => number, dismiss: () => void) => JSX.Element;
 
 interface ToastOptions {
     position: Position;
-    body: (close: (children: JSX.Element) => JSX.Element, progress: () => number) => JSX.Element;
+    body: ToastBody;
     timeout?: number; // in milliseconds, 0 means no timeout
 }
 
 interface ToastItem {
     id: string;
-    body: (close: (children: JSX.Element) => JSX.Element, progress: () => number) => JSX.Element;
+    body: ToastBody;
     progress: number;
 }
 
@@ -55,8 +56,7 @@ const useToast = (): [ParentComponent, (options: ToastOptions) => void] => {
                 ...prev,
                 {
                     id,
-                    body: (close: (children: JSX.Element) => JSX.Element, progress: () => number) =>
-                        body(close, progress),
+                    body,
                     progress: 0,
                 },
             ];
@@ -134,7 +134,8 @@ const useToast = (): [ParentComponent, (options: ToastOptions) => void] => {
                                                                     {children}
                                                                 </Close>
                                                             ),
-                                                            () => timers()[item.id]
+                                                            () => timers()[item.id],
+                                                            () => removeItem(pos, item.id)
                                                         )}
                                                     </div>
                                                 );

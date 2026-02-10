@@ -90,8 +90,12 @@ const Menu = () => {
 
     const showToast = () => {
         createToast({
-            body: (close) => (
-                <CustomToast close={close} action={() => tutorialRef?.tour()} />
+            body: (close, progress, dismiss) => (
+                <CustomToast 
+                    close={close}
+                    progress={progress} 
+                    dismiss={dismiss}
+                    action={() => tutorialRef?.tour()} />
             ),
             position: 'top-center',
             timeout: 5000
