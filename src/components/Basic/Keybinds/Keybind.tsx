@@ -1,9 +1,9 @@
 import { createMemo, createSignal, onMount, useContext } from "solid-js";
 import { KeybindsContext } from "./Keybinds";
 import { ComponentProps } from "@components/types/ComponentProps";
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import style from './Keybinds.module.scss'
 import { BindingCode, BindingLabel } from "./util/mappings";
+import baseComponent from "@components/BaseComponent/BaseComponent";
 
 interface KeyBindProps extends ComponentProps {
     action: string,
@@ -22,7 +22,7 @@ const Keybind = (props: KeyBindProps) => {
 
     const label = createMemo(() => {
         if (listening()) return context.listeningText?.() ?? 'Press any key...';
-        
+
         return context.bindings[props.action] || (context.placeholder?.() ?? '');
     })
 
@@ -43,11 +43,11 @@ const Keybind = (props: KeyBindProps) => {
         setListening(false);
     };
 
-    const eatEvent = (e :Event) => {
+    const eatEvent = (e: Event) => {
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
-    } 
+    }
 
     const onKeyDown = (e: KeyboardEvent) => {
         bindKey(e, context.KEYS[e.code as BindingCode]);
@@ -67,28 +67,24 @@ const Keybind = (props: KeyBindProps) => {
         e.preventDefault();
         e.stopPropagation();
 
-        const prevKey = context.bindings[props.action] || null;  
+        const prevKey = context.bindings[props.action] || null;
         const success = context.bind(props.action, code);
         stopListening();
         if (success) context.onChange?.(prevKey, code, props.action);
     }
 
     onMount(() => {
-        if (props.ref) (props.ref as unknown as (ref: HTMLDivElement) => void) (el);
+        if (props.ref) (props.ref as unknown as (ref: HTMLDivElement) => void)(el);
 
         if (context.bindings[props.action] === undefined) context.bind(props.action, props.value ?? null);
     })
 
     props.componentClasses = style.keybind;
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     return (
-        <div 
-            ref={el} 
-            class={className()}
-            style={inlineStyles()}
-            use:forwardEvents={props}
-            use:forwardAttrs={props}
+        <div
+            ref={el}
+            use:baseComponent={props}
             onmouseup={startListening}>
             {label()}
         </div>

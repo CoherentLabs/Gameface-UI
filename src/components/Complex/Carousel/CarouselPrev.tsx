@@ -3,8 +3,7 @@ import { CarouselContext } from "./Carousel";
 import styles from './Carousel.module.scss';
 import CarouselArrow from './CarouselArrow.svg?component-solid';
 import { ComponentProps } from "@components/types/ComponentProps";
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
-
+import baseComponent from "@components/BaseComponent/BaseComponent";
 interface CarouselPrevProps extends ComponentProps {
     'class-disabled'?: string;
 }
@@ -26,15 +25,11 @@ export const CarouselPrev: ParentComponent<CarouselPrevProps> = (props) => {
     })
 
     props.componentClasses = () => nextArrowClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     return (
         <div
-            class={className()}
-            style={inlineStyles()}
+            use:baseComponent={props}
             onClick={(event) => props.click ? props.click(event) : carouselContext.prev()}
-            use:forwardEvents={props}
-            use:forwardAttrs={props}
         >
             <Show when={props.children}>
                 {props.children}

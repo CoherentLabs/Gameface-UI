@@ -1,9 +1,9 @@
-import { Accessor, createEffect, createMemo, JSX, onCleanup, onMount, ParentComponent, ParentProps, useContext } from "solid-js";
+import { createMemo, JSX, onCleanup, onMount, ParentComponent, ParentProps, useContext } from "solid-js";
 import { SegmentContext } from "./Segment";
 import { ComponentProps } from "@components/types/ComponentProps";
 import styles from './Segment.module.scss';
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { createTokenComponent } from "@components/utils/tokenComponents";
+import baseComponent from "@components/BaseComponent/BaseComponent";
 
 interface SegmentButtonProps extends ParentProps, ComponentProps {
     style?: JSX.CSSProperties,
@@ -34,7 +34,7 @@ export const SegmentButton: ParentComponent<{ button: SegmentButtonProps }> = (p
         if (isSelected()) {
             classes.push(styles.selected);
             classes.push(props.button['class-selected'] ?? '');
-            
+
             if (segment?.firstRender()) {
                 classes.push(styles['first-render']);
             }
@@ -45,8 +45,6 @@ export const SegmentButton: ParentComponent<{ button: SegmentButtonProps }> = (p
     });
 
     props.button.componentClasses = () => buttonClasses();
-
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props.button);
 
     const handleClick = (e?: MouseEvent) => {
         if (props.button.disabled) return;
@@ -60,7 +58,7 @@ export const SegmentButton: ParentComponent<{ button: SegmentButtonProps }> = (p
 
         segment?.registerOption(props.button.value, element, props.button.selected)
     })
-    
+
     onCleanup(() => {
         segment?.unregisterOption(props.button.value);
     })
@@ -68,10 +66,7 @@ export const SegmentButton: ParentComponent<{ button: SegmentButtonProps }> = (p
     return (
         <div
             ref={element}
-            class={className()}
-            style={inlineStyles()}
-            use:forwardEvents={props}
-            use:forwardAttrs={props}
+            use:baseComponent={props.button}
             onclick={handleClick}>
             <div class={styles.content}>
                 {props.button.children}

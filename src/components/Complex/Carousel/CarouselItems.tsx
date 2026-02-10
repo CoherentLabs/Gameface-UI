@@ -3,9 +3,8 @@ import styles from './Carousel.module.scss';
 import { CarouselContext } from "./Carousel";
 import { createTokenComponent, useTokens } from "@components/utils/tokenComponents";
 import CarouselItem from "./CarouselItem";
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { ComponentProps } from "@components/types/ComponentProps";
-
+import baseComponent from "@components/BaseComponent/BaseComponent";
 export interface CarouselItemTokenProps {
     selected?: boolean
     style?: JSX.CSSProperties;
@@ -35,7 +34,6 @@ const CarouselItems: ParentComponent<CarouselItemsProps> = (props) => {
     })
 
     props.componentClasses = () => styles['carousel-items'];
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     const ItemsTokens = useTokens(Item, props.children);
 
@@ -45,10 +43,7 @@ const CarouselItems: ParentComponent<CarouselItemsProps> = (props) => {
 
     return (
         <div ref={carouselContext.setItemsWrapper}
-            class={className()}
-            style={inlineStyles()}
-            use:forwardEvents={props}
-            use:forwardAttrs={props}
+            use:baseComponent={props}
         >
             <div
                 ref={carouselContext.setItemsContainer}

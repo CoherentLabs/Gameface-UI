@@ -1,6 +1,5 @@
 import { After, Before, Input } from "../shared/tokens";
 import { onMount, createMemo, ParentComponent, createSignal, Switch, Match, Accessor } from "solid-js";
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { useToken } from '@components/utils/tokenComponents';
 import { InputBase } from "../InputBase/InputBase";
 import useTextInput from "../shared/useTextInput";
@@ -9,6 +8,7 @@ import { VisibilityButton, VisibilityButtonComponent } from "./VisibilityButton"
 import AddonSlot from "../shared/AddonSlot";
 import styles from '../shared/TextInput.module.scss';
 import baseStyles from '../InputBase/InputBase.module.scss';
+import baseComponent from "@components/BaseComponent/BaseComponent";
 
 export interface PasswordInputRef extends TextInputRef {
     show: () => void,
@@ -24,7 +24,7 @@ const PasswordInput: ParentComponent<TextInputProps> = (props) => {
     let element!: HTMLDivElement;
     let inputElement!: HTMLInputElement;
 
-    const {value, handleChange, changeValue, clear } = useTextInput(props);
+    const { value, handleChange, changeValue, clear } = useTextInput(props);
     const [type, setType] = createSignal<'text' | 'password'>('password');
     const visible = createMemo(() => type() !== 'password')
 
@@ -36,7 +36,7 @@ const PasswordInput: ParentComponent<TextInputProps> = (props) => {
     const show = () => {
         setType('text');
     }
-    
+
     const hide = () => {
         setType('password');
     }
@@ -44,25 +44,24 @@ const PasswordInput: ParentComponent<TextInputProps> = (props) => {
     const visibilityPosition = createMemo(() => VisibilityButtonToken()?.position ?? 'after');
     const isBefore = createMemo(() => !!VisibilityButtonToken() && visibilityPosition() === 'before');
     const isAfter = createMemo(() => !!VisibilityButtonToken() && visibilityPosition() === 'after');
-    
+
     const passwordInputClasses = createMemo(() => {
         const classes = [baseStyles['input-wrapper']];
-        
+
         if (props.disabled) {
             classes.push(baseStyles.disabled);
-            
+
             if (props['class-disabled']) classes.push(`${props['class-disabled']}`);
         }
-        
+
         return classes.join(' ');
     });
-    
+
     props.componentClasses = () => passwordInputClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
-    
+
     onMount(() => {
         if (!props.ref || !element) return;
-        
+
         (props.ref as unknown as (ref: any) => void)({
             element,
             input: inputElement,
@@ -74,18 +73,16 @@ const PasswordInput: ParentComponent<TextInputProps> = (props) => {
             hide
         });
     });
-    
+
     return (
-        <div 
+        <div
             ref={element!}
-            class={className()} 
-            style={inlineStyles()} 
-            use:forwardEvents={props}
-            use:forwardAttrs={props}>
+            use:baseComponent={props}
+        >
 
             <Switch>
                 <Match when={isBefore()}>
-                    <VisibilityButtonComponent 
+                    <VisibilityButtonComponent
                         visible={visible}
                         toggle={toggleVisibility}
                         parentChildren={props.children} />
@@ -95,11 +92,11 @@ const PasswordInput: ParentComponent<TextInputProps> = (props) => {
                 </Match>
             </Switch>
 
-            <InputBase 
+            <InputBase
                 type={type()}
                 value={value}
                 ref={inputElement!}
-                handleChange={handleChange} 
+                handleChange={handleChange}
                 parentChildren={props.children}
                 hasBefore={isBefore() || !!BeforeToken()}
                 hasAfter={isAfter() || !!AfterToken()}
@@ -107,7 +104,7 @@ const PasswordInput: ParentComponent<TextInputProps> = (props) => {
 
             <Switch>
                 <Match when={isAfter()}>
-                    <VisibilityButtonComponent 
+                    <VisibilityButtonComponent
                         visible={visible}
                         toggle={toggleVisibility}
                         parentChildren={props.children} />

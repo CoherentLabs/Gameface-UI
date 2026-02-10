@@ -1,7 +1,7 @@
 import { ParentComponent } from "solid-js";
 import { ComponentProps } from "../../types/ComponentProps";
-import useBaseComponent from '@components/BaseComponent/BaseComponent';
 import style from '../ImageBase/ImageBase.module.scss';
+import baseComponent from "@components/BaseComponent/BaseComponent";
 
 export interface ImageProps extends ComponentProps {
     src: string | ImageMetadata
@@ -10,14 +10,11 @@ export interface ImageProps extends ComponentProps {
 
 const Image: ParentComponent<ImageProps> = (props) => {
     props.componentClasses = () => props.fill ? style.fill : "";
-    const {className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
-    return <img src={props.src as string} 
-                ref={props.ref as HTMLImageElement}
-                class={className()}
-                style={inlineStyles()}
-                use:forwardEvents={props}
-                use:forwardAttrs={props} />
+    return <img src={props.src as string}
+        ref={props.ref as HTMLImageElement}
+        use:baseComponent={props}
+    />
 }
 
 export default Image;

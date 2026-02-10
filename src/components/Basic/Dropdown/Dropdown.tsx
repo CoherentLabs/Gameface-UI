@@ -4,9 +4,9 @@ import { DropdownOptions, Handle, Options, Track } from './DropdownOptions';
 import { Option } from './DropdownOption';
 import { DropdownTrigger, Icon, Placeholder, Trigger } from './DropdownTrigger';
 import { BaseComponentRef, ComponentProps } from '@components/types/ComponentProps';
-import useBaseComponent from '@components/BaseComponent/BaseComponent';
 import { waitForFrames } from '@components/utils/waitForFrames';
 import getScrollableParent from '@components/utils/getScrollableParent';
+import baseComponent from '@components/BaseComponent/BaseComponent';
 
 export interface CommonDropdownSlotProps {
     style?: JSX.CSSProperties,
@@ -95,7 +95,6 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
     };
 
     props.componentClasses = () => dropdownClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     function handlePosition() {
         const clipParent = getScrollableParent(element);
@@ -106,7 +105,7 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
         const allowedHeight = clipRect.top + clipRect.height;
         const totalHeight = dropdownRect.top + optionsEl.offsetHeight;
         if (totalHeight > allowedHeight) setIsInverted(true);
-    } 
+    }
 
     onMount(() => {
         waitForFrames(handlePosition);
@@ -116,27 +115,23 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
             selectOption,
             element,
         });
-        
     });
 
     const DropdownContextValue = {
-        selected, 
-        selectOption, 
-        open, 
-        toggle, 
-        registerOption, 
-        unregisterOption, 
-        options, 
+        selected,
+        selectOption,
+        open,
+        toggle,
+        registerOption,
+        unregisterOption,
+        options,
         isInverted
     }
 
     return (
         <DropdownContext.Provider value={DropdownContextValue}>
             <div ref={element}
-                class={className()}
-                style={inlineStyles()}
-                use:forwardEvents={props}
-                use:forwardAttrs={props}
+                use:baseComponent={props}
             >
                 <DropdownTrigger parentChildren={props.children} />
                 <DropdownOptions parentChildren={props.children}></DropdownOptions>

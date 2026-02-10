@@ -2,10 +2,10 @@ import { BaseComponentRef, ComponentProps } from "@components/types/ComponentPro
 import { Accessor, createMemo, DEV, onCleanup, onMount, ParentComponent, Show } from "solid-js";
 import { createContext, createSignal } from "solid-js";
 import styles from './Segment.module.scss';
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { SegmentButtons } from "./SegmentButtons";
 import { Button } from "./SegmentButton";
 import SegmentIndicator, { Indicator } from "./SegmentIndicator";
+import baseComponent from "@components/BaseComponent/BaseComponent";
 
 export const SegmentContext = createContext<SegmentContextValue>();
 export interface SegmentIndicatorData {
@@ -43,7 +43,7 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
         left: 0,
         showTransition: false,
     });
-    
+
     const options = new Map<string, HTMLDivElement>();
     let element!: HTMLDivElement;
     let transitionTimeout: ReturnType<typeof setTimeout>
@@ -66,8 +66,8 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
         const oldOption = selected();
 
         if (oldOption !== '') {
-            const oldLeft   = options.get(oldOption)!.offsetLeft;
-            const oldWidth  = options.get(oldOption)!.offsetWidth;
+            const oldLeft = options.get(oldOption)!.offsetLeft;
+            const oldWidth = options.get(oldOption)!.offsetWidth;
 
             setIndicator({
                 showTransition: false,
@@ -78,7 +78,7 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
             firstRender() && setFirstRender(false);
         }
 
-        const newLeft  = options.get(newOption)!.offsetLeft;
+        const newLeft = options.get(newOption)!.offsetLeft;
         const newWidth = options.get(newOption)!.offsetWidth;
 
         setSelected(newOption);
@@ -106,7 +106,6 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
     });
 
     props.componentClasses = () => segmentClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     onMount(() => {
         if (!props.ref || !element) return;
@@ -126,10 +125,8 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
         <SegmentContext.Provider value={{ selected, selectOption, registerOption, unregisterOption, firstRender }}>
             <div class={styles['segment-wrapper']}>
                 <div ref={element}
-                    class={className()}
-                    style={inlineStyles()}
-                    use:forwardEvents={props}
-                    use:forwardAttrs={props}>
+                    use:baseComponent={props}
+                >
                     <SegmentButtons parentChildren={props.children} />
                     <Show when={!firstRender()}>
                         <SegmentIndicator data={indicator} parentChildren={props.children} />

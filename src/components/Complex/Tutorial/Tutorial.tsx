@@ -3,11 +3,11 @@ import { ComponentProps } from "@components/types/ComponentProps";
 import Step from "./Step";
 import styles from './Tutorial.module.scss';
 import { Portal } from "solid-js/web";
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import TutorialTooltip, { ToolTipData, TooltipType } from "./TutorialTooltip";
 import { clamp } from "@components/utils/clamp";
 import getScrollableParent from "@components/utils/getScrollableParent";
 import { waitForFrames } from "@components/utils/waitForFrames";
+import baseComponent from "@components/BaseComponent/BaseComponent";
 
 export type HighlightRect = Omit<DOMRect, 'bottom' | 'right' | 'x' | 'y' | 'toJSON'>;
 
@@ -66,7 +66,7 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
         }
         setCurrentStep(changeStep(from || 1))
     };
-    
+
     // Cancels the tour and resets to initial state
     const exit = () => {
         setCurrentStep(0);
@@ -104,13 +104,13 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
         setPausedAt(null);
         tour(next ? resumeStep + 1 : resumeStep);
     }
-    
+
     // Clamps provided step to valid range (1 to total step count)
     const constraintStep = (step: number) => clamp(step, 1, count());
-    
+
     // Sets the current step after constraining it to valid range
     const changeStep = (step: number) => setCurrentStep(constraintStep(step));
-    
+
     // Advances to the next step in the tour
     const nextStep = () => {
         setCurrentStep(prev => constraintStep(prev + 1));
@@ -131,7 +131,7 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
     createEffect(() => {
         const target = targetElement();
         if (!target) return;
-        
+
         const elementHasLoaded = target.offsetHeight && target.offsetWidth;
         waitForFrames(() => {
             const rect = target.getBoundingClientRect();
@@ -147,7 +147,7 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
                 if (rect.height > parentRect.height) {
                     finalHeight = parentRect.height;
                     dispatchScroll = false
-                } else if ( rect.bottom > parentRect.height) {
+                } else if (rect.bottom > parentRect.height) {
                     // Scroll to bottom of the target
                     newScrollTop = scrollableParent.scrollHeight - target.offsetTop;
                     const scrollDelta = newScrollTop - scrollableParent.scrollTop;
@@ -159,10 +159,10 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
                 }
                 scrollableParent.scrollTop = newScrollTop;
                 if (dispatchScroll) scrollableParent.dispatchEvent(new CustomEvent('property-scroll'));
-            } 
-            
+            }
+
             const rectOutset = outset() ?? initialOutset;
-            
+
             setHighlightRect({
                 top: finalTop - rectOutset,
                 left: rect.left - rectOutset,
@@ -183,7 +183,7 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
             props.onChange?.(currentStep())
         }, !elementHasLoaded ? 3 : 0)
     })
-        
+
     const tutorialClasses = createMemo(() => {
         const classes = [styles.tutorial];
         targetElement() && classes.push(styles['tutorial-visible'])
@@ -193,7 +193,6 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
 
     props.componentClasses = tutorialClasses;
     props.componentStyles = tutorialStyles;
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     onMount(() => {
         if (!props.ref || !element) return;
@@ -233,16 +232,14 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
             <Portal>
                 <div
                     ref={element}
-                    class={className()}
-                    style={inlineStyles()}
-                    use:forwardEvents={props}
-                    use:forwardAttrs={props}>
+                    use:baseComponent={props}
+                >
                 </div>
                 <Show when={targetElement()}>
                     <div class={styles.overlay}></div>
                 </Show>
                 <div class={styles['tooltip-reference']} style={tutorialStyles()}>
-                    <TutorialTooltip 
+                    <TutorialTooltip
                         userTooltip={props.tooltip}
                         tooltipData={tooltipData}
                         progress={progress} />

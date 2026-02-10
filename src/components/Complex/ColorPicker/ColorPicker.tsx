@@ -3,10 +3,9 @@ import XYSlider, { XYSliderRef, XYSliderValue } from "@components/Basic/XYSlider
 import Slider, { SliderRef } from "@components/Basic/Slider/Slider";
 import Segment from "@components/Basic/Segment/Segment";
 import styles from './ColorPicker.module.scss';
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { ComponentProps } from "@components/types/ComponentProps";
 import { parseHSVAColor, RGBAOrHEXToHSVA } from "./colorPickerUtils";
-
+import baseComponent from "@components/BaseComponent/BaseComponent";
 export interface ColorData {
     h: number;
     s: number;
@@ -99,7 +98,6 @@ const ColorPicker: ParentComponent<ColorPickerProps> = (props) => {
     }
 
     props.componentClasses = () => colorPickerClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     onMount(() => {
         if (!props.ref || !element) return;
@@ -113,10 +111,8 @@ const ColorPicker: ParentComponent<ColorPickerProps> = (props) => {
 
     return (
         <div ref={element}
-            class={className()}
-            style={inlineStyles()}
-            use:forwardEvents={props}
-            use:forwardAttrs={props}>
+            use:baseComponent={props}
+        >
             {/**
              * XYSlider component is used for selecting color based on saturation and value.
              * If you need to customize the XYSlider, you can pass additional styles or use its slots.

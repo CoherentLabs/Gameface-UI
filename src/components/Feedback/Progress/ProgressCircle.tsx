@@ -1,11 +1,11 @@
 import { createMemo, ParentComponent, ParentProps, Show } from "solid-js";
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
 import { clampProgress, ProgressProps } from "./Progress";
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import styles from './Progress.module.scss';
+import baseComponent from "@components/BaseComponent/BaseComponent";
 
 interface FillTokenProps extends TokenBase { shape?: 'square' | 'round', }
-interface TextTokenProps extends TokenBase, ParentProps {}
+interface TextTokenProps extends TokenBase, ParentProps { }
 
 const Fill = createTokenComponent<FillTokenProps>();
 const Text = createTokenComponent<TextTokenProps>();
@@ -16,7 +16,7 @@ const ProgressCircle: ParentComponent<ProgressProps> = (props) => {
     const fillToken = useToken(Fill, props.children)
     const outlineToken = useToken(Outline, props.children)
     const textToken = useToken(Text, props.children)
-    
+
     const outlineClasses = createMemo(() => {
         const classes = [styles['circle-outline']];
         classes.push(outlineToken()?.class || "");
@@ -39,15 +39,12 @@ const ProgressCircle: ParentComponent<ProgressProps> = (props) => {
     });
 
     props.componentClasses = () => styles.circle;
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     return (
-        <div 
+        <div
             ref={props.ref as HTMLDivElement}
-            class={className()} 
-            style={inlineStyles()}
-            use:forwardEvents={props}
-            use:forwardAttrs={props}>
+            use:baseComponent={props}
+        >
             <svg class={styles['circle-svg']} viewBox="0 0 120 120">
                 <path d={PATH_DATA} class={outlineClasses()} style={outlineToken()?.style} />
                 <path

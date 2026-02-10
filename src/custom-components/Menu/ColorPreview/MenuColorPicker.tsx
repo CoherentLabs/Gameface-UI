@@ -2,10 +2,9 @@ import { createMemo, createSignal, onMount, ParentComponent } from "solid-js";
 import XYSlider, { XYSliderRef, XYSliderValue } from "@components/Basic/XYSlider/XYSlider";
 import Slider, { SliderRef } from "@components/Basic/Slider/Slider";
 import styles from '@components/Complex/ColorPicker/ColorPicker.module.scss';
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { ComponentProps } from "@components/types/ComponentProps";
 import { parseHSVAColor, RGBAOrHEXToHSVA } from "@components/Complex/ColorPicker/colorPickerUtils";
-
+import baseComponent from "@components/BaseComponent/BaseComponent";
 export interface ColorData {
     h: number;
     s: number;
@@ -91,7 +90,6 @@ const MenuColorPicker: ParentComponent<ColorPickerProps> = (props) => {
     }
 
     props.componentClasses = () => colorPickerClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     onMount(() => {
         if (!props.ref || !element) return;
@@ -105,10 +103,8 @@ const MenuColorPicker: ParentComponent<ColorPickerProps> = (props) => {
 
     return (
         <div ref={element}
-            class={className()}
-            style={inlineStyles()}
-            use:forwardEvents={props}
-            use:forwardAttrs={props}>
+            use:baseComponent={props}
+        >
             <XYSlider ref={xySliderRef} value={{ x: initialValue.s, y: 100 - initialValue.v }} class={styles.XYSlider} onChange={handleXYChange}>
                 <XYSlider.Background style={XYSliderBackground()} />
                 <XYSlider.Handle class={styles['XYSlider-handle']} style={{ "background-color": selectedColorNonTransparent() }}></XYSlider.Handle>

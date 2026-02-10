@@ -1,7 +1,6 @@
 import { ComponentProps } from "@components/types/ComponentProps";
 import { Accessor, createSignal, onMount, ParentComponent, createMemo } from "solid-js";
 import styles from './Slider.module.scss';
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { clamp } from "@components/utils/clamp";
 import { Grid, SliderGrid } from "./SliderGrid";
 import { Fill, SliderFill } from "./SliderFill";
@@ -9,7 +8,7 @@ import { Handle, SliderHandle } from "./SliderHandle";
 import { SliderThumb, Thumb } from "./SliderThumb";
 import { SliderTrack, Track } from "./SliderTrack";
 import { useToken } from "@components/utils/tokenComponents";
-
+import baseComponent from "@components/BaseComponent/BaseComponent";
 export interface SliderRef {
     value: Accessor<number>,
     element: HTMLDivElement,
@@ -93,9 +92,9 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         return snapToStep(Math.round(newValue / step()) * step())
     }
 
-    const snapToStep  = (value: number) => {
+    const snapToStep = (value: number) => {
         return clamp(Number(value.toFixed(5)), min(), max());
-    } 
+    }
 
     const SliderClasses = createMemo(() => {
         const classes = [styles.slider];
@@ -123,7 +122,6 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     }
 
     props.componentClasses = () => SliderClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     onMount(() => {
         if (!props.ref || !element) return;
@@ -138,10 +136,8 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     return (
         <div
             ref={element!}
-            class={className()}
-            style={inlineStyles()}
-            use:forwardEvents={props}
-            use:forwardAttrs={props}>
+            use:baseComponent={props}
+        >
             <SliderTrack handleClick={handleTrackClick} ref={trackElement} parentChildren={props.children}>
                 <SliderHandle percent={percent} handleMouseDown={handleMouseDown} parentChildren={props.children} />
                 <SliderFill percent={percent} parentChildren={props.children} />

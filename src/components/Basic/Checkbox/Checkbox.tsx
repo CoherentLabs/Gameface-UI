@@ -1,10 +1,10 @@
 import { ComponentProps } from "@components/types/ComponentProps";
 import { Accessor, Setter, createSignal, onMount, ParentComponent, Show, createContext, createMemo, createEffect } from "solid-js";
 import styles from './Checkbox.module.scss';
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { Control, CheckboxControl } from "./CheckboxControl";
 import { Indicator } from "./CheckboxIndicator";
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
+import baseComponent from "@components/BaseComponent/BaseComponent";
 
 const Label = createTokenComponent<{ before?: boolean }>();
 
@@ -51,7 +51,6 @@ const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
 
 
     props.componentClasses = () => checkboxClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     const toggle = (e?: MouseEvent) => {
         if (props.disabled) return;
@@ -79,10 +78,7 @@ const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
         <CheckboxContext.Provider value={{ checked }}>
             <div
                 ref={element!}
-                class={className()}
-                style={inlineStyles()}
-                use:forwardEvents={props}
-                use:forwardAttrs={props}
+                use:baseComponent={props}
                 onclick={toggle}>
 
                 <Show when={isBefore()}>

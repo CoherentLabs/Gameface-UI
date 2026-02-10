@@ -1,11 +1,11 @@
 import { ParentComponent, Show, createContext, createMemo, createSignal, onMount } from "solid-js";
 import { ComponentProps } from "../../types/ComponentProps";
-import useBaseComponent from "../../BaseComponent/BaseComponent";
 import { Portal } from "solid-js/web"
 import styles from './Modal.module.scss';
 import ModalWindow, { Window } from "./ModalWindow";
 import ModalCloseButton from "./ModalCloseButton";
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
+import baseComponent from "@components/BaseComponent/BaseComponent";
 
 export interface ModalProps extends ComponentProps {
     open?: boolean;
@@ -53,7 +53,6 @@ const Modal: ParentComponent<ModalProps> = (props) => {
     });
 
     props.componentClasses = () => modalClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     const open = () => {
         setIsOpen(true);
@@ -81,10 +80,8 @@ const Modal: ParentComponent<ModalProps> = (props) => {
             <Portal>
                 <div
                     ref={element}
-                    class={className()}
-                    style={inlineStyles()}
-                    use:forwardEvents={props}
-                    use:forwardAttrs={props}>
+                    use:baseComponent={props}
+                >
                     <Show when={isOpen()}>
                         {OverlayToken?.() && (
                             <div onClick={close} class={modalOverlayClasses()} style={OverlayToken?.()?.style}></div>

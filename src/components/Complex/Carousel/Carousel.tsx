@@ -7,8 +7,7 @@ import { CarouselPrev } from "./CarouselPrev";
 import { waitForFrames } from "@components/utils/waitForFrames";
 import { ComponentProps } from "@components/types/ComponentProps";
 import styles from './Carousel.module.scss';
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
-
+import baseComponent from "@components/BaseComponent/BaseComponent";
 
 export interface CarouselRef {
     element: HTMLDivElement;
@@ -270,7 +269,6 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
     }
 
     props.componentClasses = () => styles['carousel'];
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     return <CarouselContext.Provider value={{
         setActivePage,
@@ -288,10 +286,7 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
         setItemsWrapper
     }}>
         <div ref={carouselRef}
-            class={className()}
-            style={inlineStyles()}
-            use:forwardEvents={props}
-            use:forwardAttrs={props}
+            use:baseComponent={props}
         >
             {props.children}
         </div>

@@ -4,7 +4,7 @@ import styles from './XYSlider.module.scss';
 import { Handle, XYSliderHandle } from "./XYSliderHandle";
 import { Background, XYSliderBackground } from "./XYSliderBackground";
 import { ComponentProps } from "@components/types/ComponentProps";
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
+import baseComponent from "@components/BaseComponent/BaseComponent";
 
 export type XYSliderValue = {
     x: number;
@@ -109,7 +109,6 @@ const XYSlider: ParentComponent<XYSliderProps> = (props) => {
 
     props.componentClasses = () => styles["XYSlider"];
     props.componentStyles = () => { return { cursor: isDragging() ? "pointer" : "auto" } };
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     const changeValue = (newValue: XYSliderValue) => {
         const x = clamp(newValue.x, minX(), maxX());
@@ -131,11 +130,8 @@ const XYSlider: ParentComponent<XYSliderProps> = (props) => {
     return (
         <XYSliderContext.Provider value={{ position }}>
             <div ref={draggableArea}
-                class={className()}
-                style={inlineStyles()}
+                use:baseComponent={props}
                 onMouseDown={handleMouseDown}
-                use:forwardEvents={props}
-                use:forwardAttrs={props}
             >
                 <XYSliderBackground parentChildren={props.children} />
                 <XYSliderHandle parentChildren={props.children}></XYSliderHandle>

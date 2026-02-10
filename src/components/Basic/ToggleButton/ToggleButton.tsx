@@ -1,11 +1,11 @@
 import { ComponentProps } from "@components/types/ComponentProps";
 import { Accessor, Setter, createSignal, onMount, ParentComponent, Show, createContext, createMemo, createEffect, on } from "solid-js";
 import styles from './ToggleButton.module.scss';
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { Control, ToggleButtonControl } from "./ToggleButtonControl";
 import { Indicator } from "./ToggleButtonIndicator";
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 import { Handle } from "./ToggleButtonHandle";
+import baseComponent from "@components/BaseComponent/BaseComponent";
 
 export const LabelLeft = createTokenComponent();
 export const LabelRight = createTokenComponent();
@@ -51,7 +51,6 @@ const ToggleButton: ParentComponent<ToggleButtonProps> = (props) => {
 
 
     props.componentClasses = () => toggleButtonClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
 
     const toggle = (e?: MouseEvent) => {
         if (props.disabled) return;
@@ -62,7 +61,7 @@ const ToggleButton: ParentComponent<ToggleButtonProps> = (props) => {
     createEffect(
         on(checked, (v) => {
             props.onChange?.(v);
-        }, {defer: true})
+        }, { defer: true })
     );
 
     onMount(() => {
@@ -79,10 +78,7 @@ const ToggleButton: ParentComponent<ToggleButtonProps> = (props) => {
         <ToggleButtonContext.Provider value={{ checked }}>
             <div
                 ref={element!}
-                class={className()}
-                style={inlineStyles()}
-                use:forwardEvents={props}
-                use:forwardAttrs={props}
+                use:baseComponent={props}
                 onclick={toggle}>
 
                 <Show when={LabelLeftToken()}>
