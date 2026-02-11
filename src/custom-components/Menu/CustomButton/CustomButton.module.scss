@@ -1,0 +1,27 @@
+.button {
+    padding: 0.5vmax;
+    background-color: $primaryColor;
+    margin: 0.25vmax;
+    color: white;
+    font-size: 0.75em;
+    border-color: $secondaryColor;
+    cursor: pointer;
+    transition: 0.3s ease-in-out background-color;
+
+    &:hover {
+        background-color: $secondaryColor;
+    }
+
+    &-icon {
+        width: 1.5vmax;
+        height: 1.5vmax;
+        margin-right: 0.25vmax;
+    }
+
+    &-key {
+        border: 0.2vh solid $secondaryColor;
+        font-size: 0.5vmax;
+        padding: 0.25vmax;
+        margin-right: 0.25vmax;
+    }
+}

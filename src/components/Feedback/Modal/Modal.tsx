@@ -53,7 +53,7 @@ const Modal: ParentComponent<ModalProps> = (props) => {
     });
 
     props.componentClasses = () => modalClasses();
-    const { className, inlineStyles, forwardEvents, forwardAttrs } = useBaseComponent(props);
+    const { className, inlineStyles, forwardEvents, forwardAttrs, navigationActions } = useBaseComponent(props);
 
     const open = () => {
         setIsOpen(true);
@@ -84,7 +84,8 @@ const Modal: ParentComponent<ModalProps> = (props) => {
                     class={className()}
                     style={inlineStyles()}
                     use:forwardEvents={props}
-                    use:forwardAttrs={props}>
+                    use:forwardAttrs={props}
+                    use:navigationActions={{anchor: props.anchor, ...props.onAction }}>
                     <Show when={isOpen()}>
                         {OverlayToken?.() && (
                             <div onClick={close} class={modalOverlayClasses()} style={OverlayToken?.()?.style}></div>

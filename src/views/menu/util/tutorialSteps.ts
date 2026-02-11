@@ -34,6 +34,7 @@ export const TutorialSteps = {
     title: "Click the Toggle Button",
     content:
       "Enable the Subtitles option to reveal nested settings.",
+    completed: false,
   },
   Dynamic: {
     order: 7,
@@ -52,6 +53,7 @@ export const TutorialSteps = {
     title: "Interactive Panels",
     content:
       "Some panels have interactions that reflect changes in the menu. Try adjusting the color picker's value.",
+    completed: false,
   },
   ColorChange: {
     order: 10,
@@ -71,4 +73,4 @@ export const TutorialSteps = {
     content:
       "That's the overview of our Menu UI sample. Feel free to explore and extend this sample to fit your project needs.",
   }
-} as const;
+}

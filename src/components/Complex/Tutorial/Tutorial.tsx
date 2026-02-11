@@ -15,6 +15,8 @@ interface TutorialProps<T extends Record<string, any> = {}> extends ComponentPro
     outset?: number
     tooltip?: TooltipType<T>,
     onChange?: (step: number) => void,
+    onStart?: () => void,
+    onEnd?: () => void,
 }
 
 interface TutorialContextType {
@@ -65,6 +67,7 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
             return console.warn("Trying to start a new tour while another one is already in progress.");
         }
         setCurrentStep(changeStep(from || 1))
+        props.onStart?.();
     };
     
     // Cancels the tour and resets to initial state
@@ -72,6 +75,7 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
         setCurrentStep(0);
         setTargetElement(null);
         setPausedAt(null);
+        props.onEnd?.();
     }
 
     const pause = () => {

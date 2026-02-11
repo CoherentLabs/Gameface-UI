@@ -1,5 +1,6 @@
 import ToggleButton from "@components/Basic/ToggleButton/ToggleButton"
 import { emitChange } from "../../../views/menu/util";
+import { Accessor, createMemo } from "solid-js";
 
 interface CustomToggleProps {
     id?: string,
@@ -12,8 +13,9 @@ const CustomToggle = (props: CustomToggleProps) => {
         props.onChange?.(checked);
         emitChange();
     }
+
     return (
-        <ToggleButton attr:id={props.id} checked={props.checked} onChange={handleChange} anchor={`#${props.id}`}>
+        <ToggleButton checked={props.checked} onChange={handleChange} anchor={`#${props.id}`}>
             <ToggleButton.LabelLeft>OFF</ToggleButton.LabelLeft>
             <ToggleButton.LabelRight>ON</ToggleButton.LabelRight>
             <ToggleButton.Control style={{'margin': '0 1vmax'}} />

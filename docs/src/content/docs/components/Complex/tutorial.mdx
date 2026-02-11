@@ -55,6 +55,8 @@ export default App;
 | `outset`   | `number`                         | `0`         | Extra offset (in px) applied between the tooltip/highlight and the target element. Useful when the target has shadows/borders or sits inside tight layouts. |
 | `tooltip`  | [`TooltipType<T>`](#provided-props)                 | `undefined` | Custom tooltip component to render instead of the default one. Receives the provided tutorial props (title, content, step, controls).                       |
 | `onChange` | `(step: number) => void`         | `undefined` | Fired whenever the active tutorial step changes. The callback receives the **1-based** step index.                                                          |
+| `onStart` | `() => void`         | `undefined` | Fired whenever the tutorial starts.                                                         |
+| `onEnd` | `() => void`         | `undefined` | Fired whenever the tutorial ends.                                                         |
 | `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the tutorial. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
 | `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, the tutorial's actions will execute. Can be a CSS selector or HTMLElement. |
 

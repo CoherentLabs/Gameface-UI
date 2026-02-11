@@ -1,7 +1,7 @@
 import Stepper from "@components/Basic/Stepper/Stepper";
 import ColorPreview from "@custom-components/Menu/ColorPreview/ColorPreview";
 import MenuItem from "@custom-components/Menu/MenuItem/MenuItem";
-import { createSignal, ParentComponent, Setter, Show, useContext } from "solid-js";
+import { createEffect, createSignal, onMount, ParentComponent, Setter, Show, useContext } from "solid-js";
 import SubtitleSize from "@custom-components/Menu/SubtitleSize/SubtitleSize";
 import CustomSlider from "@custom-components/Menu/CustomSlider/CustomSlider";
 import CustomToggle from "@custom-components/Menu/CustomToggle/CustomToggle";
@@ -12,13 +12,18 @@ import Tutorial from "@components/Complex/Tutorial/Tutorial";
 import { MenuContext } from "../../../../views/menu/Menu";
 import { TutorialSteps } from "../../../../views/menu/util/tutorialSteps";
 import Navigation from "@components/Utility/Navigation/Navigation";
+import eventBus from "@components/Utility/EventBus";
 
 const Gameplay: ParentComponent = () => {
-    const [showSubtitleOptions, setShowSubtitleOptions] = createSignal(true);
+    const [showSubtitleOptions, setShowSubtitleOptions] = createSignal(false);
     const context = useContext(MenuContext);
 
+    onMount(() => {
+        eventBus.once(context!.TutorialSteps.Interactive.title, () => setShowSubtitleOptions(true));
+    })
+
     return (
-        <Navigation.Area name="menu" selector="menu-item" >
+        <Navigation.Area name="menu" selector="menu-item" focused>
             <MenuItem id="difficulty" name='Difficulty'>
                 <Stepper anchor="#difficulty" onChange={emitChange} style={{width: '15vmax'}} >
                     <Stepper.Items>
@@ -37,9 +42,7 @@ const Gameplay: ParentComponent = () => {
                 position={"bottom"}>
                 <MenuItem id="subtitles" name='Subtitles'>
                     <Tutorial.Step order={context!.TutorialSteps.Interactive.order} content={context!.TutorialSteps.Interactive.content} title={context!.TutorialSteps.Interactive.title} >
-                        <CustomToggle id="subtitles" checked={showSubtitleOptions()} onChange={(checked) => {
-                             setShowSubtitleOptions(checked)
-                        }} />
+                        <CustomToggle id="subtitles" checked={showSubtitleOptions()} onChange={setShowSubtitleOptions} />
                     </Tutorial.Step>
                 </MenuItem>
             </Tutorial.Step>
@@ -79,10 +82,10 @@ const Gameplay: ParentComponent = () => {
                 <CustomToggle id="tutorialHints" checked={true} />
             </MenuItem>
             <MenuItem id="autoSave" name='Auto-Save'>
-                <CustomToggle id="autoSave" checked={false} />
+                <CustomToggle id="autoSave" checked={true} />
             </MenuItem>
             <MenuItem id="aimAssist" name='Aim Assist'>
-                <CustomToggle id="aimAssist" checked={false} />
+                <CustomToggle id="aimAssist" checked={true} />
             </MenuItem>
             <MenuItem id="vibration" name='Controller Vibration'>
                 <CustomToggle id="vibration" checked={true} />
