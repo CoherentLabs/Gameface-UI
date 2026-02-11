@@ -6,6 +6,7 @@ import { createMemo, Show, useContext } from "solid-js"
 import { TutorialRef } from "@components/Complex/Tutorial/Tutorial"
 import { TutorialSteps } from "../../../views/menu/util/tutorialSteps"
 import { MenuContext } from "../../../views/menu/Menu"
+import CustomButton from "../CustomButton/CustomButton"
 
 interface CustomTooltipProps {
     exit: () => void;
@@ -36,10 +37,10 @@ const CustomTooltip: TooltipType<CustomTooltipProps> = (props) => {
     // Show buttons UNLESS we're on Interactive step AND tutorial hasn't been completed yet
     const shouldShowButtons = () => {
         const isInteractiveStep = props.step() === TutorialSteps.Interactive.order;
-        const tutorialCompleted = context?.interactiveTutorials().subtitles;
+        const tutorialCompleted = TutorialSteps.Interactive.completed
 
         const isInteractiveStepTwo = props.step() === TutorialSteps.InteractiveTwo.order
-        const secondTutorialCompleted = context?.interactiveTutorials().color;
+        const secondTutorialCompleted = TutorialSteps.InteractiveTwo.completed;
 
         if (isInteractiveStep) return tutorialCompleted
         if (isInteractiveStepTwo) return secondTutorialCompleted
@@ -55,7 +56,7 @@ const CustomTooltip: TooltipType<CustomTooltipProps> = (props) => {
         }
 
         return <props.Next click={changeActiveItem} class={styles['tooltip-control']}>
-            {props.progress() === 100 ? "Done" : "Next" }
+            <CustomButton text={props.progress() === 100 ? "Done" : "Next" } variation="select" />
         </props.Next>
     }
 
@@ -70,7 +71,7 @@ const CustomTooltip: TooltipType<CustomTooltipProps> = (props) => {
                         class={`${styles['tooltip-control']} 
                         ${styles['tooltip-control-first']} 
                         ${props.step() === 1 ? styles['tooltip-control-disabled'] : ''}`}>
-                        Prev
+                        <CustomButton text={"Prev"} variation="back" />
                     </props.Prev>
                     <NextButton />
                 </Flex>

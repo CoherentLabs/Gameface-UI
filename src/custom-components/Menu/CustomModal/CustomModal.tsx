@@ -7,10 +7,21 @@ import Top from "@components/Layout/Top/Top"
 import style from './CustomModal.module.scss';
 import Content from "@components/Layout/Content/Content"
 import TextBlock from "@components/Basic/TextBlock/TextBlock"
+import CustomButton from "../CustomButton/CustomButton"
 
-const CustomModal = (props: {ref: any, onClose: () => void}) => {
+const CustomModal = (props: {ref: (ref: ModalRef) => void, onClose: () => void}) => {
+    let localRef!: ModalRef;
+    
+    const assignRef = (ref: ModalRef) => {
+        localRef = ref;
+        props.ref(ref);
+    }
+
     return (
-        <Modal onClose={props.onClose} ref={props.ref} open={false}>
+        <Modal onClose={props.onClose} ref={assignRef} open={false} onAction={{
+            'select': () => localRef.close(),
+            'back': () => localRef.close(),
+        }}>
             <Modal.Overlay />
             <Modal.Window class={style.modal} >
                 <Top>
@@ -26,10 +37,10 @@ const CustomModal = (props: {ref: any, onClose: () => void}) => {
                 <Bottom>
                     <Flex justify-content='end' class={style['modal-button-container']}>
                         <Modal.Close style={{ "margin-right": '0.5vmax' }}>
-                            <Button size='small' >Save</Button>
+                            <CustomButton text="Save" variation="select" />
                         </Modal.Close>
                         <Modal.Close>
-                            <Button size='small' >Cancel</Button>
+                            <CustomButton text="Cancel" variation="back" />
                         </Modal.Close>
                     </Flex>
                 </Bottom>

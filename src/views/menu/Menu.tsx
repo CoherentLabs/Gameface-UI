@@ -30,13 +30,13 @@ import { TutorialSteps } from './util/tutorialSteps';
 import Navigation, { NavigationRef } from '@components/Utility/Navigation/Navigation';
 import { ActionMap } from '@components/Utility/Navigation/types';
 import { Icon } from '@components/Media/Icon/Icon';
+import { waitForFrames } from '@components/utils/waitForFrames';
 
 interface MenuContextValue {
     currentOption: Accessor<string>,
     setCurrentOption: Setter<string>,
     activeTab: Accessor<typeof OPTIONS[number]>,
     TutorialSteps: typeof TutorialSteps,
-    interactiveTutorials: Accessor<{subtitles: boolean; color: boolean; }>,
     inputType: Accessor<'gamepad' | 'keyboard'>,
 }
 
@@ -45,24 +45,22 @@ export const OPTIONS = ['Gameplay', 'Graphics', 'Keybinds', 'Audio', 'Credits'] 
 
 const Menu = () => {
     let modalRef!: ModalRef;
-    let tutorialRef: TutorialRef | undefined
-    let navigationRef: NavigationRef;
+    let tutorialRef!: TutorialRef | undefined
+    let navigationRef!: NavigationRef;
     const [Toaster, createToast] = useToast();
     const [currentOption, setCurrentOption] = createSignal('difficulty');
     const [hasChanges, setHasChanges] = createSignal(false);
     const [activeTab, setActiveTab] = createSignal<typeof OPTIONS[number]>(OPTIONS[0]);
-    const [interactiveTutorials, setInteractiveTutorials] = createSignal({ subtitles: false, color: false })
     const [inputType, setInputType] = createSignal<'gamepad' | 'keyboard'>(navigator.getGamepads()[0] ? 'gamepad' : 'keyboard');
     let nextTab: string | undefined;
     let tabIndex = 0;
     let tabsRef!: TabsComponentRef;
-    const MenuContextValue = {
+    const MenuContextValue: MenuContextValue = {
         currentOption,
         setCurrentOption,
         activeTab,
         TutorialSteps,
-        interactiveTutorials,
-        inputType
+        inputType,
     }
 
     const handleTabChange = (newTab: string) => {
@@ -75,6 +73,7 @@ const Menu = () => {
     const handleBeforeTabChange = (_: string, newLocation: string) => {
         if (hasChanges()) {
             modalRef.open();
+            modalRef.element.focus();
             setHasChanges(false);
             nextTab = newLocation;
             return false;
@@ -102,6 +101,95 @@ const Menu = () => {
         });
     };
 
+    const handleTutorialStart = () => {
+        batch(() => {
+            navigationRef.pauseInput();
+            navigationRef.pauseNavigation();
+
+            navigationRef.addAction('tutorial-next', {
+                key: { binds: ['ENTER'], type: ['press'] },
+                button: { binds: ['face-button-down'], type: 'press' },
+                callback: () => {
+                    if (tutorialRef!.progress() === 100) return tutorialRef!.exit();
+
+                    if (tutorialRef?.current() === TutorialSteps.Interactive.order) {
+                        if (TutorialSteps.Interactive.completed) return tutorialRef!.next();
+
+                        eventBus.emit(TutorialSteps.Interactive.title);
+                        TutorialSteps.Interactive.completed = true
+                    } else if (tutorialRef?.current() === TutorialSteps.InteractiveTwo.order - 1) {
+                        // Mandatory to show color picker
+                        setCurrentOption("subtitleColor");
+                        // Interactive tutorial completed
+                        if (TutorialSteps.InteractiveTwo.completed) return tutorialRef!.next();
+
+                        // Resume pan in order to complete tutorial
+                        batch(() => {
+                            navigationRef.resumeAction('pan', true);
+                            navigationRef.pauseAction('tutorial-next', true);
+                            navigationRef.pauseAction('tutorial-previous', true);
+                        })
+                        waitForFrames(() => eventBus.emit(TutorialSteps.InteractiveTwo.title));
+                        // Resume tutorial
+                        setTimeout(() => {
+                            batch(() => {
+                                navigationRef.pauseAction('pan', true);
+                                navigationRef.resumeAction('tutorial-next', true);
+                                navigationRef.resumeAction('tutorial-previous', true);
+                            })
+                            TutorialSteps.InteractiveTwo.completed = true;
+                            tutorialRef!.next();
+                        }, 4000);
+                    }
+
+                    tutorialRef!.next()
+                }
+            })
+
+            navigationRef.addAction('tutorial-previous', {
+                key: {binds: ['ESC'], type: ['press', 'hold']},
+                button: {binds: ['face-button-right'], type: 'press'},
+                callback: () => tutorialRef!.previous()
+            })
+        })
+    }
+
+    const handleTutorialEnd = () => {
+        batch(() => {
+            navigationRef.removeAction('tutorial-next')
+            navigationRef.removeAction('tutorial-previous')
+            navigationRef.resumeInput();
+            navigationRef.resumeNavigation();
+            navigationRef.focusFirst('menu');
+        })
+    }
+
+    const handleClick = () => {
+        if (tutorialRef?.current() === TutorialSteps.Interactive.order) {
+            if (TutorialSteps.Interactive.completed) return;
+
+            eventBus.emit(TutorialSteps.Interactive.title);
+            TutorialSteps.Interactive.completed = true;
+            tutorialRef?.next();
+
+            return;
+        }
+
+        if (tutorialRef?.current() === TutorialSteps.InteractiveTwo.order) {
+            if (TutorialSteps.InteractiveTwo.completed) return;
+
+            tutorialRef?.pause();
+            const colorPicker = document.getElementById('subtitleColor-1')
+            eventBus.emit(TutorialSteps.InteractiveTwo.title);
+            colorPicker?.addEventListener('mousedown', () => {
+                TutorialSteps.InteractiveTwo.completed = true;
+                setTimeout(() => tutorialRef?.resume(true), 2000)
+            }, { once: true });
+
+            return;
+        }
+    }
+
     onMount(() => {
         eventBus.on('ui-change', () => setHasChanges(true));
         showToast();      
@@ -110,34 +198,6 @@ const Menu = () => {
     })
 
     const isCredits = createMemo(() => activeTab() === OPTIONS[4])
-
-    const handleClick = () => {
-        if (tutorialRef?.current() === TutorialSteps.Interactive.order) {
-            if (interactiveTutorials().subtitles) return;
-
-            tutorialRef?.pause();
-            const subtitlesToggle = document.getElementById('subtitles')
-            subtitlesToggle?.addEventListener('click', () => {
-                setInteractiveTutorials((prev) => ({...prev, subtitles: true}))
-                tutorialRef?.resume(true);
-            }, { once: true });
-
-            return;
-        }
-
-        if (tutorialRef?.current() === TutorialSteps.InteractiveTwo.order) {
-            if (interactiveTutorials().color) return;
-
-            tutorialRef?.pause();
-            const colorPicker = document.getElementById('subtitleColor')
-            colorPicker?.addEventListener('mousedown', () => {
-                setInteractiveTutorials((prev) => ({...prev, color: true}))
-                setTimeout(() => tutorialRef?.resume(true), 2000)
-            }, { once: true });
-
-            return;
-        }
-    }
 
     const cycleTabs = (direction: 'prev' | 'next') => {
         if (direction === 'next') {
@@ -163,7 +223,13 @@ const Menu = () => {
     return (
         <MenuContext.Provider value={MenuContextValue}>
             <Navigation ref={(api) => navigationRef = api} actions={defaultActions} pollingInterval={100} >
-                <Tutorial click={handleClick} ref={tutorialRef} outset={5} tooltip={(props) => <CustomTooltip {...props} exit={() => tutorialRef?.exit()} />} >
+                <Tutorial 
+                    click={handleClick} 
+                    onStart={handleTutorialStart}
+                    onEnd={handleTutorialEnd}
+                    ref={tutorialRef} 
+                    outset={5} 
+                    tooltip={(props) => <CustomTooltip {...props} exit={() => tutorialRef?.exit()} />}>
                     <Toaster /> 
                     <Tutorial.Step title={TutorialSteps.End.title} content={TutorialSteps.End.content} order={TutorialSteps.End.order} outset={-10} position={"top"}>
                         <div class={styles.Menu}>
@@ -293,7 +359,7 @@ const Menu = () => {
                         </div>
                     </Tutorial.Step> 
                 </Tutorial>
-                <CustomModal ref={modalRef} onClose={handleModalClose} />
+                <CustomModal ref={(ref) => modalRef = ref} onClose={handleModalClose} />
             </Navigation>
         </MenuContext.Provider>
     );

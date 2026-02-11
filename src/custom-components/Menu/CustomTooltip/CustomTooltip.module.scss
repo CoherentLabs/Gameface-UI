@@ -45,23 +45,11 @@
     }
 
     &-control {
-        padding: 0.5vmax 0.75vmax;
-        border: 0.1vmax solid $secondaryColor;
-        background-color: $primaryColor;
-        transition: background-color 0.2s ease-in-out;
-        border-radius: 0.2vmax;
-
-        &-first {
-            margin-right: 0.5vmax;
-        }
+        font-size: 1.25vmax;
 
         &-disabled {
             opacity: 0.5;
             pointer-events: none;
-        }
-
-        &:hover {
-            background-color: $secondaryColor;
         }
     }
 

@@ -35,6 +35,12 @@ const ToggleButton: ParentComponent<ToggleButtonProps> = (props) => {
     const [checked, setChecked] = createSignal(props.checked ?? false);
     let element!: HTMLDivElement;
 
+    createEffect(() => {
+        if (props.checked !== undefined) {
+            setChecked(props.checked);
+        }
+    });
+
     const toggleButtonClasses = createMemo(() => {
         const classes = [styles['toggle-button']];
 
