@@ -250,6 +250,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     const handleFocusIn = (e: FocusEvent) => {
         if (props.focusin) return props.focusin(e);
 
+        console.log((e.target as HTMLDivElement).id)
         if (nav) scrollIntoView(e.target as HTMLDivElement);
     }
 

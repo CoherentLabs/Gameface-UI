@@ -9,7 +9,7 @@ import Top from '@components/Layout/Top/Top';
 import Content from '@components/Layout/Content/Content';
 import Bottom from '@components/Layout/Bottom/Bottom';
 import Scroll, { ScrollComponentRef } from '@components/Layout/Scroll/Scroll';
-import { Accessor, batch, createContext, createMemo, createSignal, For, Match, onMount, Setter, Show, Switch } from 'solid-js';
+import { Accessor, batch, createContext, createEffect, createMemo, createSignal, For, Match, on, onMount, Setter, Show, Switch } from 'solid-js';
 import Gameplay from '@custom-components/Menu/Options/Gameplay/Gameplay';
 import styles from './Menu.module.scss';
 import { Column12, Column4, Column8 } from '@components/Layout/Column/Column';
@@ -30,7 +30,6 @@ import { TutorialSteps } from './util/tutorialSteps';
 import Navigation, { NavigationRef } from '@components/Utility/Navigation/Navigation';
 import { ActionMap } from '@components/Utility/Navigation/types';
 import { Icon } from '@components/Media/Icon/Icon';
-import { waitForFrames } from '@components/utils/waitForFrames';
 
 interface MenuContextValue {
     currentOption: Accessor<string>,
@@ -45,8 +44,8 @@ export const OPTIONS = ['Gameplay', 'Graphics', 'Keybinds', 'Audio', 'Credits'] 
 
 const Menu = () => {
     let modalRef!: ModalRef;
-    let tutorialRef!: TutorialRef | undefined
     let navigationRef!: NavigationRef;
+    const [tutorial, setTutorial] = createSignal<TutorialRef>();
     const [Toaster, createToast] = useToast();
     const [currentOption, setCurrentOption] = createSignal('difficulty');
     const [hasChanges, setHasChanges] = createSignal(false);
@@ -94,12 +93,32 @@ const Menu = () => {
                     close={close}
                     progress={progress} 
                     dismiss={dismiss}
-                    action={() => tutorialRef?.tour()} />
+                    action={() => tutorial()?.tour()} />
             ),
             position: 'top-center',
             timeout: 5000
         });
     };
+
+    createEffect(() => {
+        const currentStep = tutorial()?.current();
+        const step = Object.values(TutorialSteps).find(s => s.order === currentStep);
+        
+        if (step?.onEnter) {
+            step.onEnter({ setCurrentOption, nav: navigationRef, tutorial: tutorial()! });
+        }
+    });
+
+    const executeCurrentStepAction = () => {
+        const currentOrder = tutorial()?.current();
+        const step = Object.values(TutorialSteps).find(s => s.order === currentOrder);
+
+        if (step?.onAction) {
+            step.onAction({ tutorial: tutorial()! });
+        } else {
+            tutorial()?.next();
+        }
+    }
 
     const handleTutorialStart = () => {
         batch(() => {
@@ -110,46 +129,15 @@ const Menu = () => {
                 key: { binds: ['ENTER'], type: ['press'] },
                 button: { binds: ['face-button-down'], type: 'press' },
                 callback: () => {
-                    if (tutorialRef!.progress() === 100) return tutorialRef!.exit();
-
-                    if (tutorialRef?.current() === TutorialSteps.Interactive.order) {
-                        if (TutorialSteps.Interactive.completed) return tutorialRef!.next();
-
-                        eventBus.emit(TutorialSteps.Interactive.title);
-                        TutorialSteps.Interactive.completed = true
-                    } else if (tutorialRef?.current() === TutorialSteps.InteractiveTwo.order - 1) {
-                        // Mandatory to show color picker
-                        setCurrentOption("subtitleColor");
-                        // Interactive tutorial completed
-                        if (TutorialSteps.InteractiveTwo.completed) return tutorialRef!.next();
-
-                        // Resume pan in order to complete tutorial
-                        batch(() => {
-                            navigationRef.resumeAction('pan', true);
-                            navigationRef.pauseAction('tutorial-next', true);
-                            navigationRef.pauseAction('tutorial-previous', true);
-                        })
-                        waitForFrames(() => eventBus.emit(TutorialSteps.InteractiveTwo.title));
-                        // Resume tutorial
-                        setTimeout(() => {
-                            batch(() => {
-                                navigationRef.pauseAction('pan', true);
-                                navigationRef.resumeAction('tutorial-next', true);
-                                navigationRef.resumeAction('tutorial-previous', true);
-                            })
-                            TutorialSteps.InteractiveTwo.completed = true;
-                            tutorialRef!.next();
-                        }, 4000);
-                    }
-
-                    tutorialRef!.next()
+                    if (tutorial()!.progress() === 100) return tutorial()!.exit();
+                    executeCurrentStepAction();
                 }
             })
 
             navigationRef.addAction('tutorial-previous', {
                 key: {binds: ['ESC'], type: ['press', 'hold']},
                 button: {binds: ['face-button-right'], type: 'press'},
-                callback: () => tutorialRef!.previous()
+                callback: () => tutorial()!.previous()
             })
         })
     }
@@ -165,30 +153,27 @@ const Menu = () => {
     }
 
     const handleClick = () => {
-        if (tutorialRef?.current() === TutorialSteps.Interactive.order) {
-            if (TutorialSteps.Interactive.completed) return;
+        const currentOrder = tutorial()?.current();
+        const step = Object.values(TutorialSteps).find(s => s.order === currentOrder);
 
-            eventBus.emit(TutorialSteps.Interactive.title);
-            TutorialSteps.Interactive.completed = true;
-            tutorialRef?.next();
-
-            return;
-        }
-
-        if (tutorialRef?.current() === TutorialSteps.InteractiveTwo.order) {
+        // Specific Mouse logic for the Color Picker
+        if (currentOrder === TutorialSteps.InteractiveTwo.order) {
             if (TutorialSteps.InteractiveTwo.completed) return;
 
-            tutorialRef?.pause();
-            const colorPicker = document.getElementById('subtitleColor-1')
-            eventBus.emit(TutorialSteps.InteractiveTwo.title);
+            tutorial()!.pause();
+            const colorPicker = document.getElementById('subtitleColor-1');
             colorPicker?.addEventListener('mousedown', () => {
                 TutorialSteps.InteractiveTwo.completed = true;
-                setTimeout(() => tutorialRef?.resume(true), 2000)
+                // Brief pause so the user sees the color change before the tutorial resumes
+                TutorialSteps.InteractiveTwo.reset?.(navigationRef);
+                setTimeout(() => tutorial()?.resume(true), 2000);
             }, { once: true });
-
+            
             return;
         }
-    }
+        // Default: If it's an interactive step, try the step's action
+        if (step?.onAction) executeCurrentStepAction();
+    };
 
     onMount(() => {
         eventBus.on('ui-change', () => setHasChanges(true));
@@ -227,9 +212,9 @@ const Menu = () => {
                     click={handleClick} 
                     onStart={handleTutorialStart}
                     onEnd={handleTutorialEnd}
-                    ref={tutorialRef} 
+                    ref={setTutorial} 
                     outset={5} 
-                    tooltip={(props) => <CustomTooltip {...props} exit={() => tutorialRef?.exit()} />}>
+                    tooltip={(props) => <CustomTooltip {...props} exit={() => tutorial()?.exit()} />}>
                     <Toaster /> 
                     <Tutorial.Step title={TutorialSteps.End.title} content={TutorialSteps.End.content} order={TutorialSteps.End.order} outset={-10} position={"top"}>
                         <div class={styles.Menu}>

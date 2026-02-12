@@ -102,7 +102,7 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
         }
 
         setPausedAt(null);
-        tour(next ? resumeStep + 1 : resumeStep);
+        setCurrentStep(changeStep(next ? resumeStep + 1 : resumeStep))
     }
     
     // Clamps provided step to valid range (1 to total step count)
