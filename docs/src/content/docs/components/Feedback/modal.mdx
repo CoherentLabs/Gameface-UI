@@ -66,6 +66,8 @@ export default App;
 | `open`  | `boolean`               | `false`     | Determines whether the modal is initially visible.                                                           |
 | `onOpen`  | `() => void`               | `undefined`     | Callback invoked when the modal is opened.                                                           |
 | `onClose` | `() => void`               | `undefined`     | Callback invoked when the modal is closed.                                                           |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the component. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, this component's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Ref API
 
