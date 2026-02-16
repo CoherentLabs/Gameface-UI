@@ -1,5 +1,5 @@
 import MenuItem from "@custom-components/Menu/MenuItem/MenuItem";
-import { createEffect, For, on, ParentComponent, Show, useContext} from "solid-js";
+import { createEffect, For, on, onCleanup, ParentComponent, Show, useContext} from "solid-js";
 import CustomSegment from "@custom-components/Menu/CustomSegment/CustomSegment";
 import ExtraContent from "@custom-components/Menu/SidePanel/ExtraContent";
 import CustomList from "@custom-components/Menu/CustomList/CustomList";
@@ -32,6 +32,10 @@ const KeyBindsTab: ParentComponent = () => {
             nav.registerArea('menu', ['.menu-item'], true)
         })
     );
+
+    onCleanup(() => {
+        nav?.unregisterArea('menu')
+    })
 
     return (
         <>

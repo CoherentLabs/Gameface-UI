@@ -75,10 +75,7 @@ export default function createActionMethods(
         }
 
         unregisterAction(name);
-        setConfig('actions', (prev) => {
-            const { [name]: _, ...rest } = prev;
-            return rest;
-        })
+        setConfig('actions', name, undefined);
     }
 
     const updateAction = (name: ActionName, data: ActionCfg) => {
@@ -106,12 +103,11 @@ export default function createActionMethods(
     const pauseAction = (name: ActionName, force: boolean = false) => {
         if (!getAction(name)) return console.warn('Action not found');
 
-        if (forcePausedActions.has(name)) {
-            if (import.meta.env.DEV) console.log(`Action: ${name} has already been force paused!`);
-            return;
-        }
-
         if (force) {
+            if (forcePausedActions.has(name)) {
+                if (import.meta.env.DEV) console.log(`Action: ${name} has already been force paused!`);
+                return;
+            }
             forcePausedActions.add(name);
             setConfig('actions', name, 'paused', true);
             return;
@@ -124,7 +120,9 @@ export default function createActionMethods(
         actionSubscribers.set(name, newCount);
 
         if (newCount === 0) {
-            setConfig('actions', name, 'paused', true);
+            if (!forcePausedActions.has(name)) {
+                setConfig('actions', name, 'paused', true);
+            }
         }
     };
 
@@ -132,15 +130,17 @@ export default function createActionMethods(
         const action = getAction(name);
         if (!action) return console.warn('Action not found');
 
-        // Increment subscibers even if force paused
-        const currentCount = actionSubscribers.get(name) || 0;
-        actionSubscribers.set(name, currentCount + 1);
-
         if (force) {
+            if (!forcePausedActions.has(name)) return; // Wasn't forced
             forcePausedActions.delete(name);
+
             setConfig('actions', name, 'paused', false);
             return;
         }
+
+        const currentCount = actionSubscribers.get(name) || 0;
+        const newCount = currentCount + 1;
+        actionSubscribers.set(name, newCount);
 
         if (forcePausedActions.has(name)) {
             if (import.meta.env.DEV) {
@@ -149,7 +149,7 @@ export default function createActionMethods(
             return;
         }
 
-        if (currentCount === 0 && action.paused) {
+        if (newCount === 1) { 
             setConfig('actions', name, 'paused', false);
         }
     };
@@ -163,11 +163,11 @@ export default function createActionMethods(
         inputCaptureSnapshot.clear();
 
         for (const actionName in allActions) {
-            if (isPaused(actionName)) {
+            if (!isPaused(actionName)) {
+                pauseAction(actionName, true);
+            } else {
                 inputCaptureSnapshot.add(actionName);
             }
-
-            pauseAction(actionName, true);
         }
     };
 
@@ -175,13 +175,9 @@ export default function createActionMethods(
         const allActions = getActions();
 
         for (const actionName in allActions) {
-            if (inputCaptureSnapshot.has(actionName)) {
-                // remove the force flag only
-                forcePausedActions.delete(actionName);
-                continue;
+            if (!inputCaptureSnapshot.has(actionName)) {
+                resumeAction(actionName, true);
             }
-
-            resumeAction(actionName, true);
         }
 
         inputCaptureSnapshot.clear();

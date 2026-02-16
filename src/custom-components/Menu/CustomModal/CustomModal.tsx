@@ -1,6 +1,4 @@
-import Button from "@components/Basic/Button/Button"
 import Modal, { ModalRef } from "@components/Feedback/Modal/Modal"
-import Block from "@components/Layout/Block/Block"
 import Bottom from "@components/Layout/Bottom/Bottom"
 import Flex from "@components/Layout/Flex/Flex"
 import Top from "@components/Layout/Top/Top"
@@ -9,19 +7,9 @@ import Content from "@components/Layout/Content/Content"
 import TextBlock from "@components/Basic/TextBlock/TextBlock"
 import CustomButton from "../CustomButton/CustomButton"
 
-const CustomModal = (props: {ref: (ref: ModalRef) => void, onClose: () => void}) => {
-    let localRef!: ModalRef;
-    
-    const assignRef = (ref: ModalRef) => {
-        localRef = ref;
-        props.ref(ref);
-    }
-
+const CustomModal = (props: {ref: ModalRef, onClose: () => void, onOpen: () => void}) => {
     return (
-        <Modal onClose={props.onClose} ref={assignRef} open={false} onAction={{
-            'select': () => localRef.close(),
-            'back': () => localRef.close(),
-        }}>
+        <Modal onClose={props.onClose} onOpen={props.onOpen} ref={props.ref} open={false}>
             <Modal.Overlay />
             <Modal.Window class={style.modal} >
                 <Top>

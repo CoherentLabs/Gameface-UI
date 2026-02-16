@@ -72,7 +72,6 @@ const Menu = () => {
     const handleBeforeTabChange = (_: string, newLocation: string) => {
         if (hasChanges()) {
             modalRef.open();
-            modalRef.element.focus();
             setHasChanges(false);
             nextTab = newLocation;
             return false;
@@ -80,10 +79,33 @@ const Menu = () => {
         tabIndex = OPTIONS.indexOf(newLocation as typeof OPTIONS[number]);
     }
 
+    const handleModalOpen = () => {
+        batch(() => {
+            navigationRef.pauseNavigation();        
+            navigationRef.pauseInput();
+            navigationRef.addAction('modal-save', {
+                key: { binds: ['ENTER'], type: ['press'] },
+                button: { binds: ['face-button-down'], type: 'press' },
+                callback: () => modalRef.close()
+            })
+            navigationRef.addAction('modal-cancel', {
+                key: { binds: ['ESC'], type: ['press'] },
+                button: { binds: ['face-button-right'], type: 'press' },
+                callback: () => modalRef.close()
+            })
+        })
+    }
+
     const handleModalClose = () => {
         if (!nextTab) return;
 
         tabsRef.changeTab(nextTab);
+        batch(() => {
+            navigationRef.removeAction('modal-save');
+            navigationRef.removeAction('modal-cancel');
+            navigationRef.resumeNavigation();
+            navigationRef.resumeInput();
+        })
     }
 
     const showToast = () => {
@@ -344,7 +366,7 @@ const Menu = () => {
                         </div>
                     </Tutorial.Step> 
                 </Tutorial>
-                <CustomModal ref={(ref) => modalRef = ref} onClose={handleModalClose} />
+                <CustomModal ref={modalRef} onClose={handleModalClose} onOpen={handleModalOpen} />
             </Navigation>
         </MenuContext.Provider>
     );
