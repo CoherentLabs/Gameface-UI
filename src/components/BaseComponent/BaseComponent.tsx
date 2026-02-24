@@ -10,28 +10,13 @@ const baseEventsSet = new Set([
 ]);
 
 function handleClasses(el: Element, props: ComponentProps) {
-    let currentClass = "";
-
     createEffect(() => {
         const rawBase = props.componentClasses;
         const base = typeof rawBase === "function" ? rawBase() : rawBase;
-
         const ext = props.class;
         const finalClass = base ? (ext ? base + " " + ext : base) : (ext || "");
 
-        if (currentClass !== finalClass) {
-            const prevTokens = currentClass.trim() ? currentClass.trim().split(/\s+/) : [];
-            if (prevTokens.length) {
-                el.classList.remove(...prevTokens);
-            }
-
-            const nextTokens = finalClass.trim() ? finalClass.trim().split(/\s+/) : [];
-            if (nextTokens.length) {
-                el.classList.add(...nextTokens);
-            }
-
-            currentClass = finalClass;
-        }
+        if (el.className !== finalClass) el.className = finalClass;
     });
 }
 
