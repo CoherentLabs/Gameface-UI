@@ -3,6 +3,7 @@ import Block from "@components/Layout/Block/Block";
 import { createMemo, ParentComponent, useContext } from "solid-js";
 import styles from './MenuItem.module.scss';
 import { MenuContext } from "../../../views/menu/Menu";
+import { NavigationContext } from "@components/Utility/Navigation/Navigation";
 
 interface MenuItemsProps {
     id: string,
@@ -11,6 +12,7 @@ interface MenuItemsProps {
 
 const MenuItem: ParentComponent<MenuItemsProps> = (props) => {
     const menuContext = useContext(MenuContext)
+    const nav = useContext(NavigationContext)
     let ref: HTMLDivElement;
 
     const isActive = createMemo(() => menuContext?.currentOption() === props.id); 
@@ -19,8 +21,8 @@ const MenuItem: ParentComponent<MenuItemsProps> = (props) => {
     }
 
     const handleMouseEnter = (event: MouseEvent) => {
-        const element = event.currentTarget;
-        (element as HTMLDivElement).focus();
+        if (nav?.getScope() !== 'menu') return;
+        (event.currentTarget as HTMLDivElement).focus();
     }
 
     const handleClick = (event: MouseEvent) => {

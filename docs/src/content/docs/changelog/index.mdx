@@ -51,9 +51,13 @@ The following components have been extended to support onAction and anchor props
 
 - <Badge text="New" variant="tip" size="small" /> [Tutorial](/components/complex/tutorial): Added `onStart` and `onEnd` props for adding a logic when the tutorial starts or ends.
 
+- <Badge text="New" variant="danger" size="small" /> [Modal](/components/feedback/modal): Forbid any mouse events outside the modal when there is a `Modal.Overlay`.
+
 - <Badge text="Fix" variant="danger" size="small" /> [Checkbox](/components/basic/checkbox): Fixed an issue where the `onChange` handler was called on component mount.
 
 - <Badge text="Fix" variant="danger" size="small" /> [ToggleButton](/components/basic/toggle-button): Fixed `checked` prop not reacting to signal state changes.
+
+- <Badge text="Fix" variant="danger" size="small" /> [Slider](/components/basic/slider) & [XYSlider](/components/basic/xy-slider): Fixed drag event not cleaning up if component unmounts during dragging.
 
 ### 📖 New Guides
 

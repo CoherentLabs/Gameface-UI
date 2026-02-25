@@ -54,14 +54,26 @@ const Modal: ParentComponent<ModalProps> = (props) => {
 
     props.componentClasses = () => modalClasses();
     const { className, inlineStyles, forwardEvents, forwardAttrs, navigationActions } = useBaseComponent(props);
+    
+    const stealMouseEvents = (e: Event) => {
+        e.stopPropagation();
+        e.preventDefault();
+    }
 
     const open = () => {
         setIsOpen(true);
+        
+        window.addEventListener('mousedown', stealMouseEvents, true);
+        window.addEventListener('mousemove', stealMouseEvents, true);
+        window.addEventListener('mouseup', stealMouseEvents, true);
         props.onOpen?.();
     }
 
     const close = () => {
         setIsOpen(false);
+        window.removeEventListener('mousedown', stealMouseEvents, true);
+        window.removeEventListener('mousemove', stealMouseEvents, true);
+        window.removeEventListener('mouseup', stealMouseEvents, true);
         props.onClose?.();
     }
 
@@ -88,7 +100,13 @@ const Modal: ParentComponent<ModalProps> = (props) => {
                     use:navigationActions={{anchor: props.anchor, ...props.onAction }}>
                     <Show when={isOpen()}>
                         {OverlayToken?.() && (
-                            <div onClick={close} class={modalOverlayClasses()} style={OverlayToken?.()?.style}></div>
+                            <div 
+                                onMouseDown={stealMouseEvents}
+                                onMouseMove={stealMouseEvents}
+                                onMouseUp={stealMouseEvents}
+                                onClick={close} 
+                                class={modalOverlayClasses()} 
+                                style={OverlayToken?.()?.style}></div>
                         )}
                         <ModalWindow parentChildren={props.children}></ModalWindow>
                     </Show>

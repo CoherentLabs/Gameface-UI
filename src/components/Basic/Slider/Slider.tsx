@@ -1,5 +1,5 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, createSignal, onMount, ParentComponent, createMemo } from "solid-js";
+import { Accessor, createSignal, onMount, ParentComponent, createMemo, onCleanup } from "solid-js";
 import styles from './Slider.module.scss';
 import useBaseComponent from "@components/BaseComponent/BaseComponent";
 import { clamp } from "@components/utils/clamp";
@@ -77,7 +77,7 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         props.onChange?.(result);
     }
 
-    const handleMouseUp = (e: MouseEvent) => {
+    const handleMouseUp = () => {
         if (!sliding) return;
 
         sliding = false;
@@ -135,6 +135,10 @@ const Slider: ParentComponent<SliderProps> = (props) => {
             changeValue
         });
     });
+
+    onCleanup(() => {
+        handleMouseUp();
+    })
 
     const defaultActions = {
         'move-left': () => changeValue(Number((value() - step()).toFixed(5))),
