@@ -144,6 +144,7 @@ const XYSlider: ParentComponent<XYSliderProps> = (props) => {
 
     onCleanup(() => {
         if (nav) nav.pauseAction('pan');
+        handleMouseUp()
     })
 
     const defaultActions = {
