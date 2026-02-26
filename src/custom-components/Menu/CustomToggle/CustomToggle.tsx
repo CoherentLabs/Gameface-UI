@@ -1,6 +1,5 @@
 import ToggleButton from "@components/Basic/ToggleButton/ToggleButton"
 import { emitChange } from "../../../views/menu/util";
-import { Accessor, createMemo } from "solid-js";
 
 interface CustomToggleProps {
     id?: string,
