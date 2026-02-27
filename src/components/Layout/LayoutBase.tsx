@@ -14,11 +14,15 @@ const LayoutBase: ParentComponent<ComponentProps> = (props) => {
     return (
         <div
             ref={(el) => {
-                if (props.ref) {
-                    (props.ref as (ref: any) => void)({
+                if (!props.ref) return;
+                
+                if (props.refObject) {
+                    (props.ref as (arg: any) => void)({
                         ...props.refObject,
-                        element: el
+                        element: el,
                     });
+                } else {
+                    (props.ref as (arg: any) => void)(el);
                 }
             }}
             use:baseComponent={props}

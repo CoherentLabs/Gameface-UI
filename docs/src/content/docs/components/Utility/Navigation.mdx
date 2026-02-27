@@ -234,20 +234,17 @@ To subscribe your component to an action, follow these steps:
 
 <Steps>
 
-1. Import the `useBaseComponent` hook in your component
+1. Import the `navigationActions` method in your component
 
-2. Extract the `navigationActions` method from the hook
+2. Add the `navigationActions` method as an attribute to the element you wish to subscribe, and prefix it with the `use:` keyword
 
-3. Add the `navigationActions` method as an attribute to the element you wish to subscribe, and prefix it with the `use:` keyword
-
-4. Provide the names of the actions you wish to subscribe to and their corresponding callbacks (what will happen when they're triggered)
+3. Provide the names of the actions you wish to subscribe to and their corresponding callbacks (what will happen when they're triggered)
 
 </Steps>
 
 ```tsx
-import { useBaseComponent } from '@components/BaseComponent/BaseComponent';
+import { navigationActions } from '@components/BaseComponent/BaseComponent';
 const MyComponent = (props) => {
-    const { navigationActions } = useBaseComponent(props);
     return (
         <div use:navigationActions={{
             select: () => console.log('Item selected'),
@@ -268,7 +265,6 @@ Anchor can also be used when subscribing to actions in custom components.
 ```tsx
 const Card = (props) => {
     let buttonRef;
-    const { navigationActions } = useBaseComponent(props);
 
     return (
         <div

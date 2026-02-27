@@ -1,11 +1,11 @@
-import { JSX, ParentComponent, ParentProps, useContext } from "solid-js";
+import { ParentComponent, useContext } from "solid-js";
 import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
 import AccordionIcon from './AccordionIcon.svg?component-solid'
 import styles from './Accordion.module.scss';
 import { CommonAccordionSlotProps, PanelChildrenComponentProps } from "./AccordionPanel";
 import { AccordionContext } from "./Accordion";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
+import { navigationActions } from "@components/BaseComponent/BaseComponent";
 import { ComponentNavigationActions } from "@components/types/ComponentProps";
 
 interface AccordionHeadingProps extends CommonAccordionSlotProps {
@@ -20,8 +20,6 @@ export const AccordionHeading: ParentComponent<{ id: string, onAction?: Record<s
     const HeadingToken = useToken(Heading, props.parentChildren);
     const IconToken = useToken(Icon, HeadingToken?.()?.children)
     const accordion = useContext(AccordionContext)
-
-    const { navigationActions } = useBaseComponent({} as any);
 
     return (
         <div

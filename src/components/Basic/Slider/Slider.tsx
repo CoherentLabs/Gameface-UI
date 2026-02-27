@@ -8,7 +8,7 @@ import { Handle, SliderHandle } from "./SliderHandle";
 import { SliderThumb, Thumb } from "./SliderThumb";
 import { SliderTrack, Track } from "./SliderTrack";
 import { useToken } from "@components/utils/tokenComponents";
-import baseComponent from "@components/BaseComponent/BaseComponent";
+import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
 
 export interface SliderRef {

@@ -2,7 +2,7 @@ import { createMemo, createSignal, JSX, onCleanup, onMount, ParentComponent, Sho
 import styles from './Tooltip.module.scss';
 import { BaseComponentRef, ComponentProps } from "@components/types/ComponentProps";
 import { getSafePosition } from "@components/utils/getSafePosition";
-import useBaseComponent from "@components/BaseComponent/BaseComponent";
+import { navigationActions } from "@components/BaseComponent/BaseComponent";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
 
 export interface TooltipRef extends BaseComponentRef {
@@ -112,8 +112,6 @@ const createTooltip = <T extends Record<string, any> = { message: string }>(opti
             if (others.class) classes.push(others.class);
             return classes.join(' ');
         });
-
-        const { navigationActions } = useBaseComponent(props);
 
         return (
             <div class={tooltipWrapperClasses()} style={others.style} ref={wrapperRef}>

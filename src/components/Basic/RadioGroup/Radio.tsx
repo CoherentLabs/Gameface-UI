@@ -6,7 +6,7 @@ import { RadioButtons } from "./RadioButtons";
 import { Button, ButtonLabel } from "./RadioButton";
 import { ButtonControl } from "./RadioButtonControl";
 import { ButtonIndicator } from "./RadioButtonIndicator";
-import baseComponent from "@components/BaseComponent/BaseComponent";
+import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
 
 export const RadioContext = createContext<RadioContextValue>();

@@ -1,5 +1,5 @@
 import { Input, Placeholder } from "../shared/tokens";
-import { onMount, Show, createMemo, ParentComponent, createSignal } from "solid-js";
+import { Show, createMemo, ParentComponent, createSignal } from "solid-js";
 import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
 import { InputBase } from "../InputBase/InputBase";
 import { TextInputProps, TextInputRef } from "../shared/types";

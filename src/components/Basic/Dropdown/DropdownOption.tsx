@@ -1,7 +1,7 @@
 import { ParentComponent, useContext, ParentProps, onCleanup, onMount, Show } from 'solid-js';
 import { CommonDropdownSlotProps, DropdownContext } from './Dropdown';
 import { createTokenComponent } from '@components/utils/tokenComponents';
-import useBaseComponent from '@components/BaseComponent/BaseComponent';
+import { navigationActions } from '@components/BaseComponent/BaseComponent';
 import style from './Dropdown.module.scss';
 
 export interface OptionTokenProps extends CommonDropdownSlotProps {
@@ -46,8 +46,6 @@ export const DropdownOption: ParentComponent<{ option: ParentProps<OptionTokenPr
 
         return classes.join(' ');
     }
-
-    const { navigationActions } = useBaseComponent(props);
 
     return <div
         ref={element}
