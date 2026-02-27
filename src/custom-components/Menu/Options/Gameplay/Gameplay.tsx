@@ -1,7 +1,7 @@
 import Stepper from "@components/Basic/Stepper/Stepper";
 import ColorPreview from "@custom-components/Menu/ColorPreview/ColorPreview";
 import MenuItem from "@custom-components/Menu/MenuItem/MenuItem";
-import { createSignal, ParentComponent, Setter, Show, useContext } from "solid-js";
+import { createEffect, createSignal, onMount, ParentComponent, Setter, Show, useContext } from "solid-js";
 import SubtitleSize from "@custom-components/Menu/SubtitleSize/SubtitleSize";
 import CustomSlider from "@custom-components/Menu/CustomSlider/CustomSlider";
 import CustomToggle from "@custom-components/Menu/CustomToggle/CustomToggle";
@@ -11,37 +11,41 @@ import { emitChange } from "../../../../views/menu/util";
 import Tutorial from "@components/Complex/Tutorial/Tutorial";
 import { MenuContext } from "../../../../views/menu/Menu";
 import { TutorialSteps } from "../../../../views/menu/util/tutorialSteps";
+import Navigation from "@components/Utility/Navigation/Navigation";
+import eventBus from "@components/Utility/EventBus";
 
 const Gameplay: ParentComponent = () => {
     const [showSubtitleOptions, setShowSubtitleOptions] = createSignal(false);
     const context = useContext(MenuContext);
 
+    onMount(() => {
+        eventBus.once(context!.TutorialSteps.Interactive.title, () => setShowSubtitleOptions(true));
+    })
+
     return (
-        <>
-            <div>
-                <MenuItem id="difficulty" name='Difficulty'>
-                    <Stepper onChange={emitChange} style={{width: '15vmax'}}>
-                        <Stepper.Items>
-                            <Stepper.Item value='Easy'>Easy</Stepper.Item>
-                            <Stepper.Item value='Normal' selected>Normal</Stepper.Item>
-                            <Stepper.Item value='Hard'>Hard</Stepper.Item>
-                            <Stepper.Item value='Nightmare'>Nightmare</Stepper.Item>
-                        </Stepper.Items>
-                        <Stepper.Control style={{"border-radius": 0}} />
-                    </Stepper>
+        <Navigation.Area name="menu" selector="menu-item" focused>
+            <MenuItem id="difficulty" name='Difficulty'>
+                <Stepper anchor="#difficulty" onChange={emitChange} style={{width: '15vmax'}} >
+                    <Stepper.Items>
+                        <Stepper.Item value='Easy'>Easy</Stepper.Item>
+                        <Stepper.Item value='Normal' selected>Normal</Stepper.Item>
+                        <Stepper.Item value='Hard'>Hard</Stepper.Item>
+                        <Stepper.Item value='Nightmare'>Nightmare</Stepper.Item>
+                    </Stepper.Items>
+                    <Stepper.Control style={{"border-radius": 0}} />
+                </Stepper>
+            </MenuItem>
+            <Tutorial.Step 
+                order={context!.TutorialSteps.Collapsable.order} 
+                content={context!.TutorialSteps.Collapsable.content} 
+                title={context!.TutorialSteps.Collapsable.title} 
+                position={"bottom"}>
+                <MenuItem id="subtitles" name='Subtitles'>
+                    <Tutorial.Step order={context!.TutorialSteps.Interactive.order} content={context!.TutorialSteps.Interactive.content} title={context!.TutorialSteps.Interactive.title} >
+                        <CustomToggle id="subtitles" checked={showSubtitleOptions()} onChange={setShowSubtitleOptions} />
+                    </Tutorial.Step>
                 </MenuItem>
-                <Tutorial.Step 
-                    order={context!.TutorialSteps.Collapsable.order} 
-                    content={context!.TutorialSteps.Collapsable.content} 
-                    title={context!.TutorialSteps.Collapsable.title} 
-                    position={"bottom"}>
-                    <MenuItem id="subtitles" name='Subtitles'>
-                        <Tutorial.Step order={context!.TutorialSteps.Interactive.order} content={context!.TutorialSteps.Interactive.content} title={context!.TutorialSteps.Interactive.title} >
-                            <CustomToggle id="subtitles" checked={showSubtitleOptions()} onChange={(checked) => setShowSubtitleOptions(checked)} />
-                        </Tutorial.Step>
-                    </MenuItem>
-                </Tutorial.Step>
-            </div>
+            </Tutorial.Step>
             <Show when={showSubtitleOptions()}>
                 <Tutorial.Step title={TutorialSteps.Dynamic.title} content={TutorialSteps.Dynamic.content} order={TutorialSteps.Dynamic.order} position={'bottom'}>
                     <Block style={{"padding-left": '2vmax'}}>
@@ -55,6 +59,7 @@ const Gameplay: ParentComponent = () => {
                         </MenuItem>
                         <MenuItem id="subtitleLanguage" name="Subtitle Language">
                             <CustomDropdown
+                                id="subtitleLanguage"
                                 values={[
                                     { value: "en", label: "English" },
                                     { value: "de", label: "Deutsch" },
@@ -68,25 +73,24 @@ const Gameplay: ParentComponent = () => {
                 </Tutorial.Step>
             </Show>
             <MenuItem id="fov" name='Field of view'>
-                <CustomSlider min={1} max={10} step={0.1} value={3.5} />
+                <CustomSlider id="fov" min={1} max={10} step={0.1} value={3.5} />
             </MenuItem>
             <MenuItem id="mouseSensitivity" name='Mouse sensitivity'>
-                <CustomSlider step={0.1} min={1} max={10} value={3.3} />
+                <CustomSlider id="mouseSensitivity" step={0.1} min={1} max={10} value={3.3} />
             </MenuItem>
             <MenuItem id="tutorialHints" name='Tutorial Hints'>
-                <CustomToggle checked={true} />
+                <CustomToggle id="tutorialHints" checked={true} />
             </MenuItem>
             <MenuItem id="autoSave" name='Auto-Save'>
-                <CustomToggle checked={false} />
+                <CustomToggle id="autoSave" checked={true} />
             </MenuItem>
             <MenuItem id="aimAssist" name='Aim Assist'>
-                <CustomToggle checked={false} />
+                <CustomToggle id="aimAssist" checked={true} />
             </MenuItem>
             <MenuItem id="vibration" name='Controller Vibration'>
-                <CustomToggle checked={true} />
+                <CustomToggle id="vibration" checked={true} />
             </MenuItem>
-        </>
-
+        </Navigation.Area>
     )
 }
 

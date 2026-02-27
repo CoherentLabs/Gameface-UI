@@ -2,6 +2,8 @@
 title: Color picker
 ---
 
+import { Steps } from '@astrojs/starlight/components';
+
 The `ColorPicker` component is a powerful UI element designed for seamless color selection. It is ideal for applications such as design tools, image editors, or any interface requiring color customization.
 
 As part of the complex components in Gameface UI, the `ColorPicker` combines multiple basic components to deliver advanced functionality. It enables users to adjust hue, saturation, brightness, and transparency, while providing a color preview area for visual feedback.
@@ -40,6 +42,8 @@ export default App;
 | `value` | `string`           | `rgba(255, 0, 0, 1)` | Initial value of the color picker. Accepts colors as strings in HEX or RGBA format. |
 | `size` | `'S' \| 'M' \| 'L' \| 'XL'` | `'L'` | Sets the size of the color picker. The size affects the overall dimensions and font sizes within the component. Ideal for quick customization. |
 | `onChange` | `(value: ColorData) => void`           | `undefined` | A callback function triggered whenever the color changes. It can be used to retrieve the updated color value. |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the color picker. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, the color picker's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Ref API
 
@@ -234,3 +238,122 @@ export default App;
 :::note
 To customize the internal components of the `ColorPicker`, such as the `XYSlider` or `Slider`, you can modify the `ColorPicker` component directly or create a copy of it for your specific needs. These internal components are designed to be flexible and can be adjusted using their own props, but no additional customization options are provided for them within the `ColorPicker`.
 :::
+
+### Extending the Color Picker With Navigation :badge[2.0.0]{variant=note}
+
+The `ColorPicker` component can be extended to work with the `Navigation` component to allow for keyboard or gamepad navigation.
+
+Since the `ColorPicker` is built using basic components like `XYSlider`, `Slider` and `Segment` , which are compatible with the `Navigation` system, you can wrap the `ColorPicker` in a `Navigation` component to enable navigation support.
+
+To achieve this, follow these steps:
+
+<Steps>
+1. Make sure the `ColorPicker` is a descendant of a `Navigation` component in your component tree.
+2. Wrap the components in the `ColorPicker` you wish to enable navigation for with the `Navigation.Area` component.
+3. Optionally, add focus styles for all components that will be navigable for visual indication.
+</Steps>
+
+#### Example setup
+
+In this example we will modify the `ColorPicker` component to include `Navigation.Area` around the internal components that we want to be navigable.
+The component's internal navigation setup will handle the interactions out of the box!
+
+```diff lang="tsx" title="ColorPicker.tsx" collapse={12-28}
+const ColorPicker: ParentComponent<ColorPickerProps> = (props) => {
+    // Existing color picker code...
+    return (
+        <div ref={element}
+            class={className()}
+            style={inlineStyles()}
+            use:forwardEvents={props}
+            use:forwardAttrs={props}>
++            <Navigation.Area name="color-picker" focused>
+                <XYSlider ref={xySliderRef} value={{ x: initialValue.s, y: 100 - initialValue.v }} class={styles.XYSlider} onChange={handleXYChange}>
+                    <XYSlider.Background style={XYSliderBackground()} />
+                    <XYSlider.Handle class={styles['XYSlider-handle']} style={{ "background-color": selectedColorNonTransparent() }}></XYSlider.Handle>
+                </XYSlider>
+
+                <Slider ref={hueSliderRef} min={0} max={360} value={initialValue.h} onChange={handleHueChange} class={styles['hue-slider']}>
+                    <Slider.Track class={styles['hue-slider-track']} />
+                    <Slider.Fill class={styles['slider-fill']}></Slider.Fill>
+                    <Slider.Handle class={styles['slider-handle']} style={{ background: selectedColorHue() }} />
+                </Slider>
+    
+                <Slider ref={alphaSliderRef} value={initialValue.a * 100} onChange={handleAlphaChange} class={styles['alpha-slider']}>
+                    <Slider.Track class={styles['alpha-slider-track']} style={{ 'background-image': `linear-gradient(to right,transparent 0% , ${selectedColorNonTransparent()} 100% )` }} />
+                    <Slider.Fill class={styles['slider-fill']}></Slider.Fill>
+                    <Slider.Handle class={styles['slider-handle']} style={{ background: selectedColor() }} />
+                </Slider>
+
+                <Segment class={styles.segment} onChange={(value) => setSelectedFormat(value)}>
+                    <Segment.Indicator class={styles['segment-indicator']}></Segment.Indicator>
+                    <Segment.Button class={styles['segment-button']} selected value="hex">HEX</Segment.Button>
+                    <Segment.Button class={styles['segment-button']} value="rgba">RGBA</Segment.Button>
+                </Segment>
++            </Navigation.Area>
+            <div class={styles['color-preview-wrapper']}>
+                <div class={styles['color-preview']}>
+                    <div class={styles['color-preview-box']} style={{ 'background-color': selectedColor() }}></div>
+                </div>
+                <TextInput class={styles['color-preview-text']} readonly value={colorTextValue()} />
+            </div>
+        </div >
+    );
+}
+```
+
+#### CSS for focus styles
+
+For the visual focus indication, in this example we add a border to the slider handles and a box-shadow to the segment when the components receive focus.
+
+Since there are multiple sliders in the `ColorPicker`'s components, we can create a SCSS mixin to handle the focus styles for the slider handles. Here's how you can implement it:
+
+```diff lang="scss" title="ColorPicker.module.scss" collapse={10-14} collapse={16-20} collapse={25-31}
++@mixin handle-focus($slider-name) {
++    &:focus {    
++        .#{$slider-name} {
++            border: 0.2vmax solid rgb(197, 197, 197);
++        }
++    }
++}
+
+.XYSlider {
+    width: 100%;
+    border: none;
+    margin-bottom: 0.5em;
+    height: 10em;
+
++    @include handle-focus('XYSlider-handle');
+    
+    &-handle {
+        width: 1.5em;
+        height: 1.5em;
+    }
+}
+
+.hue-slider,
+.alpha-slider {
+    width: 85%;
+    height: 0.75em;
+    padding: 0;
+    margin: 0;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    border-radius: 0.5em;
+
++    @include handle-focus('slider-handle');
+}
+
+.segment {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+
++    &:focus {
++        box-shadow: 0 0 0.5vmax rgba(0, 0, 0, 0.2);
++    }
+}
+```
+
+#### Final result
+
+<video src="/video/color-picker/color-picker-navigation-example.webm" autoplay loop muted></video>

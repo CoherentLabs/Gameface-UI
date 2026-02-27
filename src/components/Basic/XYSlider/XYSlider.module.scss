@@ -22,3 +22,7 @@
     transform: translate(-50%, -50%);
     cursor: pointer;
 }
+
+.transition {
+    transition: top 0.15s linear, left 0.15s linear;
+}

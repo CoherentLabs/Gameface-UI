@@ -34,7 +34,9 @@ export default App;
 |---|---|---|---|
 | `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
 | `class` | `string` | `""` | Additional CSS classes to apply to the component |
-| `ref` | `BaseComponentRef` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
+| `ref` | `HTMLDivElement` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the component. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, this component's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Guide
 
@@ -43,7 +45,7 @@ export default App;
 To access the HTML DOM element of the `Layout` component.
 
 1. Declare a variable to hold the ref but don't initialize it with a value
-2. The declared value should have a type of `BaseComponentRef`, which you need to import
+2. The declared value should have a type of `HTMLDivElement`.
 3. Set the declared variable as the value of the `ref` prop of the `Layout` component
 
 #### Example
@@ -53,10 +55,9 @@ import Layout from '@components/Layout/Layout/Layout';
 import Top from '@components/Layout/Top/Top';
 import Content from '@components/Layout/Content/Content';
 import Bottom from '@components/Layout/Bottom/Bottom';
-import { BaseComponentRef } from '@components/types/ComponentProps';
 
 const App = () => {
-    let layoutRef!: BaseComponentRef
+    let layoutRef!: HTMLDivElement
 
     return (
         <Layout ref={layoutRef}>
@@ -68,4 +69,4 @@ const App = () => {
 };
 ```
 
-Now you can access the HTML element of `Layout` with `layoutRef.element` and make modifications to it if needed. 
+Now you can access the HTML element of `Layout` with `layoutRef` and make modifications to it if needed.

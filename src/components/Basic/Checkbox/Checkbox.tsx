@@ -1,10 +1,11 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, Setter, createSignal, onMount, ParentComponent, Show, createContext, createMemo, createEffect } from "solid-js";
+import { Accessor, Setter, createSignal, onMount, ParentComponent, Show, createContext, createMemo, createEffect, on } from "solid-js";
 import styles from './Checkbox.module.scss';
 import { Control, CheckboxControl } from "./CheckboxControl";
 import { Indicator } from "./CheckboxIndicator";
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
-import baseComponent from "@components/BaseComponent/BaseComponent";
+import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
+import mergeNavigationActions from "@components/utils/mergeNavigationActions";
 
 const Label = createTokenComponent<{ before?: boolean }>();
 
@@ -52,16 +53,18 @@ const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
 
     props.componentClasses = () => checkboxClasses();
 
-    const toggle = (e?: MouseEvent) => {
+    const toggle = () => {
         if (props.disabled) return;
 
         setChecked(prev => !prev);
         props.onChange?.(checked())
     }
 
-    createEffect(() => {
-        props.onChange?.(checked());
-    })
+    createEffect(
+        on(checked, (v) => {
+            props.onChange?.(v);
+        }, {defer: true})
+    );
 
     onMount(() => {
         if (!props.ref || !element) return;
@@ -79,6 +82,7 @@ const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
             <div
                 ref={element!}
                 use:baseComponent={props}
+                use:navigationActions={mergeNavigationActions(props, { 'select': toggle })}
                 onclick={toggle}>
 
                 <Show when={isBefore()}>

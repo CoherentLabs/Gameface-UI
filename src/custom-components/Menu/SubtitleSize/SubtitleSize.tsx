@@ -9,7 +9,7 @@ const SubtitleSize = (props: {id: string}) => {
     
     return (
         <>
-            <CustomTextSlider values={['Small', 'Medium', 'Large', 'Max']} value={value()} onChange={(newValue) => setValue(newValue)}/>
+            <CustomTextSlider id={props.id} values={['Small', 'Medium', 'Large', 'Max']} value={value()} onChange={(newValue) => setValue(newValue)}/>
             <ExtraContent id={props.id}>
                 <Block class={`${style[`subtitle-${value().toLowerCase()}`]} ${style.subtitle}`}>Your subtitle size</Block>
             </ExtraContent>

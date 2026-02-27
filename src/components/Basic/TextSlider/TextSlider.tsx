@@ -9,13 +9,15 @@ import { SliderThumb, Thumb } from "@components/Basic/Slider/SliderThumb";
 import { SliderTrack, Track } from "@components/Basic/Slider/SliderTrack";
 import { useToken } from "@components/utils/tokenComponents";
 import { Pol } from "./TextSliderPol";
-import baseComponent from "@components/BaseComponent/BaseComponent";
+import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
+import mergeNavigationActions from "@components/utils/mergeNavigationActions";
 
 export interface TextSliderRef {
     value: Accessor<string>,
     values: Accessor<string[]>
     element: HTMLDivElement,
-    changeValue: (newValue: string) => void
+    changeValue: (newValue: string) => void,
+    stepValue: (direction: 1 | -1) => void
 }
 
 interface TextSliderProps extends ComponentProps {
@@ -130,6 +132,14 @@ const TextSlider: ParentComponent<TextSliderProps> = (props) => {
         props.onChange?.(newValue);
     }
 
+    const stepValue = (direction: 1 | -1) => {
+        const currValues = values()
+        const currentIndex = currValues.indexOf(value());
+        const newIndex = clamp(currentIndex + direction, 0, currValues.length - 1);
+
+        changeValue(currValues[newIndex]);
+    }
+
     props.componentClasses = () => SliderClasses();
 
     onMount(() => {
@@ -139,16 +149,23 @@ const TextSlider: ParentComponent<TextSliderProps> = (props) => {
             value,
             values,
             element,
-            changeValue
+            changeValue,
+            stepValue
         });
     });
+
+    
+    const defaultActions = {
+        'move-left': () => stepValue(-1),
+        'move-right': () => stepValue(1),
+    }
 
     return (
         <TextSliderContext.Provider value={{ values }}>
             <div
                 ref={element!}
                 use:baseComponent={props}
-            >
+                use:navigationActions={mergeNavigationActions(props, defaultActions)}>
                 <SliderTrack handleClick={handleTrackClick} ref={trackElement} parentChildren={props.children}>
                     <SliderHandle percent={percent} handleMouseDown={handleMouseDown} parentChildren={props.children} />
                     <SliderFill percent={percent} parentChildren={props.children} />

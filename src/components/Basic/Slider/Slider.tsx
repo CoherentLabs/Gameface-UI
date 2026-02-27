@@ -1,5 +1,5 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, createSignal, onMount, ParentComponent, createMemo } from "solid-js";
+import { Accessor, createSignal, onMount, ParentComponent, createMemo, onCleanup } from "solid-js";
 import styles from './Slider.module.scss';
 import { clamp } from "@components/utils/clamp";
 import { Grid, SliderGrid } from "./SliderGrid";
@@ -8,7 +8,9 @@ import { Handle, SliderHandle } from "./SliderHandle";
 import { SliderThumb, Thumb } from "./SliderThumb";
 import { SliderTrack, Track } from "./SliderTrack";
 import { useToken } from "@components/utils/tokenComponents";
-import baseComponent from "@components/BaseComponent/BaseComponent";
+import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
+import mergeNavigationActions from "@components/utils/mergeNavigationActions";
+
 export interface SliderRef {
     value: Accessor<number>,
     element: HTMLDivElement,
@@ -75,7 +77,7 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         props.onChange?.(result);
     }
 
-    const handleMouseUp = (e: MouseEvent) => {
+    const handleMouseUp = () => {
         if (!sliding) return;
 
         sliding = false;
@@ -133,11 +135,20 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         });
     });
 
+    onCleanup(() => {
+        handleMouseUp();
+    })
+
+    const defaultActions = {
+        'move-left': () => changeValue(Number((value() - step()).toFixed(5))),
+        'move-right': () => changeValue(Number((value() + step()).toFixed(5))),
+    }
+
     return (
         <div
             ref={element!}
             use:baseComponent={props}
-        >
+            use:navigationActions={mergeNavigationActions(props, defaultActions)}>
             <SliderTrack handleClick={handleTrackClick} ref={trackElement} parentChildren={props.children}>
                 <SliderHandle percent={percent} handleMouseDown={handleMouseDown} parentChildren={props.children} />
                 <SliderFill percent={percent} parentChildren={props.children} />

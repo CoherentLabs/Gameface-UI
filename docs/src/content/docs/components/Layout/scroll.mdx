@@ -39,6 +39,8 @@ In this example, the text is wrapped inside the `Scroll` component, and the maxi
 | `class`    | `string`                               | `""`        | Additional CSS classes to apply to the scroll's wrapper element.                                                                                                                                             |
 | `ref`      | `ScrollComponentRef  \| undefined`      | `undefined` | A reference to the component, providing access to its methods and the underlying HTML element.                                                             |
 | `onScroll` | `(event: { scrollDirection: 'up' \| 'down' }) => void` | `undefined` | A callback function triggered whenever the scroll position changes. |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the component. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, this component's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Ref API
 
@@ -173,6 +175,35 @@ const App = () => {
     );
 };
 ```
+
+
+## Implemented Navigation Actions
+
+The `Scroll` component implements the following navigation actions by default:
+
+| Action Name | Behavior                          |
+|-------------|-----------------------------------|
+| `pan`    | Scrolls the scrollable container up or down depending on stick position.       |
+
+You can extend the `Scroll` with additional navigation actions or override the default behavior using the `onAction` prop:
+
+```tsx
+import Scroll from '@components/Layout/Scroll/Scroll';
+
+<Scroll
+    onAction={{
+        'select': () => console.log('Custom select logic'), 
+        'pan': (_, axis: [number, number]) => console.log(`x: ${axis[0]}, y: ${axis[1]}`), // Overrides default 
+    }}
+>
+    <Scroll.Content class={styles['scroll-content']}>
+        {/* Scrollable content goes here */}
+    </Scroll.Content>
+</Scroll>
+```
+
+For more information about navigation actions, see the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions).
+
 
 ## Guide
 

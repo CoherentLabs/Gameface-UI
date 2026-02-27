@@ -45,14 +45,15 @@ export default App;
 
 | Prop Name       | Type                                                                                     | Default       | Description                                                                                                       |
 | --------------- | ---------------------------------------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `ref`           | `BaseComponentRef`                                                                       | `undefined`   | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
+| `ref`           | `HTMLDivElement`                                                                       | `undefined`   | Retrieves the component's DOM element and assigns it to a variable. |
 | `type`          | `'ordered' \| 'unordered'`                                                               | `'unordered'` | Controls whether the list is ordered (numbered) or unordered (bulleted). Automatically set to `'ordered'` when `bullet-type` is `"number"`. |
 | `bullet-type`   | `'disc' \| 'circle' \| 'square' \| 'number' \| 'none' \| string \| ImageMetadata`        | `'disc'` (unordered) / `'number'` (ordered) | Sets the bullet style for all items in the list. Can be a predefined style, or an image. |
 | `bullet-class`  | `string`                                                                                 | `""`          | Additional CSS classes to apply to all bullet elements.                                                        |
 | `style`         | `JSX.CSSProperties`                                                                      | `{}`          | Inline styles to apply to the root element.                                                                      |
 | `class`         | `string`                                                                                 | `""`          | Additional CSS classes to apply to the root element.                                                             |
 | `children`      | `JSX.Element`                                                                            | `""`          | List items to render. It renders only `List.Item` components. |
-
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the component. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, this component's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Slots
 
@@ -67,6 +68,8 @@ Use `List.Item` to define an item in the list. Items can contain any valid JSX c
 | `style`    | `JSX.CSSProperties` | `{}`    | Inline styles for the individual list item.               |
 | `class`    | `string`            | `""`    | Additional CSS classes for the item.                      |
 | `children` | `JSX.Element`       | `""`    | Content of the list item. Supports nested `List` components and any other valid JSX content. |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the component. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, this component's actions will execute. Can be a CSS selector or HTMLElement. |
 
 #### Usage
 
@@ -150,7 +153,7 @@ const App = () => {
 
 | Prop Name  | Type                | Default | Description                                                                                                        |
 | ---------- | ------------------- | ------- | ------------------------------------------------------------------------------------------------------------------ |
-| `ref`      | `BaseComponentRef`  | `undefined`   | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
+| `ref`      | `HTMLDivElement`  | `undefined`   | Retrieves the component's DOM element and assigns it to a variable. |
 | `class`    | `string`            | `""`    | Additional CSS classes for **this icon only**. Overrides `bullet-class` from `List` for this item.                 |
 | `style`    | `JSX.CSSProperties` | `{}`    | Inline styles for **this icon only**. Overrides styles from `List` for this item.                                  |
 | `children` | `JSX.Element`       | `""`    | Custom content to replace the bullet entirely for this item. If set, `bullet-type` and `bullet-class` are ignored. |
@@ -294,17 +297,16 @@ const App = () => {
 To access the HTML DOM element of the `List` component.
 
 1. Declare a variable to hold the ref but don't initialize it with a value
-2. The declared value should have a type of `BaseComponentRef`, which you need to import
+2. The declared value should have a type of `HTMLDivElement`.
 3. Set the declared variable as the value of the `ref` prop of the `List` component
 
 #### Example
 
 ```tsx
 import List from '@components/Layout/List/List';
-import { BaseComponentRef } from '@components/types/ComponentProps';
 
 const App = () => {
-    let listRef!: BaseComponentRef
+    let listRef!: HTMLDivElement
 
     return (
         <List ref={listRef}>
@@ -319,4 +321,82 @@ const App = () => {
 You can access the element of every `List.Item` component in the same way.
 :::
 
-Now you can access the HTML element of `List` with `listRef.element` and make modifications to it if needed. 
+Now you can access the HTML element of `List` with `listRef` and make modifications to it if needed.
+
+### Making list items navigable
+
+To make the `List` component navigable via keyboard or gamepad, you can use the [Navigation](/components/utility/navigation/) component. There are two ways to achieve this.
+
+#### Approach 1: The Callback Ref
+
+You can manually register the list items using the [registerArea](/components/utility/navigation/#area-methods) method.
+
+1. Wrap the `List` (or a parent) with the `Navigation` component.
+2. Use the `ref` callback to access the `Navigation` API immediately.
+3. Register the specific class name of your list items using `registerArea`.
+
+```tsx
+import List from '@components/Layout/List/List';
+import Navigation, {NavigationRef} from '@components/Utility/Navigation/Navigation';
+import { For } from 'solid-js';
+
+const App = () => {
+    // 1. Use a callback to register the area immediately when Navigation initializes
+    const handleNavRef = (api: NavigationRef) => {
+        // Note the dot (.) prefix for the class selector
+        api.registerArea('list-items', ['.test'], true);
+    };
+
+    return (
+        <Navigation ref={handleNavRef} >
+            <List >
+                <For each={items}>
+                    {(item) => (
+                        // 2. Add the matching class name to your items
+                        <List.Item class='test'>
+                            {item.text}
+                        </List.Item>
+                    )}
+                </For>
+            </List>
+        </Navigation>
+    );
+}
+```
+
+#### Approach 2: The Wrapper Component (Declarative)
+
+Alternatively, you can wrap the `List` in a [Navigation.Area](/components/utility/navigation/#navigationarea) component.
+
+In this case, you must provide the `selector` prop to tell the area which inner elements are focusable.
+
+```tsx
+import List from '@components/Layout/List/List';
+import Navigation from '@components/Utility/Navigation/Navigation';
+import For from 'solid-js';
+
+const App = () => {
+    return (
+        <Navigation >
+            <Navigation.Area selector="test" name="list-items" focused >
+                <List >
+                    <For each={items}>
+                        {(item) => (
+                            // Add the matching class name to your items
+                            <List.Item class='test'>
+                                {item.text}
+                            </List.Item>
+                        )}
+                    </For>
+                </List>
+            </Navigation.Area>
+        </Navigation>
+    );
+}
+```
+
+:::danger[Selector Required] 
+When using `Navigation.Area` with a List, you must provide a valid class selector.
+
+If you omit the selector, the `Navigation` component will attempt to focus the direct children (the List wrapper itself), and your individual items will not be navigable. 
+:::

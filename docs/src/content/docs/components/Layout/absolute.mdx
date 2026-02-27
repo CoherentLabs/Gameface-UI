@@ -35,8 +35,10 @@ export default App;
 |---|---|---|---|
 | `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
 | `class` | `string` | `""` | Additional CSS classes to apply to the component |
-| `ref` | `BaseComponentRef` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. The HTML element can be accessed using the `element` property of the returned ref object. |
+| `ref` | `HTMLDivElement` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. |
 | `top`, `left`, `right`, `bottom` | `string` | `""` | Specify the position offset of the `Absolute` component. It accepts any valid css unit value |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the component. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, this component's actions will execute. Can be a CSS selector or HTMLElement. |
 
 ## Guide
 
@@ -73,7 +75,7 @@ export default App;
 To access the HTML DOM element of the `Absolute` component.
 
 1. Declare a variable to hold the ref but don't initialize it with a value
-2. The declared value should have a type of `BaseComponentRef`, which you need to import
+2. The declared value should have a type of `HTMLDivElement`.
 3. Set the declared variable as the value of the `ref` prop of the `Absolute` component
 
 #### Example
@@ -82,10 +84,9 @@ To access the HTML DOM element of the `Absolute` component.
 import Relative from '@components/Layout/Relative/Relative';
 import Absolute from '@components/Layout/Absolute/Absolute';
 import Block from '@components/Layout/Block/Block';
-import { BaseComponentRef } from '@components/types/ComponentProps';
 
 const App = () => {
-    let absoluteRef!: BaseComponentRef
+    let absoluteRef!: HTMLDivElement;
 
     return (
         <Relative>
@@ -99,4 +100,4 @@ const App = () => {
 export default App;
 ```
 
-Now you can access the HTML element of `absoluteRef` with `absoluteRef.element` and make modifications to it if needed. 
+Now you can access the HTML element of the component with `absoluteRef` and make modifications to it if needed. 

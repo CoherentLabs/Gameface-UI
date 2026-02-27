@@ -19,6 +19,7 @@ export const XYSliderHandle = (props: TokenComponentProps) => {
         const classes = [styles.handle];
 
         if (HandleToken?.()?.class) classes.push(HandleToken?.()?.class as string);
+        if (sliderContext?.hasTransition()) classes.push(styles.transition)
 
         return classes.join(' ');
     });

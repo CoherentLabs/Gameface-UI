@@ -1,6 +1,6 @@
 import { render } from 'solid-js/web';
-import './index.css';
 import Menu from './Menu';
+import './index.css';
 
 const root = document.getElementById('root');
 

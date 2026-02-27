@@ -44,6 +44,16 @@ Creates a new toast notification with the specified options.
 | `position`  | `'top-left' \| 'top-center' \| 'top-right' \| 'middle-left' \| 'middle-center' \| 'middle-right' \| 'bottom-left' \| 'bottom-center' \| 'bottom-right'`  | `'top-right'` | The position on the screen where the toast will appear.                                      |
 | `timeout`   | `number`            | `0`           | Duration in milliseconds before the toast disappears. `0` makes the toast persistent.       |
 
+#### Body Arguments
+
+When defining the body function, you receive the following helpers:
+
+| Argument | Type | Description |
+|----------|------|-------------|
+| `close` | `(children: JSX.Element) => JSX.Element` | A wrapper function that attaches a click-to-close listener to any element. |
+| `progress` | `() => number` | A signal returning the current lifetime of the toast (0 to 20). |
+| `dismiss` | `() => void` | A function to programmatically remove the toast from the UI. |
+
 ## Guide
 
 ### Adding a close button
@@ -177,3 +187,46 @@ export default App;
 }
 ```
 
+### Programmatic Closing
+
+While the `close` wrapper is convenient for standard buttons, you may need to close a `toast` programmatically after an logic-heavy action (like starting a tutorial or responding to a gamepad event). 
+The `dismiss` function allows you to trigger the removal logic directly without relying on DOM click events.
+
+```tsx
+import useToast from '@components/Feedback/Toast/toast';
+
+const App = () => {
+    const [Toaster, createToast] = useToast();
+
+    const showToast = () => {
+        createToast({
+            body: (close, progress, dismiss) => (
+                <div>
+                    Proceed with Action?
+                    <button onClick={() => {
+                        // 1. Perform your logic
+                        console.log("Action Triggered");
+                        
+                        // 2. Programmatically close the toast
+                        dismiss();
+                    }}>
+                        Confirm
+                    </button>
+                    
+                    {/* Fallback for simple UI closing */}
+                    {close(<button>Cancel</button>)}
+                </div>
+            ),
+            position: 'top-center',
+            timeout: 0, // Persistent until dismissed
+        });
+    };
+
+    return (
+        <>
+            <button onClick={showToast}>Trigger Complex Toast</button>
+            <Toaster />
+        </>
+    );
+};
+```

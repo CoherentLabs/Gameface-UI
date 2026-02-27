@@ -1,10 +1,12 @@
 import { clamp } from "@components/utils/clamp";
-import { Accessor, createContext, createEffect, createMemo, createSignal, on, onMount, ParentComponent } from "solid-js";
+import { Accessor, createContext, createEffect, createMemo, createSignal, on, onCleanup, onMount, ParentComponent } from "solid-js";
 import styles from './XYSlider.module.scss';
 import { Handle, XYSliderHandle } from "./XYSliderHandle";
 import { Background, XYSliderBackground } from "./XYSliderBackground";
 import { ComponentProps } from "@components/types/ComponentProps";
-import baseComponent from "@components/BaseComponent/BaseComponent";
+import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
+import mergeNavigationActions from "@components/utils/mergeNavigationActions";
+import { useNavigation } from "@components/Utility/Navigation/Navigation";
 
 export type XYSliderValue = {
     x: number;
@@ -16,6 +18,7 @@ interface XYSliderProps extends ComponentProps {
     maxX?: number;
     minY?: number;
     maxY?: number;
+    step?: number;
     value?: XYSliderValue;
     onChange?: (value: XYSliderValue) => void;
 }
@@ -28,6 +31,7 @@ export interface XYSliderRef {
 
 interface XYSliderContext {
     position: () => XYSliderValue;
+    hasTransition: Accessor<boolean>
 }
 
 export const XYSliderContext = createContext<XYSliderContext>();
@@ -45,9 +49,16 @@ const XYSlider: ParentComponent<XYSliderProps> = (props) => {
     const maxX = () => props.maxX || 100;
     const minY = () => props.minY || 0;
     const maxY = () => props.maxY || 100;
+    // Gamepad navigation
+    const step = () => props.step || 1;
+    const maxBoost = createMemo(() => Math.max(maxX(), minX()) / 10 ); // 10% of max axis value
+    const accelRate = createMemo(() => maxBoost() / 10);   // 10% of max boost
+    let speedBoost = { x: 0, y: 0 };
+    const nav = useNavigation();
 
     const [position, setPosition] = createSignal({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = createSignal(false);
+    const [hasTransition, setHasTransition] = createSignal(true);
 
     const calculatePercentPosition = (pos: { x: number; y: number }) => ({
         x: ((pos.x - minX()) / (maxX() - minX())) * 100,
@@ -96,6 +107,7 @@ const XYSlider: ParentComponent<XYSliderProps> = (props) => {
     const handleMouseDown = (e: MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
+        setHasTransition(false);
 
         const { left, top, width, height } = draggableArea.getBoundingClientRect();
         Object.assign(rect, { left, top, width, height });
@@ -118,6 +130,8 @@ const XYSlider: ParentComponent<XYSliderProps> = (props) => {
     }
 
     onMount(() => {
+        if (nav) nav.resumeAction('pan');
+        
         if (!props.ref || !draggableArea) return;
 
         (props.ref as unknown as (ref: any) => void)({
@@ -127,10 +141,49 @@ const XYSlider: ParentComponent<XYSliderProps> = (props) => {
         });
     });
 
+    onCleanup(() => {
+        if (nav) nav.pauseAction('pan');
+        handleMouseUp()
+    })
+
+    const defaultActions = {
+        'pan': (_: any, axes: [number, number]) => {
+            const [inputX, inputY] = axes;
+
+            // Deadzone check
+            if (Math.abs(inputX) < 0.1 && Math.abs(inputY) < 0.1) {
+                speedBoost = { x: 0, y: 0 };
+                return;
+            }
+
+            const currentPosPercent = position(); // This is 0-100
+            const baseStep = step();
+            const rangeX = maxX() - minX();
+            const rangeY = maxY() - minY();
+            const currentRawX = minX() + (currentPosPercent.x / 100) * rangeX;
+            const currentRawY = minY() + (currentPosPercent.y / 100) * rangeY;
+
+            if (inputX !== 0) speedBoost.x = Math.min(speedBoost.x + accelRate(), maxBoost());
+            if (inputY !== 0) speedBoost.y = Math.min(speedBoost.y + accelRate(), maxBoost());
+
+            // FORMULA: Input (0-1) * Step (Base) * (1 + Boost)
+            const deltaX = inputX * baseStep * (1 + speedBoost.x);
+            const deltaY = inputY * baseStep * (1 + speedBoost.y);
+
+            if (!hasTransition()) setHasTransition(true);
+
+            changeValue({
+                x: currentRawX + deltaX,
+                y: currentRawY + deltaY
+            });
+        },
+    }
+
     return (
-        <XYSliderContext.Provider value={{ position }}>
+        <XYSliderContext.Provider value={{ position, hasTransition }}>
             <div ref={draggableArea}
                 use:baseComponent={props}
+                use:navigationActions={mergeNavigationActions(props, defaultActions)}
                 onMouseDown={handleMouseDown}
             >
                 <XYSliderBackground parentChildren={props.children} />
