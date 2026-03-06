@@ -19,16 +19,12 @@ This component provides:
 - Pause/resume functionality for navigation state
 - Integration with components via context and navigation actions directive
 
-:::tip
-For in-depth introduction to the interaction system provided by the `Navigation` component refer to the [Navigation System]() page.
-:::
-
 ## Usage
 
 To use the `Navigation` component, wrap your UI with it and define navigation areas for different sections of your UI. You can configure default actions and provide custom input bindings for your game.
 
 :::tip
-For detailed usage instructions, examples, and advanced features, refer to the [Guide](/components/utility/navigation#guide) section.
+For detailed usage instructions, examples, and advanced features, refer to the [Guide](#guide) section.
 :::
 
 ```tsx
@@ -358,7 +354,7 @@ When defining actions, you can configure the following properties:
 | `actions`         | `ActionMap`                   | `{}`        | Custom action configurations to register in addition to default actions. Each action can define keyboard/gamepad bindings and callbacks.                                                                    |
 | `scope`           | `string`                      | `""`        | The initial navigation scope. When a `Navigation.Area` with a matching name is registered, it will be auto-focused.                                                                                           |
 | `pollingInterval` | `number`                      | `200`       | Gamepad polling interval in milliseconds. Determines how frequently the system checks for gamepad input.                                                                                                     |
-| `ref`             | `NavigationRef` \| `((nav: NavigationRef) => void)` | `undefined` | A reference to the component, providing access to all navigation methods via the [NavigationRef](/components/utility/navigation#contextref-api) interface.                                                                                                   |
+| `ref`             | `NavigationRef` \| `((nav: NavigationRef) => void)` | `undefined` | A reference to the component, providing access to all navigation methods via the [NavigationRef](#usenavigation-hook--ref-api) interface.                                                                                                   |
 | `overlap`         | `number`                      | `undefined` | Overlap threshold for spatial navigation. Determines how much elements can overlap before being considered in different navigation paths.                                                                    |
 
 ## UseNavigation hook & Ref API
@@ -369,9 +365,9 @@ The `Navigation` component exposes a comprehensive API through the `useNavigatio
 
 | Method Name     | Parameters                   | Return Value | Description                                                                                                                                                                                                 |
 |-----------------|------------------------------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `addAction`     | `name: ActionName, config:` [ActionCfg](/components/utility/navigation#action-configuration-reference-actioncfg) | `void` | Adds a new `Navigation` action and registers it with the interaction manager. |
+| `addAction`     | `name: ActionName, config:` [ActionCfg](#action-configuration-reference-actioncfg) | `void` | Adds a new `Navigation` action and registers it with the interaction manager. |
 | `removeAction`  | `name: ActionName`           | `void`       | Removes a registered `Navigation` action and unregisters it from the interaction manager.                                                                                                                     |
-| `updateAction`  | `name: ActionName, config:` [ActionCfg](/components/utility/navigation#action-configuration-reference-actioncfg) | `void` | Updates an existing action's configuration. Default actions can be updated as well. Accepts the same config properties as `addAction`.                                                                      |
+| `updateAction`  | `name: ActionName, config:` [ActionCfg](#action-configuration-reference-actioncfg) | `void` | Updates an existing action's configuration. Default actions can be updated as well. Accepts the same config properties as `addAction`.                                                                      |
 | `executeAction` | `name: ActionName`           | `void`       | Executes a registered action by name, triggering its callback and event emission.                                                                                                                          |
 | `pauseAction`   | `action: ActionName`, `force?: boolean = false` | `void`       | Pauses an action, preventing its callback from executing. Actions can be paused only when they don't have subscribers, to bypass that provide `true` as the second argument.                                                                                                              |
 | `resumeAction`  | `action: ActionName`, `force?: boolean = false` | `void`       | Resumes a paused action, allowing its callback to execute again. If an action was force paused, you must resume it by providing `true` as a second argument when calling the function.                                                                                                                                           |

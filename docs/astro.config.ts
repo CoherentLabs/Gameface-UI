@@ -24,7 +24,7 @@ export default defineConfig({
       },
       credits: false,
       customCss: ['./src/styles/custom.css'],
-      plugins: [starlightThemeRapide(), starlightLinksValidator(), starlightHeadingBadges()],
+      plugins: [starlightThemeRapide(), starlightHeadingBadges(), starlightLinksValidator()],
       sidebar: [
         {
           label: 'Gettings Started',
