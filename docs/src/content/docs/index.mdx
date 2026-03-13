@@ -1,24 +1,106 @@
 ---
 title: Gameface UI
 description: GamefaceUI is a comprehensive collection of components designed to simplify the prototyping of game user interfaces.
-head:
-  - tag: title
-    content: GamefaceUI
 template: splash
-editUrl: false
-lastUpdated: false
 hero:
   tagline: GamefaceUI is a comprehensive collection of components designed to simplify the prototyping of game user interfaces.
   image:
     html: |
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
       <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+      
+      <div class="expressive-code-mock">
+        <div class="frame">
+          <div class="header">
+            <span class="file-name">Hud.jsx</span>
+          </div>
+          <pre class="language-jsx"><code id="code-block" class="language-jsx"></code></pre>
+        </div>
+      </div>
 
-      <pre><code class="language-jsx" id="code-block"></code></pre>
+      <style>
+        :root {
+          --ec-bg: #0d1117;
+          --ec-header-bg: #161b22;
+          --ec-brd: #30363d;
+          --ec-txt: #D6DEEB;
+          
+          --tk-kw: #C792EA;
+          --tk-fn: #F78C6C;
+          --tk-tag: #CAECE6;
+          --tk-attr: #C5E478;
+          --tk-punc: #7FDBCA;
+          --tk-str: #ECC48D;
+          --tk-obj: #ffa657;
+        }
+
+        :root[data-theme='light'] {
+          --ec-bg: #ffffff;
+          --ec-header-bg: #f6f8fa;
+          --ec-brd: #d0d7de;
+          --ec-txt: #403F53;
+          
+          --tk-kw: #8844AE;
+          --tk-fn: #AA0982;
+          --tk-tag: #AA0982;
+          --tk-attr: #005cc5;
+          --tk-punc: #24292f;
+          --tk-str: #984E4D;
+          --tk-obj: #e36209;
+        }
+
+        .expressive-code-mock {
+          text-align: left;
+          width: 100%;
+          margin: 0 auto;
+        }
+
+        .expressive-code-mock .frame {
+          background-color: var(--ec-bg);
+          border: 1px solid var(--ec-brd);
+          border-radius: 0.5rem;
+          overflow: hidden;
+          box-shadow: var(--sl-shadow-sm);
+        }
+
+        .expressive-code-mock .header {
+          background-color: var(--ec-header-bg);
+          padding: 0.5rem 1rem;
+          border-bottom: 1px solid var(--ec-brd);
+          color: var(--sl-color-gray-3);
+          font-size: 13px;
+          font-family: var(--sl-font-system);
+        }
+
+        .expressive-code-mock pre[class*="language-"] {
+          margin: 0 !important;
+          padding: 1rem !important;
+          background: var(--sl-color-gray-6) !important;
+        }
+
+        .expressive-code-mock code[class*="language-"] {
+          color: var(--ec-txt) !important;
+          font-family: var(--sl-font-mono) !important;
+          font-size: 14px !important;
+          line-height: 1.6 !important;
+          text-shadow: none !important;
+        }
+
+        .token.keyword { color: var(--tk-kw) !important; }
+        .token.function { color: var(--tk-fn) !important; }
+        .token.tag { color: var(--tk-tag) !important; }
+        .token.attr-name { color: var(--tk-attr) !important; }
+        .token.string { color: var(--tk-str) !important; }
+        .token.punctuation, .token.operator { color: var(--tk-punc) !important; }
+        .token.attr-value { color: var(--tk-str) !important; }
+        .token.boolean, .token.number { color: var(--tk-obj) !important; }
+        .token.class-name { color: var(--tk-fn) !important; }
+
+        .token.script.language-javascript { color: var(--ec-txt); }
+      </style>
 
       <script>
-      const codeElement = document.getElementById("code-block");
+      (function() {
       const codeSnippet = `import Row from '@components/Layout/Row/Row';
       import { Column4 } from '@components/Layout/Column/Column';
       import Block from '@components/Layout/Block/Block';
@@ -42,17 +124,24 @@ hero:
         );
       }`;
 
-      let index = 0;
-      function typeCode() {
-          if (index < codeSnippet.length) {
-              codeElement.innerHTML += codeSnippet[index];
-              Prism.highlightElement(codeElement);
-              index++;
-              setTimeout(typeCode,0);
-          }
-      }
+        let index = 0;
+        const codeElement = document.getElementById("code-block");
 
-      typeCode();
+        function typeCode() {
+            if (!window.Prism || !window.Prism.languages.jsx) {
+                setTimeout(typeCode, 0);
+                return;
+            }
+
+            if (index < codeSnippet.length) {
+                codeElement.textContent = codeSnippet.substring(0, index + 1);
+                Prism.highlightElement(codeElement);
+                index++;
+                setTimeout(typeCode, 0);
+            }
+        }
+        setTimeout(typeCode, 0);
+      })();
       </script>
   actions:
     - text: Getting Started
