@@ -1,7 +1,8 @@
-import { ParentComponent, JSX, For, createContext, createSignal } from "solid-js";
+import { ParentComponent, JSX, For, createContext, createSignal, onMount, createMemo } from "solid-js";
 import styles from './Grid.module.scss';
 import LayoutBase from "../LayoutBase";
 import { BaseComponentRef, ComponentBaseProps } from "../../types/ComponentProps";
+import { GAMEFACE_VERSION, verIsAtLeast } from "@components/utils/gamefaceVersion";
 
 export interface GridRef extends BaseComponentRef {
     rows: number,
@@ -11,8 +12,15 @@ export interface GridRef extends BaseComponentRef {
 }
 
 interface GridProps extends ComponentBaseProps {
-    rows: number
-    cols: number
+    rows: number;
+    cols: number;
+    'row-style'?: JSX.CSSProperties; 
+    'column-style'?: JSX.CSSProperties; 
+    'row-class'?: string,
+    'column-class'?: string,
+    gap?: string;
+    'row-gap'?: string;
+    'column-gap'?: string;
 }
 
 type GridContextType = {
@@ -51,16 +59,41 @@ const Grid: ParentComponent<GridProps> = (props) => {
         removeItem,
     }
 
+    const gridStyles = createMemo(() => {
+        return {
+            gap: props.gap,
+            'row-gap': props['row-gap'],
+        }
+    })
+
+    const rowStyles = createMemo(() => {
+        return {
+            'column-gap': props['column-gap'] ? props['column-gap'] : props.gap,
+            ...props["row-style"]
+        }
+    })
+
+    let warningShown: boolean = false;
+    onMount(() => {
+        const hasGap = !!(props.gap || props["row-gap"] || props["column-gap"]);
+        if (!warningShown && hasGap && !verIsAtLeast(2, 2)) {
+            console.warn(
+                `[Gameface UI] The "gap" property is unsupported in Gameface v${GAMEFACE_VERSION}. Upgrade to 2.2+`
+            );
+            warningShown = true;
+        }
+    })
+
     return (
-        <LayoutBase {...props} componentClasses={styles.Grid} refObject={gridObjectRef}>
+        <LayoutBase {...props} componentClasses={styles.Grid} componentStyles={gridStyles()} refObject={gridObjectRef}>
             <GridContext.Provider value={{ placeTile }}>
                 {props.children}
                 <For each={gridTiles()}>
                     {(row) => (
-                        <div class={styles['grid-row']}>
+                        <div class={`${styles['Grid-row']} ${props["row-class"] ?? ''}`} style={rowStyles()}>
                             <For each={row}>{(cell) =>
-                                <div class={styles['grid-col']}>
-                                    {cell || <div class={styles['grid-empty-cell']}></div>}
+                                <div class={`${styles['Grid-col']} ${props["column-class"] ?? ''}`} style={props["column-style"]}>
+                                    {cell}
                                 </div>
                             }</For>
                         </div>

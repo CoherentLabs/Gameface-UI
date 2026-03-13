@@ -17,10 +17,10 @@ import Block from '@components/Layout/Block/Block';
 
 const App = () => {
     return (
-        <Grid cols={3} rows={3} >
-            <GridTile row={2} col={2}><Block>Placed in row 2 column 2</Block></GridTile>
-            <GridTile row={3} col={2}><Block>Placed in row 3 column 2</Block></GridTile>
-            <GridTile row={3} col={3}><Block>Placed in row 3 column 3</Block></GridTile>
+        <Grid cols={3} rows={3} gap="1vmax" style={{ width: '30vmax', height: '30vmax' }} >
+            <GridTile row={2} col={2}>Placed in row 2 column 2</GridTile>
+            <GridTile row={3} col={2}>Placed in row 3 column 2</GridTile>
+            <GridTile row={3} col={3}>Placed in row 3 column 3</GridTile>
         </Grid>
     );
 };
@@ -31,15 +31,24 @@ export default App;
 ## API
 
 ### Props
-|Prop Name |Type |Default | Description |
-|---|---|---|---|
+| Prop Name | Type | Default | Description |
+| --- | --- | --- | --- |
 | `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
 | `class` | `string` | `""` | Additional CSS classes to apply to the component |
 | `ref` | `GridRef` | `undefined` | Retrieves the grid's properties, methods and HTML element and assigns them to a local variable |
 | `rows` | `number` | `Required` | The number of rows in the grid. |
-| `cols` | `number` | `Required` | The number of columns  in the grid. |
-| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the component. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
-| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, this component's actions will execute. Can be a CSS selector or HTMLElement. |
+| `cols` | `number` | `Required` | The number of columns in the grid. |
+| `gap` | `string` | `undefined` | Applies spacing between the rows and columns. It's a shorthand for both row and column gaps. Requires Gameface 2.2+. |
+| `row-gap` | `string` | `undefined` | Vertical spacing between grid rows. Requires Gameface 2.2+. |
+| `column-gap` | `string` | `undefined` | Horizontal spacing between grid columns. Requires Gameface 2.2+. |
+| `row-class` | `string` | `""` | Additional CSS classes for internal row wrappers. |
+| `column-class` | `string` | `""` | Additional CSS classes for internal column/cell wrappers. |
+| `row-style` | `JSX.CSSProperties` | `{}` | Inline styles applied to internal row wrappers. |
+| `column-style` | `JSX.CSSProperties` | `{}` | Inline styles applied to internal column/cell wrappers. |
+
+:::caution[Note on Compatibility]
+The gap properties require Gameface version 2.2 or higher. If using an older version, these properties will be ignored. Check the console for compatibility warnings.
+:::
 
 ### Methods
 |Method |Parameters |Return Value |Description |
