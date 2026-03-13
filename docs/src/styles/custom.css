@@ -1,11 +1,6 @@
-:root {
-  --sl-content-width: 60rem;
-}
-
 .language-jsx,
 #code-block {
-  width: 100% !important;
-  font-size: 0.9rem !important;
+  overflow: auto;
 }
 
 @media (max-width: 50rem) {
@@ -33,16 +28,7 @@
     flex: 1 0 0;
   }
 
-  .hero {
-    padding-block: 5rem !important;
-  }
-
   .stack {
-    width: 44%;
-    height: 36rem;
+    height: 40rem;
   }
-}
-
-.sl-markdown-content code:not(:where(.not-content *)) {
-  overflow-wrap: break-word;
 }

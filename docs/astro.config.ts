@@ -1,10 +1,12 @@
 import starlight from '@astrojs/starlight'
 import { defineConfig } from 'astro/config'
-import starlightThemeRapide from 'starlight-theme-rapide'
 import starlightLinksValidator from 'starlight-links-validator';
-import starlightHeadingBadges from 'starlight-heading-badges'
-import changelogSidebar from './src/changelogSideBar';
 import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-sections';
+import coherentTheme, { generateDocsChangelog, generateVersionWithPackageJSON } from 'coherent-docs-theme'
+import path from 'node:path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /** @type {import('@astrojs/starlight/expressive-code').StarlightExpressiveCodeOptions} */
 export default defineConfig({
@@ -14,19 +16,19 @@ export default defineConfig({
         plugins: [pluginCollapsibleSections()],
       },
       favicon: '/favicon-32x32.png',
-      logo: {
-        dark: './src/assets/gameface-ui-header-dark.svg',
-        light: './src/assets/gameface-ui-header-light.svg',
-        replacesTitle: true
-      },
-      components: {
-        SocialIcons: './src/components/SocialIcons.astro',
-      },
       credits: false,
       customCss: ['./src/styles/custom.css'],
-      plugins: [starlightThemeRapide(), starlightHeadingBadges(), starlightLinksValidator()],
+      plugins: [
+        ...coherentTheme({
+          documentationSearchTag: "Gameface UI"
+        }),
+        starlightLinksValidator()
+      ],
       sidebar: [
-        {
+        await generateVersionWithPackageJSON(
+          '../package.json',
+          'https://github.com/CoherentLabs/Gameface-UI'
+        ), {
           label: 'Gettings Started',
           autogenerate: { directory: 'getting-started' },
         },
@@ -40,13 +42,13 @@ export default defineConfig({
           autogenerate: { directory: 'components', collapsed: false },
 
         },
-        changelogSidebar,
+        generateDocsChangelog(path.join(__dirname, `./src/content/docs/changelog/index.mdx`)),
       ],
       social: [
         {
-          icon: 'open-book',
-          label: 'Documentation',
-          href: 'https://coherent-labs.com/documentation',
+          icon: 'laptop',
+          label: 'Site',
+          href: 'https://coherent-labs.com/',
         },
         {
           icon: 'email',
