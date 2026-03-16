@@ -19,6 +19,7 @@ const App = () => {
             wrap="wrap"
             justify-content="space-between"
             align-items="center"
+            gap="1vmax"
             style={{ height: '100vh' }}
         >
             <Block>Item 1</Block>
@@ -44,8 +45,15 @@ export default App;
 | `justify-content` | `"start"`, `"center"`, `"end"`, `"space-between"`, `"space-around"` | `"start"` | Specifies the CSS `justify-content` property, which aligns items along the main axis (horizontal in row and vertical in column). Options like `"space-between"` distribute items with equal gaps, while `"center"` centers them. |
 | `align-items` | `"start"`, `"center"`, `"end"`, `"stretch"` | `"stretch"` | Specifies the CSS `align-items` property, which controls the alignment of items along the cross axis (perpendicular to the main axis). For example, `"stretch"` makes all items stretch to fill the container, while `"center"` aligns them in the middle. |
 | `align-content` | `"start"`, `"center"`, `"end"`, `"stretch"` | `"stretch"` | Specifies the CSS `align-content` property, which controls the spacing between rows or columns in a multi-line flex container. For example, `"space-between"` evenly distributes rows, while `"center"` aligns them in the middle of the container. |
+| `gap` | `string` | `undefined` | Applies spacing between the elements. It's a shorthand for both row and column gaps. Requires Gameface 2.2+. |
+| `row-gap` | `string` | `undefined` | Vertical spacing that applies only when the flex container allows for wrapping with `flex-wrap: wrap`. Requires Gameface 2.2+. |
+| `column-gap` | `string` | `undefined` | Horizontal spacing between grid columns. Requires Gameface 2.2+. |
 | `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the component. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
 | `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, this component's actions will execute. Can be a CSS selector or HTMLElement. |
+
+:::caution[Note on Compatibility]
+The gap properties require Gameface version 2.2 or higher. If using an older version, these properties will be ignored. Check the console for compatibility warnings.
+:::
 
 ## Guide
 
