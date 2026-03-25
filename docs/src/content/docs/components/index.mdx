@@ -1,9 +1,11 @@
 ---
 title: Overview
 ---
+
 <style>
     {`
     .card {
+        --sl-color-bg-nav: var(--sl-color-gray-6);
         gap: 0;
         align-items: center;
         justify-content: center;
@@ -33,30 +35,40 @@ export const componentCategories = {
   Utility: Object.keys(import.meta.glob('/src/assets/components/utility/*'))
 };
 
-export function getCategorySlug(title) {
-  return title.toLowerCase();
-}
-
-export function ComponentGrid({ title, components }) {
+export function ComponentGrid({ category, components }) {
+  const slug = category.toLowerCase();
+  
   return (
-    <>
-      <h2>{title}</h2>
-      <CardGrid>
-        {components.map((componentPath) => (
-          <Card>
-            <LinkButton
-              href={`/components/${getCategorySlug(title)}/${getComponentName(componentPath)}`}
-              variant="minimal"
-            >
-              <SVG path={componentPath} />
-            </LinkButton>
-          </Card>
-        ))}
-      </CardGrid>
-    </>
+    <CardGrid>
+      {components.map((componentPath) => (
+        <Card>
+          <LinkButton
+            href={`/components/${slug}/${getComponentName(componentPath)}`}
+            aria-label={getComponentName(componentPath)}
+            variant="minimal"
+          >
+            <SVG path={componentPath} />
+          </LinkButton>
+        </Card>
+      ))}
+    </CardGrid>
   );
 }
 
-{Object.entries(componentCategories).map(([title, components]) => (
-  <ComponentGrid title={title} components={components} />
-))}
+## Basic
+<ComponentGrid category="Basic" components={componentCategories.Basic} />
+
+## Feedback
+<ComponentGrid category="Feedback" components={componentCategories.Feedback} />
+
+## Complex
+<ComponentGrid category="Complex" components={componentCategories.Complex} />
+
+## Layout
+<ComponentGrid category="Layout" components={componentCategories.Layout} />
+
+## Media
+<ComponentGrid category="Media" components={componentCategories.Media} />
+
+## Utility
+<ComponentGrid category="Utility" components={componentCategories.Utility} />
