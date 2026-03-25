@@ -19,22 +19,13 @@ hero:
       </div>
 
       <style>
-        :root {
-          --ec-bg: #0d1117;
-          --ec-header-bg: #161b22;
-          --ec-brd: #30363d;
-          --ec-txt: #D6DEEB;
-          
-          --tk-kw: #C792EA;
-          --tk-fn: #F78C6C;
-          --tk-tag: #CAECE6;
-          --tk-attr: #C5E478;
-          --tk-punc: #7FDBCA;
-          --tk-str: #ECC48D;
-          --tk-obj: #ffa657;
+        .expressive-code-mock {
+          text-align: left;
+          width: 100%;
+          margin: 0 auto;
         }
 
-        :root[data-theme='light'] {
+        [data-theme="light"] .expressive-code-mock .frame {
           --ec-bg: #ffffff;
           --ec-header-bg: #f6f8fa;
           --ec-brd: #d0d7de;
@@ -47,15 +38,22 @@ hero:
           --tk-punc: #24292f;
           --tk-str: #984E4D;
           --tk-obj: #e36209;
-        }
-
-        .expressive-code-mock {
-          text-align: left;
-          width: 100%;
-          margin: 0 auto;
-        }
+          }
 
         .expressive-code-mock .frame {
+          --ec-bg: #0d1117;
+          --ec-header-bg: #161b22;
+          --ec-brd: #30363d;
+          --ec-txt: #D6DEEB;
+          
+          --tk-kw: #C792EA;
+          --tk-fn: #F78C6C;
+          --tk-tag: #CAECE6;
+          --tk-attr: #C5E478;
+          --tk-punc: #7FDBCA;
+          --tk-str: #ECC48D;
+          --tk-obj: #ffa657;
+
           background-color: var(--ec-bg);
           border: 1px solid var(--ec-brd);
           border-radius: 0.5rem;
@@ -125,22 +123,23 @@ hero:
       }`;
 
         let index = 0;
+        const step = 3;
         const codeElement = document.getElementById("code-block");
 
         function typeCode() {
             if (!window.Prism || !window.Prism.languages.jsx) {
-                setTimeout(typeCode, 0);
+                requestAnimationFrame(typeCode);
                 return;
             }
 
             if (index < codeSnippet.length) {
-                codeElement.textContent = codeSnippet.substring(0, index + 1);
+                codeElement.textContent = codeSnippet.substring(0, index + step);
                 Prism.highlightElement(codeElement);
-                index++;
-                setTimeout(typeCode, 0);
+                index+=step;
+                requestAnimationFrame(typeCode);
             }
         }
-        setTimeout(typeCode, 0);
+        requestAnimationFrame(typeCode);
       })();
       </script>
   actions:
@@ -154,6 +153,20 @@ hero:
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components'
+
+<style>
+  {`
+    @media (min-width: 85rem) {
+      .hero-html {
+        width: 60%;
+      }
+
+      .sl-container {
+        max-width: var(--sl-content-width);
+      }
+    }
+  `}
+</style>
 
 <CardGrid>
   <Card title="How to use" icon="information">

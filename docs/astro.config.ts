@@ -29,7 +29,7 @@ export default defineConfig({
           '../package.json',
           'https://github.com/CoherentLabs/Gameface-UI'
         ), {
-          label: 'Gettings Started',
+          label: 'Getting Started',
           autogenerate: { directory: 'getting-started' },
         },
         {

@@ -4,10 +4,8 @@ title: Overview
 
 <style>
     {`
-    :root{
-      --sl-color-bg-nav: var(--sl-color-gray-6);
-    }
     .card {
+        --sl-color-bg-nav: var(--sl-color-gray-6);
         gap: 0;
         align-items: center;
         justify-content: center;
@@ -46,6 +44,7 @@ export function ComponentGrid({ category, components }) {
         <Card>
           <LinkButton
             href={`/components/${slug}/${getComponentName(componentPath)}`}
+            aria-label={getComponentName(componentPath)}
             variant="minimal"
           >
             <SVG path={componentPath} />
