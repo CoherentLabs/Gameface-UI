@@ -70,6 +70,7 @@
         background-color: white;
         width: 35vh;
         display: flex;
+        align-items: center;
         color: black;
 
         &:hover {
@@ -95,6 +96,7 @@
 
     &-icon {
         width: 10%;
+        height: 1.25vmax;
         display: flex;
         justify-content: center;
         align-items: center;

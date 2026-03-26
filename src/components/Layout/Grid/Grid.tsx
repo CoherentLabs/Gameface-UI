@@ -1,7 +1,10 @@
-import { ParentComponent, JSX, For, createContext, createSignal } from "solid-js";
+import { ParentComponent, JSX, For, createSignal, onMount, createMemo } from "solid-js";
 import styles from './Grid.module.scss';
 import LayoutBase from "../LayoutBase";
 import { BaseComponentRef, ComponentBaseProps } from "../../types/ComponentProps";
+import { warnIfUnsupported } from "@components/utils/supportsGamefaceFeature";
+import GridTile from "@components/Layout/GridTile/GridTile";
+import { GridContext } from "./GridContext";
 
 export interface GridRef extends BaseComponentRef {
     rows: number,
@@ -11,15 +14,16 @@ export interface GridRef extends BaseComponentRef {
 }
 
 interface GridProps extends ComponentBaseProps {
-    rows: number
-    cols: number
+    rows: number;
+    cols: number;
+    'row-style'?: JSX.CSSProperties; 
+    'column-style'?: JSX.CSSProperties; 
+    'row-class'?: string,
+    'column-class'?: string,
+    gap?: string;
+    'row-gap'?: string;
+    'column-gap'?: string;
 }
-
-type GridContextType = {
-    placeTile: (row: number, col: number, content: JSX.Element) => void;
-};
-
-export const GridContext = createContext<GridContextType>();
 
 const Grid: ParentComponent<GridProps> = (props) => {
     const initialGrid = Array.from({ length: props.rows }, () => Array.from({ length: props.cols }, () => null));
@@ -51,16 +55,32 @@ const Grid: ParentComponent<GridProps> = (props) => {
         removeItem,
     }
 
+    const gridStyles = createMemo(() => {
+        return {
+            gap: props.gap,
+            'row-gap': props['row-gap'] ?? props.gap,
+        }
+    })
+
+    const rowStyles = createMemo(() => {
+        return {
+            'column-gap': props['column-gap'] ?? props.gap,
+            ...props["row-style"]
+        }
+    })
+
+    onMount(() => warnIfUnsupported(props, "gap"))
+
     return (
-        <LayoutBase {...props} componentClasses={styles.Grid} refObject={gridObjectRef}>
+        <LayoutBase {...props} componentClasses={styles.Grid} componentStyles={gridStyles()} refObject={gridObjectRef}>
             <GridContext.Provider value={{ placeTile }}>
                 {props.children}
                 <For each={gridTiles()}>
                     {(row) => (
-                        <div class={styles['grid-row']}>
+                        <div class={`${styles['Grid-row']} ${props["row-class"] ?? ''}`} style={rowStyles()}>
                             <For each={row}>{(cell) =>
-                                <div class={styles['grid-col']}>
-                                    {cell || <div class={styles['grid-empty-cell']}></div>}
+                                <div class={`${styles['Grid-col']} ${props["column-class"] ?? ''}`} style={props["column-style"]}>
+                                    {cell}
                                 </div>
                             }</For>
                         </div>
@@ -71,5 +91,4 @@ const Grid: ParentComponent<GridProps> = (props) => {
     );
 }
 
-export default Grid;
-
+export default Object.assign(Grid, { Tile: GridTile });

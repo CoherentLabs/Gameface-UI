@@ -1,8 +1,9 @@
 import { ParentComponent, JSX, useContext, createSignal } from "solid-js";
-import { GridContext } from "../Grid/Grid";
 import { ComponentBaseProps } from "../../types/ComponentProps";
 import LayoutBase from "../LayoutBase";
 import { BaseComponentRef } from "../../types/ComponentProps";
+import style from './GridTile.module.scss';
+import { GridContext } from "../Grid/GridContext";
 
 export interface GridTileRef extends BaseComponentRef {
     row: number,
@@ -48,7 +49,7 @@ const GridTile: ParentComponent<GridTileProps> = (props) => {
     }
 
     const initialTile = (
-        <LayoutBase {...props} refObject={gridTileRef} />
+        <LayoutBase {...props} componentClasses={style.Tile} refObject={gridTileRef} />
     )
 
     setTile(initialTile)

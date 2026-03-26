@@ -4,7 +4,13 @@ title: Grid
 
 The `Grid` component is a flexible, dynamic container that arranges content in a structured grid layout. It provides a mechanism for creating interactive grids where individual cells can be updated dynamically.
 
-The `Grid` component must be used in tandem with the `GridTile` component, which allows for placement of content within specific grid cells.
+The `Grid` component must be used in tandem with the [GridTile](../grid-tile/) component, which allows for placement of content within specific grid cells.
+
+:::tip[Tile Slot Support]
+From Gameface UI version 2.1 onwards, you can access the `GridTile` component as a slot of the `Grid` component, using `Grid.Tile`. 
+
+The previous method of importing `GridTile` separately is still supported for backward compatibility.
+:::
 
 ## Usage 
 
@@ -12,15 +18,14 @@ The `Grid` component must be provided with number of rows and columns through th
 
 ```tsx
 import Grid from '@components/Layout/Grid/Grid';
-import GridTile from '@components/Layout/GridTile/GridTile';
 import Block from '@components/Layout/Block/Block';
 
 const App = () => {
     return (
-        <Grid cols={3} rows={3} >
-            <GridTile row={2} col={2}><Block>Placed in row 2 column 2</Block></GridTile>
-            <GridTile row={3} col={2}><Block>Placed in row 3 column 2</Block></GridTile>
-            <GridTile row={3} col={3}><Block>Placed in row 3 column 3</Block></GridTile>
+        <Grid cols={3} rows={3} gap="1vmax" style={{ width: '30vmax', height: '30vmax' }} >
+            <Grid.Tile row={2} col={2}><Block>Placed in row 2 column 2</Block></Grid.Tile>
+            <Grid.Tile row={3} col={2}><Block>Placed in row 3 column 2</Block></Grid.Tile>
+            <Grid.Tile row={3} col={3}><Block>Placed in row 3 column 3</Block></Grid.Tile>
         </Grid>
     );
 };
@@ -31,21 +36,60 @@ export default App;
 ## API
 
 ### Props
-|Prop Name |Type |Default | Description |
-|---|---|---|---|
+| Prop Name | Type | Default | Description |
+| --- | --- | --- | --- |
 | `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
 | `class` | `string` | `""` | Additional CSS classes to apply to the component |
 | `ref` | `GridRef` | `undefined` | Retrieves the grid's properties, methods and HTML element and assigns them to a local variable |
 | `rows` | `number` | `Required` | The number of rows in the grid. |
-| `cols` | `number` | `Required` | The number of columns  in the grid. |
+| `cols` | `number` | `Required` | The number of columns in the grid. |
+| `gap` | `string` | `undefined` | Applies spacing between the rows and columns. It's a shorthand for both row and column gaps. Requires Gameface 2.2+. |
+| `row-gap` | `string` | `undefined` | Vertical spacing between grid rows. Requires Gameface 2.2+. |
+| `column-gap` | `string` | `undefined` | Horizontal spacing between grid columns. Requires Gameface 2.2+. |
+| `row-class` | `string` | `""` | Additional CSS classes for internal row wrappers. |
+| `column-class` | `string` | `""` | Additional CSS classes for internal column/cell wrappers. |
+| `row-style` | `JSX.CSSProperties` | `{}` | Inline styles applied to internal row wrappers. |
+| `column-style` | `JSX.CSSProperties` | `{}` | Inline styles applied to internal column/cell wrappers. |
 | `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the component. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
 | `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, this component's actions will execute. Can be a CSS selector or HTMLElement. |
+
+:::caution[Note on Compatibility]
+The gap properties require Gameface version 2.2 or higher. If using an older version, these properties will be ignored. Check the console for compatibility warnings.
+:::
 
 ### Methods
 |Method |Parameters |Return Value |Description |
 |---|---|---|---|
 | `addItem` | `row`: number, `col`: number, `item`: JSX.Element | `void` | Adds the provided element to the specified row and column. Will throw an error if the row and column don't exist. Will overwrite any existing items to the specified row and column. |
 | `removeItem` | `row`: number, `col`: number | `void` | Removes the content of the specified cell. Will throw an error if the row and column don't exist. |
+
+## Slots
+
+### `Grid.Tile`
+
+The `Tile` slot is used to specify on which row and column the content inside it should be placed on the Grid.
+
+#### Properties
+|Prop Name |Type |Default | Description |
+|---|---|---|---|
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
+| `class` | `string` | `""` | Additional CSS classes to apply to the component |
+| `ref` | `GridTileRef` | `undefined` | Retrieves the `GridTile`'s properties, methods and HTML element and assigns them to a local variable |
+| `row` | `number` | `Required` | The row index where the tile will be placed. |
+| `col` | `number` | `Required` | The column  index where the tile will be placed. |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the component. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
+| `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, this component's actions will execute. Can be a CSS selector or HTMLElement. |
+
+#### Methods
+|Method |Parameters |Return Value |Description |
+|---|---|---|---|
+| `moveTile` | `newRow`: number, `newCol`: number | `void` | Moves the tile to a different place on the grid. Will throw an error if the row and column don't exist. |
+| `removeItem` | `void` | `void` | Removes the tile from the grid. Will throw an error if the row and column don't exist. |
+| `replaceTile` | `newTile`: JSX.ELement | `void` | Inserts new content on the place of the tile. Will throw an error if the row and column don't exist. |
+
+:::tip
+You can check more in-depth usage examples of the `Grid.Tile` slot in the [GridTile documentation](../grid-tile/#guide).
+:::
 
 ## Guide
 

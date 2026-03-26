@@ -4,6 +4,12 @@ title: GridTile
 
 The `GridTile` component is content wrapper component made to be used only within the `Grid` component. It is used to specify on which row and column the content inside it should be placed on the `Grid`.
 
+:::tip[Tile Slot Support]
+From Gameface UI version 2.1 onwards, you can access the `GridTile` component as a slot of the `Grid` component, using `Grid.Tile`. 
+
+The previous method of importing `GridTile` separately is still supported for backward compatibility.
+:::
+
 ## Usage 
 
 The `GridTile` component must be provided with the specific row and column through the `rows` and `cols` props. You can dynamically move, remove and replace the tile in specific cells using the provided methods.

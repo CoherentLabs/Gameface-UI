@@ -1,4 +1,4 @@
-.grid {
+.Grid {
     &-row {
         display: flex;
         flex-direction: row;
@@ -8,10 +8,5 @@
 
     &-col {
         flex: 1 1 0;
-    }
-
-    &-empty-cell {
-        height: 50px;
-        user-select: none;
     }
 }

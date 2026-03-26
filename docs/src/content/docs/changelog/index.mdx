@@ -4,7 +4,25 @@ title: Changelog
 
 import { Badge } from '@astrojs/starlight/components'
 
-## 2.0.0 :badge[Latest]{variant="note"}
+## 2.1.0 :badge[Latest]{variant="note"}
+
+- <Badge text="Feature" variant="success" size="small" /> Added `Grid.Tile` slot for the [Grid](/components/layout/grid#props). This allows you to use the `GridTile` component without importing it separately. You can now write `<Grid.Tile row={1} col={1}>` instead of `<GridTile row={1} col={1}>`.
+
+    :::caution
+    The previous method of importing `GridTile` separately is still supported for backward compatibility. You can continue using `<GridTile>` as before if you prefer.
+    ::: 
+
+- <Badge text="Feature" variant="success" size="small" /> Added `gap`, `row-gap`, and `column-gap` props to the [Flex](/components/layout/flex#props) & [Grid](/components/layout/grid#props) components. 
+
+    :::caution
+    These properties are supported in Gameface 2.2 and later versions.
+    :::
+
+- <Badge text="Feature" variant="success" size="small" /> Added `row-class`, `column-class`, `row-style`, and `column-style` props to the [Grid](/components/layout/grid) component for customizing the styles of internal row and column wrappers.
+
+- <Badge text="Fix" variant="danger" size="small" /> [Dropdown](/components/basic/dropdown): Fixed content inside `Dropdown.Trigger` not being vertically centered.
+
+## 2.0.0
 
 ### ⚠️ Breaking Changes
 
