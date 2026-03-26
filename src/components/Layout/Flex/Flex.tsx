@@ -2,7 +2,7 @@ import { createMemo, onMount, ParentComponent } from "solid-js";
 import LayoutBase from "../LayoutBase";
 import styles from './Flex.module.scss'
 import { ComponentBaseProps } from "../../types/ComponentProps";
-import { GAMEFACE_VERSION, verIsAtLeast } from "@components/utils/gamefaceVersion";
+import { warnIfUnsupported } from "@components/utils/supportsGamefaceFeature";
 
 interface FlexProps extends ComponentBaseProps {
     direction?: 'row' | 'row-reverse' | 'column' | 'column-reverse';
@@ -15,18 +15,8 @@ interface FlexProps extends ComponentBaseProps {
     'column-gap'?: string;
 }
 
-let warningShown = false;
-
 const Flex: ParentComponent<FlexProps> = (props) => {
-    onMount(() => {
-        const hasGap = !!(props.gap || props["row-gap"] || props["column-gap"]);
-        if (!warningShown && hasGap && !verIsAtLeast(2, 2)) {
-            console.warn(
-                `[Gameface UI] The "gap" property is unsupported in Gameface v${GAMEFACE_VERSION}. Upgrade to 2.2+`
-            );
-            warningShown = true;
-        }
-    });
+    onMount(() => warnIfUnsupported(props, 'gap'));
 
     const classes = createMemo(() => {
         const flexClasses = [styles.flex];

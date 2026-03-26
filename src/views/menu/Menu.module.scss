@@ -12,10 +12,18 @@
     padding: 0 $horizontal-spacing;
     margin-top: 2.5vmax;
     margin-bottom: 0.5vmax;
+    height: 14%;
+    flex: 0;
+}
+
+.bottom {
+    height: 14%;
+    flex: 0;
 }
 
 .content {
     margin: 0 $horizontal-spacing;
+    flex: 1 0 0;
 }
 
 .link {

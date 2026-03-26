@@ -1,8 +1,10 @@
-import { ParentComponent, JSX, For, createContext, createSignal, onMount, createMemo } from "solid-js";
+import { ParentComponent, JSX, For, createSignal, onMount, createMemo } from "solid-js";
 import styles from './Grid.module.scss';
 import LayoutBase from "../LayoutBase";
 import { BaseComponentRef, ComponentBaseProps } from "../../types/ComponentProps";
-import { GAMEFACE_VERSION, verIsAtLeast } from "@components/utils/gamefaceVersion";
+import { warnIfUnsupported } from "@components/utils/supportsGamefaceFeature";
+import GridTile from "@components/Layout/GridTile/GridTile";
+import { GridContext } from "./GridContext";
 
 export interface GridRef extends BaseComponentRef {
     rows: number,
@@ -22,12 +24,6 @@ interface GridProps extends ComponentBaseProps {
     'row-gap'?: string;
     'column-gap'?: string;
 }
-
-type GridContextType = {
-    placeTile: (row: number, col: number, content: JSX.Element) => void;
-};
-
-export const GridContext = createContext<GridContextType>();
 
 const Grid: ParentComponent<GridProps> = (props) => {
     const initialGrid = Array.from({ length: props.rows }, () => Array.from({ length: props.cols }, () => null));
@@ -62,27 +58,18 @@ const Grid: ParentComponent<GridProps> = (props) => {
     const gridStyles = createMemo(() => {
         return {
             gap: props.gap,
-            'row-gap': props['row-gap'],
+            'row-gap': props['row-gap'] ?? props.gap,
         }
     })
 
     const rowStyles = createMemo(() => {
         return {
-            'column-gap': props['column-gap'] ? props['column-gap'] : props.gap,
+            'column-gap': props['column-gap'] ?? props.gap,
             ...props["row-style"]
         }
     })
 
-    let warningShown: boolean = false;
-    onMount(() => {
-        const hasGap = !!(props.gap || props["row-gap"] || props["column-gap"]);
-        if (!warningShown && hasGap && !verIsAtLeast(2, 2)) {
-            console.warn(
-                `[Gameface UI] The "gap" property is unsupported in Gameface v${GAMEFACE_VERSION}. Upgrade to 2.2+`
-            );
-            warningShown = true;
-        }
-    })
+    onMount(() => warnIfUnsupported(props, "gap"))
 
     return (
         <LayoutBase {...props} componentClasses={styles.Grid} componentStyles={gridStyles()} refObject={gridObjectRef}>
@@ -104,5 +91,4 @@ const Grid: ParentComponent<GridProps> = (props) => {
     );
 }
 
-export default Grid;
-
+export default Object.assign(Grid, { Tile: GridTile });

@@ -263,7 +263,7 @@ const Menu = () => {
                                                 </Flex>
                                             </Tutorial.Step>
                                         </Top>
-                                        <Content basis={70} class={styles.content}>
+                                        <Content class={styles.content}>
                                             <Tutorial.Step order={TutorialSteps.Structure.order} content={TutorialSteps.Structure.content} title={TutorialSteps.Structure.title} position="top">
                                                 <Row>
                                                     <Show when={!isCredits()}>
@@ -310,7 +310,7 @@ const Menu = () => {
                                                 </Row>
                                             </Tutorial.Step>
                                         </Content>
-                                        <Bottom>
+                                        <Bottom class={styles.bottom}>
                                             <Show when={!isCredits()}>
                                                 <Tutorial.Step order={TutorialSteps.Footer.order} content={TutorialSteps.Footer.content} title={TutorialSteps.Footer.title} outset={-15}>
                                                     <Row class={styles['button-wrapper']}>
