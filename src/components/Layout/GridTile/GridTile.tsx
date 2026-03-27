@@ -49,7 +49,7 @@ const GridTile: ParentComponent<GridTileProps> = (props) => {
     }
 
     const initialTile = (
-        <LayoutBase {...props} componentClasses={style.Tile} refObject={gridTileRef} />
+        <LayoutBase {...props} refObject={gridTileRef} />
     )
 
     setTile(initialTile)
