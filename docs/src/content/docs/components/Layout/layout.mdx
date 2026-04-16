@@ -38,6 +38,38 @@ export default App;
 | `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the component. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
 | `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, this component's actions will execute. Can be a CSS selector or HTMLElement. |
 
+## Slots
+
+### Top, Content, Bottom
+
+The `Top`, `Content`, and `Bottom` slots structure the internal layout of the `Layout` component. They clearly define which content belongs in the top, main, and bottom sections of your page or container.
+
+:::note[Note on Slot Usage]
+These slots provide a convenient, dot-notation syntax for the [Top](/components/layout/top), [Content](/components/layout/content), and [Bottom](/components/layout/bottom) components as children of `Layout`. 
+You can still import and use those components separately if you prefer.
+:::
+
+#### Usage
+
+```diff lang="tsx" 
+import Layout from '@components/Layout/Layout/Layout';
+-import Top from '@components/Layout/Top/Top';
+-import Content from '@components/Layout/Content/Content';
+-import Bottom from '@components/Layout/Bottom/Bottom';
+
+const App = () => {
+    return (
+        <Layout style={{ height: '100vh' }}>
++            <Layout.Top>Top Section</Layout.Top>
++            <Layout.Content>Main Content</Layout.Content>
++            <Layout.Bottom>Bottom Section</Layout.Bottom>
+        </Layout>
+    );
+};
+
+export default App;
+```
+
 ## Guide
 
 ### Accessing the HTML element

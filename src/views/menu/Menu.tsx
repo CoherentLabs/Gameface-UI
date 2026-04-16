@@ -5,9 +5,6 @@ import Tabs, { TabsComponentRef } from '@components/Layout/Tabs/Tabs';
 import TabLink from '@components/Layout/TabLink/TabLink';
 import Tab from '@components/Layout/Tab/Tab';
 import Layout from '@components/Layout/Layout/Layout';
-import Top from '@components/Layout/Top/Top';
-import Content from '@components/Layout/Content/Content';
-import Bottom from '@components/Layout/Bottom/Bottom';
 import Scroll, { ScrollComponentRef } from '@components/Layout/Scroll/Scroll';
 import { Accessor, batch, createContext, createEffect, createMemo, createSignal, For, Match, on, onMount, Setter, Show, Switch } from 'solid-js';
 import Gameplay from '@custom-components/Menu/Options/Gameplay/Gameplay';
@@ -247,7 +244,7 @@ const Menu = () => {
                                         content={TutorialSteps.Intro.content}
                                         title={TutorialSteps.Intro.title}
                                         outset={-5}>
-                                        <Top class={styles.top}>
+                                        <Layout.Top class={styles.top}>
                                             <Flex>
                                                 <h2 style={{ 'text-transform': 'uppercase' }}>Options</h2>
                                             </Flex>
@@ -262,8 +259,8 @@ const Menu = () => {
                                                     </For>
                                                 </Flex>
                                             </Tutorial.Step>
-                                        </Top>
-                                        <Content class={styles.content}>
+                                        </Layout.Top>
+                                        <Layout.Content class={styles.content}>
                                             <Tutorial.Step order={TutorialSteps.Structure.order} content={TutorialSteps.Structure.content} title={TutorialSteps.Structure.title} position="top">
                                                 <Row>
                                                     <Show when={!isCredits()}>
@@ -309,8 +306,8 @@ const Menu = () => {
                                                     </Show>
                                                 </Row>
                                             </Tutorial.Step>
-                                        </Content>
-                                        <Bottom class={styles.bottom}>
+                                        </Layout.Content>
+                                        <Layout.Bottom class={styles.bottom}>
                                             <Show when={!isCredits()}>
                                                 <Tutorial.Step order={TutorialSteps.Footer.order} content={TutorialSteps.Footer.content} title={TutorialSteps.Footer.title} outset={-15}>
                                                     <Row class={styles['button-wrapper']}>
@@ -359,7 +356,7 @@ const Menu = () => {
                                                     </Row>
                                                 </Tutorial.Step>
                                             </Show>
-                                        </Bottom>
+                                        </Layout.Bottom>
                                     </Tutorial.Step>
                                 </Layout>
                             </Tabs>

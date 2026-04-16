@@ -4,7 +4,54 @@ title: Changelog
 
 import { Badge } from '@astrojs/starlight/components'
 
-## 2.1.0 :badge[Latest]{variant="note"}
+## 3.0.0 :badge[Latest]{variant="note"}
+
+### ⚠️ Breaking Changes
+
+- <Badge text="Breaking Change" variant="danger" size="small" /> Removed default `width` and `height` styles from [Relative](/components/layout/relative) component to avoid unexpected behavior. Now, the `Relative` component will only take up as much space as its content requires unless dimensions are explicitly set through styles or classes. 
+
+- <Badge text="Breaking Change" variant="danger" size="small" /> Removed the `<div>` wrapper from the [Tab](/components/layout/tab) component to avoid unexpected layout behavior.
+ Now, the `Tab` component will render its content directly without an additional wrapper element. 
+ This change may affect styling and layout, so please review your usage of the `Tab` component and adjust styles accordingly.
+
+### ✨ New View UI
+
+- <Badge text="New" variant="tip" size="small" /> Added a new sample `Inventory UI` prototype view at `src/views/inventory`. It can be accessed by navigating to `/inventory` in the development server.
+
+- <Badge text="New" variant="tip" size="small" /> Added new assets related to the `Inventory UI` (icons & font). 
+
+    :::note[Asset Credits]
+    The "Cinzel" font is provided by Google Fonts under the SIL Open Font License. The UI icons are provided by [game-icons.net](https://game-icons.net) under the CC BY 3.0 license.
+    :::
+
+### 🛠 Component Enhancements 
+
+- <Badge text="Feature" variant="success" size="small" /> Added `center` prop to the [Absolute](/components/layout/absolute#props) component for easily centering content. 
+
+- <Badge text="Feature" variant="success" size="small" /> Added dot-notation access for [Column](/components/layout/column) sizes. 
+This allows you to use specific `Column` sizes without needing to import each one separately. 
+For example, you can now write `<Column.Six />` instead of `<Column6 />`.
+
+    :::caution
+    The previous method of importing individual size components is still supported for backward compatibility. You can continue using `<Column1>`, `<Column2>`, etc., as before.
+    :::
+
+- <Badge text="Feature" variant="success" size="small" /> Added `fill` prop to the [Icon](/components/media/icon#props) & [Image](/components/media/image#props) components allowing them to fill the space of 
+their parent containers. 
+
+- <Badge text="Fix" variant="danger" size="small" /> [Icon](/components/media/icon#props): Fixed typescript types suggestion for the component's props.
+
+- <Badge text="Feature" variant="success" size="small"/> Added `width` and `height` props to the [Block](/components/layout/block#props) component for easier size customization when prototyping.
+
+- <Badge text="Feature" variant="success" size="small" /> Added dot-notation access for the [Top](/components/layout/top), [Content](/components/layout/content), and [Bottom](/components/layout/bottom) components 
+within the [Layout](/components/layout/layout#slots) component. 
+You can now write `<Layout.Top>`, `<Layout.Content>`, and `<Layout.Bottom>` without needing to import them separately.
+
+    :::caution
+    The previous method of importing these components individually is still supported for backward compatibility. You can continue using `<Top>`, `<Content>`, and `<Bottom>` as before.
+    :::
+
+## 2.1.0
 
 - <Badge text="Feature" variant="success" size="small" /> Added `Grid.Tile` slot for the [Grid](/components/layout/grid#props). This allows you to use the `GridTile` component without importing it separately. You can now write `<Grid.Tile row={1} col={1}>` instead of `<GridTile row={1} col={1}>`.
 
