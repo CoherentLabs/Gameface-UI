@@ -37,6 +37,7 @@ export default App;
 | `class` | `string` | `""` | Additional CSS classes to apply to the component |
 | `ref` | `HTMLDivElement` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. |
 | `top`, `left`, `right`, `bottom` | `string` | `""` | Specify the position offset of the `Absolute` component. It accepts any valid css unit value |
+| `center` | `boolean \| 'x' \| 'y'` | `undefined` | Specifies whether to center the component within its closest relatively positioned ancestor (usually a `Relative` component). Use a boolean to center on both axes, or specify `'x'` or `'y'` for a single axis. |
 | `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the component. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
 | `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, this component's actions will execute. Can be a CSS selector or HTMLElement. |
 
@@ -101,3 +102,22 @@ export default App;
 ```
 
 Now you can access the HTML element of the component with `absoluteRef` and make modifications to it if needed. 
+
+### Quickly centering an element within a container :badge[3.0.0]{variant="note"}
+
+The `center` prop easily centers an `Absolute` component within its closest relatively positioned ancestor. You can center it on both axes or restrict it to a single axis.
+
+This is particularly useful for quickly centering elements (like text) inside a container without manually calculating offsets.
+
+For example, to overlay text in the center of a `Progress.Bar`:
+
+1. Wrap the `Progress.Bar` in a `Relative` component to establish a positioning context.
+2. Place the `Absolute` component as a sibling to the `Progress.Bar`.
+3. Set the `center` prop on the `Absolute` component to `true` (both axes), or specify `'x'` or `'y'` for a single axis.
+
+```tsx
+<Relative style={{ width: '100%', height: '2rem' }}>
+    <Progress.Bar progress={80} style={{ width: '100%', height: '100%' }} />
+    <Absolute center>80%</Absolute>
+</Relative>
+```
