@@ -1,0 +1,27 @@
+@font-face {
+  font-family: 'Cinzel';
+    /* Go up two folders from /views/inventory/ to reach /src/ */
+    src: url('../../assets/fonts/Cinzel-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+html {
+  font-size: 1.4814vh
+}
+
+h1,h2,h3,h4,h5,h6 {
+  margin: 0;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  background-color: black;
+  color: white;
+}
+
+.test-border {
+  border: 1px solid white;
+}

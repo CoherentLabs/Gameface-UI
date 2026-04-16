@@ -8,6 +8,7 @@ interface AbsoluteProps extends ComponentBaseProps {
     left?: string,
     right?: string,
     bottom?: string,
+    center?: boolean | 'x' | 'y',
 }
 
 const Absolute: ParentComponent<AbsoluteProps> = (props) => {
@@ -20,7 +21,22 @@ const Absolute: ParentComponent<AbsoluteProps> = (props) => {
         }
     });
 
-    return <LayoutBase {...props} componentClasses={styles.absolute} componentStyles={positionStyle} />
+    const absoluteClasses = createMemo(() => {
+        const base = [styles.absolute];
+
+        const center = props.center;
+        if (center) {
+            base.push(
+                typeof center === "boolean" 
+                ? styles.center 
+                : styles[`center-${center.toLocaleLowerCase()}`]
+            )
+        }
+
+        return base.join(" ");
+    })
+
+    return <LayoutBase {...props} componentClasses={absoluteClasses} componentStyles={positionStyle} />
 }
 
 export default Absolute;
