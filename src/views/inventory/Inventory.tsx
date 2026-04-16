@@ -22,7 +22,7 @@ import Transform from "@components/Layout/Transform/Transform";
 const Inventory = () => {
 	return (
 		<Tabs default="inventory">
-			<Row>
+			<Row style={{height: '100%'}}>
 				<Column.Two>
 						<Flex class={styles.sidebar} direction="column" gap="1rem" align-items="end">
 							<TabLink activeClass={styles['tab-link-current']} class={styles['tab-link']} location="inventory">Inventory</TabLink>
