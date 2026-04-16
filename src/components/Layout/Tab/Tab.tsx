@@ -1,7 +1,6 @@
 import { children, ParentComponent, Show, useContext } from 'solid-js';
 import { ComponentBaseProps } from '../../types/ComponentProps';
 import { TabsContext } from '../Tabs/Tabs';
-import LayoutBase from '../LayoutBase';
 
 interface TabProps extends ComponentBaseProps {
     location: string;
