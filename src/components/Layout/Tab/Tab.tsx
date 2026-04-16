@@ -19,14 +19,14 @@ const Tab: ParentComponent<TabProps> = (props) => {
         let resolved = children(() => props.children);
         return (
             <Show when={props.location === tabs.current()}>
-                <LayoutBase {...props}>{resolved()}</LayoutBase>
+                <>{resolved()}</>
             </Show>
         );
     }
 
     return (
         <Show when={props.location === tabs.current()}>
-            <LayoutBase {...props}>{props.children}</LayoutBase>
+            <>{props.children}</>
         </Show>
     );
 };
