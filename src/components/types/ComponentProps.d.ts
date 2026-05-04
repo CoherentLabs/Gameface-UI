@@ -3,7 +3,7 @@ import Events from "./BaseComponent";
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
 import { ActionName } from "@components/Utility/Navigation/types";
 
-type ExcludedEvents =
+export type ExcludedEvents =
     | "abort"
     | "animationend"
     | "durationchange"

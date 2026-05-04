@@ -29,7 +29,7 @@ const Absolute: ParentComponent<AbsoluteProps> = (props) => {
             base.push(
                 typeof center === "boolean" 
                 ? styles.center 
-                : styles[`center-${center.toLocaleLowerCase()}`]
+                : styles[`center-${center.toLowerCase()}`]
             )
         }
 
