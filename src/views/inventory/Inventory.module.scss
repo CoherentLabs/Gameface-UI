@@ -1,0 +1,149 @@
+$global-spacing: 3rem;
+$font-cinzel: 'Cinzel', serif;
+$primaryColor: #868599;
+$secondaryColor: #3e3d5d;
+$background-soft-solid: #383940;
+
+@mixin active-slot($border-width) {
+    border: $border-width solid white;
+    background-color: $secondaryColor;
+}
+
+.sidebar {
+    padding-top: calc(2rem + $global-spacing); //5rem
+    flex-grow: 1;
+    background-color: $background-soft-solid;
+}
+
+.tab-link {
+    font-family: 'Cinzel';
+    width: 85%;
+    padding: 1.5rem 0;
+    text-align: center;
+    font-size: 2rem;
+    background-color: $primaryColor;
+
+    &-current {
+        background-color: $secondaryColor;
+        color: white;
+        position: relative;
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: -3rem;
+            width: 3rem;
+            z-index: -1;
+            // height: 100%;
+            background-color: $secondaryColor;
+            clip-path: polygon(0 0, 0 100%, 100% 50%);
+        }
+    }
+}
+
+.main-panel {
+    padding: $global-spacing 0;
+    flex: 1;
+}
+
+.equipped {
+    &-items-wrapper {
+        margin: 0 $global-spacing;
+        margin-top: calc(5rem + $global-spacing); //8rem
+        height: 75%;
+    }
+
+    &-item {
+        width: 6.15rem;
+        height: 6.15rem;
+        background-color: $primaryColor;
+
+        &-active {
+            @include active-slot(0.20rem)
+        }
+    }
+}
+
+.grid {
+    width: 100%;
+    flex-grow: 1;
+    padding: 2rem;
+    color: white;
+    background-color: $background-soft-solid;
+
+    &-wrapper {
+        flex-grow: 1;
+        border: 0.5rem solid $secondaryColor;
+    }
+
+    &-options {
+        padding: 2rem;
+
+        &-dropdown-trigger {
+            width: 17rem;
+            height: 2.5rem;
+            background-color: $primaryColor;
+        }
+
+        &-dropdown-icon path {
+            stroke: $disabledTextColor;
+            transition: stroke .15s ease;
+        }
+
+        &-checkbox {
+            width: 2.5rem;
+            height: 2.5rem;
+        }
+    }
+
+    &-cell {
+        background-color: rgba($primaryColor, 0.5);
+    }
+
+    &-item-active {
+        @include active-slot(0.25rem)
+    }
+}
+
+.item {
+    &-container {
+        padding: $global-spacing;
+    }
+
+    &-wrapper {
+        border: 0.5rem solid $secondaryColor;
+        flex-grow: 1;
+        font-size: 1.375rem;
+    }
+
+    &-inspector-label {
+        width: 100%; 
+        padding: 0.5rem;
+        margin: 0;
+        background-color: $background-soft-solid;
+        text-align: center;
+        font-family: $font-cinzel;
+    }
+
+    &-image {
+        width: 15rem;
+        height: 15rem;
+        background-color: $primaryColor;
+        border: 0.5rem solid $secondaryColor;
+    }
+
+    &-name,
+    &-button {
+        font-family: "Cinzel";
+        color: white;
+        font-size: 2rem;
+    }
+}
+
+.separator {
+    width: 18rem;
+    height: 0.1rem;
+    background-color: white;
+}

@@ -13,6 +13,7 @@ for (let i = 1; i <= 12; i++) {
   };
 }
 
+
 export const Column1 = Columns.Column1;
 export const Column2 = Columns.Column2;
 export const Column3 = Columns.Column3;
@@ -26,3 +27,17 @@ export const Column10 = Columns.Column10;
 export const Column11 = Columns.Column11;
 export const Column12 = Columns.Column12;
 export const Column = Columns.Column12;
+export default Object.assign(Column, {
+  'One': Column1,
+  'Two': Column2,
+  'Three': Column3,
+  'Four': Column4,
+  'Five': Column5,
+  'Six': Column6,
+  'Seven': Column7,
+  'Eight': Column8,
+  'Nine': Column9,
+  'Ten': Column10,
+  'Eleven': Column11,
+  'Twelve': Column12,
+})

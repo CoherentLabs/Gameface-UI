@@ -1,7 +1,6 @@
 import { children, ParentComponent, Show, useContext } from 'solid-js';
 import { ComponentBaseProps } from '../../types/ComponentProps';
 import { TabsContext } from '../Tabs/Tabs';
-import LayoutBase from '../LayoutBase';
 
 interface TabProps extends ComponentBaseProps {
     location: string;
@@ -19,14 +18,14 @@ const Tab: ParentComponent<TabProps> = (props) => {
         let resolved = children(() => props.children);
         return (
             <Show when={props.location === tabs.current()}>
-                <LayoutBase {...props}>{resolved()}</LayoutBase>
+                <>{resolved()}</>
             </Show>
         );
     }
 
     return (
         <Show when={props.location === tabs.current()}>
-            <LayoutBase {...props}>{props.children}</LayoutBase>
+            <>{props.children}</>
         </Show>
     );
 };

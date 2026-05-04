@@ -6,7 +6,7 @@ import LayoutBase from "../LayoutBase";
 
 interface TabLinkProps extends ComponentBaseProps {
     location: string,
-    activeClass: string
+    activeClass?: string
 }
 
 const TabLink: ParentComponent<TabLinkProps> = (props) => {
@@ -22,7 +22,7 @@ const TabLink: ParentComponent<TabLinkProps> = (props) => {
     };
   
     return (
-        <LayoutBase {...props} click={handleTabChange} componentClasses={() => props.location === tabs.current() ? props.activeClass : ''}>
+        <LayoutBase {...props} click={handleTabChange} componentClasses={() => props.activeClass && props.location === tabs.current() ? props.activeClass : ""}>
             {props.children}
         </LayoutBase>
     );

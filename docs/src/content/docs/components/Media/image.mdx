@@ -11,7 +11,7 @@ To render an image asset in your UI, use the `Image` component as follows:
 1. First, import the asset into your file:
 
 ```jsx
-import MyImage from '../../assets/my-image.png';
+import MyImage from '@assets/my-image.png';
 ```
 
 2. Then, render the image using the `Image` component by setting its `src` attribute:
@@ -24,7 +24,7 @@ And the full example:
 
 ```jsx
 import Image from '@components/Media/Image/Image';
-import MyImage from '../../assets/my-image.png';
+import MyImage from '@assets/my-image.png';
 
 const App = () => {
     return (
@@ -34,6 +34,17 @@ const App = () => {
 
 export default App;
 ```
+
+## Props
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
+| `class` | `string` | `""` | Additional CSS classes to apply to the component. |
+| `src` | `string` | `undefined` | The URL source of the image. |
+| `fill` | `boolean` | `false` | Specifies if the component should fill its container by setting the `width` and `height` of the component to be 100%. |
+
+## Guide
 
 ### Applying styles to the component
 
@@ -54,7 +65,7 @@ However, using the `class` attribute is recommended for better performance. To u
 
 ```jsx
 import Image from '@components/Media/Image/Image';
-import MyImage from '../../assets/my-image.png';
+import MyImage from '@assets/my-image.png';
 import styles from './MyImage.module.css';
 
 const App = () => {
@@ -73,7 +84,7 @@ This will apply styles to ensure the image occupies the entire space of its pare
 
 ```tsx
 import Image from '@components/Media/Image/Image';
-import MyImage from '../../assets/my-image.png';
+import MyImage from '@assets/my-image.png';
 
 const App = () => {
     return (

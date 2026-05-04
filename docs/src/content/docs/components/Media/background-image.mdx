@@ -10,7 +10,7 @@ The `BackgroundImage` component is used to wrap other UI elements, applying a ba
 
 ```jsx
 import BackgroundImage from '@components/Media/BackgroundImage/BackgroundImage';
-import Background from '../../assets/bg.png';
+import Background from '@assets/bg.png';
 
 const App = () => {
     return (
@@ -23,7 +23,7 @@ const App = () => {
 export default App;
 ```
 
-In this example, the `BackgroundImage` component wraps the `<div>Content</div>` with a background image. The container has a width and height of `150px`. The `options` attribute sets the background image to fit inside the container, regardless of its original size. The background image source is specified by importing the image file via `import Background from '../../assets/bg.png';`.
+In this example, the `BackgroundImage` component wraps the `<div>Content</div>` with a background image. The container has a width and height of `150px`. The `options` attribute sets the background image to fit inside the container, regardless of its original size. The background image source is specified by importing the image file via `import Background from '@assets/bg.png';`.
 
 ## API
 
@@ -35,7 +35,7 @@ In this example, the `BackgroundImage` component wraps the `<div>Content</div>` 
 | `class` | `string` | `""` | Additional CSS classes to apply to the component. |
 | `ref` | `HTMLDivElement` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. |
 | `src` | `string` | `undefined` | The URL source of the background image. |
-| `fill` | `boolean` | `undefined` | Specifies if the component should fill its container by setting the `width` and `height` of the component to be 100%. |
+| `fill` | `boolean` | `false` | Specifies if the component should fill its container by setting the `width` and `height` of the component to be 100%. |
 | `options` | `{ repeat?: ImageRepeat; size?: ImageSize; position?: ImagePosition; }` | `undefined` | Configures the background image. You can set whether the background repeats (default is no repeat), its size, and its position. For more information, check the [options object properties](#options-object-properties). |
 
 ### `options` object properties
@@ -54,7 +54,7 @@ To load an image as a background using the `BackgroundImage` component, import t
 
 ```jsx
 import BackgroundImage from '@components/Media/BackgroundImage/BackgroundImage';
-import Background from '../../assets/bg.png';
+import Background from '@assets/bg.png';
 
 const App = () => {
     return (
@@ -73,7 +73,7 @@ To set the size of the background image container, use either the `style` or `cl
 
 ```jsx
 import BackgroundImage from '@components/Media/BackgroundImage/BackgroundImage';
-import Background from '../../assets/bg.png';
+import Background from '@assets/bg.png';
 
 const App = () => {
     return (
@@ -91,7 +91,7 @@ Since the `style` attribute is defined with an object, you can easily reuse this
 ```jsx
 import { JSX } from 'solid-js';
 import BackgroundImage from '@components/Media/BackgroundImage/BackgroundImage';
-import Background from '../../assets/bg.png';
+import Background from '@assets/bg.png';
 
 const App = () => {
     const bgStyle: JSX.CSSProperties = { width: '150px', height: '150px' };
@@ -122,7 +122,7 @@ However, if the styles of the component are static and will not change at runtim
 
 ```jsx
 import BackgroundImage from '@components/Media/BackgroundImage/BackgroundImage';
-import Background from '../../assets/bg.png';
+import Background from '@assets/bg.png';
 import styles from './App.module.css';
 
 const App = () => {
@@ -143,7 +143,7 @@ After setting the container size, you can define the background image size withi
 ```jsx
 import { JSX } from 'solid-js';
 import BackgroundImage from '@components/Media/BackgroundImage/BackgroundImage';
-import Background from '../../assets/bg.png';
+import Background from '@assets/bg.png';
 
 const App = () => {
     const bgStyle: JSX.CSSProperties = { width: '150px', height: '150px' };
@@ -175,7 +175,7 @@ By default, the `BackgroundImage` component renders the background image without
 import { JSX } from 'solid-js';
 import { ImageBaseOptions } from '@components/Media/ImageBase/ImageBase';
 import BackgroundImage from '@components/Media/BackgroundImage/BackgroundImage';
-import Background from '../../assets/bg.png';
+import Background from '@assets/bg.png';
 
 const App = () => {
     const bgSize: ImageBaseOptions = { size: '100px 100px' };
@@ -209,7 +209,7 @@ The following example demonstrates positioning the background using the `top`, `
 import { JSX } from 'solid-js';
 import { ImageBaseOptions } from '@components/Media/ImageBase/ImageBase';
 import BackgroundImage from '@components/Media/BackgroundImage/BackgroundImage';
-import Background from '../../assets/bg.png';
+import Background from '@assets/bg.png';
 
 const App = () => {
     const bgSize: ImageBaseOptions = { size: '100px 100px' };
@@ -241,7 +241,7 @@ To access the HTML DOM element of the `BackgroundImage` component:
 
 ```tsx
 import BackgroundImage from '@components/Media/BackgroundImage/BackgroundImage';
-import Background from '../../assets/bg.png';
+import Background from '@assets/bg.png';
 
 const App = () => {
     let ref!: HTMLDivElement;
