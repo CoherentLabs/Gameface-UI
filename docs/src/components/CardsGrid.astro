@@ -1,0 +1,210 @@
+---
+export interface Props {
+    searchPlaceholder?: string;
+}
+
+const { searchPlaceholder } = Astro.props as Props;
+---
+
+<div class="cards-grid" data-cards-library>
+    <div class="toolbar">
+        <div class="search">
+            <span class="search-icon" aria-hidden="true">🔎</span>
+            <input
+                id="filter-input"
+                type="search"
+                placeholder={searchPlaceholder || "Search"}
+                autocomplete="off"
+                spellcheck="false"
+            />
+        </div>
+
+        <div class="filters" role="group" aria-label="Filters">
+            <button
+                class="filter-pill"
+                type="button"
+                data-filter="__all__"
+                aria-pressed="true"
+            >
+                All
+            </button>
+            <slot name="filters" />
+        </div>
+    </div>
+    <slot name="items" />
+    <div class="empty-state" data-empty-state hidden>
+        No items found.
+    </div>
+</div>
+<script is:inline>
+    (function () {
+        const root = document.querySelector(".cards-grid");
+        if (!root) return;
+
+        const input = root.querySelector("#filter-input");
+        const pills = root.querySelectorAll(".filter-pill");
+        const sections = root.querySelectorAll("[data-section]");
+        const emptyState = root.querySelector("[data-empty-state]");
+
+        let activeCategory = "__all__";
+
+        function normalize(s) {
+            return (s ?? "").toString().trim().toLowerCase();
+        }
+
+        function apply() {
+            const query = normalize(input?.value);
+
+            if (sections.length > 0) {
+                let anyGridVisible = false;
+                sections.forEach((section) => {
+                    const sectionCategory =
+                        section.getAttribute("data-section");
+                    const items = section.querySelectorAll(".cards-grid-item");
+
+                    let anyVisible = false;
+
+                    items.forEach((el) => {
+                        const name = normalize(el.getAttribute("data-name"));
+                        const category = el.getAttribute("data-category");
+
+                        const matchesCategory =
+                            activeCategory === "__all__" ||
+                            category === activeCategory;
+                        const matchesQuery = !query || name.includes(query);
+
+                        const visible = matchesCategory && matchesQuery;
+                        el.classList.toggle("is-hidden", !visible);
+                        if (visible) anyVisible = true;
+                    });
+
+                    section.classList.toggle("section-hidden", !anyVisible);
+                    if (anyVisible) anyGridVisible = true;
+
+                    if (activeCategory !== "__all__") {
+                        section.classList.toggle(
+                            "section-not-active",
+                            sectionCategory !== activeCategory,
+                        );
+                    } else {
+                        section.classList.remove("section-not-active");
+                    }
+                });
+                if (emptyState) emptyState.hidden = anyGridVisible;
+                return;
+            }
+
+            const items = root.querySelectorAll(".cards-grid-item");
+            let anyGridVisible = false;
+            items.forEach((el) => {
+                const name = normalize(el.getAttribute("data-name"));
+                const category = el.getAttribute("data-category");
+
+                const matchesCategory =
+                    activeCategory === "__all__" || category === activeCategory;
+                const matchesQuery = !query || name.includes(query);
+
+                const visible = matchesCategory && matchesQuery;
+                el.classList.toggle("is-hidden", !visible);
+                if (visible) anyGridVisible = true;
+            });
+            if (emptyState) emptyState.hidden = anyGridVisible;
+        }
+
+        pills.forEach((pill) => {
+            pill.addEventListener("click", () => {
+                activeCategory = pill.getAttribute("data-filter") ?? "__all__";
+                pills.forEach((p) =>
+                    p.setAttribute(
+                        "aria-pressed",
+                        p === pill ? "true" : "false",
+                    ),
+                );
+                apply();
+            });
+        });
+
+        input?.addEventListener("input", apply);
+        apply();
+    })();
+</script>
+
+<style is:inline>
+    .additional-filters {
+        margin-top: 0;
+    }
+    .toolbar {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        flex-wrap: wrap;
+        margin: 1rem 0 1.5rem;
+    }
+
+    .search {
+        flex: 1 1 18rem;
+        min-width: 16rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.55rem 0.75rem;
+        background: var(--sl-color-gray-6);
+        border: 1px solid var(--sl-color-gray-5);
+        border-radius: 0.4rem;
+    }
+
+    .search input {
+        width: 100%;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: var(--sl-color-white);
+        font: inherit;
+    }
+
+    .filters {
+        display: inline-flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+        margin-top: 0;
+    }
+
+    .filter-pill {
+        padding: 0.45rem 0.7rem;
+        border-radius: 0.35rem;
+        border: 1px solid var(--sl-color-gray-5);
+        background: var(--sl-color-gray-7);
+        color: var(--sl-color-white);
+        font: inherit;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        cursor: pointer;
+        margin-top: 0;
+    }
+
+    .filter-pill[aria-pressed="true"] {
+        background: var(--sl-color-accent);
+        border-color: var(--sl-color-accent);
+        color: var(--sl-color-black);
+    }
+
+    .is-hidden {
+        display: none !important;
+    }
+
+    .section-hidden {
+        display: none;
+    }
+
+    .empty-state {
+        margin-top: 1rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--sl-color-gray-5);
+        border-radius: 0.5rem;
+        background: var(--sl-color-gray-6);
+        color: var(--sl-color-gray-2);
+        font-weight: 650;
+    }
+</style>

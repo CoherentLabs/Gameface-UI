@@ -6,7 +6,7 @@ import coherentTheme from 'coherent-docs-theme'
 import starlightSidebarTopics from 'starlight-sidebar-topics';
 import path from 'node:path';
 import { fileURLToPath } from 'url';
-import { componentSidebarItems } from './src/config/componentSidebarItems';
+import { componentSidebarItems, recipesSidebarItems } from './src/config/sidebarItems';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -33,8 +33,10 @@ const sidebarTopics = [
     items: componentSidebarItems(),
   },
   {
+    id: 'recipes',
     label: 'Community Recipes',
     link: '/recipes/',
+    items: recipesSidebarItems(),
   },
   {
     id: 'changelog',

@@ -1,6 +1,7 @@
 ---
 import { Card, CardGrid, LinkButton } from "@astrojs/starlight/components";
 import SVG from "./SVG.astro";
+import CardsGrid from "./CardsGrid.astro";
 
 function getComponentName(filePath: string) {
   return filePath.split("/").pop()?.replace(".svg", "") ?? filePath;
@@ -25,151 +26,62 @@ const componentsByCategory = {
 } satisfies Record<(typeof categories)[number], string[]>;
 ---
 
-<div class="components-library" data-components-library>
-  <div class="components-toolbar">
-    <div class="components-search">
-      <span class="components-search-icon" aria-hidden="true">🔎</span>
-      <input
-        id="components-filter-input"
-        type="search"
-        placeholder="Find component..."
-        autocomplete="off"
-        spellcheck="false"
-      />
-    </div>
-
-    <div
-      class="components-filters"
-      role="group"
-      aria-label="Component categories"
-    >
-      <button
-        class="filter-pill"
-        type="button"
-        data-filter="__all__"
-        aria-pressed="true"
-      >
-        All
-      </button>
-      {
-        categories.map((category) => (
-          <button
-            class="filter-pill"
-            type="button"
-            data-filter={category}
-            aria-pressed="false"
-          >
-            {category}
-          </button>
-        ))
-      }
-    </div>
-  </div>
-
-  {
-    categories.map((category) => {
-      const components = componentsByCategory[category];
-      const slug = category.toLowerCase();
-
-      return (
-        <section class="component-section" data-section={category}>
-          <h2 class="component-section-heading" data-heading>
-            {category}
-          </h2>
-          <CardGrid>
-            {components.map((componentPath) => {
-              const name = getComponentName(componentPath);
-              return (
-                <div
-                  class="component-item"
-                  data-category={category}
-                  data-name={name}
-                >
-                  <Card>
-                    <LinkButton
-                      href={`/components/${slug}/${name}`}
-                      aria-label={name}
-                      variant="minimal"
-                    >
-                      <div class="component-tile">
-                        <SVG path={componentPath} />
-                      </div>
-                    </LinkButton>
-                  </Card>
-                </div>
-              );
-            })}
-          </CardGrid>
-        </section>
-      );
-    })
-  }
-</div>
-
-<script is:inline>
-  (function () {
-    const root = document.querySelector("[data-components-library]");
-    if (!root) return;
-
-    const input = root.querySelector("#components-filter-input");
-    const pills = root.querySelectorAll(".filter-pill");
-    const sections = root.querySelectorAll("[data-section]");
-
-    let activeCategory = "__all__";
-
-    function normalize(s) {
-      return (s ?? "").toString().trim().toLowerCase();
+<CardsGrid searchPlaceholder="Find component">
+  <Fragment slot="filters">
+    {
+      categories.map((category) => (
+        <button
+          class="filter-pill"
+          type="button"
+          data-filter={category}
+          aria-pressed="false"
+        >
+          {category}
+        </button>
+      ))
     }
+  </Fragment>
+  <div slot="items">
+    {
+      categories.map((category) => {
+        const components = componentsByCategory[category];
+        const slug = category.toLowerCase();
 
-    function apply() {
-      const query = normalize(input?.value);
-
-      sections.forEach((section) => {
-        const sectionCategory = section.getAttribute("data-section");
-        const items = section.querySelectorAll(".component-item");
-
-        let anyVisible = false;
-
-        items.forEach((el) => {
-          const name = normalize(el.getAttribute("data-name"));
-          const category = el.getAttribute("data-category");
-
-          const matchesCategory =
-            activeCategory === "__all__" || category === activeCategory;
-          const matchesQuery = !query || name.includes(query);
-
-          const visible = matchesCategory && matchesQuery;
-          el.classList.toggle("component-hidden", !visible);
-          if (visible) anyVisible = true;
-        });
-
-        section.classList.toggle("section-hidden", !anyVisible);
-
-        if (activeCategory !== "__all__") {
-          section.classList.toggle(
-            "section-not-active",
-            sectionCategory !== activeCategory,
-          );
-        } else {
-          section.classList.remove("section-not-active");
-        }
-      });
-    }
-
-    pills.forEach((pill) => {
-      pill.addEventListener("click", () => {
-        activeCategory = pill.getAttribute("data-filter") ?? "__all__";
-        pills.forEach((p) =>
-          p.setAttribute("aria-pressed", p === pill ? "true" : "false"),
+        return (
+          <section class="component-section" data-section={category}>
+            <h2 class="component-section-heading" data-heading>
+              {category}
+            </h2>
+            <CardGrid>
+              {components.map((componentPath) => {
+                const name = getComponentName(componentPath);
+                return (
+                  <div
+                    class="cards-grid-item component-item"
+                    data-category={category}
+                    data-name={name}
+                  >
+                    <Card>
+                      <LinkButton
+                        href={`/components/${slug}/${name}`}
+                        aria-label={name}
+                        variant="minimal"
+                      >
+                        <div class="component-tile">
+                          <SVG path={componentPath} />
+                        </div>
+                      </LinkButton>
+                    </Card>
+                  </div>
+                );
+              })}
+            </CardGrid>
+          </section>
         );
-        apply();
-      });
-    });
-
-    input?.addEventListener("input", apply);
-    apply();
-  })();
-</script>
+      })
+    }
+  </div>
+</CardsGrid>
 
 <style>
   :global(.card) {
@@ -190,63 +102,6 @@ const componentsByCategory = {
     width: 100%;
   }
 
-  .components-toolbar {
-    display: flex;
-    gap: 0.75rem;
-    align-items: center;
-    flex-wrap: wrap;
-    margin: 1rem 0 1.5rem;
-  }
-
-  .components-search {
-    flex: 1 1 18rem;
-    min-width: 16rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.55rem 0.75rem;
-    background: var(--sl-color-gray-6);
-    border: 1px solid var(--sl-color-gray-5);
-    border-radius: 0.4rem;
-  }
-
-  .components-search input {
-    width: 100%;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--sl-color-white);
-    font: inherit;
-  }
-
-  .components-filters {
-    display: inline-flex;
-    gap: 0.4rem;
-    flex-wrap: wrap;
-    margin-top: 0;
-  }
-
-  .filter-pill {
-    padding: 0.45rem 0.7rem;
-    border-radius: 0.35rem;
-    border: 1px solid var(--sl-color-gray-5);
-    background: var(--sl-color-gray-7);
-    color: var(--sl-color-white);
-    font: inherit;
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    cursor: pointer;
-    margin-top: 0;
-  }
-
-  .filter-pill[aria-pressed="true"] {
-    background: var(--sl-color-accent);
-    border-color: var(--sl-color-accent);
-    color: var(--sl-color-black);
-  }
-
   .component-tile {
     display: flex;
     flex-direction: column;
@@ -262,14 +117,6 @@ const componentsByCategory = {
     text-transform: uppercase;
     color: var(--sl-color-white);
     opacity: 0.9;
-  }
-
-  .component-hidden {
-    display: none !important;
-  }
-
-  .section-hidden {
-    display: none;
   }
 
   :global(.card-grid) {
