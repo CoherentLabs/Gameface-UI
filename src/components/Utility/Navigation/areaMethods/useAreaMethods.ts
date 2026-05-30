@@ -1,14 +1,15 @@
 import { waitForFrames } from '@components/utils/waitForFrames';
-import { SetStoreFunction } from 'solid-js/store';
 import { NavigationConfigType } from '../types';
 import { AreaMethods } from './areaMethods.types';
-import { spatialNavigation } from 'coherent-gameface-interaction-manager';
-import { KeyName } from 'coherent-gameface-interaction-manager/dist/types/interaction-manager';
+import { KeyName, spatialNavigation } from 'coherent-gameface-interaction-manager';
+import { StoreSetter } from 'solid-js';
 
 export default function createAreaMethods(
     areas: Set<string>,
-    setConfig: SetStoreFunction<NavigationConfigType>
+    setConfig: StoreSetter<NavigationConfigType>
 ): AreaMethods {
+    // helper
+    const setScope = (area: string) => setConfig(s => {s.scope = area});
 
     const registerArea = (area: string, elements: string[] | HTMLElement[], focused?: boolean) => {
         waitForFrames(() => {
@@ -54,21 +55,21 @@ export default function createAreaMethods(
         if (!isAreaValid(area)) return;
 
         spatialNavigation.focusFirst(area);
-        setConfig('scope', area);
+        setScope(area);
     };
 
     const focusLast = (area: string) => {
         if (!isAreaValid(area)) return;
 
         spatialNavigation.focusLast(area);
-        setConfig('scope', area);
+        setScope(area);
     };
 
     const switchArea = (area: string) => {
         if (!isAreaValid(area)) return;
 
         spatialNavigation.switchArea(area);
-        setConfig('scope', area);
+        setScope(area);
     };
 
     const clearFocus = () => spatialNavigation.clearFocus();

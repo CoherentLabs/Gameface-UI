@@ -1,22 +1,22 @@
-import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, Setter, createSignal, onMount, ParentComponent, Show, createContext, createMemo, createEffect, on } from "solid-js";
+import { BaseComponentRef, ComponentProps } from "@components/types/ComponentProps";
+import { Accessor, Setter, createSignal, ParentComponent, Show, createContext, createMemo, createEffect } from "solid-js";
 import styles from './Checkbox.module.scss';
 import { Control, CheckboxControl } from "./CheckboxControl";
 import { Indicator } from "./CheckboxIndicator";
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
+import { untrack } from "@solidjs/web";
 
 const Label = createTokenComponent<{ before?: boolean }>();
 
-export interface CheckboxRef {
+export interface CheckboxRef extends BaseComponentRef {
     checked: Accessor<boolean>,
     value: any,
     setChecked: Setter<boolean>,
-    element: HTMLDivElement,
 }
 
-interface CheckBoxProps extends ComponentProps {
+interface CheckBoxProps extends ComponentProps<CheckboxRef> {
     value?: any
     checked?: boolean
     disabled?: boolean
@@ -29,12 +29,10 @@ interface CheckBoxProps extends ComponentProps {
 export const CheckboxContext = createContext<{ checked: Accessor<boolean> }>();
 
 const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
-    const LabelToken = useToken(Label, props.children);
+    const LabelToken = useToken(Label, () => props.children);
 
     const [checked, setChecked] = createSignal(props.checked ?? false);
     const isBefore = createMemo(() => LabelToken()?.before);
-    let element!: HTMLDivElement;
-
     const checkboxClasses = createMemo(() => {
         const classes = [styles.checkbox];
 
@@ -52,38 +50,27 @@ const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
 
 
     props.componentClasses = () => checkboxClasses();
+    props.refObject = {
+        checked,
+        value: untrack(() => props.value),
+        setChecked,
+    }
 
     const toggle = () => {
         if (props.disabled) return;
 
         setChecked(prev => !prev);
-        props.onChange?.(checked())
     }
 
-    createEffect(
-        on(checked, (v) => {
-            props.onChange?.(v);
-        }, {defer: true})
-    );
-
-    onMount(() => {
-        if (!props.ref || !element) return;
-
-        (props.ref as unknown as (ref: any) => void)({
-            checked,
-            value: props.value,
-            setChecked,
-            element,
-        });
-    });
+    createEffect(checked, (value) => {
+        props.onChange?.(value);
+    }, {defer: true})
 
     return (
-        <CheckboxContext.Provider value={{ checked }}>
+        <CheckboxContext value={{ checked }}>
             <div
-                ref={element!}
-                use:baseComponent={props}
-                use:navigationActions={mergeNavigationActions(props, { 'select': toggle })}
-                onclick={toggle}>
+                ref={[baseComponent(props), navigationActions(mergeNavigationActions(props, { 'select': toggle }))]}
+                onClick={toggle}>
 
                 <Show when={isBefore()}>
                     {LabelToken()?.children}
@@ -100,7 +87,7 @@ const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
                 </Show>
 
             </div>
-        </CheckboxContext.Provider>
+        </CheckboxContext>
     )
 }
 

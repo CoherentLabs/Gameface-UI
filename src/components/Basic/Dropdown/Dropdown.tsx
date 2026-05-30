@@ -1,4 +1,4 @@
-import { Accessor, createContext, createMemo, createSignal, createUniqueId, DEV, JSX, onMount, ParentComponent } from 'solid-js';
+import { Accessor, createContext, createMemo, createSignal, createUniqueId, DEV, onSettled, ParentComponent } from 'solid-js';
 import { DropdownOptions, Handle, Options, Track } from './DropdownOptions';
 import { Option } from './DropdownOption';
 import { DropdownTrigger, Icon, Placeholder, Trigger } from './DropdownTrigger';
@@ -9,6 +9,7 @@ import baseComponent, { navigationActions } from '@components/BaseComponent/Base
 import mergeNavigationActions from '@components/utils/mergeNavigationActions';
 import { useNavigation } from '@components/Utility/Navigation/Navigation';
 import style from './Dropdown.module.scss';
+import { JSX } from '@solidjs/web';
 export interface CommonDropdownSlotProps {
     style?: JSX.CSSProperties,
     class?: string,
@@ -33,7 +34,7 @@ interface DropdownContextValue {
     isInverted: Accessor<boolean>
 }
 
-interface DropdownProps extends ComponentProps {
+interface DropdownProps extends ComponentProps<DropdownRef> {
     disabled?: boolean
     'class-disabled'?: string
     onChange?: (value: string) => void;
@@ -106,6 +107,10 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
     };
 
     props.componentClasses = () => dropdownClasses();
+    props.refObject = {
+        selected,
+        selectOption,
+    }
 
     function handlePosition() {
         const clipParent = getScrollableParent(element);
@@ -142,16 +147,9 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
         nav?.switchArea(previousNavScope!);
     }
 
-    onMount(() => {
+    onSettled(() => {
         waitForFrames(() => {
             handlePosition()
-        });
-        if (!props.ref || !element) return;
-
-        (props.ref as unknown as (ref: any) => void)({
-            selected,
-            selectOption,
-            element,
         });
     });
 
@@ -173,15 +171,16 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
     }
 
     return (
-        <DropdownContext.Provider value={DropdownContextValue}>
-            <div ref={element}
-                use:baseComponent={props}
-                use:navigationActions={mergeNavigationActions(props, defaultActions)}
-            >
+        <DropdownContext value={DropdownContextValue}>
+            <div ref={[
+                    baseComponent(props), 
+                    navigationActions(mergeNavigationActions(props, defaultActions)), 
+                    (el) => element = el
+                ]}>
                 <DropdownTrigger parentChildren={props.children} />
                 <DropdownOptions parentChildren={props.children}></DropdownOptions>
             </div>
-        </DropdownContext.Provider>
+        </DropdownContext>
     );
 };
 

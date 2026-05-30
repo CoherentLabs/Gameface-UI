@@ -1,6 +1,6 @@
 import mergeNavigationActions from "@components/utils/mergeNavigationActions"
 import baseStyles from '../InputBase/InputBase.module.scss';
-import { createMemo, onMount, ParentComponent } from "solid-js";
+import { createMemo, onSettled, ParentComponent } from "solid-js";
 import { ComponentNavigationActions } from "@components/types/ComponentProps";
 import { useNavigation } from "@components/Utility/Navigation/Navigation";
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
@@ -29,7 +29,7 @@ const InputWrapper: ParentComponent<InputWrapperProps> = (wrapperProps) => {
         return classes.join(' ');
     });
 
-    onMount(() => {
+    onSettled(() => {
         if (!wrapperProps.props.ref || !element) return;
         
         (wrapperProps.props.ref as unknown as (ref: any) => void)({
@@ -42,10 +42,10 @@ const InputWrapper: ParentComponent<InputWrapperProps> = (wrapperProps) => {
     wrapperProps.props.componentClasses = () => inputWrapperClasses();
     
     return (
-        <div 
-            ref={element!}
-            use:baseComponent={wrapperProps.props}
-            use:navigationActions={mergeNavigationActions(wrapperProps.props, {
+        <div ref={[
+            baseComponent(wrapperProps.props),
+            (el) => element = el,
+            navigationActions(mergeNavigationActions(wrapperProps.props, {
                 'select': () => {
                     nav?.pauseNavigation();
                     wrapperProps.inputRef.current?.focus();
@@ -55,7 +55,8 @@ const InputWrapper: ParentComponent<InputWrapperProps> = (wrapperProps) => {
                     wrapperProps.inputRef.current?.blur()
                 },
                 ...wrapperProps.navActions
-            })}>
+            }))
+        ]}>
             {wrapperProps.children}
         </div>
     )

@@ -1,10 +1,11 @@
-import { ParentComponent, JSX, For, createSignal, onMount, createMemo } from "solid-js";
+import { ParentComponent, For, createSignal, createMemo, onSettled } from "solid-js";
 import styles from './Grid.module.scss';
 import LayoutBase from "../LayoutBase";
-import { BaseComponentRef, ComponentBaseProps } from "../../types/ComponentProps";
+import { BaseComponentRef, LayoutComponentProps } from "../../types/ComponentProps";
 import { warnIfUnsupported } from "@components/utils/supportsGamefaceFeature";
 import GridTile from "@components/Layout/GridTile/GridTile";
 import { GridContext } from "./GridContext";
+import { JSX } from "@solidjs/web";
 
 export interface GridRef extends BaseComponentRef {
     rows: number,
@@ -13,7 +14,7 @@ export interface GridRef extends BaseComponentRef {
     removeItem: (row: number, col: number) => void,
 }
 
-interface GridProps extends ComponentBaseProps {
+interface GridProps extends LayoutComponentProps<GridRef> {
     rows: number;
     cols: number;
     'row-style'?: JSX.CSSProperties; 
@@ -69,11 +70,11 @@ const Grid: ParentComponent<GridProps> = (props) => {
         }
     })
 
-    onMount(() => warnIfUnsupported(props, "gap"))
+    onSettled(() => warnIfUnsupported(props, "gap"))
 
     return (
         <LayoutBase {...props} componentClasses={styles.Grid} componentStyles={gridStyles()} refObject={gridObjectRef}>
-            <GridContext.Provider value={{ placeTile }}>
+            <GridContext value={{ placeTile }}>
                 {props.children}
                 <For each={gridTiles()}>
                     {(row) => (
@@ -86,7 +87,7 @@ const Grid: ParentComponent<GridProps> = (props) => {
                         </div>
                     )}
                 </For>
-            </GridContext.Provider>
+            </GridContext>
         </LayoutBase>
     );
 }

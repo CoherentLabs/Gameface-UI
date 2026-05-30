@@ -1,0 +1,36 @@
+diff --git a/node_modules/@solid-primitives/utils/dist/index.d.ts b/node_modules/@solid-primitives/utils/dist/index.d.ts
+index c3bbb9f..74933a3 100644
+--- a/node_modules/@solid-primitives/utils/dist/index.d.ts
++++ b/node_modules/@solid-primitives/utils/dist/index.d.ts
+@@ -1,6 +1,6 @@
+ import { onCleanup, createSignal, type Accessor, type AccessorArray, type EffectFunction, type NoInfer, type SignalOptions } from "solid-js";
+-import { isServer } from "solid-js/web";
+ import type { AnyClass, MaybeAccessor, MaybeAccessorValue, Noop, AnyObject, AnyFunction } from "./types.js";
++import { isServer } from "@solidjs/web";
+ export * from "./types.js";
+ export { isServer };
+ export declare const isClient: boolean;
+diff --git a/node_modules/@solid-primitives/utils/dist/index.js b/node_modules/@solid-primitives/utils/dist/index.js
+index 96e1a53..5ff331d 100644
+--- a/node_modules/@solid-primitives/utils/dist/index.js
++++ b/node_modules/@solid-primitives/utils/dist/index.js
+@@ -1,5 +1,6 @@
+-import { getOwner, onCleanup, createSignal, untrack, sharedConfig, onMount, DEV, equalFn, } from "solid-js";
+-import { isServer } from "solid-js/web";
++import { getOwner, onCleanup, createSignal, untrack, sharedConfig, onSettled, DEV, } from "solid-js";
++import { isServer } from "@solidjs/web";
++const onMount = onSettled;
+ export * from "./types.js";
+ //
+ // GENERAL HELPERS:
+@@ -12,8 +13,8 @@ export const isProd = !isDev;
+ export const noop = (() => void 0);
+ export const trueFn = () => true;
+ export const falseFn = () => false;
+-/** @deprecated use {@link equalFn} from "solid-js" */
+-export const defaultEquals = equalFn;
++/** @deprecated */
++export const defaultEquals = (a, b) => a === b;
+ export const EQUALS_FALSE_OPTIONS = { equals: false };
+ export const INTERNAL_OPTIONS = { internal: true };
+ /**

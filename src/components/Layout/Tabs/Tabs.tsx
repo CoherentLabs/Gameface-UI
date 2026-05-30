@@ -1,4 +1,4 @@
-import { Accessor, onMount, ParentComponent } from "solid-js";
+import { onSettled, ParentComponent } from "solid-js";
 import { createContext, createSignal } from "solid-js";
 
 export const TabsContext = createContext<TabsContextValue>();
@@ -9,7 +9,7 @@ export interface TabsComponentRef {
     changeTab: changeTabMethod;
 }
 
-interface TabsContextValue {
+export interface TabsContextValue {
     current: () => string,
     changeTab: changeTabMethod;
 }
@@ -43,16 +43,16 @@ const Tabs: ParentComponent<TabsProps> = (props) => {
         changeTab,
     };
 
-    onMount(() => {
+    onSettled(() => {
         if (props.ref) {
             (props.ref as (ref: any) => void)(tabsRefObject);
         }
       });
 
     return (
-        <TabsContext.Provider value={{ current, changeTab }}>
+        <TabsContext value={{ current, changeTab }}>
             {props.children}
-        </TabsContext.Provider>
+        </TabsContext>
     );
 }
 

@@ -52,11 +52,12 @@ export default defineConfig(({ mode }) => {
       },
     },
     resolve: {
-      alias: {
-        '@components': path.resolve(__dirname, "./src/components"),
-        '@custom-components': path.resolve(__dirname, "./src/custom-components"),
-        '@assets': path.resolve(__dirname, "./src/assets"),
-      }
+      alias: [
+        { find: /^@solidjs\/web$/, replacement: path.resolve(__dirname, "./src/shims/solid-web.ts") },
+        { find: '@components', replacement: path.resolve(__dirname, "./src/components") },
+        { find: '@custom-components', replacement: path.resolve(__dirname, "./src/custom-components") },
+        { find: '@assets', replacement: path.resolve(__dirname, "./src/assets") },
+      ]
     },
     css: {
       preprocessorOptions: {

@@ -1,4 +1,4 @@
-import { createEffect, onCleanup, Accessor } from "solid-js";
+import { createEffect, onCleanup } from "solid-js";
 import { ComponentProps, NavigationActionsConfig } from "@components/types/ComponentProps";
 import { useNavigation } from "@components/Utility/Navigation/Navigation";
 import eventBus from "@components/Utility/EventBus";
@@ -14,15 +14,19 @@ const baseEventsSet = new Set([
     "timeout", "touchend", "touchmove", "touchstart", "transitionend", "volumechange", "wheel",
 ]);
 
-function handleClasses(el: Element, props: ComponentProps) {
-    createEffect(() => {
-        const rawBase = props.componentClasses;
-        const base = typeof rawBase === "function" ? rawBase() : rawBase;
-        const ext = props.class;
-        const finalClass = base ? (ext ? base + " " + ext : base) : (ext || "");
-
-        if (el.className !== finalClass) el.className = finalClass;
-    });
+function handleClasses(getEl: () => HTMLElement | undefined, props: ComponentProps) {
+    createEffect(
+        () => {
+            const rawBase = props.componentClasses;
+            const base = typeof rawBase === "function" ? rawBase() : rawBase;
+            const ext = props.class;
+            return base ? (ext ? base + " " + ext : base) : (ext || "");
+        },
+        (finalClass) => {
+            const el = getEl();
+            if (el) el.className = finalClass;
+        }
+    );
 }
 
 type StyleObject = Record<string, string | number | null | undefined>;
@@ -53,15 +57,20 @@ function reconcileStyles(elStyle: CSSStyleDeclaration, next: any, prev: any) {
     }
 }
 
-function handleStyles(el: HTMLElement, props: ComponentProps) {
+function handleStyles(getEl: () => HTMLElement | undefined, props: ComponentProps) {
     let prevStyles: StyleObject = {};
 
     createEffect(() => {
-        const styles = el.style;
         const compRaw = props.componentStyles;
         const extStyles = props.style;
-
         const compStyles = typeof compRaw === "function" ? compRaw() : compRaw;
+
+        return ({extStyles, compStyles})
+
+    }, ({compStyles, extStyles}) => {
+        const el = getEl();
+        
+        if (!el) return;
 
         if (!compStyles && !extStyles) {
             if (Object.keys(prevStyles).length > 0) {
@@ -71,6 +80,7 @@ function handleStyles(el: HTMLElement, props: ComponentProps) {
             return;
         }
 
+        const styles = el.style;
         const isCompString = typeof compStyles === "string";
         const isExtString = typeof extStyles === "string";
 
@@ -98,86 +108,75 @@ function handleStyles(el: HTMLElement, props: ComponentProps) {
     });
 }
 
-function handleAttrs(el: Element, props: ComponentProps) {
-    let prevKeys: string[] = [];
-
+function handleAttrs(getEl: () => HTMLElement | undefined, props: ComponentProps) {
     createEffect(() => {
-        const currentKeys: string[] = [];
-
+        const attrs: Record<string, string | null> = {};
         for (const key in props) {
-            if (!key.startsWith("attr:")) continue;
-
-            const name = key.slice(5);
-            const val = (props as any)[key];
-            currentKeys.push(name);
-
-            if (val != null) {
-                const strVal = String(val);
-                if (el.getAttribute(name) !== strVal) {
-                    el.setAttribute(name, strVal);
-                }
-            } else {
-                el.removeAttribute(name);
+            if (!key.startsWith('data-')) continue;
+            attrs[key] = (props as any)[key] != null ? String((props as any)[key]) : null;
+        }
+        return attrs;
+    }, 
+    (next, prev) => {
+        const el = getEl();
+        if (!el) return;
+        if (prev) {
+            for (const key in prev) {
+                if (!(key in next)) el.removeAttribute(key);
             }
         }
-
-        if (prevKeys.length > 0) {
-            for (let i = 0; i < prevKeys.length; i++) {
-                const oldName = prevKeys[i];
-                if (!(`attr:${oldName}` in props)) {
-                    el.removeAttribute(oldName);
-                }
-            }
+        for (const key in next) {
+            if (next[key] != null) el.setAttribute(key, next[key]!);
+            else el.removeAttribute(key);
         }
-        prevKeys = currentKeys;
-    });
+    })
 }
 
-function handleEvents(el: Element, props: ComponentProps) {
+function handleEvents(getEl: () => HTMLElement | undefined, props: ComponentProps) {
     const listeners: Array<[string, EventListener]> = [];
 
     for (const key in props) {
         if (baseEventsSet.has(key)) {
             const handler = (props as any)[key];
             if (typeof handler === 'function') {
-                el.addEventListener(key, handler as EventListener);
+                
                 listeners.push([key, handler as EventListener]);
             }
         }
     }
 
-    return () => {
+    onCleanup(() => {
+        const el = getEl();
+        if (!el) return;
         for (const [eventName, fn] of listeners) {
             el.removeEventListener(eventName, fn);
+        }
+    })
+
+    return (el: HTMLElement) => {
+        for (const [eventName, fn] of listeners) {
+            el.addEventListener(eventName, fn);
         }
     };
 }
 
-export function navigationActions(el: HTMLElement, accessor: Accessor<NavigationActionsConfig>) {
-    const config = accessor();
-    if (!config) return;
+export function navigationActions(config: NavigationActionsConfig | undefined) {
+    if (!config) return () => {};
 
     const nav = useNavigation();
-    if (!nav) return;
+    if (!nav) return () => {};
 
     const { anchor, ...actionHandlers } = config;
-
-    el.setAttribute('tabindex', '0');
-
-    let anchorElement: HTMLElement | null = null;
-    if (anchor) {
-        if (typeof anchor === 'string') {
-            waitForFrames(() => anchorElement = document.querySelector(anchor));
-        } else if (anchor instanceof HTMLElement) {
-            anchorElement = anchor;
-        }
-    }
+    let el: HTMLElement | undefined, 
+    anchorElement: HTMLElement | null = null;
 
     const isFocused = () => {
+        if (!el) return false;
         const active = document.activeElement;
+
         return (
             active === el || 
-            (anchorElement && active === anchorElement) || 
+            (anchorElement !== null && active === anchorElement) || 
             el.contains(active)
         );
     };
@@ -203,22 +202,46 @@ export function navigationActions(el: HTMLElement, accessor: Accessor<Navigation
         listeners.push([name, handler]);
     }
 
-    return () => {
+    
+    onCleanup(() => {
         for (const [name, handler] of listeners) {
             eventBus.off(name, handler);
         }
-    };
+    })
+
+    return (nextEl: HTMLElement) => {
+        el = nextEl
+        el.setAttribute('tabindex', '0');
+
+        if (anchor) {
+            if (typeof anchor === 'string') {
+                waitForFrames(() => anchorElement = document.querySelector(anchor));
+            } else if (anchor instanceof HTMLElement) {
+                anchorElement = anchor;
+            }
+        }
+    }
 }
 
-function baseComponent(el: Element, accessor: () => ComponentProps) {
-    const props = accessor();
+function baseComponent(props: ComponentProps<any>) {
+    let el: HTMLElement | undefined;
+    handleClasses(() => el, props);
+    handleStyles(() => el, props);
+    handleAttrs(() => el, props);
+    const attachEvents = handleEvents(() => el, props);
 
-    handleClasses(el, props);
-    handleStyles(el as HTMLElement, props);
-    handleAttrs(el, props);
+    return (nextEl: HTMLElement) => {
+        el = nextEl;
+        attachEvents(nextEl);
 
-    const cleanupEvents = handleEvents(el, props);
-    onCleanup(() => cleanupEvents());
+        if (!props.ref) return;
+
+        if (props.refObject) {
+            (props.ref as Function)({ ...props.refObject, element: nextEl });
+        } else {
+            (props.ref as Function)(nextEl);
+        }
+    }
 }
 
 export default baseComponent;

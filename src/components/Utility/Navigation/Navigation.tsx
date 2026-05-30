@@ -1,7 +1,6 @@
-import { createContext, onCleanup, onMount, ParentComponent, useContext } from "solid-js"
+import { createContext, createStore, onCleanup, onSettled, ParentComponent, useContext } from "solid-js"
 import { gamepad } from 'coherent-gameface-interaction-manager';
 import NavigationArea from "./NavigationArea";
-import { createStore } from "solid-js/store";
 import { ActionMap, NavigationConfigType } from "./types";
 import { DEFAULT_ACTIONS } from "./defaults";
 import createAreaMethods from "./areaMethods/useAreaMethods";
@@ -17,8 +16,11 @@ export interface NavigationRef extends NavigationContextType {}
 
 export const NavigationContext = createContext<NavigationContextType>();
 export const useNavigation = () => {
-    const context = useContext(NavigationContext);
-    if (context) return context
+    try {
+        return useContext(NavigationContext);
+    } catch {
+        return undefined;
+    }
 }
 
 interface NavigationProps {
@@ -64,7 +66,7 @@ const Navigation: ParentComponent<NavigationProps> = (props) => {
         }
     }
     
-    onMount(() => {
+    onSettled(() => {
         if (config.gamepad) {
             gamepad.enabled = true;
             gamepad.pollingInterval = props.pollingInterval ?? 200;
@@ -72,7 +74,7 @@ const Navigation: ParentComponent<NavigationProps> = (props) => {
         initActions()
 
         if (!props.ref) return;
-        (props.ref as unknown as (ref: NavigationRef) => void)(navigationAPI);
+        (props.ref as Function)(navigationAPI);
     })
 
     onCleanup(() => {
@@ -81,9 +83,9 @@ const Navigation: ParentComponent<NavigationProps> = (props) => {
     })
 
     return (
-        <NavigationContext.Provider value={navigationAPI}>
+        <NavigationContext value={navigationAPI}>
             {props.children}
-        </NavigationContext.Provider>
+        </NavigationContext>
     )
 }
 

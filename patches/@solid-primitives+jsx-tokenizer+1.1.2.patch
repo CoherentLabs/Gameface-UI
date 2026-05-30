@@ -1,0 +1,23 @@
+diff --git a/node_modules/@solid-primitives/jsx-tokenizer/dist/index.d.ts b/node_modules/@solid-primitives/jsx-tokenizer/dist/index.d.ts
+index 8ed2db2..e0bd4e3 100644
+--- a/node_modules/@solid-primitives/jsx-tokenizer/dist/index.d.ts
++++ b/node_modules/@solid-primitives/jsx-tokenizer/dist/index.d.ts
+@@ -1,5 +1,6 @@
+-import { type Accessor, type Component, type JSX, type ResolvedJSXElement } from "solid-js";
++import { type Accessor, type Component, type ResolvedJSXElement } from "solid-js";
+ import type { NoInfer } from "@solid-primitives/utils";
++import { JSX } from "@solidjs/web";
+ /** @internal $TYPE is only used for type inference */
+ declare const $TYPE: unique symbol;
+ /** @internal */
+diff --git a/node_modules/@solid-primitives/jsx-tokenizer/dist/index.js b/node_modules/@solid-primitives/jsx-tokenizer/dist/index.js
+index d64d465..6b120b6 100644
+--- a/node_modules/@solid-primitives/jsx-tokenizer/dist/index.js
++++ b/node_modules/@solid-primitives/jsx-tokenizer/dist/index.js
+@@ -1,5 +1,5 @@
+ import { createComponent, createMemo, DEV, } from "solid-js";
+-import { isServer } from "solid-js/web";
++import { isServer } from "@solidjs/web";
+ import { asArray } from "@solid-primitives/utils";
+ /** @internal */
+ const $TOKENIZER = Symbol(!isServer && DEV ? "jsx-tokenizer" : "");

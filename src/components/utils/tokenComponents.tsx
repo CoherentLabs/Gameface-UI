@@ -1,10 +1,12 @@
 import { createToken, isToken, JSXTokenizer, resolveTokens } from '@solid-primitives/jsx-tokenizer';
-import { ParentProps, JSX, createMemo, createUniqueId, mergeProps } from 'solid-js';
+import { JSX } from '@solidjs/web';
+import { ParentProps, createMemo, createUniqueId, merge } from 'solid-js';
 
 type TokenizerType<T extends Record<string, any>> = JSXTokenizer<{ props: ParentProps<T> }>;
 
-export const useToken = <T extends Record<string, any>>(tokenizer: TokenizerType<T>, parentChildren: JSX.Element) => {
+export const useToken = <T extends Record<string, any>>(tokenizer: TokenizerType<T>, getChildren: () => JSX.Element) => {
     return createMemo(() => {
+        const parentChildren = getChildren(); 
         if (!parentChildren) return null;
 
         const tokens = resolveTokens(tokenizer, () => parentChildren, { includeJSXElements: true })();
@@ -14,8 +16,9 @@ export const useToken = <T extends Record<string, any>>(tokenizer: TokenizerType
     });
 };
 
-export const useTokens = <T extends Record<string, any>>(tokenizer: TokenizerType<T>, parentChildren: JSX.Element) => {
+export const useTokens = <T extends Record<string, any>>(tokenizer: TokenizerType<T>, getChildren: () => JSX.Element) => {
     return createMemo(() => {
+        const parentChildren = getChildren(); 
         if (!parentChildren) return null;
 
         const tokens = resolveTokens(tokenizer, () => parentChildren, { includeJSXElements: true })();
@@ -37,6 +40,6 @@ export const createTokenComponent = <T extends Record<string, any>>(withId = fal
     return createToken((props: ParentProps<T>) => {
         if (!withId) return { props };
 
-        return { props: mergeProps(props, { _id: withId ? createUniqueId() : undefined }) as ParentProps<T> & { _id?: string } };
+        return { props: merge(props, { _id: withId ? createUniqueId() : undefined }) as ParentProps<T> & { _id?: string } };
     }, emptyToken);
 };

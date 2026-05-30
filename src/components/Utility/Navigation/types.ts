@@ -1,4 +1,4 @@
-import { KeyName, GamepadInput } from 'coherent-gameface-interaction-manager/dist/types/interaction-manager';
+import { GamepadInput, KeyName } from "coherent-gameface-interaction-manager";
 
 type ActionType = 'press' | 'hold' | 'lift';
 

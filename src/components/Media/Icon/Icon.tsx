@@ -1,4 +1,4 @@
-import { Component, createSignal, JSX } from "solid-js";
+import { Component, createSignal } from "solid-js";
 import { IconMap } from "./IconTypes";
 import styles from './Icon.module.scss';
 import baseStyles from '../ImageBase/ImageBase.module.scss';
@@ -6,12 +6,12 @@ import fallbackImg from './fallback.png?url';
 import baseComponent from "@components/BaseComponent/BaseComponent";
 import { ComponentProps, ExcludedEvents } from "@components/types/ComponentProps";
 import Events from "@components/types/BaseComponent";
+import { JSX } from "@solidjs/web";
 
 export interface IconProps extends Omit<Events, ExcludedEvents> {
 	fill?: boolean
 	style?: JSX.CSSProperties
     class?: string,
-    [key: `attr:${string}`]: any;
 }
 
 const iconClasses = (base: string, props: IconProps) => {
@@ -23,7 +23,7 @@ const modules = import.meta.glob('@assets/icons/**/*.{png,svg}', { eager: true }
 const MissingIcon: Component<ComponentProps & {fill?: boolean}> = (props) => {
 	props.componentClasses = () => iconClasses(styles.fallback, props);
  
-	return <img use:baseComponent={props} src={fallbackImg} />;
+	return <img ref={baseComponent(props)} src={fallbackImg} />;
 }
 
 const IconComponent = (src: string): Component<ComponentProps & {fill?: boolean}> => {
@@ -38,7 +38,7 @@ const IconComponent = (src: string): Component<ComponentProps & {fill?: boolean}
 					<MissingIcon {...props} />
 				) : (
 					<img
-						use:baseComponent={props}
+						ref={baseComponent(props)}
 						src={src}
 						onError={() => setHasError(true)}
 					/>

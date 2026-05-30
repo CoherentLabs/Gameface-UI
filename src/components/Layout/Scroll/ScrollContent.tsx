@@ -1,9 +1,10 @@
 
-import { createMemo, JSX, onCleanup, onMount, ParentComponent, useContext } from 'solid-js';
+import { createMemo, onCleanup, onSettled, ParentComponent, useContext } from 'solid-js';
 import styles from './Scroll.module.scss';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { ScrollContext } from './Scroll';
+import { JSX, untrack } from '@solidjs/web';
 
 interface ScrollContentProps extends TokenComponentProps {
     ref: HTMLDivElement
@@ -22,7 +23,7 @@ export const ScrollContent: ParentComponent<ScrollContentProps> = (props) => {
     let contentRef: HTMLDivElement | undefined;
 
     const scrollContext = useContext(ScrollContext);
-    const ContentToken = useToken(Content, props.parentChildren);
+    const ContentToken = useToken(Content, () => props.parentChildren);
 
     const contentStyles = createMemo(() => {
         const token = ContentToken();
@@ -39,23 +40,26 @@ export const ScrollContent: ParentComponent<ScrollContentProps> = (props) => {
         return classes.join(' ');
     });
 
-    onMount(() => {
+    onSettled(() => {
         resizeObserver = new ResizeObserver(scrollContext!.updateMeasurements);
 
         if (contentRef) resizeObserver.observe(contentRef);
     });
 
-    const initContentRef = (el: HTMLDivElement) => {
-        const token = ContentToken();
-        token?.ref && (token.ref as any as (el: HTMLDivElement) => void)(el);
-        (props.ref as any as (el: HTMLDivElement) => void)(el);
+    const initContentRef = () => {
+        const token = untrack(() => ContentToken());
+
+        return (el: HTMLDivElement) => {
+            token?.ref && (token.ref as any as (el: HTMLDivElement) => void)(el);
+            (props.ref as any as (el: HTMLDivElement) => void)(el);
+        }
     }
 
     onCleanup(() => {
         if (resizeObserver) resizeObserver.disconnect();
     });
 
-    return <div ref={initContentRef} style={contentStyles()} class={contentClasses()}>
+    return <div ref={initContentRef()} style={contentStyles()} class={contentClasses()}>
         <div ref={contentRef}>
             {ContentToken()?.children}
         </div>

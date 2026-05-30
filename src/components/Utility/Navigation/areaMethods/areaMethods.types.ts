@@ -1,4 +1,4 @@
-import { KeyName } from 'coherent-gameface-interaction-manager/dist/types/interaction-manager';
+import { KeyName } from "coherent-gameface-interaction-manager";
 
 /**
  * Interface defining all area-related navigation methods

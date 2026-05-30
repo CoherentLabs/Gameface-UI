@@ -12,9 +12,9 @@ export const Icon = createTokenComponent<CommonDropdownSlotProps>();
 
 export const DropdownTrigger: ParentComponent<TokenComponentProps> = (props) => {
     const dropdown = useContext(DropdownContext);
-    const TriggerToken = useToken(Trigger, props.parentChildren);
-    const PlaceholderToken = useToken(Placeholder, props.parentChildren);
-    const IconToken = useToken(Icon, props.parentChildren);
+    const TriggerToken = useToken(Trigger, () => props.parentChildren);
+    const PlaceholderToken = useToken(Placeholder, () => props.parentChildren);
+    const IconToken = useToken(Icon, () => props.parentChildren);
 
     const triggerStyles = createMemo(() => {
         const token = TriggerToken?.();
@@ -30,6 +30,7 @@ export const DropdownTrigger: ParentComponent<TokenComponentProps> = (props) => 
         const token = IconToken?.();
         return token && token.style ? { ...token.style } : {};
     });
+    let test: HTMLDivElement | undefined
 
     return (
         <div onClick={() => dropdown?.toggle(!dropdown.open())} class={style['dropdown-trigger'] + ` ${TriggerToken?.()?.class || ''}`} style={triggerStyles()}>
@@ -38,7 +39,7 @@ export const DropdownTrigger: ParentComponent<TokenComponentProps> = (props) => 
                     {dropdown?.options.get(dropdown?.selected())?.label}
                 </Show>
                 <Show when={!dropdown?.selected()}>
-                    <InlineTextBlock class={style['dropdown-placeholder'] + ` ${PlaceholderToken?.()?.class || ''}`} style={placeholderStyles()}>
+                    <InlineTextBlock ref={test} class={style['dropdown-placeholder'] + ` ${PlaceholderToken?.()?.class || ''}`} style={placeholderStyles()}>
                         <Show when={PlaceholderToken?.()}>
                             {PlaceholderToken?.()?.children || 'Select an option'}
                         </Show>

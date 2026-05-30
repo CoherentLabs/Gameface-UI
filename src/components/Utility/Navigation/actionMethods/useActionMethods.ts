@@ -1,13 +1,13 @@
 import { actions, keyboard, gamepad } from 'coherent-gameface-interaction-manager';
-import { SetStoreFunction } from 'solid-js/store';
 import { ActionName, ActionCfg, DefaultActions, NavigationConfigType } from '../types';
 import { DEFAULT_ACTION_NAMES } from '../defaults';
 import eventBus from '@components/Utility/EventBus';
 import { ActionMethods } from './actionMethods.types';
+import { StoreSetter } from 'solid-js';
 
 export default function createActionMethods(
     config: NavigationConfigType,
-    setConfig: SetStoreFunction<NavigationConfigType>
+    setConfig: StoreSetter<NavigationConfigType>
 ): ActionMethods {
     // For regular pause/unpause subscribers
     const actionSubscribers = new Map<string, number>();
@@ -15,6 +15,8 @@ export default function createActionMethods(
     const forcePausedActions = new Set<string>();
     // For remembering which already paused actions were affected in the pause input function
     const inputCaptureSnapshot = new Set<string>();
+    // Helper
+    const setPaused = (name: ActionName, paused: boolean = true) => setConfig(s => {s.actions[name]!.paused = paused});
     
     const registerAction = (actionName: ActionName) => {
         const {key, button, callback, global} = getAction(actionName)!;
@@ -61,7 +63,7 @@ export default function createActionMethods(
         if (getAction(name)) {
             return console.warn(`Action ${name} is already registered! If you wish to update it's data use updateAction() instead.`)
         }
-        setConfig('actions', name, data);
+        setConfig(s => {s.actions[name] = data});
         registerAction(name);
     }
 
@@ -75,7 +77,8 @@ export default function createActionMethods(
         }
 
         unregisterAction(name);
-        setConfig('actions', name, undefined);
+        // setConfig('actions', name, undefined);
+        setConfig(s => { delete s.actions[name] });
     }
 
     const updateAction = (name: ActionName, data: ActionCfg) => {
@@ -84,7 +87,8 @@ export default function createActionMethods(
         }
 
         unregisterAction(name)
-        setConfig('actions', name, data);
+        // setConfig('actions', name, data);
+        setConfig(s => {s.actions[name] = data});
         registerAction(name);
     }
 
@@ -109,7 +113,9 @@ export default function createActionMethods(
                 return;
             }
             forcePausedActions.add(name);
-            setConfig('actions', name, 'paused', true);
+            // setConfig('actions', name, 'paused', true);
+            setPaused(name);
+
             return;
         }
 
@@ -120,9 +126,7 @@ export default function createActionMethods(
         actionSubscribers.set(name, newCount);
 
         if (newCount === 0) {
-            if (!forcePausedActions.has(name)) {
-                setConfig('actions', name, 'paused', true);
-            }
+            if (!forcePausedActions.has(name)) setPaused(name);
         }
     };
 
@@ -134,7 +138,7 @@ export default function createActionMethods(
             if (!forcePausedActions.has(name)) return; // Wasn't forced
             forcePausedActions.delete(name);
 
-            setConfig('actions', name, 'paused', false);
+            setPaused(name, false);
             return;
         }
 
@@ -149,9 +153,7 @@ export default function createActionMethods(
             return;
         }
 
-        if (newCount === 1) { 
-            setConfig('actions', name, 'paused', false);
-        }
+        if (newCount === 1) setPaused(name, false);
     };
 
     const isPaused = (name: ActionName) => {

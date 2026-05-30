@@ -1,9 +1,10 @@
-import { createMemo, JSX, ParentComponent, useContext } from "solid-js";
+import { createMemo, ParentComponent, useContext } from "solid-js";
 import styles from './ToggleButton.module.scss';
 
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
 import { ToggleButtonContext } from "./ToggleButton";
+import { JSX } from "@solidjs/web";
 
 interface IndicatorTokenProps {
     style?: JSX.CSSProperties,
@@ -14,7 +15,7 @@ export const Indicator = createTokenComponent<IndicatorTokenProps>();
 
 export const ToggleButtonIndicator: ParentComponent<TokenComponentProps> = (props) => {
     const toggleButtonContext = useContext(ToggleButtonContext);
-    const IndicatorToken = useToken(Indicator, props.parentChildren);
+    const IndicatorToken = useToken(Indicator, () => props.parentChildren);
 
     const indicatorClasses = createMemo(() => {
         const classes = [styles.indicator];

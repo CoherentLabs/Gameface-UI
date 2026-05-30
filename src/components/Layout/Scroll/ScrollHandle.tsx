@@ -1,8 +1,9 @@
-import { createMemo, JSX, ParentComponent, useContext } from "solid-js";
+import { createMemo, ParentComponent, useContext } from "solid-js";
 import styles from './Scroll.module.scss';
 import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
 import { ScrollContext } from "./Scroll";
 import { TokenComponentProps } from "@components/types/ComponentProps";
+import { JSX } from "@solidjs/web";
 
 export interface HandleTokenProps {
     style?: JSX.CSSProperties | undefined
@@ -13,7 +14,7 @@ export const Handle = createTokenComponent<HandleTokenProps>();
 
 export const ScrollHandle: ParentComponent<TokenComponentProps> = (props) => {
     const scrollContext = useContext(ScrollContext);
-    const HandleToken = useToken(Handle, props.parentChildren);
+    const HandleToken = useToken(Handle, () => props.parentChildren);
 
     const handleStyles = createMemo(() => {
         const styles = { height: `${scrollContext?.handleHeight()}px`, top: `${scrollContext?.handleTop()}px` };

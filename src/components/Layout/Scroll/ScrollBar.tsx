@@ -1,9 +1,10 @@
-import { createMemo, JSX, ParentComponent, Show, useContext } from 'solid-js';
+import { createMemo, ParentComponent, Show, useContext } from 'solid-js';
 import { ScrollContext } from './Scroll';
 import styles from './Scroll.module.scss';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 import { ScrollHandle } from './ScrollHandle';
 import { TokenComponentProps } from '@components/types/ComponentProps';
+import { JSX } from '@solidjs/web';
 
 export interface BarTokenProps {
     style?: JSX.CSSProperties | undefined
@@ -14,7 +15,7 @@ export const Bar = createTokenComponent<BarTokenProps>();
 
 export const ScrollBar: ParentComponent<TokenComponentProps> = (props) => {
     const scrollContext = useContext(ScrollContext);
-    const BarToken = useToken(Bar, props.parentChildren);
+    const BarToken = useToken(Bar, () => props.parentChildren);
 
     const scrollBarStyles = createMemo(() => {
         const token = BarToken();

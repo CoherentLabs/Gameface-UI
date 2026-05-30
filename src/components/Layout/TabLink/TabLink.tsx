@@ -1,6 +1,6 @@
 import { ParentComponent, useContext } from "solid-js";
 import { ComponentBaseProps } from "../../types/ComponentProps";
-import { TabsContext } from "../Tabs/Tabs";
+import { TabsContext, TabsContextValue } from "../Tabs/Tabs";
 import LayoutBase from "../LayoutBase";
 
 
@@ -10,11 +10,10 @@ interface TabLinkProps extends ComponentBaseProps {
 }
 
 const TabLink: ParentComponent<TabLinkProps> = (props) => {
-    const tabs = useContext(TabsContext);
+    let tabs: TabsContextValue;
 
-    if (!tabs) {
-        throw new Error("TabLink must be used within a <Tabs> component");
-    }
+    try { tabs = useContext(TabsContext); }
+    catch { throw new Error("TabLink must be used within a <Tabs> component"); }
 
     const handleTabChange = async (event: MouseEvent) => {
         props.click && props.click(event);

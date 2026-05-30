@@ -3,11 +3,11 @@
     "strict": true,
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "jsx": "preserve",
-    "jsxImportSource": "solid-js",
+    "jsxImportSource": "@solidjs/web",
     "types": [
       "vite-plugin-solid-svg/types",
       "vite/client"
@@ -23,10 +23,9 @@
     "noImplicitThis": true, // Raise error on 'this' expressions with an implied 'any' type
     "alwaysStrict": true, // Parse in strict mode and emit "use strict" for each source file
     "paths": {
-      "@components/*": ["src/components/*"],
-      "@custom-components/*": ["src/custom-components/*"],
-      "@assets/*": ["src/assets/*"]
+      "@components/*": ["./src/components/*"],
+      "@custom-components/*": ["./src/custom-components/*"],
+      "@assets/*": ["./src/assets/*"]
     },
-    "baseUrl": "./"
   },
 }

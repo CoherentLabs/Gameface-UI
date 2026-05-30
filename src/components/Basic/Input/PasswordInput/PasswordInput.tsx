@@ -16,9 +16,9 @@ export interface PasswordInputRef extends TextInputRef {
 }
 
 const PasswordInput: ParentComponent<TextInputProps> = (props) => {
-    const BeforeToken = useToken(Before, props.children);
-    const AfterToken = useToken(After, props.children);
-    const VisibilityButtonToken = useToken(VisibilityButton, props.children);
+    const BeforeToken = useToken(Before, () => props.children);
+    const AfterToken = useToken(After,() =>  props.children);
+    const VisibilityButtonToken = useToken(VisibilityButton, () => props.children);
 
     const {value, handleChange, changeValue, clear } = useTextInput(props);
     const [type, setType] = createSignal<'text' | 'password'>('password');

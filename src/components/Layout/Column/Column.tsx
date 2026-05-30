@@ -1,14 +1,14 @@
-import { JSX } from "solid-js";
 import styles from './Column.module.scss';
-import { ComponentBaseProps } from "../../types/ComponentProps";
+import { LayoutComponentProps } from "../../types/ComponentProps";
 import LayoutBase from "../LayoutBase";
+import { JSX } from '@solidjs/web';
 
-const Columns: Record<string, (props: ComponentBaseProps) => JSX.Element> = {};
+const Columns: Record<string, (props: LayoutComponentProps) => JSX.Element> = {};
 
 for (let i = 1; i <= 12; i++) {
   const componentName = `Column${i}`;
 
-  Columns[componentName] = (props: ComponentBaseProps) => {
+  Columns[componentName] = (props: LayoutComponentProps) => {
     return <LayoutBase {...props} componentClasses={styles[`column-${i}`]} />
   };
 }

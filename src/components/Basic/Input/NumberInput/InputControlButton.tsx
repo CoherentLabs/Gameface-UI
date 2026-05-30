@@ -25,7 +25,7 @@ const InputControlButton: ParentComponent<InputControlButtonProps> = (props) => 
         <div 
             class={InputControlButtonClasses()} 
             style={props.token()?.style} 
-            onclick={props.click}>
+            onClick={props.click}>
             {props.token()?.children || (props.orientation === 'up' ? <ArrowUpIcon /> : <ArrowDownIcon /> )}
         </div>
     )

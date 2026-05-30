@@ -1,4 +1,4 @@
-import { ParentComponent, createMemo, mergeProps } from "solid-js";
+import { ParentComponent, createMemo, merge} from "solid-js";
 import { ComponentProps } from "../../types/ComponentProps";
 import styles from './Button.module.scss';
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
@@ -23,16 +23,13 @@ const getButtonClasses = (props: ButtonProps) => {
 }
 
 const Button: ParentComponent<ButtonProps> = (props) => {
-    const mergedProps = mergeProps({ textFit: true }, props);
+    const mergedProps = merge({ textFit: true }, props);
     props.componentClasses = createMemo(() => getButtonClasses(mergedProps).join(' '))
 
-    return <button
-        ref={props.ref as HTMLButtonElement}
-        use:baseComponent={props}
-        use:navigationActions={{
-            anchor: props.anchor,
-            ...props.onAction,
-        }}>
+    return <button ref={[
+            baseComponent(props), 
+            navigationActions({ anchor: props.anchor, ...props.onAction })
+        ]}>
         {props.children}
     </button>
 }

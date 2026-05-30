@@ -4,10 +4,13 @@ import { TextInputProps } from "./types";
 function useTextInput (props: TextInputProps) {
     const [value, setValue] = createSignal<string>(props.value ?? '');
 
-    createEffect(() => {
-        changeValue(props.value ?? "")
-        console.log('hello')
-    });
+    createEffect(
+        () => props.value,
+        (value) => {
+            changeValue(value ?? "")
+            console.log('hello')
+        }
+    );
 
     const handleChange = (e: InputEvent) => {
         if (!e.target ) return;

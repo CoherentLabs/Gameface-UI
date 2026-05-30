@@ -1,9 +1,9 @@
-import { ParentComponent, JSX, useContext, createSignal } from "solid-js";
-import { ComponentBaseProps } from "../../types/ComponentProps";
+import { ParentComponent, useContext, onSettled } from "solid-js";
+import { LayoutComponentProps } from "../../types/ComponentProps";
 import LayoutBase from "../LayoutBase";
 import { BaseComponentRef } from "../../types/ComponentProps";
-import style from './GridTile.module.scss';
-import { GridContext } from "../Grid/GridContext";
+import { GridContext, GridContextType } from "../Grid/GridContext";
+import { JSX } from "@solidjs/web";
 
 export interface GridTileRef extends BaseComponentRef {
     row: number,
@@ -14,21 +14,24 @@ export interface GridTileRef extends BaseComponentRef {
     replaceTile: (newTile: Element | JSX.Element) => void
 }
 
-export interface GridTileProps extends ComponentBaseProps {
+export interface GridTileProps extends LayoutComponentProps<GridTileRef> {
     row: number
     col: number
 }
 
 const GridTile: ParentComponent<GridTileProps> = (props) => {
-    const gridContext = useContext(GridContext)
+    let gridContext: GridContextType;
 
-    if (!gridContext) throw new Error("GridTile component must be used within a Grid component");
+    try { gridContext = useContext(GridContext) }
+    catch (error) {
+        throw new Error("GridTile component must be used within a Grid component");
+    }
 
     const { placeTile } = gridContext;
-    const [tile, setTile] = createSignal<JSX.Element | null>(null);
+    let tile: JSX.Element | null = null;
 
     const moveTile = (newRow: number, newCol: number) => {
-        placeTile(newRow - 1, newCol - 1, tile());
+        placeTile(newRow - 1, newCol - 1, tile);
     }
 
     const removeTile = () => {
@@ -36,8 +39,8 @@ const GridTile: ParentComponent<GridTileProps> = (props) => {
     }
 
     const replaceTile = (newTile: Element | JSX.Element) => {
-        setTile(newTile)
-        placeTile(props.row - 1, props.col - 1, tile());
+        tile = newTile;
+        placeTile(props.row - 1, props.col - 1, tile);
     }
 
     const gridTileRef = {
@@ -52,11 +55,13 @@ const GridTile: ParentComponent<GridTileProps> = (props) => {
         <LayoutBase {...props} refObject={gridTileRef} />
     )
 
-    setTile(initialTile)
-    placeTile(props.row - 1, props.col - 1, tile());
+    tile = initialTile;
+
+    onSettled(() => {
+        placeTile(props.row - 1, props.col - 1, tile);
+    });
 
     return null
 }
 
 export default GridTile;
-

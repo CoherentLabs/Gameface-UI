@@ -1,4 +1,4 @@
-import { ParentComponent, useContext, ParentProps, onCleanup, onMount, Show } from 'solid-js';
+import { ParentComponent, useContext, ParentProps, onCleanup, Show, onSettled } from 'solid-js';
 import { CommonDropdownSlotProps, DropdownContext } from './Dropdown';
 import { createTokenComponent } from '@components/utils/tokenComponents';
 import { navigationActions } from '@components/BaseComponent/BaseComponent';
@@ -23,7 +23,7 @@ export const DropdownOption: ParentComponent<{ option: ParentProps<OptionTokenPr
         dropdown?.toggle(false);
     }
 
-    onMount(() => {
+    onSettled(() => {
         dropdown?.registerOption(props.option.value, props.option.children, element!, props.option.selected);
     })
 
@@ -48,17 +48,19 @@ export const DropdownOption: ParentComponent<{ option: ParentProps<OptionTokenPr
     }
 
     return <div
-        ref={element}
-        //@ts-ignore
-        attr:disabled={props.option.disabled || undefined}
-        onclick={() => onClickOption(props.option)}
+        ref={[
+            navigationActions({'select': () => {
+                dropdown?.selectOption(props.option.value)
+                dropdown?.handleNavigationClose();
+            }}), 
+            (el) =>  element = el
+        ]}
+        //@ts-ignore        
+        disabled={props.option.disabled || undefined}
+        onClick={() => onClickOption(props.option)}
         onMouseOver={(e: MouseEvent) => (e.currentTarget as HTMLElement).focus()}
         class={optionClasses(props.option)}
         style={{...props.option.style}}
-        use:navigationActions={{'select': () => {
-            dropdown?.selectOption(props.option.value)
-            dropdown?.handleNavigationClose();
-        }}}
     >
         <Show when={props.option.children}>
             {props.option.children}

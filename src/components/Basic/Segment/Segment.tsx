@@ -1,5 +1,5 @@
 import { BaseComponentRef, ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, createMemo, DEV, onCleanup, onMount, ParentComponent, Show } from "solid-js";
+import { Accessor, createMemo, DEV, onCleanup, onSettled, ParentComponent, Show } from "solid-js";
 import { createContext, createSignal } from "solid-js";
 import styles from './Segment.module.scss';
 import { SegmentButtons } from "./SegmentButtons";
@@ -31,7 +31,7 @@ interface SegmentContextValue {
     firstRender: Accessor<boolean>,
 }
 
-interface SegmentProps extends ComponentProps {
+interface SegmentProps extends ComponentProps<SegmentRef> {
     disabled?: boolean;
     'class-disabled'?: string;
     onChange?: (selected: string) => void;
@@ -128,17 +128,22 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
     });
 
     props.componentClasses = () => segmentClasses();
+    props.refObject = {
+        selected,
+        selectOption,
+        changeSelected,
+    }
 
-    onMount(() => {
-        if (!props.ref || !element) return;
+    // onSettled(() => {
+    //     if (!props.ref || !element) return;
 
-        (props.ref as unknown as (ref: any) => void)({
-            selected,
-            selectOption,
-            changeSelected,
-            element,
-        });
-    });
+    //     (props.ref as unknown as (ref: any) => void)({
+    //         selected,
+    //         selectOption,
+    //         changeSelected,
+    //         element,
+    //     });
+    // });
 
     onCleanup(() => {
         window.clearTimeout(transitionTimeout);
@@ -150,17 +155,16 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
     }
 
     return (
-        <SegmentContext.Provider value={{ selected, selectOption, registerOption, unregisterOption, firstRender }}>
-            <div ref={element}
-                use:baseComponent={props}
-                use:navigationActions={mergeNavigationActions(props, defaultActions)}
+        <SegmentContext value={{ selected, selectOption, registerOption, unregisterOption, firstRender }}>
+            <div ref={[baseComponent(props), el => { element = el; }]} 
+                // use:navigationActions={mergeNavigationActions(props, defaultActions)}
             >
                 <SegmentButtons parentChildren={props.children} />
                 <Show when={!firstRender()}>
                     <SegmentIndicator data={indicator} parentChildren={props.children} />
                 </Show>
             </div>
-        </SegmentContext.Provider>
+        </SegmentContext>
     );
 }
 

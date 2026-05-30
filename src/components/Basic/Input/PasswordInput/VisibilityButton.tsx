@@ -18,7 +18,7 @@ interface VisibilityButtonTokenProps extends TokenBase {
 export const VisibilityButton = createTokenComponent<VisibilityButtonTokenProps>();
 
 export const VisibilityButtonComponent: ParentComponent<VisibilityButtonComponentProps> = (props) => {
-    const VisibilityButtonToken = useToken(VisibilityButton, props.parentChildren);
+    const VisibilityButtonToken = useToken(VisibilityButton, () => props.parentChildren);
 
     const VisibilityButtonClasses = createMemo(() => {
         const classes = [styles['visibility-button']];
@@ -33,7 +33,7 @@ export const VisibilityButtonComponent: ParentComponent<VisibilityButtonComponen
         <div 
             class={VisibilityButtonClasses()} 
             style={VisibilityButtonToken()?.style} 
-            onclick={props.toggle}>
+            onClick={props.toggle}>
             {VisibilityButtonToken()?.children || (props.visible() ? <EyeIcon /> : <EyeOffIcon /> )}
         </div>
     )

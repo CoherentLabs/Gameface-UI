@@ -14,8 +14,8 @@ interface InputComponentProps extends TokenComponentProps {
 }
 
 export const InputBase: Component<InputComponentProps> = (props) => {
-    const InputToken = useToken(Input, props.parentChildren);
-    const PlaceholderToken = useToken(Placeholder, props.parentChildren);
+    const InputToken = useToken(Input, () => props.parentChildren);
+    const PlaceholderToken = useToken(Placeholder, () => props.parentChildren);
 
     const InputClasses = createMemo(() => {
         const classes = [styles.input];
@@ -35,7 +35,7 @@ export const InputBase: Component<InputComponentProps> = (props) => {
                 class={InputClasses()}
                 style={InputToken()?.style}
                 onInput={props.handleChange}
-                ondblclick={(e) => e.currentTarget.select()}
+                onDblClick={(e) => e.currentTarget.select()}
                 value={props.value()} />
             <Show when={PlaceholderToken() && props.value() === ''}>
                 <div class={`${styles.placeholder} ${PlaceholderToken()?.class ?? ''}`} style={PlaceholderToken()?.style}>

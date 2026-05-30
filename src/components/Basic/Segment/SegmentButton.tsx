@@ -1,9 +1,10 @@
-import { createMemo, JSX, onCleanup, onMount, ParentComponent, ParentProps, useContext } from "solid-js";
+import { createMemo, onCleanup, onSettled, ParentComponent, ParentProps, useContext } from "solid-js";
 import { SegmentContext } from "./Segment";
 import { ComponentProps } from "@components/types/ComponentProps";
 import styles from './Segment.module.scss';
 import { createTokenComponent } from "@components/utils/tokenComponents";
 import baseComponent from "@components/BaseComponent/BaseComponent";
+import { JSX } from "@solidjs/web";
 
 interface SegmentButtonProps extends ParentProps, ComponentProps {
     style?: JSX.CSSProperties,
@@ -53,9 +54,7 @@ export const SegmentButton: ParentComponent<{ button: SegmentButtonProps }> = (p
         props.button.click?.(e as MouseEvent);
     }
 
-    onMount(() => {
-        if (props.button.ref) (props.button.ref as unknown as (ref: any) => void)(element);
-
+    onSettled(() => {
         segment?.registerOption(props.button.value, element, props.button.selected)
     })
 
@@ -65,9 +64,8 @@ export const SegmentButton: ParentComponent<{ button: SegmentButtonProps }> = (p
 
     return (
         <div
-            ref={element}
-            use:baseComponent={props.button}
-            onclick={handleClick}>
+            ref={[baseComponent(props.button), el => { element = el; }]}
+            onClick={handleClick}>
             <div class={styles.content}>
                 {props.button.children}
             </div>

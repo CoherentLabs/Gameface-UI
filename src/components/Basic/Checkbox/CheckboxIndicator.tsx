@@ -1,9 +1,10 @@
-import { JSX, ParentComponent, useContext } from "solid-js";
+import { ParentComponent, useContext } from "solid-js";
 import styles from './Checkbox.module.scss';
 
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
 import { CheckboxContext } from "./Checkbox";
+import { JSX } from "@solidjs/web";
 
 interface IndicatorTokenProps {
     style?: JSX.CSSProperties,
@@ -14,7 +15,7 @@ export const Indicator = createTokenComponent<IndicatorTokenProps>();
 
 export const CheckboxIndicator: ParentComponent<TokenComponentProps> = (props) => {
     const checkboxContext = useContext(CheckboxContext);
-    const IndicatorToken = useToken(Indicator, props.parentChildren);
+    const IndicatorToken = useToken(Indicator, () => props.parentChildren);
 
     return (
         <div

@@ -1,0 +1,54 @@
+$primary-color: #868599;
+$secondary-color: #3e3d5d;
+$background: #383940;
+$font-cinzel: 'Cinzel', serif;
+
+.item-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: $background;
+}
+
+.item-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem;
+    border: 0.5rem solid $secondary-color;
+    min-width: 20rem;
+}
+
+.item-inspector-label {
+    width: 100%;
+    padding: 0.5rem;
+    margin: 0;
+    background-color: $background;
+    text-align: center;
+    font-family: $font-cinzel;
+    color: white;
+    font-size: 2rem;
+}
+
+.separator {
+    width: 18rem;
+    height: 0.1rem;
+    background-color: white;
+}
+
+.item-button {
+    font-family: $font-cinzel;
+    color: white;
+    font-size: 2rem;
+    width: 4rem;
+    height: 4rem;
+    background-color: $primary-color;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+        background-color: $secondary-color;
+    }
+}

@@ -1,10 +1,11 @@
-import { createMemo, JSX, ParentComponent } from "solid-js";
+import { createMemo, ParentComponent } from "solid-js";
 import styles from './ToggleButton.module.scss';
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
 import { ToggleButtonIndicator } from "./ToggleButtonIndicator";
 import { ToggleButtonHandle } from "./ToggleButtonHandle";
 import { LabelLeft, LabelRight } from "./ToggleButton";
+import { JSX } from "@solidjs/web";
 
 interface ControlTokenProps {
     style?: JSX.CSSProperties,
@@ -14,9 +15,9 @@ interface ControlTokenProps {
 export const Control = createTokenComponent<ControlTokenProps>();
 
 export const ToggleButtonControl: ParentComponent<TokenComponentProps> = (props) => {
-    const ControlToken = useToken(Control, props.parentChildren);
-    const LabelLeftToken = useToken(LabelLeft, props.parentChildren);
-    const LabelRightToken = useToken(LabelRight, props.parentChildren);
+    const ControlToken = useToken(Control, () => props.parentChildren);
+    const LabelLeftToken = useToken(LabelLeft, () => props.parentChildren);
+    const LabelRightToken = useToken(LabelRight, () => props.parentChildren);
 
     const controlClasses = createMemo(() => {
         const classes = [styles.control];

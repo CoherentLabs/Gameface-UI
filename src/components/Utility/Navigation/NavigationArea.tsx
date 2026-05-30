@@ -1,7 +1,8 @@
-import { children, createEffect, on, onCleanup, onMount, ParentComponent } from "solid-js"
+import { children, createEffect, onCleanup, onSettled, ParentComponent } from "solid-js"
 import { useNavigation } from "./Navigation";
 //@ts-ignore
 import { spatialNavigation } from 'coherent-gameface-interaction-manager';
+import { untrack } from "@solidjs/web";
 interface NavigationAreaProps {
     name: string,
     selector?: string,
@@ -12,12 +13,12 @@ const NavigationArea: ParentComponent<NavigationAreaProps> = (props) => {
     const nav = useNavigation();
     if (!nav) throw new Error('useNavigation must be used within Navigation');
     const cachedChildren = children(() => props.children);
-    const navigatableElements = props.selector ? [`.${props.selector}`] : cachedChildren();
+    const navigatableElements = props.selector ? [`.${props.selector}`] : untrack(() => cachedChildren());
 
-    const refresh = () => {
+    const refresh = (elements: HTMLElement[]) => {
         if (!spatialNavigation.enabled) return;
         deinit();
-        init(false);
+        nav.registerArea(props.name, elements, false);
     }
 
     const init = (focus: boolean) => {
@@ -29,9 +30,9 @@ const NavigationArea: ParentComponent<NavigationAreaProps> = (props) => {
     };
     
     // Refresh whenever children change
-    createEffect(on(cachedChildren, refresh, { defer: true }))
+    createEffect(() => cachedChildren() as HTMLElement[], refresh, { defer: true });
 
-    onMount(() => {
+    onSettled(() => {
         const shouldFocus = props.focused || props.name === nav.getScope();
         init(shouldFocus);
     })

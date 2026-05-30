@@ -30,8 +30,8 @@ export const DecreaseControl = createTokenComponent<InputControlTokenProps>();
 
 const NumberInput: ParentComponent<NumberInputProps> = (props) => {
     const [value, setValue] = createSignal<valueType>(props.value ?? '');
-    const IncreaseControlToken = useToken(IncreaseControl, props.children);
-    const DecreaseControlToken = useToken(DecreaseControl, props.children);
+    const IncreaseControlToken = useToken(IncreaseControl, () => props.children);
+    const DecreaseControlToken = useToken(DecreaseControl, () => props.children);
 
     const inputRef = { current: undefined as HTMLInputElement | undefined };
 

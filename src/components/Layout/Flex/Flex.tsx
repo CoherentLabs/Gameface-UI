@@ -1,4 +1,4 @@
-import { createMemo, onMount, ParentComponent } from "solid-js";
+import { createMemo, onSettled, ParentComponent } from "solid-js";
 import LayoutBase from "../LayoutBase";
 import styles from './Flex.module.scss'
 import { ComponentBaseProps } from "../../types/ComponentProps";
@@ -16,7 +16,7 @@ interface FlexProps extends ComponentBaseProps {
 }
 
 const Flex: ParentComponent<FlexProps> = (props) => {
-    onMount(() => warnIfUnsupported(props, 'gap'));
+    onSettled(() => warnIfUnsupported(props, 'gap'));
 
     const classes = createMemo(() => {
         const flexClasses = [styles.flex];
