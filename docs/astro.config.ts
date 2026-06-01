@@ -44,6 +44,12 @@ const sidebarTopics = [
     link: '/changelog/',
     items: []
   },
+  {
+    id: 'submit-recipe',
+    label: 'Submit Recipe',
+    link: '/submit-recipe/',
+    items: []
+  },
 ];
 
 /** @type {import('@astrojs/starlight/expressive-code').StarlightExpressiveCodeOptions} */
@@ -73,8 +79,11 @@ export default defineConfig({
         }),
         starlightSidebarTopics(sidebarTopics, {
           exclude: ['/'],
+          topics: {
+            recipes: ['/recipes', '/recipes/**'],
+          },
         }),
-        starlightLinksValidator()
+        starlightLinksValidator(),
       ],
       social: [
         {

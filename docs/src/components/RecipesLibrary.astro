@@ -25,6 +25,7 @@ const recipeDocs = allDocs
   .filter(
     (entry) => entry.id.startsWith("recipes/") && entry.id !== "recipes/index",
   )
+  .filter((entry) => !entry.data.draft)
   .filter((entry) => entry.data?.recipe);
 
 const recipes: RecipeCard[] = recipeDocs
@@ -133,7 +134,7 @@ const difficulties: Difficulty[] = ["beginner", "intermediate", "advanced"];
     padding: 0;
   }
 
-  :global(.sl-link-button) {
+  .sl-link-button {
     margin: 0 !important;
     display: flex;
     justify-content: center;

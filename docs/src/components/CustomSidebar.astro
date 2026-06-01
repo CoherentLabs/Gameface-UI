@@ -5,17 +5,18 @@ import { version } from "../../../package.json";
 import documentationIcon from "../assets/icons/documentation.png";
 import componentsIcon from "../assets/icons/components.png";
 import recipesIcon from "../assets/icons/recipes.png";
+import submitRecipeIcon from "../assets/icons/submit-recipe.png";
 import changelogIcon from "../assets/icons/changelog.png";
 
 export const topicIcons: Record<string, string> = {
     Documentation: documentationIcon.src,
     Components: componentsIcon.src,
     'Community Recipes': recipesIcon.src,
+    'Submit Recipe': submitRecipeIcon.src,
     Changelog: changelogIcon.src,
 };
 
-const { topics = [] } =
-    Astro.locals.starlightSidebarTopics ?? {};
+const { topics = [] } = Astro.locals.starlightSidebarTopics ?? {};
 
 const topicsArray = topics.map((topic) => ({
     id: topic.label,

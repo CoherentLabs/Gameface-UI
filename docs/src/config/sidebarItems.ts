@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import matter from 'gray-matter';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,16 +23,23 @@ export function componentSidebarItems() {
   ];
 }
 
-export function recipesSidebarItems() {
-  const subfolders = fs
+function getPublishedRecipeSlugs(): string[] {
+  return fs
     .readdirSync(recipesDir, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
-    .sort();
+    .filter((folderName) => {
+      const indexPath = path.join(recipesDir, folderName, 'index.mdx');
+      if (!fs.existsSync(indexPath)) return false;
 
-  return [
-    // Use slug entries to avoid nested groups (folder -> index.mdx)
-    // Each folder is expected to have `index.mdx` and the slug becomes `recipes/<folder>`.
-    ...subfolders.map((name) => `recipes/${name}`),
-  ];
+      const { data } = matter(fs.readFileSync(indexPath, 'utf8'));
+      if (data.draft === true) return false;
+      return Boolean(data.recipe);
+    })
+    .sort()
+    .map((name) => `recipes/${name}`);
+}
+
+export function recipesSidebarItems() {
+  return getPublishedRecipeSlugs();
 }

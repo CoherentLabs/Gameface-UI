@@ -1,0 +1,76 @@
+name: Recipe submission
+description: Submit a community recipe for the Gameface UI docs
+title: "[Recipe] "
+labels:
+  - recipe
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for contributing a community recipe!
+
+        Fill in the fields below. Items marked **(required)** must be provided for us to review your submission. Items marked **(recommended)** help us publish faster.
+
+  - type: input
+    id: username
+    attributes:
+      label: Username (recommended)
+      description: Your GitHub username or display name
+      placeholder: octocat
+
+  - type: input
+    id: recipe_title
+    attributes:
+      label: Recipe title (recommended)
+      placeholder: Animated Health Bar
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Brief description (recommended)
+      description: What this recipe does, dependencies, and intended use cases
+
+  - type: input
+    id: tags
+    attributes:
+      label: Tags (optional)
+      description: Comma-separated tags (e.g. hud, health, ui)
+      placeholder: hud, ui, health
+
+  - type: textarea
+    id: how_to_use
+    attributes:
+      label: How to use (recommended)
+      description: Step-by-step integration instructions
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Recipe files **(required)**
+
+        Attach your recipe files or a `.zip` archive in the GitHub issue composer (drag and drop below the form). Submissions **without files cannot be reviewed**.
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Terms
+      options:
+        - label: I agree to the Terms of Contribution
+          required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+        ### Review requirements
+
+        For the team to review and publish your recipe:
+
+        | | |
+        |---|---|
+        | **Required** | Recipe files attached to this issue (zip or individual files) |
+        | **Recommended** | Recipe title, brief description, how to use instructions |
+        | **Optional** | Username, tags |
+
+        We may follow up on the issue if anything is missing. Thank you!

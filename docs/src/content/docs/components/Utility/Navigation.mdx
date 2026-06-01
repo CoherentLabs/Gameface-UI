@@ -65,7 +65,7 @@ These actions are recognized across the entire Gameface UI component library, en
 Each default action has:
 - **Keyboard bindings** - One or more keyboard keys
 - **Gamepad bindings** - One or more gamepad buttons
-- **Global emission** - They emit events via the [event bus](/concepts/ui-communication/), allowing any component to respond
+- **Global emission** - They emit events via the [event bus](/docs/concepts/ui-communication/), allowing any component to respond
 - **No default callbacks** - They don't execute callbacks by default, only emit events. However they can be extended to execute callback as well.
 - **Library-wide recognition** - Preset components like Dropdown, `Stepper`, `Checkbox`, and others automatically listen to these actions
 
@@ -340,7 +340,7 @@ When defining actions, you can configure the following properties:
 | `key`      | `{binds: KeyName[], type?: ActionType[]}` | Keyboard configuration. `binds` specifies which keys trigger the action. `type` specifies when to trigger: `'press'` (default), `'hold'`, or `'lift'`.                                                     |
 | `button`   | `{binds: GamepadInput[], type?: Exclude<ActionType, 'lift'>}` | Gamepad configuration. `binds` specifies which buttons trigger the action. `type` specifies when to trigger: `'press'` (default) or `'hold'`.                                                              |
 | `callback` | `(scope?: string, ...args: any[]) => void`   | Function to execute when the action is triggered. Receives the current navigation scope as the first parameter.                                                                                            |
-| `global`   | `boolean`                                    | When `true`, the action emits globally via the [eventBus](/concepts/ui-communication/), allowing any component to listen. When `false`, only the callback is executed. Default actions have this set to `true`.                          |
+| `global`   | `boolean`                                    | When `true`, the action emits globally via the [eventBus](/docs/concepts/ui-communication/), allowing any component to listen. When `false`, only the callback is executed. Default actions have this set to `true`.                          |
 | `paused`   | `boolean`                                    | When set to true the action will be paused by default. Useful for configuring actions that are not immediately needed.                          |
 
 ## API
