@@ -6,7 +6,6 @@ function useTextInput (props: TextInputProps) {
 
     createEffect(() => {
         changeValue(props.value ?? "")
-        console.log('hello')
     });
 
     const handleChange = (e: InputEvent) => {

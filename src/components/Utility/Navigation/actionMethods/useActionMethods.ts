@@ -21,6 +21,9 @@ export default function createActionMethods(
 
         const shouldEmitGlobally = DEFAULT_ACTION_NAMES.has(actionName as DefaultActions) || global;
 
+        if (!key && !button) console.warn(`Action "${actionName}" has no key or button binding and will never be triggered by input!`);
+        if (!callback && !shouldEmitGlobally) console.warn(`Action "${actionName}" has no callback or global emission and will never produce any output!`);
+
         actions.register(actionName, (...args: any[]) => {
             if (isPaused(actionName)) return;
             
@@ -61,6 +64,7 @@ export default function createActionMethods(
         if (getAction(name)) {
             return console.warn(`Action ${name} is already registered! If you wish to update it's data use updateAction() instead.`)
         }
+
         setConfig('actions', name, data);
         registerAction(name);
     }

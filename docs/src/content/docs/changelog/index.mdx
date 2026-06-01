@@ -4,7 +4,15 @@ title: Changelog
 
 import { Badge } from '@astrojs/starlight/components'
 
-## 3.0.0 :badge[Latest]{variant="note"}
+## 3.0.1 :badge[Latest]{variant="note"}
+
+### 🛠 Navigation Improvements
+
+- <Badge text="Fix" variant="danger" size="small" /> [Navigation](/components/utility/navigation/): `callback` in the `ActionCfg` type is now optional. Overriding a default action with only key/button bindings no longer requires passing an empty callback or a redundant `global` flag.
+
+- <Badge text="Feature" variant="success" size="small" /> [Navigation](/components/utility/navigation/#action-methods): `addAction` now warns at runtime when the provided config has no `callback` and no `global: true`, or no `key`/`button` binding, as such an action would be unreachable or produce no effect.
+
+## 3.0.0
 
 ### ⚠️ Breaking Changes
 

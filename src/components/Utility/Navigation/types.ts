@@ -1,13 +1,13 @@
-import { KeyName, GamepadInput } from 'coherent-gameface-interaction-manager/dist/types/interaction-manager';
+import { KeyName, GamepadInput } from "coherent-gameface-interaction-manager";
 
 type ActionType = 'press' | 'hold' | 'lift';
 
 export type ActionCfg = {
     key?: {binds: KeyName[], type?: ActionType[]};
-    button?: {binds: GamepadInput[], type?: Exclude<ActionType, 'lift'>}
-    callback: (scope?: string, ...args: any[]) => void
-    global?: boolean,
-    paused?: boolean,
+    button?: {binds: GamepadInput[], type?: Exclude<ActionType, 'lift'>};
+    callback?: (scope?: string, ...args: any[]) => void;
+    global?: boolean;
+    paused?: boolean;
 };
 
 export type DefaultActions = 'move-left' | 'move-right' | 'move-up' | 'move-down' | 'select' | 'back' | 'pan';

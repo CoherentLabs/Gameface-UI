@@ -33,9 +33,9 @@ import { ActionMap } from '@components/Navigation/Navigation/types';
 
 const App = () => {
     const defaultActions: ActionMap = {
-        'tab-left': {key: {binds: ['Q'], type: ['press']}, button: {binds: ['left-sholder'], type: 'press'}, callback: menuLeft, global: true},
-        'tab-right': {key: {binds: ['E'], type: ['press']}, button: {binds: ['right-sholder'], type: 'press'}, callback: menuRight, global: true},
-        'select': {key: {binds: ['SPACE'], type: ['press']}, button: {binds: ['face-button-left'], type: 'press'}},
+        'tab-left': {key: {binds: ['Q'], type: ['press']}, button: {binds: ['left-shoulder'], type: 'press'}, callback: menuLeft, global: true},
+        'tab-right': {key: {binds: ['E'], type: ['press']}, button: {binds: ['right-shoulder'], type: 'press'}, callback: menuRight, global: true},
+        'select': {key: {binds: ['SPACEBAR'], type: ['press']}, button: {binds: ['face-button-left'], type: 'press'}},
         'back': {key: {binds: ['BACKSPACE'], type: ['press']}},
     }
     return (
@@ -106,7 +106,7 @@ import Navigation from '@components/Navigation/Navigation/Navigation';
 import { ActionMap } from '@components/Navigation/Navigation/types';
 
 const customActions: ActionMap = {
-    // Customize the 'select' action to use SPACE instead of ENTER
+    // Customize the 'select' action to use SPACEBAR instead of ENTER
     'select': {
         key: {binds: ['SPACEBAR'], type: ['press']},
         button: {binds: ['face-button-down'], type: 'press'},
@@ -141,6 +141,7 @@ nav.updateAction('select', {
 ### Adding Custom Actions
 
 Beyond the default actions, you can add your own custom actions for game-specific inputs:
+
 
 ```tsx
 import Navigation from '@components/Navigation/Navigation/Navigation';
