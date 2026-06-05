@@ -1,0 +1,59 @@
+/* Copyright (C) Microsoft Corporation. All rights reserved. */
+
+/* stylelint-disable property-allowed-list, declaration-property-value-allowed-list */
+/* stylelint-disable selector-pseudo-element-allowed-list */
+/* stylelint-disable selector-pseudo-class-allowed-list */
+
+/* Combination of resets and trying to maintain cross browser compatibility - https://docs.coherent-labs.com/cpp-gameface/what_is_gfp/htmlfeaturesupport/ */
+
+/* CSS that can be applied to both gameface and browsers lives in in reset.pcss. CSS that is invalid in Gameface and shows warnings lives in reset-browser.pcss */
+
+/* Uses cohinline attribute to apply inline styles to try and match layout behaviour - https://docs.coherent-labs.com/cpp-gameface/content_development/inlinelayout/ */
+
+/* A browser sees "cohinline" as a standalone attribute and "cohinline=true" as the same, but coherent doesn't, so adding both variants just in case */
+
+[cohinline] {
+	display: inline;
+	vertical-align: text-bottom;
+}
+
+[cohinline] * {
+	display: inline;
+}
+
+[cohinline] img {
+	vertical-align: text-bottom;
+}
+
+[cohinline="true"] {
+	display: inline;
+	vertical-align: text-bottom;
+}
+
+[cohinline="true"] * {
+	display: inline;
+}
+
+[cohinline="true"] img {
+	vertical-align: text-bottom;
+}
+
+*::-webkit-scrollbar {
+	display: none;
+}
+
+*:focus {
+	outline: none;
+}
+
+input,
+button,
+textarea,
+select {
+	font-variant: inherit;
+}
+
+ul[role="list"],
+ol[role="list"] {
+	list-style: none;
+}

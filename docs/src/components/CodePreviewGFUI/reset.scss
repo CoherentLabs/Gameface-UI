@@ -1,0 +1,64 @@
+/* Copyright (C) Microsoft Corporation. All rights reserved. */
+
+/* Combination of resets and trying to maintain cross browser compatibility - https://docs.coherent-labs.com/cpp-gameface/what_is_gfp/htmlfeaturesupport/ */
+
+/* CSS that can be applied to both gameface and browsers lives in in reset.pcss. CSS that is invalid in Gameface and shows warnings lives in reset-browser.pcss */
+
+*,
+*::before,
+*::after {
+	/* stylelint-disable-next-line property-allowed-list */
+	box-sizing: border-box;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	background-color: transparent;
+	font-size: 0.16px; /* 1px = 0.16rem, so 100rem = 16px */
+}
+
+body {
+	position: absolute;
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden;
+
+	/* Font size is purposefully large and noticable, as all text should use pre-defined styles */
+	font-family: sans-serif;
+	font-size: 100rem;
+	font-weight: 400;
+	line-height: 1.5;
+	user-select: none;
+}
+
+body * {
+	display: flex;
+	flex-direction: column;
+	flex-shrink: 0;
+	min-width: 0;
+	min-height: 0;
+}
+
+span,
+p,
+button {
+	flex-direction: row;
+}
+
+input,
+button,
+textarea,
+select {
+	font-family: inherit;
+	font-style: inherit;
+}
+
+img,
+picture {
+	max-width: 100%;
+	max-height: 100%;
+}

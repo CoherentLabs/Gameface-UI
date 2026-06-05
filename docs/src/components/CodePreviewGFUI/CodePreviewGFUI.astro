@@ -1,0 +1,42 @@
+---
+// CodePreviewGFUI.astro — thin wrapper. Mostly exists to give you a code panel
+// next to the preview and to keep MDX usage clean.
+import PreviewIsland from './PreviewIsland.tsx';
+
+interface Props {
+    css?: string | string[];
+    height?: number;
+    // Raw source string for the displayed code panel (see note below).
+    code?: string;
+    hash?: string;
+}
+const { css, height, code, hash } = Astro.props;
+---
+
+<div class="gfui-preview">
+    <div class="gfui-preview__stage">
+        {/* The island hydrates client-side; children pass through as the demo JSX */}
+        <PreviewIsland css={css} height={height} code={code} hash={hash} client:load>
+        </PreviewIsland>
+    </div>
+</div>
+
+<style>
+    .gfui-preview {
+        border: 1px solid var(--sl-color-gray-5, #d0d0d0);
+        border-radius: 8px;
+        overflow: hidden;
+        margin: 1.5rem 0;
+    }
+    .gfui-preview__stage {
+        padding: 1rem;
+        background: var(--sl-color-bg, #fff);
+    }
+    .gfui-preview__code {
+        margin: 0;
+        border-top: 1px solid var(--sl-color-gray-5, #d0d0d0);
+        padding: 1rem;
+        overflow-x: auto;
+        font-size: 0.85rem;
+    }
+</style>
