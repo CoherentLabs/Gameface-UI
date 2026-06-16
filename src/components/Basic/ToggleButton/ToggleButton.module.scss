@@ -58,16 +58,17 @@
 
 .handle {
     position: absolute;
-    width: 1.4vmax;
-    height: 1.4vmax;
+    width: 40%;
+    aspect-ratio: 1;
     border-radius: 50%;
-    top: 0.2vmax;
     z-index: 2;
+    top: 50%;
     left: 0.2vmax;
+    transform: translate(0%, -50%);
     background-color: #ffffff;
     transition: transform ease-in-out 0.2s, background-color ease-in-out 0.2s;
 
     &-checked {
-        transform: translateX(110%);
+        transform: translate(110%, -50%);
     }
 }
