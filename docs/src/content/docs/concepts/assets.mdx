@@ -7,7 +7,36 @@ import { FileTree } from '@astrojs/starlight/components'
 
 import CodePreviewGFUI from '../../../components/CodePreviewGFUI/CodePreviewGFUI.astro'
 
-<CodePreviewGFUI>
+<CodePreviewGFUI showSource lang='html'>
+```html
+<style>
+body{
+  background: black;
+}
+</style>
+<div style="width:100px;height:100px; background:red;"></div>
+```
+</CodePreviewGFUI>
+<CodePreviewGFUI showSource lang='js'>
+```tsx
+import { render } from 'solid-js/web';
+import {  onMount } from 'solid-js';
+import Dropdown from '@components/Basic/Dropdown/Dropdown';
+export default (root) => render(() => {
+  onMount(()=>{
+  const body = document.querySelector('body');
+  body.style.background='black';
+  const a = document.createElement('div');
+  a.style.color= 'white';
+  a.textContent = 'test';
+  body.appendChild(a);
+  })
+  return null
+}, root);
+```
+</CodePreviewGFUI>
+
+<CodePreviewGFUI showSource lang='tsx'>
 ```tsx
 import { render } from 'solid-js/web';
 import Dropdown from '@components/Basic/Dropdown/Dropdown';

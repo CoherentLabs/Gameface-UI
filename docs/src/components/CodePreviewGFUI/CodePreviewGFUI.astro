@@ -1,7 +1,9 @@
 ---
 // CodePreviewGFUI.astro — thin wrapper. Mostly exists to give you a code panel
 // next to the preview and to keep MDX usage clean.
-import PreviewIsland from './PreviewIsland.tsx';
+import { Code } from "@astrojs/starlight/components";
+import PreviewIsland from "./PreviewIsland.tsx";
+import { Tabs, TabItem } from "@astrojs/starlight/components";
 
 interface Props {
     css?: string | string[];
@@ -9,27 +11,68 @@ interface Props {
     // Raw source string for the displayed code panel (see note below).
     code?: string;
     hash?: string;
+    showSource?: boolean;
+    lang?: string;
 }
-const { css, height, code, hash } = Astro.props;
+const { css, height, code, hash, showSource, lang } = Astro.props;
 ---
 
 <div class="gfui-preview">
     <div class="gfui-preview__stage">
-        {/* The island hydrates client-side; children pass through as the demo JSX */}
-        <PreviewIsland css={css} height={height} code={code} hash={hash} client:load>
-        </PreviewIsland>
+        {
+            showSource && code && (
+                <Tabs class:list="gfui-preview__tabs">
+                    <TabItem label="Source">
+                        <Code code={code} lang={lang} />
+                    </TabItem>
+                    <TabItem label="Preview">
+                        <PreviewIsland
+                            css={css}
+                            height={height}
+                            code={code}
+                            hash={hash}
+                            lang={lang}
+                            client:load
+                        />
+                    </TabItem>
+                </Tabs>
+            )
+        }
+        {
+            /* The island hydrates client-side; children pass through as the demo JSX */
+        }
+        {
+            !showSource && (
+                <PreviewIsland
+                    css={css}
+                    height={height}
+                    code={code}
+                    hash={hash}
+                    lang={lang}
+                    client:load
+                />
+            )
+        }
     </div>
 </div>
 
-<style>
+<style is:inline>
     .gfui-preview {
         border: 1px solid var(--sl-color-gray-5, #d0d0d0);
         border-radius: 8px;
         overflow: hidden;
-        margin: 1.5rem 0;
+        /* margin: 1.5rem 0; */
+    }
+    .gfui-preview__stage starlight-tabs {
+        width: 100%;
     }
     .gfui-preview__stage {
         padding: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+        flex-direction: row;
         background: var(--sl-color-bg, #fff);
     }
     .gfui-preview__code {

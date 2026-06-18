@@ -1,46 +1,60 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { visit } from 'unist-util-visit';
-import { demoRegistry, hashDemo } from './gfui-demo-registry'; // adjust path
+import { demoRegistry, hashDemo } from './gfui-demo-registry';
+import { GFUI_DEMO_DIR } from './gfui-demo-paths';
 
-// Remark plugin: finds <CodePreviewGFUI> nodes containing a fenced code block,
-// extracts the code, registers it in the demoRegistry, and sets `hash`/`code`
-// attributes on the node so PreviewIsland can load + display it.
-console.log('[remark] module loaded');
+function getAttr(node: { attributes?: any[] }, name: string): string | undefined {
+  const attr = node.attributes?.find(
+    (a: { type?: string; name?: string }) => a.type === 'mdxJsxAttribute' && a.name === name,
+  );
+  if (!attr) return undefined;
+  if (typeof attr.value === 'string') return attr.value;
+  return undefined;
+}
+
 export function remarkGfuiDemo() {
-    console.log('[remark] plugin factory called');
-    return (tree: any) => {
-        visit(tree, (node: any) => {
-            // MDX JSX elements appear as mdxJsxFlowElement / mdxJsxTextElement
-            if (node.type !== 'mdxJsxFlowElement' && node.type !== 'mdxJsxTextElement') {
-                return;
-            }
-            if (node.name !== 'CodePreviewGFUI') return;
+  return (tree: unknown) => {
+    visit(tree as Parameters<typeof visit>[0], (node: any) => {
+      if (node.type !== 'mdxJsxFlowElement' && node.type !== 'mdxJsxTextElement') {
+        return;
+      }
+      if (node.name !== 'CodePreviewGFUI') return;
 
-            // Find a fenced code child (```tsx ... ```)
-            const codeNode = (node.children ?? []).find((c: any) => c.type === 'code');
-            if (!codeNode) return;
+      const codeNode = (node.children ?? []).find((c: { type?: string }) => c.type === 'code');
+      if (!codeNode) return;
 
-            const code = codeNode.value as string;
-            const hash = hashDemo(code);
-            demoRegistry.set(hash, code);
+      const code = codeNode.value as string;
+      const hash = hashDemo(code);
+      const lang = getAttr(node, 'lang') ?? codeNode.lang ?? 'tsx';
 
-            // Ensure attributes array exists
-            node.attributes = node.attributes ?? [];
+      demoRegistry.set(hash, code);
+      fs.mkdirSync(GFUI_DEMO_DIR, { recursive: true });
 
-            const setAttr = (name: string, value: string) => {
-                const existing = node.attributes.find((a: any) => a.type === 'mdxJsxAttribute' && a.name === name);
-                if (existing) {
-                    existing.value = value;
-                } else {
-                    node.attributes.push({ type: 'mdxJsxAttribute', name, value });
-                }
-            };
+      if (lang === 'html') {
+        fs.writeFileSync(path.join(GFUI_DEMO_DIR, `${hash}.html`), code, 'utf-8');
+      } else {
+        fs.writeFileSync(path.join(GFUI_DEMO_DIR, `${hash}.tsx`), code, 'utf-8');
+      }
 
-            setAttr('hash', hash);
-            console.log('[remark] registered demo:', hash);
-            setAttr('code', code); // raw source for the code-display panel
+      node.attributes = node.attributes ?? [];
 
-            // Remove the fenced code from rendered output (we don't want it printed twice)
-            node.children = [];
-        });
-    };
+      const setAttr = (name: string, value: string) => {
+        const existing = node.attributes.find(
+          (a: { type?: string; name?: string }) => a.type === 'mdxJsxAttribute' && a.name === name,
+        );
+        if (existing) {
+          existing.value = value;
+        } else {
+          node.attributes.push({ type: 'mdxJsxAttribute', name, value });
+        }
+      };
+
+      setAttr('hash', hash);
+      setAttr('code', code);
+      setAttr('lang', lang);
+
+      node.children = [];
+    });
+  };
 }

@@ -2,7 +2,6 @@ import starlight from '@astrojs/starlight';
 import solid from '@astrojs/solid-js';
 import { defineConfig } from 'astro/config';
 import starlightLinksValidator from 'starlight-links-validator';
-import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-sections';
 import coherentTheme, { generateDocsChangelog, generateVersionWithPackageJSON } from 'coherent-docs-theme';
 import path from 'node:path';
 import { fileURLToPath } from 'url';
@@ -45,9 +44,6 @@ export default defineConfig({
     },
     integrations: [
         starlight({
-            expressiveCode: {
-                plugins: [pluginCollapsibleSections()],
-            },
             favicon: '/favicon-32x32.png',
             credits: false,
             customCss: ['./src/styles/custom.css'],

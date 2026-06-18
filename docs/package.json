@@ -22,7 +22,8 @@
     "starlight-heading-badges": "^0.5.0",
     "starlight-links-validator": "^0.15.0",
     "starlight-theme-rapide": "^0.4.0",
-    "unified": "^11.0.5"
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.0.0"
   },
   "overrides": {
     "zod": "3.25.76",
@@ -33,6 +34,8 @@
     "node": ">=18"
   },
   "devDependencies": {
-    "sass": "^1.100.0"
+    "sass": "^1.100.0",
+    "vite-plugin-solid": "^2.10.2",
+    "vite-solid-style-to-css": "^1.0.1"
   }
 }
