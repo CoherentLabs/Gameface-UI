@@ -1,5 +1,5 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, createSignal, onMount, ParentComponent, createContext, createMemo } from "solid-js";
+import { Accessor, createSignal, onMount, ParentComponent, createContext, createMemo, createEffect, on } from "solid-js";
 import styles from '@components/Basic/Slider/Slider.module.scss';
 import { clamp } from "@components/utils/clamp";
 import { TextSliderGrid } from "./TextSliderGrid";
@@ -67,7 +67,6 @@ const TextSlider: ParentComponent<TextSliderProps> = (props) => {
         const newValue = findValueInPercent(result)
 
         setValue(newValue);
-        props.onChange?.(newValue);
     }
 
     const handleMouseDown = (e: MouseEvent) => {
@@ -88,7 +87,6 @@ const TextSlider: ParentComponent<TextSliderProps> = (props) => {
         const newValue = findValueInPercent(result)
 
         setValue(newValue);
-        props.onChange?.(newValue);
     }
 
     const handleMouseUp = (e: MouseEvent) => {
@@ -129,7 +127,6 @@ const TextSlider: ParentComponent<TextSliderProps> = (props) => {
             return;
         }
         setValue(newValue);
-        props.onChange?.(newValue);
     }
 
     const stepValue = (direction: 1 | -1) => {
@@ -141,6 +138,8 @@ const TextSlider: ParentComponent<TextSliderProps> = (props) => {
     }
 
     props.componentClasses = () => SliderClasses();
+
+    createEffect(on(value, (v) => props.onChange?.(v), { defer: true }));
 
     onMount(() => {
         if (!props.ref || !element) return;

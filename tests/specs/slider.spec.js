@@ -60,6 +60,21 @@ describe('Slider', function () {
         assert.equal(await thumb.text(), 50, 'Slider\'s thumb should move to the center');
     })
 
+    it('Should not call onChangeEnd before any interaction', async () => {
+        const changeEndEl = await gf.get(`.${selectors.changeEndElement}`);
+
+        assert.equal(await changeEndEl.text(), 'none', 'onChangeEnd should not fire on mount');
+    })
+
+    it('Should retrieve final value via onChangeEnd prop after dragging', async () => {
+        const changeEndEl = await gf.get(`.${selectors.changeEndElement}`);
+        const handle = await gf.get(`.${selectors.sliderHandle}`);
+        const thumb = await gf.get(`.${selectors.sliderThumb}`);
+        await handle.dragBy(1000, 0);
+
+        assert.equal(await changeEndEl.text(), await thumb.text(), 'onChangeEnd element\'s text should match the final value of the slider');
+    })
+
     describe('reactivity', () => {
         const scenarios = [
             { selector: `.${selectors.slider}`, desc: 'root' },

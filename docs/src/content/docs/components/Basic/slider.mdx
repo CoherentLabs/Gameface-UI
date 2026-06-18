@@ -35,7 +35,8 @@ export default App;
 | `min`         | `number`                            | `undefined`   | The minimum value that the slider can select. |
 | `max`         | `number`                            | `undefined`   | The maximum value that the slider can select. |
 | `step`        | `number`                            | `undefined`   | The amount by which the slider value changes when the handle is moved. Determines the granularity of the slider. |
-| `onChange` | `(value: number) => void`              | `undefined` | A function that is called every time the slider's value has changed. It can be used to retrieve the up to date value of the slider. |
+| `onChange` | `(value: number) => void`              | `undefined` | A function that is called whenever the slider's value changes. It only fires when the value actually changes, not on every mouse move. |
+| `onChangeEnd` | `(value: number) => void`           | `undefined` | A function that is called when the user finishes interacting with the slider (e.g. on mouse release). Useful for committing the final value without reacting to every intermediate change. |
 | `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Extends or overrides the component's default navigation action handlers. See [Implemented Navigation Actions](#implemented-navigation-actions) for details. |
 | `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, the slider's actions will execute. Can be a CSS selector or HTMLElement. |
 
@@ -271,6 +272,30 @@ const App = () => {
     return (
         <>
             <Slider onChange={(value) => setSliderValue(value)} value={50} max={100} min={0} step={1} />
+            <div>{sliderValue()}</div>
+        </>
+    );
+};
+
+export default App;
+```
+
+### React only to the final value
+
+- The `onChange` prop fires every time the value changes while dragging. If you only care about the final value once the user finishes interacting (e.g. to avoid expensive work on every step), use the `onChangeEnd` prop instead.
+
+`onChangeEnd` is called when the user releases the handle after a drag, and after navigation actions (`move-left` / `move-right`) settle.
+
+```tsx
+import Slider from '@components/Basic/Slider/Slider';
+import { createSignal} from 'solid-js';
+
+const App = () => {
+    const [sliderValue, setSliderValue] = createSignal(50);
+
+    return (
+        <>
+            <Slider onChangeEnd={(value) => setSliderValue(value)} value={50} max={100} min={0} step={1} />
             <div>{sliderValue()}</div>
         </>
     );

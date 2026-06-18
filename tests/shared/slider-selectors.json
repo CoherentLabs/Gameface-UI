@@ -1,5 +1,6 @@
 {
   "assertionElement": "assertion-element",
+  "changeEndElement": "change-end-element",
   "scenarioBtn": "scenario-btn",
   "slider": "slider",
   "sliderFill": "slider-fill",

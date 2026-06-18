@@ -8,6 +8,7 @@ const initialValue = 10;
 const SliderTest = () => {
     let sliderRef!: SliderRef;
     const [value, setValue] = createSignal(initialValue);
+    const [endValue, setEndValue] = createSignal<number | string>('none');
     const [test, setTest] = createSignal('red');
 
     const scenarios = [
@@ -17,6 +18,7 @@ const SliderTest = () => {
 
     const reset = () => {
         setValue(initialValue);
+        setEndValue('none');
         setTest('red');
         sliderRef?.changeValue(initialValue);
     };
@@ -31,7 +33,8 @@ const SliderTest = () => {
     return (
         <Tab location='slider'>
             <div class={selectors.assertionElement}>{value()}</div>
-            
+            <div class={selectors.changeEndElement}>{endValue()}</div>
+
             <For each={scenarios}>
                 {(sc, i) => (
                     <button class={`${selectors.scenarioBtn} scenario-${i()}`} onClick={sc.action} >
@@ -43,6 +46,7 @@ const SliderTest = () => {
             <Slider
                 ref={sliderRef}
                 onChange={(value) => setValue(value)}
+                onChangeEnd={(value) => setEndValue(value)}
                 min={0}
                 max={100}
                 step={10}

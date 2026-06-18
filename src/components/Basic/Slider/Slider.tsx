@@ -1,5 +1,5 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, createSignal, onMount, ParentComponent, createMemo, onCleanup } from "solid-js";
+import { Accessor, createSignal, onMount, ParentComponent, createMemo, onCleanup, createEffect, on } from "solid-js";
 import styles from './Slider.module.scss';
 import { clamp } from "@components/utils/clamp";
 import { Grid, SliderGrid } from "./SliderGrid";
@@ -23,6 +23,7 @@ interface SliderProps extends ComponentProps {
     max?: number,
     step?: number,
     onChange?: (value: number) => void;
+    onChangeEnd?: (value: number) => void;
 }
 
 const Slider: ParentComponent<SliderProps> = (props) => {
@@ -35,6 +36,7 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     let element!: HTMLDivElement;
     let trackElement!: HTMLDivElement;
     let sliding = false;
+    let commitTimeout: ReturnType<typeof setTimeout> | undefined;
     let start: number,
         maxValue: number,
         minValue: number,
@@ -53,7 +55,6 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         const result = snapToStep(Math.round(newValue / step()) * step())
 
         setValue(result);
-        props.onChange?.(result);
 
         handleMouseDown(e);
     }
@@ -74,7 +75,6 @@ const Slider: ParentComponent<SliderProps> = (props) => {
 
         const result = calculateResult(e)
         setValue(result);
-        props.onChange?.(result);
     }
 
     const handleMouseUp = () => {
@@ -83,6 +83,8 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         sliding = false;
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
+
+        props.onChangeEnd?.(value());
     }
 
     const calculateResult = (e: MouseEvent) => {
@@ -120,10 +122,23 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         const clampedValue = clamp(newValue, min(), max());
 
         setValue(clampedValue);
-        props.onChange?.(clampedValue);
+    }
+
+    // gamepad movement has no release event so we debounce a synthetic commit
+    // Remove when 'release' event is supported with IM gamepad
+    const scheduleCommit = () => {
+        if (!props.onChangeEnd) return;
+
+        if (commitTimeout) clearTimeout(commitTimeout);
+        commitTimeout = setTimeout(() => {
+            commitTimeout = undefined;
+            props.onChangeEnd?.(value());
+        }, 250);
     }
 
     props.componentClasses = () => SliderClasses();
+
+    createEffect(on(value, (v) => props.onChange?.(v), { defer: true }));
 
     onMount(() => {
         if (!props.ref || !element) return;
@@ -137,11 +152,12 @@ const Slider: ParentComponent<SliderProps> = (props) => {
 
     onCleanup(() => {
         handleMouseUp();
+        if (commitTimeout) clearTimeout(commitTimeout);
     })
 
     const defaultActions = {
-        'move-left': () => changeValue(Number((value() - step()).toFixed(5))),
-        'move-right': () => changeValue(Number((value() + step()).toFixed(5))),
+        'move-left': () => { changeValue(Number((value() - step()).toFixed(5))); scheduleCommit(); },
+        'move-right': () => { changeValue(Number((value() + step()).toFixed(5))); scheduleCommit(); },
     }
 
     return (
