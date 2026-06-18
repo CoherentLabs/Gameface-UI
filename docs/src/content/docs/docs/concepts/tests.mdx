@@ -81,8 +81,12 @@ Once this file is in place, you can simply run:
 npm run test
 ```
 
-:::caution
+:::caution[Dependencies]
 Make sure you have run `npm i` in the root of the project before running the tests to install all required dependencies.
+:::
+
+:::caution[Port Conflict]
+If a dev server is already running on port `3000`, the Gameface Player may fail to open and run the tests. Close any open dev servers first, manually or with a tool like `npx kill-port 3000`.
 :::
 
 ## Running single test `.spec` file
