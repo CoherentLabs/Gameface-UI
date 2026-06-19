@@ -10,6 +10,8 @@ import { Badge } from '@astrojs/starlight/components'
 
 - <Badge text="Change" variant="note" size="small" /> [Slider](/components/basic/slider#props) & [TextSlider](/components/basic/text-slider#props): `onChange` now only fires when the value actually changes instead of on every mouse move.
 
+- <Badge text="Change" variant="note" size="small" /> [Icon](/components/media/icon): Improved rendering performance by swapping directly to the fallback image on error instead of rendering a separate fallback component.
+
 - <Badge text="Fix" variant="danger" size="small" /> [ToggleButton](/components/basic/toggle-button): Make the `<ToggleButton.Indicator>` scale off the size of the
 `<ToggleButton.Control>` element instead of the indicator's size. This ensures that the indicator scales correctly when the button size changes.
 
