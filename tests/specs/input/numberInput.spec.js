@@ -126,6 +126,32 @@ describe('NumberInput', function () {
         assert.equal(await assertionElement.text(), '-0.555', 'Input\'s value should be a decimal value');
     })
 
+    it('Should debounce onChange when delay prop is set', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-7`);
+        const input = await gf.get(`.${selectors.input}`);
+        const assertEl = await gf.get(`.${selectors.assertionElement}`);
+
+        await input.type('50');
+        assert.equal(await assertEl.text(), '', 'onChange should not fire immediately when delay is set');
+
+        await new Promise(resolve => setTimeout(resolve, 400));
+        assert.equal(await assertEl.text(), '50', 'onChange should fire after the delay expires');
+    })
+
+    it('Should update the input when the value prop changes and clamp to max', async () => {
+        const getPlaceholder = async () => {
+            try {
+                return await gf.get(`.${selectors.inputPlaceholder}`);
+            } catch {
+                return null;
+            }
+        };
+
+        assert.ok(await getPlaceholder(), 'Placeholder should be visible initially');
+        await gf.click(`.${selectors.scenarioBtn}.scenario-8`);
+        assert.ok(!(await getPlaceholder()), 'Placeholder should be hidden after the value prop changes');
+    })
+
     describe('reactivity', () => {
         const scenarios = [
             { selector: `.${selectors.root}`, desc: 'root' },

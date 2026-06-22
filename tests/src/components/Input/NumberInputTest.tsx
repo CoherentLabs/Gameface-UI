@@ -10,7 +10,9 @@ const NumberInputTest = () => {
     const [disabled, setDisabled] = createSignal(false);
     const [readonly, setReadonly] = createSignal(false);
     const [test, setTest] = createSignal(false);
-    const [customBtn, setCustomBtn] = createSignal<string | null>(null)
+    const [customBtn, setCustomBtn] = createSignal<string | null>(null);
+    const [delay, setDelay] = createSignal<number | undefined>(undefined);
+    const [externalValue, setExternalValue] = createSignal<number | string>('');
 
     const scenarios = [
         { label: "Change input value with ref", action: () => inputRef?.changeValue(100) },
@@ -20,6 +22,8 @@ const NumberInputTest = () => {
         { label: "Increase", action: () => inputRef.increaseValue() },
         { label: "Decrease", action: () => inputRef.decreaseValue() },
         { label: "Enable custom button", action: () => setCustomBtn('Custom icon') },
+        { label: "Enable delay", action: () => setDelay(250) },
+        { label: "Change external value", action: () => setExternalValue(200) },
     ];
 
     const reset = () => {
@@ -28,6 +32,8 @@ const NumberInputTest = () => {
         setTest(false);
         setReadonly(false);
         setCustomBtn(null);
+        setDelay(undefined);
+        setExternalValue('');
 
         inputRef?.clear();
     };
@@ -53,8 +59,8 @@ const NumberInputTest = () => {
 
             <div style={{'display': 'flex'}}>
                 <NumberInput
-                    onChange={(value) => setValue(value)} 
-                    disabled={disabled()} 
+                    onChange={(value) => setValue(value)}
+                    disabled={disabled()}
                     class-disabled={selectors.inputDisabled}
                     ref={inputRef}
                     class={`${selectors.root} ${reactiveClass()}`}
@@ -62,17 +68,19 @@ const NumberInputTest = () => {
                     max={100}
                     step={10}
                     readonly={readonly()}
+                    value={externalValue()}
+                    delay={delay()}
                     style={reactiveStyle()}>
                     <NumberInput.Placeholder class={`${selectors.inputPlaceholder} ${reactiveClass()}`} style={reactiveStyle()}>50</NumberInput.Placeholder>
                     <NumberInput.Input class={`${selectors.input} ${reactiveClass()}`} style={reactiveStyle()}></NumberInput.Input>
-                    <NumberInput.IncreaseControl 
-                        class={`${selectors.inputIncreaseControl} ${reactiveClass()}`} 
+                    <NumberInput.IncreaseControl
+                        class={`${selectors.inputIncreaseControl} ${reactiveClass()}`}
                         style={reactiveStyle()}
                         position="after">
                             {customBtn()}
                         </NumberInput.IncreaseControl>
-                    <NumberInput.DecreaseControl 
-                        class={`${selectors.inputDecreaseControl} ${reactiveClass()}`} 
+                    <NumberInput.DecreaseControl
+                        class={`${selectors.inputDecreaseControl} ${reactiveClass()}`}
                         style={reactiveStyle()}
                         position="after"></NumberInput.DecreaseControl>
                 </NumberInput>

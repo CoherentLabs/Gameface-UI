@@ -12,6 +12,10 @@ import { Badge } from '@astrojs/starlight/components'
 
 - <Badge text="Change" variant="note" size="small" /> [Icon](/components/media/icon): Improved rendering performance by swapping directly to the fallback image on error instead of rendering a separate fallback component.
 
+- <Badge text="Feature" variant="success" size="small" /> [TextInput](/components/basic/text-input#props), [PasswordInput](/components/basic/password-input#props) & [NumberInput](/components/basic/number-input#props): Added a `delay` prop that debounces the `onChange` callback by the given amount in milliseconds.
+
+- <Badge text="Fix" variant="danger" size="small" /> [NumberInput](/components/basic/number-input#props): The `value` prop is now reactive — updating it is reflected in the input (two-way binding), matching the other input components.
+
 - <Badge text="Fix" variant="danger" size="small" /> [ToggleButton](/components/basic/toggle-button): Make the `<ToggleButton.Indicator>` scale off the size of the
 `<ToggleButton.Control>` element instead of the indicator's size. This ensures that the indicator scales correctly when the button size changes.
 

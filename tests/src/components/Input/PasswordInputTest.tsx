@@ -2,6 +2,7 @@ import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
 import selectors from "../../../shared/input-selectors.json";
 import PasswordInput, { PasswordInputRef } from "@components/Basic/Input/PasswordInput/PasswordInput";
+import { Placeholder } from "@components/Basic/Input/shared/tokens";
 import './input.css';
 
 const PasswordInputTest = () => {
@@ -11,6 +12,8 @@ const PasswordInputTest = () => {
     const [readonly, setReadonly] = createSignal(false);
     const [test, setTest] = createSignal(false);
     const [position, setPosition] = createSignal<'before' | 'after'>('after');
+    const [delay, setDelay] = createSignal<number | undefined>(undefined);
+    const [externalValue, setExternalValue] = createSignal('');
 
     const scenarios = [
         { label: "Change input value with ref", action: () => inputRef?.changeValue("100") },
@@ -20,6 +23,8 @@ const PasswordInputTest = () => {
         { label: "Show password", action: () => inputRef.show() },
         { label: "Hide password", action: () => inputRef.hide() },
         { label: "Change button position", action: () => setPosition('before') },
+        { label: "Enable delay", action: () => setDelay(250) },
+        { label: "Change external value", action: () => setExternalValue('hello') },
     ];
 
     const reset = () => {
@@ -27,7 +32,9 @@ const PasswordInputTest = () => {
         setDisabled(false);
         setTest(false);
         setReadonly(false);
-        setPosition('after')
+        setPosition('after');
+        setDelay(undefined);
+        setExternalValue('');
         inputRef?.clear();
         inputRef?.hide();
     };
@@ -53,21 +60,24 @@ const PasswordInputTest = () => {
 
             <div style={{'display': 'flex'}}>
                 <PasswordInput
-                    onChange={(value) => setValue(value)} 
-                    disabled={disabled()} 
+                    onChange={(value) => setValue(value)}
+                    disabled={disabled()}
                     class-disabled={selectors.inputDisabled}
                     ref={inputRef}
                     class={`${selectors.root} ${reactiveClass()}`}
                     max-symbols={5}
                     readonly={readonly()}
+                    value={externalValue()}
+                    delay={delay()}
                     style={reactiveStyle()}>
                     <PasswordInput.Before class={`${selectors.inputBefore} ${reactiveClass()}`} style={reactiveStyle()}>Before</PasswordInput.Before>
                     <PasswordInput.After class={`${selectors.inputAfter} ${reactiveClass()}`} style={reactiveStyle()}>After</PasswordInput.After>
                     <PasswordInput.Input class={`${selectors.input} ${reactiveClass()}`} style={reactiveStyle()}></PasswordInput.Input>
-                    <PasswordInput.VisibilityButton 
-                        position={position()} 
-                        class={`${selectors.inputVisibilityButton} ${reactiveClass()}`} 
+                    <PasswordInput.VisibilityButton
+                        position={position()}
+                        class={`${selectors.inputVisibilityButton} ${reactiveClass()}`}
                         style={reactiveStyle()} />
+                    <Placeholder class={`${selectors.inputPlaceholder} ${reactiveClass()}`} style={reactiveStyle()}>Placeholder</Placeholder>
                 </PasswordInput>
             </div>
         </Tab>

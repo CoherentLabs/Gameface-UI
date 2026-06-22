@@ -11,12 +11,16 @@ const TextInputTest = () => {
     const [disabled, setDisabled] = createSignal(false);
     const [readonly, setReadonly] = createSignal(false);
     const [test, setTest] = createSignal(false);
+    const [delay, setDelay] = createSignal<number | undefined>(undefined);
+    const [externalValue, setExternalValue] = createSignal('');
 
     const scenarios = [
         { label: "Change input value with ref", action: () => inputRef?.changeValue("100") },
         { label: "Disable input", action: () => setDisabled(true) },
         { label: "Set readonly", action: () => setReadonly(true) },
         { label: "Change styles", action: () => setTest(true) },
+        { label: "Enable delay", action: () => setDelay(250) },
+        { label: "Change external value", action: () => setExternalValue('hello') },
     ];
 
     const reset = () => {
@@ -24,6 +28,8 @@ const TextInputTest = () => {
         setDisabled(false);
         setTest(false);
         setReadonly(false);
+        setDelay(undefined);
+        setExternalValue('');
         inputRef?.clear();
     };
 
@@ -48,13 +54,15 @@ const TextInputTest = () => {
 
             <div style={{'display': 'flex'}}>
                 <TextInput
-                    onChange={(value) => setValue(value)} 
-                    disabled={disabled()} 
+                    onChange={(value) => setValue(value)}
+                    disabled={disabled()}
                     class-disabled={selectors.inputDisabled}
                     ref={inputRef}
                     class={`${selectors.root} ${reactiveClass()}`}
                     max-symbols={5}
                     readonly={readonly()}
+                    value={externalValue()}
+                    delay={delay()}
                     style={reactiveStyle()}>
                     <TextInput.Before class={`${selectors.inputBefore} ${reactiveClass()}`} style={reactiveStyle()}>Before</TextInput.Before>
                     <TextInput.After class={`${selectors.inputAfter} ${reactiveClass()}`} style={reactiveStyle()}>After</TextInput.After>
