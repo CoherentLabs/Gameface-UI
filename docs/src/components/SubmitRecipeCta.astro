@@ -1,0 +1,91 @@
+---
+import { LinkButton } from "@astrojs/starlight/components";
+export const GITHUB_RECIPE_ISSUE_URL =
+  "https://github.com/CoherentLabs/Gameface-UI/issues/new?template=submit-recipe.yml";
+---
+
+<div class="submit-recipe-cta" data-submit-cta>
+  <label class="submit-terms">
+    <input type="checkbox" data-terms-checkbox />
+    <span>I have read and accept the terms of contribution above.</span>
+  </label>
+
+  <p class="submit-cta-wrap">
+    <LinkButton
+      href={GITHUB_RECIPE_ISSUE_URL}
+      variant="primary"
+      target="_blank"
+      rel="noopener noreferrer"
+      data-github-submit
+      aria-disabled="true"
+      class="submit-github-btn is-disabled"
+    >
+      Submit recipe
+    </LinkButton>
+  </p>
+</div>
+
+<script is:inline>
+  (function () {
+    const root = document.querySelector("[data-submit-cta]");
+    if (!root) return;
+
+    const checkbox = root.querySelector("[data-terms-checkbox]");
+    const button = root.querySelector("[data-github-submit]");
+    if (!checkbox || !button) return;
+
+    const href = button.getAttribute("href");
+    if (!href) return;
+
+    function setEnabled(enabled) {
+      if (enabled) {
+        button.classList.remove("is-disabled");
+        button.removeAttribute("aria-disabled");
+        button.setAttribute("href", href);
+        button.style.pointerEvents = "";
+      } else {
+        button.classList.add("is-disabled");
+        button.setAttribute("aria-disabled", "true");
+        button.removeAttribute("href");
+        button.style.pointerEvents = "none";
+      }
+    }
+
+    checkbox.addEventListener("change", () => {
+      setEnabled(checkbox.checked);
+    });
+
+    setEnabled(false);
+  })();
+</script>
+
+<style>
+  .submit-recipe-cta {
+    margin: 1.25rem 0;
+  }
+
+  .submit-terms {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin: 0 0 1rem;
+    font-size: 0.9rem;
+    color: var(--sl-color-gray-2);
+    line-height: 1.45;
+    cursor: pointer;
+  }
+
+  .submit-terms input {
+    margin-top: 0.2rem;
+    flex-shrink: 0;
+  }
+
+  .submit-cta-wrap {
+    margin: 0;
+  }
+
+  .submit-github-btn.is-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+</style>

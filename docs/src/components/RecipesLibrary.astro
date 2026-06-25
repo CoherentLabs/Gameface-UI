@@ -1,0 +1,255 @@
+---
+import {
+  Card,
+  CardGrid,
+  LinkButton,
+  Badge,
+} from "@astrojs/starlight/components";
+import { getCollection } from "astro:content";
+import CardsGrid from "./CardsGrid.astro";
+
+type Difficulty = "beginner" | "intermediate" | "advanced";
+
+type RecipeCard = {
+  href: string;
+  title: string;
+  description?: string;
+  author?: string;
+  tags: string[];
+  difficulty?: Difficulty;
+  thumbnailSrc?: string;
+};
+
+const allDocs = await getCollection("docs");
+const recipeDocs = allDocs
+  .filter(
+    (entry) => entry.id.startsWith("recipes/") && entry.id !== "recipes/index",
+  )
+  .filter((entry) => !entry.data.draft)
+  .filter((entry) => entry.data?.recipe);
+
+const recipes: RecipeCard[] = recipeDocs
+  .map((entry) => {
+    const recipe = entry.data.recipe;
+    if (!recipe) return null;
+    const href = `/${entry.id.replace(/\\/g, "/").replace(/\/index$/, "")}/`;
+    const title = entry.data.title;
+    const description = entry.data.description;
+
+    return {
+      href,
+      title,
+      description,
+      author: recipe.author,
+      tags: recipe.tags ?? [],
+      difficulty: recipe.difficulty,
+      thumbnailSrc: recipe.thumbnail?.src,
+    } satisfies RecipeCard;
+  })
+  .filter((x): x is RecipeCard => Boolean(x))
+  .sort((a, b) => a.title.localeCompare(b.title));
+
+const difficulties: Difficulty[] = ["beginner", "intermediate", "advanced"];
+---
+
+<CardsGrid searchPlaceholder="Find recipe">
+  <Fragment slot="filters">
+    {
+      difficulties.map((d) => (
+        <button
+          class="filter-pill"
+          type="button"
+          data-filter={d}
+          aria-pressed="false"
+        >
+          {d}
+        </button>
+      ))
+    }
+  </Fragment>
+
+  <div slot="items">
+    <CardGrid>
+      {
+        recipes.map((recipe) => (
+          <div
+            class="cards-grid-item recipe-item"
+            data-name={recipe.title}
+            data-category={recipe.difficulty ?? ""}
+          >
+            <Card>
+              <LinkButton
+                href={recipe.href}
+                aria-label={recipe.title}
+                variant="minimal"
+              >
+                <article class="recipe-card">
+                  <div
+                    class="recipe-thumb"
+                    data-has-thumb={recipe.thumbnailSrc ? "true" : "false"}
+                  >
+                    {recipe.thumbnailSrc ? (
+                      <img src={recipe.thumbnailSrc} alt="" loading="lazy" />
+                    ) : (
+                      <div class="recipe-thumb-fallback" aria-hidden="true" />
+                    )}
+                  </div>
+
+                  <div class="recipe-meta">
+                    <div class="recipe-title">{recipe.title}</div>
+                    {(recipe.author || recipe.difficulty) && (
+                      <div class="recipe-sub">
+                        {recipe.author && (
+                          <span class="recipe-author">by {recipe.author}</span>
+                        )}
+                        {recipe.difficulty && (
+                          <Badge
+                            text={recipe.difficulty}
+                            variant="note"
+                            size="small"
+                          />
+                        )}
+                      </div>
+                    )}
+                    {recipe.description && (
+                      <div class="recipe-desc">{recipe.description}</div>
+                    )}
+                  </div>
+                </article>
+              </LinkButton>
+            </Card>
+          </div>
+        ))
+      }
+    </CardGrid>
+  </div>
+</CardsGrid>
+
+<style>
+  :global(.card) {
+    --sl-color-bg-nav: var(--sl-color-gray-6);
+    gap: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .sl-link-button {
+    margin: 0 !important;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 0;
+    border: none;
+  }
+
+  :global(.sl-badge) {
+    text-transform: capitalize;
+  }
+
+  :global(.card-grid) {
+    justify-items: center;
+  }
+
+  .recipe-card {
+    width: 100%;
+    max-width: 22rem;
+    display: flex;
+    flex-direction: column;
+    /* gap: 0.75rem; */
+    /* padding: 1rem; */
+  }
+
+  .recipe-thumb {
+    border-radius: 0.6rem;
+    overflow: hidden;
+    background: var(--sl-color-gray-6);
+    aspect-ratio: 16 / 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .recipe-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .recipe-thumb-fallback {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      135deg,
+      var(--sl-color-gray-6),
+      var(--sl-color-gray-7)
+    );
+  }
+
+  .recipe-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1rem;
+    background-color: var(--sl-color-gray-5);
+  }
+
+  .recipe-title {
+    font-size: 1rem;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--sl-color-white);
+  }
+
+  .recipe-sub {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    color: var(--sl-color-gray-2);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .recipe-desc {
+    color: var(--sl-color-gray-2);
+    font-size: 0.85rem;
+    line-height: 1.35;
+  }
+
+  .recipe-tags {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    margin-top: 0.25rem;
+  }
+
+  .recipe-tag {
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.3rem;
+    border: 1px solid var(--sl-color-gray-5);
+    background: var(--sl-color-gray-7);
+    color: var(--sl-color-gray-2);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .recipes-empty {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.5rem;
+    background: var(--sl-color-gray-6);
+    color: var(--sl-color-gray-2);
+    font-weight: 650;
+  }
+
+  @media (min-width: 80rem) {
+    :global(.card-grid) {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+</style>

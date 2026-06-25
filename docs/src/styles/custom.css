@@ -32,3 +32,21 @@
     height: 40rem;
   }
 }
+
+.starlight-sidebar-topics [href="/submit-recipe/"],
+.starlight-sidebar-topics [href="/submit-recipe/"]:hover {
+  color: var(--sl-color-black);
+  background: var(--sl-color-text-accent);
+}
+
+.starlight-sidebar-topics [href="/submit-recipe/"]:hover {
+  filter: brightness(1.2);
+}
+
+.starlight-sidebar-topics [href="/submit-recipe/"]:hover .icon-mask {
+  background-color: var(--sl-color-black);
+}
+
+.starlight-sidebar-topics [href="/submit-recipe/"] .icon-mask {
+  background-color: var(--sl-color-black);
+}

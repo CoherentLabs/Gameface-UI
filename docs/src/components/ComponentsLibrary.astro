@@ -1,0 +1,131 @@
+---
+import { Card, CardGrid, LinkButton } from "@astrojs/starlight/components";
+import SVG from "./SVG.astro";
+import CardsGrid from "./CardsGrid.astro";
+
+function getComponentName(filePath: string) {
+  return filePath.split("/").pop()?.replace(".svg", "") ?? filePath;
+}
+
+const categories = [
+  "Basic",
+  "Feedback",
+  "Complex",
+  "Layout",
+  "Media",
+  "Utility",
+] as const;
+
+const componentsByCategory = {
+  Basic: Object.keys(import.meta.glob("/src/assets/components/basic/*")),
+  Feedback: Object.keys(import.meta.glob("/src/assets/components/feedback/*")),
+  Complex: Object.keys(import.meta.glob("/src/assets/components/complex/*")),
+  Layout: Object.keys(import.meta.glob("/src/assets/components/layout/*")),
+  Media: Object.keys(import.meta.glob("/src/assets/components/media/*")),
+  Utility: Object.keys(import.meta.glob("/src/assets/components/utility/*")),
+} satisfies Record<(typeof categories)[number], string[]>;
+---
+
+<CardsGrid searchPlaceholder="Find component">
+  <Fragment slot="filters">
+    {
+      categories.map((category) => (
+        <button
+          class="filter-pill"
+          type="button"
+          data-filter={category}
+          aria-pressed="false"
+        >
+          {category}
+        </button>
+      ))
+    }
+  </Fragment>
+  <div slot="items">
+    {
+      categories.map((category) => {
+        const components = componentsByCategory[category];
+        const slug = category.toLowerCase();
+
+        return (
+          <section class="component-section" data-section={category}>
+            <h2 class="component-section-heading" data-heading>
+              {category}
+            </h2>
+            <CardGrid>
+              {components.map((componentPath) => {
+                const name = getComponentName(componentPath);
+                return (
+                  <div
+                    class="cards-grid-item component-item"
+                    data-category={category}
+                    data-name={name}
+                  >
+                    <Card>
+                      <LinkButton
+                        href={`/components/${slug}/${name}`}
+                        aria-label={name}
+                        variant="minimal"
+                      >
+                        <div class="component-tile">
+                          <SVG path={componentPath} />
+                        </div>
+                      </LinkButton>
+                    </Card>
+                  </div>
+                );
+              })}
+            </CardGrid>
+          </section>
+        );
+      })
+    }
+  </div>
+</CardsGrid>
+
+<style>
+  :global(.card) {
+    --sl-color-bg-nav: var(--sl-color-gray-6);
+    gap: 0;
+    align-items: center;
+    justify-content: center;
+  }
+
+  :global(.sl-link-button) {
+    margin: 0 !important;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .component-item {
+    width: 100%;
+  }
+
+  .component-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.25rem 0.75rem;
+  }
+
+  .component-tile-name {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--sl-color-white);
+    opacity: 0.9;
+  }
+
+  :global(.card-grid) {
+    justify-items: center;
+  }
+
+  @media (min-width: 80rem) {
+    :global(.card-grid) {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+</style>

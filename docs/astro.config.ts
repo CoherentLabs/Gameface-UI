@@ -2,18 +2,73 @@ import starlight from '@astrojs/starlight'
 import { defineConfig } from 'astro/config'
 import starlightLinksValidator from 'starlight-links-validator';
 import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-sections';
-import coherentTheme, { generateDocsChangelog, generateVersionWithPackageJSON } from 'coherent-docs-theme'
+import coherentTheme from 'coherent-docs-theme'
+import starlightSidebarTopics from 'starlight-sidebar-topics';
 import path from 'node:path';
 import { fileURLToPath } from 'url';
+import { componentSidebarItems, recipesSidebarItems } from './src/config/sidebarItems';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const sidebarTopics = [
+  {
+    id: 'documentation',
+    label: 'Documentation',
+    link: '/docs/',
+    items: [
+      {
+        label: 'Getting Started',
+        autogenerate: { directory: 'docs/getting-started' },
+      },
+      {
+        label: 'Concepts',
+        autogenerate: { directory: 'docs/concepts' },
+      },
+    ],
+  },
+  {
+    id: 'components',
+    label: 'Components',
+    link: '/components/',
+    items: componentSidebarItems(),
+  },
+  {
+    id: 'recipes',
+    label: 'Community Recipes',
+    link: '/recipes/',
+    items: recipesSidebarItems(),
+  },
+  {
+    id: 'changelog',
+    label: 'Changelog',
+    link: '/changelog/',
+    items: []
+  },
+  {
+    id: 'submit-recipe',
+    label: 'Submit Recipe',
+    link: '/submit-recipe/',
+    items: []
+  },
+];
+
 /** @type {import('@astrojs/starlight/expressive-code').StarlightExpressiveCodeOptions} */
 export default defineConfig({
+  vite: {
+    resolve: {
+      preserveSymlinks: true,
+      alias: {
+        '@components': path.join(__dirname, "src", "components"),
+      }
+    }
+  },
   integrations: [
     starlight({
       expressiveCode: {
         plugins: [pluginCollapsibleSections()],
+      },
+      components: {
+        Sidebar: '@components/CustomSidebar.astro',
       },
       favicon: '/favicon-32x32.png',
       credits: false,
@@ -22,29 +77,20 @@ export default defineConfig({
         ...coherentTheme({
           documentationSearchTag: "Gameface UI"
         }),
-        starlightLinksValidator()
-      ],
-      sidebar: [
-        await generateVersionWithPackageJSON(
-          '../package.json',
-          'https://github.com/CoherentLabs/Gameface-UI'
-        ), {
-          label: 'Getting Started',
-          autogenerate: { directory: 'getting-started' },
-        },
-        {
-          label: 'Concepts',
-          autogenerate: { directory: 'concepts' },
-        },
-        {
-          label: 'Components',
-          collapsed: true,
-          autogenerate: { directory: 'components', collapsed: false },
-
-        },
-        generateDocsChangelog(path.join(__dirname, `./src/content/docs/changelog/index.mdx`)),
+        starlightSidebarTopics(sidebarTopics, {
+          exclude: ['/'],
+          topics: {
+            recipes: ['/recipes', '/recipes/**'],
+          },
+        }),
+        starlightLinksValidator(),
       ],
       social: [
+        {
+          icon: 'seti:github',
+          label: 'Git',
+          href: 'https://github.com/CoherentLabs/Gameface-UI',
+        },
         {
           icon: 'laptop',
           label: 'Site',

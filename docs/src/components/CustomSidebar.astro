@@ -1,0 +1,40 @@
+---
+import DefaultSidebar from "@astrojs/starlight/components/Sidebar.astro";
+import TopicSwitcherUI from "coherent-docs-theme/internal-components/TopicSwitcherUI.astro";
+import { version } from "../../../package.json";
+import documentationIcon from "../assets/icons/documentation.png";
+import componentsIcon from "../assets/icons/components.png";
+import recipesIcon from "../assets/icons/recipes.png";
+import submitRecipeIcon from "../assets/icons/submit-recipe.png";
+import changelogIcon from "../assets/icons/changelog.png";
+
+export const topicIcons: Record<string, string> = {
+    Documentation: documentationIcon.src,
+    Components: componentsIcon.src,
+    'Community Recipes': recipesIcon.src,
+    'Submit Recipe': submitRecipeIcon.src,
+    Changelog: changelogIcon.src,
+};
+
+const { topics = [] } = Astro.locals.starlightSidebarTopics ?? {};
+
+const topicsArray = topics.map((topic) => ({
+    id: topic.label,
+    label: topic.label,
+    href: topic.link,
+    icon: topicIcons[topic.label] ?? topic.icon,
+}));
+
+const currentTopic = topics.find((topic) => topic.isCurrent);
+const activeTopicId = currentTopic?.label;
+---
+
+<TopicSwitcherUI
+    version={version}
+    topics={topicsArray}
+    currentTopicId={activeTopicId}
+/>
+
+<div class="starlight-sidebar-content">
+    <DefaultSidebar {...Astro.props} />
+</div>
