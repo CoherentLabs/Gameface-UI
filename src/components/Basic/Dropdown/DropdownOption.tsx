@@ -20,7 +20,7 @@ export const DropdownOption: ParentComponent<{ option: ParentProps<OptionTokenPr
 
     const onClickOption = (option: ParentProps<OptionTokenProps>) => {
         dropdown?.selectOption(option.value);
-        dropdown?.toggle(false);
+        if (!dropdown?.multiple()) dropdown?.toggle(false);
     }
 
     onMount(() => {
@@ -35,7 +35,7 @@ export const DropdownOption: ParentComponent<{ option: ParentProps<OptionTokenPr
         const classes = [style['dropdown-option']];
 
         if (option.class) classes.push(option.class);
-        if (option.value === dropdown?.selected()) {
+        if (dropdown?.isSelected(option.value)) {
             classes.push(style['dropdown-option-selected']);
             if (option['class-selected']) classes.push(option['class-selected']);
         }
@@ -57,7 +57,7 @@ export const DropdownOption: ParentComponent<{ option: ParentProps<OptionTokenPr
         style={{...props.option.style}}
         use:navigationActions={{'select': () => {
             dropdown?.selectOption(props.option.value)
-            dropdown?.handleNavigationClose();
+            if (!dropdown?.multiple()) dropdown?.handleNavigationClose();
         }}}
     >
         <Show when={props.option.children}>

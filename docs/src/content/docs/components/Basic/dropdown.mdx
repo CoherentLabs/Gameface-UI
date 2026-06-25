@@ -38,7 +38,8 @@ export default App;
 | `ref`             | `DropdownRef \| undefined` | `undefined` | A reference to the component, providing access to its methods and underlying HTML element for programmatic control. |
 | `disabled`        | `boolean`            | `false`     | Disables the dropdown when set to `true`.                                                                      |
 | `class-disabled`  | `string`             | `""`        | Additional CSS classes to apply when the dropdown is disabled.                                                 |
-| `onChange`        | `(value: string) => void` | `undefined` | Callback function triggered whenever the selected option changes, providing the selected option's value.        |
+| `multiple`        | `boolean`            | `false`     | Enables multi-select mode. When `true`, selecting an option toggles it on or off, the options panel stays open after a selection, and `onChange` reports an array of values.        |
+| `onChange`        | `(value: string \| string[]) => void` | `undefined` | Callback function triggered whenever the selection changes. Provides the selected option's value, or an array of selected values when `multiple` is enabled.        |
 | `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Extends or overrides the component's default navigation action handlers. See [Implemented Navigation Actions](#implemented-navigation-actions) for details. |
 | `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, the dropdown's actions will execute. Can be a CSS selector or HTMLElement. |
 
@@ -48,16 +49,20 @@ To interact with the `Dropdown` programmatically, you can use the `DropdownRef` 
 
 ### Properties
 
-| Property   | Type                | Description                                                                 |
-|------------|---------------------|-----------------------------------------------------------------------------|
-| `selected` | `Accessor<string>`  | Read the currently selected option: `ref.selected()` returns the value.      |
-| `element`  | `HTMLDivElement`    | A reference to the dropdown's root HTML element, useful for DOM access or styling. |
+| Property         | Type                  | Description                                                                 |
+|------------------|-----------------------|-----------------------------------------------------------------------------|
+| `selected`       | `Accessor<string>`    | Read the currently selected option: `ref.selected()` returns the value.      |
+| `selectedValues` | `Accessor<string[]>`  | Read all currently selected values when the dropdown is in `multiple` mode: `ref.selectedValues()` returns the array of values. |
+| `element`        | `HTMLDivElement`      | A reference to the dropdown's root HTML element, useful for DOM access or styling. |
 
 ### Methods
 
-| Method          | Parameters         | Return Value | Description                                      |
-|------------------|------------------|--------------|--------------------------------------------------|
-| `selectOption`   | `value: string`   | `void`       | Sets a new selected option programmatically.      |
+| Method            | Parameters           | Return Value | Description                                      |
+|-------------------|----------------------|--------------|--------------------------------------------------|
+| `selectOption`    | `value: string`      | `void`       | Selects an option programmatically. In `multiple` mode, calling it with an already-selected value toggles it off. |
+| `deselectOption`  | `value: string`      | `void`       | Deselects a single option by its value.           |
+| `deselectAll`     | `none`               | `void`       | Clears every selected option in one call, firing `onChange` once with the empty result. |
+| `toggle`          | `isOpened: boolean`  | `void`       | Programmatically opens (`true`) or closes (`false`) the dropdown's options panel. |
 
 ## Slots
 
@@ -338,6 +343,42 @@ const App = () => {
 
 export default App;
 ```
+
+### Allow selecting multiple options
+
+To let users select more than one option at a time, enable the `multiple` prop.
+
+#### Behavior
+
+- Clicking an option toggles it on or off instead of replacing the current selection.
+- The options panel stays open after a selection so several options can be picked in a row.
+- `onChange` receives an array of the selected values.
+
+```tsx
+import Dropdown from '@components/Basic/Dropdown/Dropdown';
+
+const App = () => {
+    const handleSelectionChange = (selected: string[]) => {
+        console.log(selected); // e.g. ["red", "blue"]
+    };
+
+    return (
+        <Dropdown multiple onChange={handleSelectionChange}>
+            <Dropdown.Options>
+                <Dropdown.Option value="red">red</Dropdown.Option>
+                <Dropdown.Option value="green">green</Dropdown.Option>
+                <Dropdown.Option value="blue">blue</Dropdown.Option>
+            </Dropdown.Options>
+        </Dropdown>
+    );
+};
+
+export default App;
+```
+
+:::note
+In `multiple` mode, read the current selection with `ref.selectedValues()` and clear it with `ref.deselectAll()`.
+:::
 
 ### Programmatically set the selected option
 

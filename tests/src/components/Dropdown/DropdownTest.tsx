@@ -12,7 +12,9 @@ const dropdownOptions = [
 
 const DropdownTest = () => {
     let dropdownRef!: DropdownRef;
+    let multipleRef!: DropdownRef;
     const [selected, setSelected] = createSignal("");
+    const [multipleSelected, setMultipleSelected] = createSignal<string[]>([]);
     const [disabled, setDisabled] = createSignal(false);
     const [btnDisabled, setBtnDisabled] = createSignal(false);
     const [options, setOptions] = createSignal(dropdownOptions);
@@ -30,12 +32,15 @@ const DropdownTest = () => {
 
     const reset = () => {
         setSelected('');
+        setMultipleSelected([]);
         setDisabled(false);
         setCustomIcon(false);
         setBtnDisabled(false);
         setTestInverted(false);
         setOptions(dropdownOptions);
-        dropdownRef?.selectOption('');
+        dropdownRef?.deselectAll();
+        multipleRef?.deselectAll();
+        multipleRef?.toggle(false);
     };
 
     const isReactive = createMemo(() => selected() === 'test1');
@@ -44,12 +49,20 @@ const DropdownTest = () => {
 
     onMount(() => {
         document.addEventListener('reset', reset)
+        document.addEventListener('selectOptionMultiple', () => multipleRef?.selectOption("test0"))
+        document.addEventListener('deselectOptionMultiple', () => multipleRef?.deselectOption("test0"))
     })
-    onCleanup(() => document.removeEventListener('reset', reset))
+    onCleanup(() => {
+        document.removeEventListener('reset', reset)
+        document.removeEventListener('selectOptionMultiple', () => multipleRef?.selectOption("test0"))
+        document.removeEventListener('deselectOptionMultiple', () => multipleRef?.deselectOption("test0"))
+    })
 
     return (
         <Tab location='dropdown'>
             <div class={selectors.assertionElement}>{selected()}</div>
+
+            <div class={selectors.multipleAssertionElement}>{multipleSelected().join(',')}</div>
 
             <For each={scenarios}>
                 {(sc, i) => (
@@ -61,7 +74,7 @@ const DropdownTest = () => {
 
             <Dropdown
                 ref={dropdownRef}
-                onChange={(value) => setSelected(value)}
+                onChange={(value) => setSelected(value as string)}
                 disabled={disabled()}
                 class-disabled={`${selectors.base}-disabled`}
                 style={reactiveStyle()}
@@ -91,6 +104,29 @@ const DropdownTest = () => {
                 </Dropdown.Icon>
                 <Dropdown.Track style={reactiveStyle()} class={`${selectors.track} ${reactiveClass()}`} />
                 <Dropdown.Handle style={reactiveStyle()} class={`${selectors.handle} ${reactiveClass()}`} />
+            </Dropdown>
+
+            <Dropdown
+                ref={multipleRef}
+                multiple
+                onChange={(value) => setMultipleSelected(value as string[])}
+                class={`${selectors.multiple}`}>
+                <Dropdown.Options class={`${selectors.multipleOptions}`}>
+                    <For each={options()}>
+                        {(option, index) => (
+                            <Dropdown.Option
+                                value={option.value + index()}
+                                class-selected="option-selected"
+                                class={`${selectors.multipleOption} ${selectors.multipleOption}${index()}`}>
+                                {option.value + index()}
+                            </Dropdown.Option>
+                        )}
+                    </For>
+                </Dropdown.Options>
+
+                <Dropdown.Trigger class={`${selectors.multipleTrigger}`} />
+                <Dropdown.Placeholder>Select multiple options</Dropdown.Placeholder>
+                <Dropdown.Icon />
             </Dropdown>
 
             <Show when={testInverted()}>

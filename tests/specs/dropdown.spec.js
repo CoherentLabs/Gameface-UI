@@ -146,11 +146,9 @@ describe('Dropdown options', function () {
         const dropdown = await gf.get(`.${selectors.base}`);
         const trigger = await dropdown.find(`.${selectors.trigger}`);
 
-
         await trigger.click();
         const option = await gf.get(`.${selectors.option}2`);
         await option.click();
-
 
         const optionClasses = await option.classes();
         const optionStyles = await option.styles();
@@ -230,4 +228,80 @@ describe('Dropdown track and handle', function () {
             });
         }
     });
+});
+
+describe('Dropdown multiple', function () {
+    this.afterEach(async () => {
+        await gf.trigger('reset');
+    })
+
+    it('Should keep the options open when selecting an option', async () => {
+        const dropdown = await gf.get(`.${selectors.multiple}`);
+        const trigger = await dropdown.find(`.${selectors.multipleTrigger}`);
+        const options = await dropdown.find(`.${selectors.multipleOptions}`);
+
+        await trigger.click();
+        await gf.click(`.${selectors.multipleOption}0`);
+
+        assert.ok(await options.waitForVisibility(true), 'Dropdown options should stay open after selecting an option');
+    })
+
+    it('Should allow selecting several options at once', async () => {
+        const dropdown = await gf.get(`.${selectors.multiple}`);
+        const trigger = await dropdown.find(`.${selectors.multipleTrigger}`);
+
+        await trigger.click();
+
+        await gf.click(`.${selectors.multipleOption}0`);
+        await gf.click(`.${selectors.multipleOption}1`);
+
+        const firstOption = await gf.get(`.${selectors.multipleOption}0`);
+        const secondOption = await gf.get(`.${selectors.multipleOption}1`);
+
+        assert.ok((await firstOption.classes()).includes('option-selected'), 'First selected option should have the selected class');
+        assert.ok((await secondOption.classes()).includes('option-selected'), 'Second selected option should have the selected class');
+    })
+
+    it('Should deselect an option when selecting it again', async () => {
+        const dropdown = await gf.get(`.${selectors.multiple}`);
+        const trigger = await dropdown.find(`.${selectors.multipleTrigger}`);
+        const option = await gf.get(`.${selectors.multipleOption}0`);
+
+
+        await trigger.click();
+        await option.click();
+        assert.ok((await option.classes()).includes('option-selected'), 'Option should be selected after the first click');
+
+        await option.click();
+        assert.ok(!(await option.classes()).includes('option-selected'), 'Option should be deselected after clicking it again');
+    })
+
+    it('Should retrieve all selected values via onChange prop', async () => {
+        const assertionEl = await gf.get(`.${selectors.multipleAssertionElement}`);
+        const dropdown = await gf.get(`.${selectors.multiple}`);
+        const trigger = await dropdown.find(`.${selectors.multipleTrigger}`);
+
+
+        await trigger.click();
+        await gf.click(`.${selectors.multipleOption}0`);
+        await gf.click(`.${selectors.multipleOption}1`);
+        assert.equal(await assertionEl.text(), 'test0,test1', 'onChange should report every selected value');
+
+        await gf.click(`.${selectors.multipleOption}0`);
+        assert.equal(await assertionEl.text(), 'test1', 'onChange should report the remaining values after a deselection');
+    })
+
+    it('Should select and deselect options via ref', async () => {
+        const assertionEl = await gf.get(`.${selectors.multipleAssertionElement}`);
+        const option = await gf.get(`.${selectors.multipleOption}0`);
+
+
+        await gf.executeScript(() => document.dispatchEvent(new Event('selectOptionMultiple')));
+        assert.ok((await option.classes()).includes('option-selected'), 'Option should be selected through the ref');
+        assert.equal(await assertionEl.text(), 'test0', 'Selecting via ref should update the reported values');
+
+        await gf.executeScript(() => document.dispatchEvent(new Event('deselectOptionMultiple')));
+        assert.ok(!(await option.classes()).includes('option-selected'), 'Option should be deselected through the ref');
+        assert.equal(await assertionEl.text(), '', 'Deselecting via ref should update the reported values');
+    })
 });

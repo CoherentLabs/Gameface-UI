@@ -6,7 +6,13 @@ import { Badge } from '@astrojs/starlight/components'
 
 ## 3.0.2 :badge[Latest]{variant="note"}
 
+- <Badge text="Feature" variant="success" size="small" /> [Dropdown](/components/basic/dropdown#props): Exposed `toggle` method in the `ref` to programmatically open/close the dropdown.
+
+- <Badge text="Feature" variant="success" size="small" /> [Dropdown](/components/basic/dropdown#props): Added a `multiple` prop that allows selecting several options at once. When enabled, the dropdown stays open while selecting, clicking a selected option deselects it, and `onChange` returns an array of the selected values. The exposed `ref` gains a `selectedValues` accessor and a `deselectOption` method.
+
 - <Badge text="Feature" variant="success" size="small" /> [Slider](/components/basic/slider#props): Added an `onChangeEnd` prop that fires once the user finishes interacting with the slider (e.g. on mouse release), useful for committing the final value.
+
+- <Badge text="Change" variant="note" size="small" /> [Dropdown](/components/basic/dropdown): The dropdown trigger now spans the full width (`100%`) of the dropdown component, making it easier to restyle.
 
 - <Badge text="Change" variant="note" size="small" /> [Slider](/components/basic/slider#props) & [TextSlider](/components/basic/text-slider#props): `onChange` now only fires when the value actually changes instead of on every mouse move.
 

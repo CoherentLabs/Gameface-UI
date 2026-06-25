@@ -16,13 +16,20 @@ export interface CommonDropdownSlotProps {
 
 export interface DropdownRef extends BaseComponentRef {
     selected: Accessor<string>;
+    selectedValues: Accessor<string[]>;
     selectOption: (value: string) => void
+    deselectOption: (value: string) => void
+    deselectAll: () => void
+    toggle: (isOpened: boolean) => void
 }
 
 export const DropdownContext = createContext<DropdownContextValue>();
 
 interface DropdownContextValue {
     selected: Accessor<string>;
+    selectedValues: Accessor<string[]>;
+    isSelected: (value: string) => boolean;
+    multiple: Accessor<boolean>;
     selectOption: (value: string) => void
     open: Accessor<boolean>;
     toggle: (isOpened: boolean) => void;
@@ -36,12 +43,14 @@ interface DropdownContextValue {
 interface DropdownProps extends ComponentProps {
     disabled?: boolean
     'class-disabled'?: string
-    onChange?: (value: string) => void;
+    multiple?: boolean
+    onChange?: (value: string | string[]) => void;
 }
 
 const Dropdown: ParentComponent<DropdownProps> = (props) => {
     let element!: HTMLDivElement;
     const [selected, setSelected] = createSignal('');
+    const [selectedValues, setSelectedValues] = createSignal<string[]>([]);
     const [firstRender, setFirstRender] = createSignal(true);
     const [open, setOpen] = createSignal(false);
     const [isInverted, setIsInverted] = createSignal(false);
@@ -64,11 +73,50 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
             return;
         }
 
+        if (props.multiple) {
+            const selected = setSelectedValues(prev =>
+                prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]
+            );
+            props.onChange?.(selected);
+            return;
+        }
+
         setSelected(value);
 
         if (selected() !== "" && firstRender()) return setFirstRender(false);
         props.onChange?.(value);
     }
+
+    const deselectOption = (value: string) => {
+        if (props.multiple) {
+            const selected = setSelectedValues(prev => prev.filter(v => v !== value));
+            props.onChange?.(selected);
+            return;
+        }
+
+        if (selected() === value) {
+            setSelected('');
+            props.onChange?.('');
+        }
+    }
+
+    const deselectAll = () => {
+        if (props.multiple) {
+            if (selectedValues().length === 0) return;
+            const selected = setSelectedValues([]);
+            props.onChange?.(selected);
+            return;
+        }
+
+        if (selected() === '') return;
+        setSelected('');
+        props.onChange?.('');
+    }
+
+    const isSelected = (value: string) =>
+        props.multiple ? selectedValues().includes(value) : selected() === value;
+
+    const multiple = () => !!props.multiple;
 
     const dropdownClasses = createMemo(() => {
         const classes = [style.dropdown];
@@ -150,20 +198,27 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
 
         (props.ref as unknown as (ref: any) => void)({
             selected,
+            selectedValues,
             selectOption,
+            deselectOption,
+            deselectAll,
+            toggle,
             element,
         });
     });
 
     const DropdownContextValue = {
-        selected, 
-        selectOption, 
-        open, 
-        toggle, 
-        registerOption, 
+        selected,
+        selectedValues,
+        isSelected,
+        multiple,
+        selectOption,
+        open,
+        toggle,
+        registerOption,
         unregisterOption,
         handleNavigationClose,
-        options, 
+        options,
         isInverted
     }
 
