@@ -8,15 +8,18 @@ const initialValue = 'Easy';
 const TextSliderTest = () => {
     let sliderRef!: TextSliderRef;
     const [value, setValue] = createSignal(initialValue);
+    const [controlled, setControlled] = createSignal<string>(initialValue);
     const [test, setTest] = createSignal('red');
 
     const scenarios = [
         { label: "Change value with ref", action: () => { sliderRef.changeValue('Medium') } },
         { label: "Change styles", action: () => { setTest('blue') } },
+        { label: "Set value via prop", action: () => { setControlled('Hard') } },
     ];
 
     const reset = () => {
         setValue(initialValue);
+        setControlled(initialValue);
         setTest('red');
         sliderRef?.changeValue(initialValue);
     };
@@ -44,7 +47,7 @@ const TextSliderTest = () => {
                 ref={sliderRef}
                 onChange={(value) => setValue(value)}
                 values={['Easy', 'Medium', 'Hard', 'Extreme']}
-                value={initialValue}
+                value={controlled()}
                 style={reactiveStyle()}
                 class={`${selectors.slider} ${reactiveClass()}`}>
                 <TextSlider.Fill style={reactiveStyle()} class={`${selectors.sliderFill} ${reactiveClass()}`} />

@@ -1,0 +1,15 @@
+{
+  "assertionStartElement": "assertion-start-element",
+  "assertionEndElement": "assertion-end-element",
+  "changeEndStartElement": "change-end-start-element",
+  "changeEndEndElement": "change-end-end-element",
+  "scenarioBtn": "scenario-btn",
+  "slider": "two-handle-slider",
+  "sliderFill": "slider-fill",
+  "sliderTrack": "slider-track",
+  "sliderHandle": "slider-handle",
+  "sliderThumb": "slider-thumb",
+  "sliderGrid": "slider-grid",
+  "sliderPol": "slider-pol",
+  "reactive": "reactive"
+}

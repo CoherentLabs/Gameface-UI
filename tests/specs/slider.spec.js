@@ -60,6 +60,13 @@ describe('Slider', function () {
         assert.equal(await thumb.text(), 50, 'Slider\'s thumb should move to the center');
     })
 
+    it('Should update value via the value prop (two-way binding)', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-2`);
+        const thumb = await gf.get(`.${selectors.sliderThumb}`);
+
+        assert.equal(await thumb.text(), 80, 'Slider value should update to 80 via the value prop');
+    })
+
     it('Should not call onChangeEnd before any interaction', async () => {
         const changeEndEl = await gf.get(`.${selectors.changeEndElement}`);
 

@@ -31,7 +31,7 @@ export default App;
 | `style`    | `JSX.CSSProperties`                    | `{}`        | Inline styles to apply directly to the component's root element.                                                                                                                             |
 | `class`    | `string`                               | `""`        | Additional CSS classes to apply to the component                                                                                                                                             |
 | `ref`      | `SliderRef  \| undefined`            | `undefined` | A reference to the component that gives you access to its methods and the underlying HTML element. Useful if you need to set the value of the slider programmatically.                                                             |
-| `value`       | `number`                            | `undefined`   | The current value of the slider. Use this to control or set the slider's position. |
+| `value`       | `number`                            | `undefined`   | The current value of the slider. Use this to control or set the slider's position. The prop is reactive - updating it externally moves the handle. |
 | `min`         | `number`                            | `undefined`   | The minimum value that the slider can select. |
 | `max`         | `number`                            | `undefined`   | The maximum value that the slider can select. |
 | `step`        | `number`                            | `undefined`   | The amount by which the slider value changes when the handle is moved. Determines the granularity of the slider. |
@@ -56,6 +56,7 @@ To interact with the `Slider` programmatically, you can use the `SliderRef` inte
 | Method         | Parameters         | Return Value | Description                                      |
 |----------------|-------------------|--------------|--------------------------------------------------|
 | `changeValue`  | `newValue: number`| `void`       | Programmatically sets a new value for the slider. |
+| `stepValue`    | `direction: 1 \| -1` | `void`    | Steps the value up (`1`) or down (`-1`) by the `step` amount. |
 
 ## Slots
 
@@ -127,6 +128,8 @@ Customizes the draggable handle of the slider. Use this slot to apply custom sty
 |-----------|------|---------|-------------|
 | `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the slider handle. |
 | `class`   | `string` | `""` | Additional CSS classes to style the slider handle. |
+| `styleActive` | `JSX.CSSProperties` | `{}` | Inline styles applied to the handle while it is active (the slider is focused via keyboard/gamepad navigation). Merged on top of `style`. |
+| `classActive` | `string` | `""` | CSS class applied to the handle while it is active, replacing the default active styling. |
 
 #### Usage
 
@@ -137,7 +140,7 @@ const App = () => {
     return (
         <>
             <Slider min={0} max={100} value={35} step={1}>
-+               <Slider.Handle style={{'background-color': 'red'}}></Slider.Handle>
++               <Slider.Handle style={{'background-color': 'red'}} styleActive={{'background-color': 'green'}}></Slider.Handle>
             </Slider>
         </>
     );

@@ -4,13 +4,21 @@ title: Changelog
 
 import { Badge } from '@astrojs/starlight/components'
 
-## 3.0.2 :badge[Latest]{variant="note"}
+## 3.1.0 :badge[Latest]{variant="note"}
 
 - <Badge text="Feature" variant="success" size="small" /> [Dropdown](/components/basic/dropdown#props): Exposed `toggle` method in the `ref` to programmatically open/close the dropdown.
 
 - <Badge text="Feature" variant="success" size="small" /> [Dropdown](/components/basic/dropdown#props): Added a `multiple` prop that allows selecting several options at once. When enabled, the dropdown stays open while selecting, clicking a selected option deselects it, and `onChange` returns an array of the selected values. The exposed `ref` gains a `selectedValues` accessor and a `deselectOption` method.
 
 - <Badge text="Feature" variant="success" size="small" /> [Slider](/components/basic/slider#props): Added an `onChangeEnd` prop that fires once the user finishes interacting with the slider (e.g. on mouse release), useful for committing the final value.
+
+- <Badge text="New" variant="tip" size="small" /> Added [TwoHandleSlider](/components/basic/two-handle-slider) component for selecting a numeric range with a lower (start) and an upper (end) handle.
+
+- <Badge text="Feature" variant="success" size="small" /> Added `Track`, `Fill`, `Thumb`, `Handle` and `Grid` slots for the [TwoHandleSlider](/components/basic/two-handle-slider/#slots) component.
+
+- <Badge text="Feature" variant="success" size="small" /> [Slider](/components/basic/slider#props) & [TextSlider](/components/basic/text-slider#props): The `value` prop is now reactive - updating it externally moves the slider (two-way binding).
+
+- <Badge text="Feature" variant="success" size="small" /> [Slider](/components/basic/slider#methods): Exposed a `stepValue` method in the `ref` to step the value up or down by the `step` amount programmatically.
 
 - <Badge text="Change" variant="note" size="small" /> [Dropdown](/components/basic/dropdown): The dropdown trigger now spans the full width (`100%`) of the dropdown component, making it easier to restyle.
 

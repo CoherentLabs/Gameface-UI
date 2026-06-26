@@ -1,0 +1,346 @@
+---
+title: TwoHandleSlider
+---
+
+The `TwoHandleSlider` component lets users select a numeric **range** by dragging two handles along a track - a lower (`start`) handle and an upper (`end`) handle. It is useful for constraints such as picking a minimum and maximum age, price, or level.
+
+## Usage
+
+To use the `TwoHandleSlider` component, specify the minimum (`min`), maximum (`max`), initial range (`value`), and step size (`step`). The `value` is an object with a `start` and an `end` key.
+
+```tsx
+import TwoHandleSlider from '@components/Basic/TwoHandleSlider/TwoHandleSlider';
+
+const App = () => {
+    return (
+        <>
+            <TwoHandleSlider min={0} max={100} value={{ start: 20, end: 60 }} step={1} />
+        </>
+    );
+};
+
+export default App;
+```
+
+:::note
+The handles cannot cross - the `start` handle is always kept at least one `step` below the `end` handle, and vice versa.
+:::
+
+## API
+
+### Props
+
+| Prop Name  | Type                                   | Default     | Description                                                                                                                                                                                  |
+| ---------- | -------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `style`    | `JSX.CSSProperties`                    | `{}`        | Inline styles to apply directly to the component's root element.                                                                                                                             |
+| `class`    | `string`                               | `""`        | Additional CSS classes to apply to the component.                                                                                                                                            |
+| `ref`      | `TwoHandleSliderRef \| undefined`      | `undefined` | A reference to the component that gives you access to its methods and the underlying HTML element. Useful if you need to set the range of the slider programmatically.                        |
+| `value`    | `{ start: number; end: number }`       | `undefined` | The current range of the slider. Use this to control or set the handle positions. The prop is reactive - updating it externally moves the handles.                          |
+| `min`      | `number`                               | `undefined` | The minimum value that the slider can select.                                                                                                                                                |
+| `max`      | `number`                               | `undefined` | The maximum value that the slider can select.                                                                                                                                                |
+| `step`     | `number`                               | `undefined` | The amount by which a handle's value changes when it is moved. Determines the granularity of the slider.                                                                                      |
+| `onChange` | `(value: { start: number; end: number }) => void` | `undefined` | A function that is called whenever either handle's value changes. It only fires when a value actually changes, not on every mouse move.                                            |
+| `onChangeEnd` | `(value: { start: number; end: number }) => void` | `undefined` | A function that is called when the user finishes interacting with the slider (e.g. on mouse release, and after navigation actions settle). Useful for committing the final range. |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Extends or overrides the component's default navigation action handlers. See [Implemented Navigation Actions](#implemented-navigation-actions) for details. |
+| `anchor`   | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, the slider's actions will execute. Can be a CSS selector or HTMLElement. |
+
+## Ref API
+
+To interact with the `TwoHandleSlider` programmatically, you can use the `TwoHandleSliderRef` interface. This interface provides properties and methods to access and manipulate the component's state.
+
+### Properties
+
+| Property   | Type                                        | Description                                                                 |
+|------------|---------------------------------------------|-----------------------------------------------------------------------------|
+| `element`  | `HTMLDivElement`                            | A reference to the slider's root HTML element, useful for DOM access or styling. |
+| `value`    | `Accessor<{ start: number; end: number }>`  | The current range of the slider. Use `value()` to get the latest `{ start, end }`. |
+
+### Methods
+
+| Method        | Parameters                              | Return Value | Description                                                          |
+|---------------|-----------------------------------------|--------------|----------------------------------------------------------------------|
+| `changeValue` | `newValue: { start: number; end: number }` | `void`    | Sets both handles at once, clamped to the range and snapped to `step`. |
+| `changeStart` | `start: number`                         | `void`       | Sets the start (lower) handle, kept one `step` below the end handle.  |
+| `changeEnd`   | `end: number`                           | `void`       | Sets the end (upper) handle, kept one `step` above the start handle.  |
+| `stepStart`   | `direction: 1 \| -1`                    | `void`       | Steps the start handle up (`1`) or down (`-1`) by the `step` amount.  |
+| `stepEnd`     | `direction: 1 \| -1`                    | `void`       | Steps the end handle up (`1`) or down (`-1`) by the `step` amount.    |
+
+## Slots
+
+### `TwoHandleSlider.Track`
+
+Customizes the slider's track. Use this slot to apply custom classes or styles to the track area of the slider.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the slider track. |
+| `class`   | `string` | `""` | Additional CSS classes to style the slider track. |
+
+#### Usage
+
+```diff lang="tsx"
+import TwoHandleSlider from '@components/Basic/TwoHandleSlider/TwoHandleSlider';
+
+const App = () => {
+    return (
+        <>
+            <TwoHandleSlider min={0} max={100} value={{ start: 20, end: 60 }} step={1}>
++               <TwoHandleSlider.Track style={{'background-color': 'red'}}></TwoHandleSlider.Track>
+            </TwoHandleSlider>
+        </>
+    );
+};
+
+export default App;
+```
+
+### `TwoHandleSlider.Fill`
+
+Customizes the filled portion of the track between the two handles, which visually represents the selected range. Use this slot to apply custom styles or classes to the fill area.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the slider fill. |
+| `class`   | `string` | `""` | Additional CSS classes to style the slider fill. |
+
+#### Usage
+
+```diff lang="tsx"
+import TwoHandleSlider from '@components/Basic/TwoHandleSlider/TwoHandleSlider';
+
+const App = () => {
+    return (
+        <>
+            <TwoHandleSlider min={0} max={100} value={{ start: 20, end: 60 }} step={1}>
++               <TwoHandleSlider.Fill style={{'background-color': 'red'}}></TwoHandleSlider.Fill>
+            </TwoHandleSlider>
+        </>
+    );
+};
+
+export default App;
+```
+
+### `TwoHandleSlider.Handle`
+
+Customizes the draggable handles of the slider. The styling is shared, so it is applied to **both** the start and end handles.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the slider handles. |
+| `class`   | `string` | `""` | Additional CSS classes to style the slider handles. |
+| `styleActive` | `JSX.CSSProperties` | `{}` | Inline styles applied to whichever handle is active while the slider is focused via keyboard/gamepad navigation. Merged on top of `style`. |
+| `classActive` | `string` | `""` | CSS class applied to the active handle while the slider is focused via navigation, replacing the default active styling. |
+
+#### Usage
+
+```diff lang="tsx"
+import TwoHandleSlider from '@components/Basic/TwoHandleSlider/TwoHandleSlider';
+
+const App = () => {
+    return (
+        <>
+            <TwoHandleSlider min={0} max={100} value={{ start: 20, end: 60 }} step={1}>
++               <TwoHandleSlider.Handle style={{'background-color': 'red'}} styleActive={{'background-color': 'green'}}></TwoHandleSlider.Handle>
+            </TwoHandleSlider>
+        </>
+    );
+};
+
+export default App;
+```
+
+### `TwoHandleSlider.Thumb`
+
+The `TwoHandleSlider.Thumb` slot renders a small rectangular element above each handle that displays its current value. Use this slot to customize the appearance of the value indicators. The styling is shared, so it is applied to **both** thumbs.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the slider thumb (value indicator). |
+| `class`   | `string` | `""` | Additional CSS classes to style the slider thumb. |
+
+#### Usage
+
+```diff lang="tsx"
+import TwoHandleSlider from '@components/Basic/TwoHandleSlider/TwoHandleSlider';
+
+const App = () => {
+    return (
+        <>
+            <TwoHandleSlider min={0} max={100} value={{ start: 20, end: 60 }} step={1}>
++               <TwoHandleSlider.Thumb class={styles['Custom-Thumb']} />
+            </TwoHandleSlider>
+        </>
+    );
+};
+
+export default App;
+```
+
+:::caution
+The thumbs of the slider won't be displayed by default. To enable them provide the `Thumb` slot inside the `TwoHandleSlider` component.
+:::
+
+### `TwoHandleSlider.Grid`
+
+The `TwoHandleSlider.Grid` slot displays a visual indicator of progress along the slider's range, dividing the track into evenly spaced segments called "pols."
+Each pol marks a separation between the minimum and maximum values, helping users see how far each handle has moved.
+
+You can control the number of main pols (with value labels) using the `pols` prop.
+Additionally, by enabling the `pols-without-text` prop, smaller unlabeled pols are rendered between the main pols for finer granularity and enhanced visual feedback.
+
+#### Properties
+
+| Prop Name         | Type                | Default     | Description                                                                                                 |
+|-------------------|---------------------|-------------|-------------------------------------------------------------------------------------------------------------|
+| `style`           | `JSX.CSSProperties` | `{}`        | Inline styles to apply directly to the grid container.                                                      |
+| `class`           | `string`            | `""`        | Additional CSS classes to style the grid container.                                                         |
+| `pols`            | `number`            | `5`         | Number of main pols (segments with value labels) to display along the slider track.                         |
+| `pols-without-text` | `number`          | `5`         | If prop is present, it renders smaller unlabeled pols between main pols for finer granularity.                           |
+| `pol-style`        | `JSX.CSSProperties` | `{}`        | Inline styles to apply directly to each pol (segment marker).                                              |
+| `pol-class`        | `string`            | `""`        | Additional CSS classes to style each pol (segment marker).                                                 |
+| `pol-value-style` | `JSX.CSSProperties` | `{}`        | Inline styles for poles displaying the slider's current value.             |
+| `pol-value-class` | `string`            | `""`        | Additional CSS classes for poles displaying the slider's current value.    |
+
+#### Usage
+
+```diff lang="tsx"
+import TwoHandleSlider from '@components/Basic/TwoHandleSlider/TwoHandleSlider';
+
+const App = () => {
+    return (
+        <>
+            <TwoHandleSlider min={0} max={100} value={{ start: 20, end: 60 }} step={1}>
++               <TwoHandleSlider.Grid pol-style={{'background-color': 'red', 'color': 'green'}} pols={5} pols-without-text={7} />
+            </TwoHandleSlider>
+        </>
+    );
+};
+
+export default App;
+```
+
+:::caution
+The `TwoHandleSlider.Grid` slot will only be rendered if you include it as a child of the `TwoHandleSlider` component.
+:::
+
+## Implemented Navigation Actions
+
+The `TwoHandleSlider` component implements the following navigation actions by default. Adjustments apply to the currently **active** handle.
+
+| Action Name  | Behavior                                                    |
+|--------------|-------------------------------------------------------------|
+| `move-left`  | Decreases the active handle's value by the `step` amount    |
+| `move-right` | Increases the active handle's value by the `step` amount    |
+| `select`     | Switches the active handle between the start and end handle |
+
+You can extend the `TwoHandleSlider` with additional navigation actions or override the default behavior using the `onAction` prop:
+
+```tsx
+import TwoHandleSlider from '@components/Basic/TwoHandleSlider/TwoHandleSlider';
+
+<TwoHandleSlider
+    min={0}
+    max={100}
+    value={{ start: 20, end: 60 }}
+    step={5}
+    onAction={{
+        'back': () => console.log('Going back')
+    }}
+/>
+```
+
+For more information about navigation actions, see the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions).
+
+## Guide
+
+### Retrieve and use the slider range
+
+- To get the current range of the `TwoHandleSlider` component, use the `onChange` prop. It receives an object with the `start` and `end` values.
+
+#### Steps
+
+1. Define a state variable (e.g., using `createSignal`) to store the slider range.
+2. Pass a callback to the `onChange` prop that updates this state variable.
+3. Use the state variable wherever you need the slider's range.
+
+```tsx
+import TwoHandleSlider from '@components/Basic/TwoHandleSlider/TwoHandleSlider';
+import { createSignal } from 'solid-js';
+
+const App = () => {
+    const [range, setRange] = createSignal({ start: 20, end: 60 });
+
+    return (
+        <>
+            <TwoHandleSlider onChange={(value) => setRange(value)} value={{ start: 20, end: 60 }} max={100} min={0} step={1} />
+            <div>{range().start} - {range().end}</div>
+        </>
+    );
+};
+
+export default App;
+```
+
+### React only to the final range
+
+- The `onChange` prop fires every time a value changes while dragging. If you only care about the final range once the user finishes interacting (e.g. to avoid expensive work on every step), use the `onChangeEnd` prop instead.
+
+`onChangeEnd` is called when the user releases a handle after a drag, and after navigation actions (`move-left` / `move-right`) settle.
+
+```tsx
+import TwoHandleSlider from '@components/Basic/TwoHandleSlider/TwoHandleSlider';
+import { createSignal } from 'solid-js';
+
+const App = () => {
+    const [range, setRange] = createSignal({ start: 20, end: 60 });
+
+    return (
+        <>
+            <TwoHandleSlider onChangeEnd={(value) => setRange(value)} value={{ start: 20, end: 60 }} max={100} min={0} step={1} />
+            <div>{range().start} - {range().end}</div>
+        </>
+    );
+};
+
+export default App;
+```
+
+### Set the range of the slider programmatically
+
+The `TwoHandleSlider` component lets you set the range through code. Use `changeValue` to set both handles at once, or `changeStart` / `changeEnd` to move a single handle.
+
+#### Steps
+
+1. Declare a `ref` variable with type `TwoHandleSliderRef` and pass it to the `TwoHandleSlider` component.
+2. Call `ref.changeValue()` (or `ref.changeStart()` / `ref.changeEnd()`) from anywhere (e.g., a keyboard event or external button) to set the range programmatically.
+
+```tsx
+import TwoHandleSlider, { TwoHandleSliderRef } from '@components/Basic/TwoHandleSlider/TwoHandleSlider';
+
+const App = () => {
+    let sliderRef!: TwoHandleSliderRef;
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+        if (e.keyCode !== 13) return
+
+        sliderRef.changeValue({ start: 10, end: 90 });
+    }
+
+    return (
+        <>
+            <TwoHandleSlider ref={sliderRef} value={{ start: 20, end: 60 }} max={100} min={0} step={1} />
+        </>
+    );
+};
+
+export default App;
+```

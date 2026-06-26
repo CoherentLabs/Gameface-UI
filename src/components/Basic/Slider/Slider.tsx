@@ -10,11 +10,14 @@ import { SliderTrack, Track } from "./SliderTrack";
 import { useToken } from "@components/utils/tokenComponents";
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
+import { calculatePercent, getTrackGeometry, snapToStepAndNormalize, TrackGeometry } from "./sliderMath";
+import { stopImmediatePropagation } from "@components/utils/stopPropagation";
 
 export interface SliderRef {
     value: Accessor<number>,
     element: HTMLDivElement,
-    changeValue: (newValue: number) => void
+    changeValue: (newValue: number) => void,
+    stepValue: (direction: 1 | -1) => void
 }
 
 interface SliderProps extends ComponentProps {
@@ -31,39 +34,46 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     const max = () => props.max || 100;
     const step = () => props.step || 1;
     const [value, setValue] = createSignal(clamp(props.value ?? 50, min(), max()));
-    const percent = () => ((value() - min()) / (max() - min())) * 100;
+    // purely for navigation state
+    const [navEngaged, setNavEngaged] = createSignal(false);
+    const percent = () => calculatePercent(value(), min(), max());
 
     let element!: HTMLDivElement;
     let trackElement!: HTMLDivElement;
     let sliding = false;
     let commitTimeout: ReturnType<typeof setTimeout> | undefined;
-    let start: number,
-        maxValue: number,
-        minValue: number,
-        pixelRange: number,
-        startValue: number;
+    let startValue: number;
+    let geometry: TrackGeometry;
 
     const ThumbSlot = useToken(Thumb, props.children)
     const GridSlot = useToken(Grid, props.children)
 
-    const handleTrackClick = (e: MouseEvent) => {
-        calculateInitialValues(e);
-        const valueRange = max() - min();
-        const delta = start - minValue;
-        const newValue = min() + (delta / pixelRange) * valueRange;
+    // On change subscription
+    createEffect(on(value, (v) => props.onChange?.(v), { defer: true }));
 
-        const result = snapToStep(Math.round(newValue / step()) * step())
+    // Two Way Binding
+    createEffect(on(() => props.value, (v) => {
+        if (v !== undefined) changeValue(v);
+    }, { defer: true }));
+
+    const handleTrackClick = (e: MouseEvent) => {
+        geometry = getTrackGeometry(trackElement, e.clientX);
+        
+        const valueRange = max() - min();
+        const delta = geometry.start - geometry.trackStart;
+        const newValue = min() + (delta / geometry.pixelRange) * valueRange;
+
+        const result = snapValue(newValue)
 
         setValue(result);
-
         handleMouseDown(e);
     }
 
     const handleMouseDown = (e: MouseEvent) => {
-        e.stopImmediatePropagation();
+        stopImmediatePropagation(e);
         sliding = true;
 
-        calculateInitialValues(e);
+        geometry = getTrackGeometry(trackElement, e.clientX);
         startValue = value();
 
         window.addEventListener('mousemove', handleMouseMove);
@@ -88,17 +98,15 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     }
 
     const calculateResult = (e: MouseEvent) => {
-        const delta = e.clientX - start;
+        const delta = e.clientX - geometry.start;
         const valueRange = max() - min();
-        const deltaValue = (delta / pixelRange) * valueRange
+        const deltaValue = (delta / geometry.pixelRange) * valueRange
         const newValue = startValue + deltaValue;
 
-        return snapToStep(Math.round(newValue / step()) * step())
+        return snapValue(newValue);
     }
 
-    const snapToStep = (value: number) => {
-        return clamp(Number(value.toFixed(5)), min(), max());
-    }
+    const snapValue = (value: number) => snapToStepAndNormalize(value, step(), min(), max());
 
     const SliderClasses = createMemo(() => {
         const classes = [styles.slider];
@@ -109,19 +117,12 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         return classes.join(' ');
     });
 
-    const calculateInitialValues = (e: MouseEvent) => {
-        const { left, width } = trackElement.getBoundingClientRect();
-
-        start = e.clientX;
-        minValue = left
-        maxValue = left + width;
-        pixelRange = maxValue - minValue;
+    const changeValue = (newValue: number) => {
+        setValue(snapValue(newValue));
     }
 
-    const changeValue = (newValue: number) => {
-        const clampedValue = clamp(newValue, min(), max());
-
-        setValue(clampedValue);
+    const stepValue = (direction: 1 | -1) => {
+        changeValue(value() + step() * direction);
     }
 
     // gamepad movement has no release event so we debounce a synthetic commit
@@ -138,15 +139,14 @@ const Slider: ParentComponent<SliderProps> = (props) => {
 
     props.componentClasses = () => SliderClasses();
 
-    createEffect(on(value, (v) => props.onChange?.(v), { defer: true }));
-
     onMount(() => {
         if (!props.ref || !element) return;
 
-        (props.ref as unknown as (ref: any) => void)({
+        (props.ref as unknown as (ref: SliderRef) => void)({
             value,
             element,
-            changeValue
+            changeValue,
+            stepValue
         });
     });
 
@@ -156,17 +156,19 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     })
 
     const defaultActions = {
-        'move-left': () => { changeValue(Number((value() - step()).toFixed(5))); scheduleCommit(); },
-        'move-right': () => { changeValue(Number((value() + step()).toFixed(5))); scheduleCommit(); },
+        'move-left': () => { stepValue(-1); scheduleCommit(); },
+        'move-right': () => { stepValue(1); scheduleCommit(); },
     }
 
     return (
         <div
             ref={element!}
+            on:focusin={() => setNavEngaged(true)}
+            on:focusout={() => setNavEngaged(false)}
             use:baseComponent={props}
             use:navigationActions={mergeNavigationActions(props, defaultActions)}>
             <SliderTrack handleClick={handleTrackClick} ref={trackElement} parentChildren={props.children}>
-                <SliderHandle percent={percent} handleMouseDown={handleMouseDown} parentChildren={props.children} />
+                <SliderHandle percent={percent} handleMouseDown={handleMouseDown} parentChildren={props.children} active={navEngaged} />
                 <SliderFill percent={percent} parentChildren={props.children} />
                 <SliderThumb value={value} percent={percent} parentChildren={props.children} />
             </SliderTrack>

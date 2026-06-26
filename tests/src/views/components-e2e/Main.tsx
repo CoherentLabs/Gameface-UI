@@ -18,6 +18,7 @@ import MediaTest from '../../components/Media/MediaTest';
 import BaseTest from '../../components/Base/BaseTest';
 import SliderTest from '../../components/Slider/SliderTest';
 import TextSliderTest from '../../components/TextSlider/TextSliderTest';
+import TwoHandleSliderTest from '../../components/TwoHandleSlider/TwoHandleSliderTest';
 import XYSliderTest from '../../components/XYSlider/XYSliderTest';
 import ToggleButtonTest from '../../components/toggleButton/ToggleButton';
 import ColorPickerTest from '../../components/ColorPicker/ColorPickerTest';
@@ -47,6 +48,7 @@ const Main = () => {
         "stepper",
         "slider",
         "text-slider",
+        "two-handle-slider",
         "xy-slider",
         "toggle",
         "pagination",
@@ -108,6 +110,7 @@ const Main = () => {
                 <MediaTest />
                 <SliderTest />
                 <TextSliderTest />
+                <TwoHandleSliderTest />
                 <XYSliderTest />
                 <ToggleButtonTest />
                 <ColorPickerTest />

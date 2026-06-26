@@ -11,6 +11,8 @@ import { useToken } from "@components/utils/tokenComponents";
 import { Pol } from "./TextSliderPol";
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
+import { getTrackGeometry, TrackGeometry } from "../Slider/sliderMath";
+import { stopImmediatePropagation } from "@components/utils/stopPropagation";
 
 export interface TextSliderRef {
     value: Accessor<string>,
@@ -35,6 +37,8 @@ export const TextSliderContext = createContext<TextSliderContext>();
 const TextSlider: ParentComponent<TextSliderProps> = (props) => {
     const values = () => props.values || [];
     const [value, setValue] = createSignal(props.value || values()[0] || '');
+    // purely for navigation state
+    const [navEngaged, setNavEngaged] = createSignal(false);
     const getValuePercent = (value: string) => {
         const valueIndex = values().indexOf(value);
         if (valueIndex === -1) return 0;
@@ -52,28 +56,34 @@ const TextSlider: ParentComponent<TextSliderProps> = (props) => {
     let element!: HTMLDivElement;
     let trackElement!: HTMLDivElement;
     let sliding = false;
-    let start: number,
-        maxValue: number,
-        minValue: number,
-        pixelRange: number,
-        startValue: number;
+    let startValue: number;
+    let geometry: TrackGeometry;
 
     const ThumbSlot = useToken(Thumb, props.children)
 
+    // On change subscription
+    createEffect(on(value, (v) => props.onChange?.(v), { defer: true }));
+
+    // Two Way Binding
+    createEffect(on(() => props.value, (v) => {
+        if (v !== undefined) changeValue(v);
+    }, { defer: true }));
+
     const handleTrackClick = (e: MouseEvent) => {
-        calculateInitialValues(e);
-        const delta = start - minValue;
-        const result = Math.round(clamp(Math.round((delta / pixelRange) * 100), 0, 100));
+        geometry = getTrackGeometry(trackElement, e.clientX);
+
+        const delta = geometry.start - geometry.trackStart;
+        const result = Math.round(clamp(Math.round((delta / geometry.pixelRange) * 100), 0, 100));
         const newValue = findValueInPercent(result)
 
         setValue(newValue);
     }
 
     const handleMouseDown = (e: MouseEvent) => {
-        e.stopImmediatePropagation();
+        stopImmediatePropagation(e);
         sliding = true;
 
-        calculateInitialValues(e);
+        geometry = getTrackGeometry(trackElement, e.clientX);
         startValue = getValuePercent(value());
 
         window.addEventListener('mousemove', handleMouseMove);
@@ -98,8 +108,8 @@ const TextSlider: ParentComponent<TextSliderProps> = (props) => {
     }
 
     const calculateResult = (e: MouseEvent) => {
-        const delta = e.clientX - start;
-        const deltaValue = (delta / pixelRange) * 100;
+        const delta = e.clientX - geometry.start;
+        const deltaValue = (delta / geometry.pixelRange) * 100;
         const newValue = startValue + deltaValue;
         return clamp(Math.round(newValue), 0, 100);
     }
@@ -111,15 +121,6 @@ const TextSlider: ParentComponent<TextSliderProps> = (props) => {
 
         return classes.join(' ');
     });
-
-    const calculateInitialValues = (e: MouseEvent) => {
-        const { left, width } = trackElement.getBoundingClientRect();
-
-        start = e.clientX;
-        minValue = left;
-        maxValue = left + width;
-        pixelRange = maxValue - minValue;
-    }
 
     const changeValue = (newValue: string) => {
         if (!values().includes(newValue)) {
@@ -138,8 +139,6 @@ const TextSlider: ParentComponent<TextSliderProps> = (props) => {
     }
 
     props.componentClasses = () => SliderClasses();
-
-    createEffect(on(value, (v) => props.onChange?.(v), { defer: true }));
 
     onMount(() => {
         if (!props.ref || !element) return;
@@ -163,10 +162,12 @@ const TextSlider: ParentComponent<TextSliderProps> = (props) => {
         <TextSliderContext.Provider value={{ values }}>
             <div
                 ref={element!}
+                on:focusin={() => setNavEngaged(true)}
+                on:focusout={() => setNavEngaged(false)}
                 use:baseComponent={props}
                 use:navigationActions={mergeNavigationActions(props, defaultActions)}>
                 <SliderTrack handleClick={handleTrackClick} ref={trackElement} parentChildren={props.children}>
-                    <SliderHandle percent={percent} handleMouseDown={handleMouseDown} parentChildren={props.children} />
+                    <SliderHandle percent={percent} handleMouseDown={handleMouseDown} parentChildren={props.children} active={navEngaged} />
                     <SliderFill percent={percent} parentChildren={props.children} />
                     <SliderThumb value={value} percent={percent} parentChildren={props.children} />
                 </SliderTrack>
