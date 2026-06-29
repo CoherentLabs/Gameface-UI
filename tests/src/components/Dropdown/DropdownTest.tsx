@@ -5,16 +5,16 @@ import selectors from '../../../shared/dropdown-selectors.json';
 import './dropdown.css';
 
 const dropdownOptions = [
-    { value: 'test', },
-    { value: 'test', },
-    { value: 'test', },
+    { value: 'test' },
+    { value: 'test'  },
+    { value: 'test' },
 ]
 
 const DropdownTest = () => {
     let dropdownRef!: DropdownRef;
     let multipleRef!: DropdownRef;
     const [selected, setSelected] = createSignal("");
-    const [multipleSelected, setMultipleSelected] = createSignal<string[]>([]);
+    const [multipleSelected, setMultipleSelected] = createSignal<string[]>(['test0', 'test1']);
     const [disabled, setDisabled] = createSignal(false);
     const [btnDisabled, setBtnDisabled] = createSignal(false);
     const [options, setOptions] = createSignal(dropdownOptions);
@@ -28,6 +28,10 @@ const DropdownTest = () => {
         { label: "Enable Overflow", action: () => setOptions([...dropdownOptions, ...dropdownOptions, ...dropdownOptions, ...dropdownOptions]) },
         { label: "Enable custom icon", action: () => setCustomIcon(true) },
         { label: "Test overflow", action: () => setTestInverted(true) },
+        { label: "Externally set value to test2", action: () => setSelected('test2') },
+        { label: "Externally set invalid value", action: () => setSelected('does-not-exist') },
+        { label: "Externally set multiple to test0 & test2", action: () => setMultipleSelected(['test0', 'test2']) },
+        { label: "Externally set multiple with an invalid value", action: () => setMultipleSelected(['test1', 'does-not-exist']) },
     ];
 
     const reset = () => {
@@ -74,6 +78,7 @@ const DropdownTest = () => {
 
             <Dropdown
                 ref={dropdownRef}
+                value={selected()}
                 onChange={(value) => setSelected(value as string)}
                 disabled={disabled()}
                 class-disabled={`${selectors.base}-disabled`}
@@ -109,7 +114,8 @@ const DropdownTest = () => {
             <Dropdown
                 ref={multipleRef}
                 multiple
-                onChange={(value) => setMultipleSelected(value as string[])}
+                value={multipleSelected()}
+                onChange={(value) => setMultipleSelected(value as string[]) }
                 class={`${selectors.multiple}`}>
                 <Dropdown.Options class={`${selectors.multipleOptions}`}>
                     <For each={options()}>

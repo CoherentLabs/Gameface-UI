@@ -53,7 +53,7 @@ The `Dropdown.Option` must be used within the `Dropdown.Options` slot.
 | `style`          | `JSX.CSSProperties` | `{}`        | Inline styles applied directly to the dropdown option element.                                 |
 | `class`          | `string`            | `""`        | Additional CSS classes for the dropdown option element.                                        |
 | `value`          | `string`            | `undefined` | The value associated with the dropdown option.                                                |
-| `selected`       | `boolean`           | `false`     | Indicates if the dropdown option is selected.                                                 |
+| `selected`       | `boolean`           | `false`     | Marks the option as selected initially, when the component mounts. If the parent `Dropdown` is given a valid `value` prop, that value determines the selection instead and this prop is ignored. |
 | `disabled`       | `boolean`           | `false`     | Indicates if the dropdown option is disabled.                                                 |
 | `class-selected` | `string`            | `""`        | Additional CSS classes applied when the dropdown option is selected.                          |
 | `class-disabled` | `string`            | `""`        | Additional CSS classes applied when the dropdown option is disabled.                          |
@@ -81,6 +81,10 @@ export default App;
 
 :::note
 You can use the `Dropdown.Option` slot multiple times within the `Dropdown.Options` slot as needed.
+:::
+
+:::note
+The `selected` prop only sets the **initial** selection. To control the selection over time, use the `value` prop on the [Dropdown](/components/basic/dropdown#props) instead — when a valid `value` is provided it takes precedence over `selected`.
 :::
 
 :::tip

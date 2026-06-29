@@ -18,6 +18,8 @@ import { Badge } from '@astrojs/starlight/components'
 
 - <Badge text="Feature" variant="success" size="small" /> [Slider](/components/basic/slider#props) & [TextSlider](/components/basic/text-slider#props): The `value` prop is now reactive - updating it externally moves the slider (two-way binding).
 
+- <Badge text="Feature" variant="success" size="small" /> [Dropdown](/components/basic/dropdown#props): Added a `value` prop that controls and sets the selection. It is reactive - updating it externally changes the selection (two-way binding) - accepts an array in `multiple` mode, and takes precedence over the `selected` prop on `Dropdown.Option`.
+
 - <Badge text="Feature" variant="success" size="small" /> [Slider](/components/basic/slider#methods): Exposed a `stepValue` method in the `ref` to step the value up or down by the `step` amount programmatically.
 
 - <Badge text="Change" variant="note" size="small" /> [Dropdown](/components/basic/dropdown): The dropdown trigger now spans the full width (`100%`) of the dropdown component, making it easier to restyle.

@@ -1,4 +1,4 @@
-import { Accessor, createContext, createMemo, createSignal, createUniqueId, DEV, JSX, onMount, ParentComponent } from 'solid-js';
+import { Accessor, createContext, createEffect, createMemo, createSignal, createUniqueId, DEV, JSX, on, onMount, ParentComponent } from 'solid-js';
 import { DropdownOptions, Handle, Options, Track } from './DropdownOptions';
 import { Option } from './DropdownOption';
 import { DropdownTrigger, Icon, Placeholder, Trigger } from './DropdownTrigger';
@@ -41,6 +41,7 @@ interface DropdownContextValue {
 }
 
 interface DropdownProps extends ComponentProps {
+    value?: string | string[],
     disabled?: boolean
     'class-disabled'?: string
     multiple?: boolean
@@ -51,9 +52,9 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
     let element!: HTMLDivElement;
     const [selected, setSelected] = createSignal('');
     const [selectedValues, setSelectedValues] = createSignal<string[]>([]);
-    const [firstRender, setFirstRender] = createSignal(true);
     const [open, setOpen] = createSignal(false);
     const [isInverted, setIsInverted] = createSignal(false);
+    const [ready, setReady] = createSignal(false);
     
     const nav = useNavigation();
     let previousNavScope: string | undefined;
@@ -61,8 +62,38 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
 
     const options = new Map<string, {label: string | JSX.Element, element: HTMLElement}>();
 
+    createEffect(on(
+        () => props.multiple ? selectedValues() : selected(),
+        (next) => { if (ready()) props.onChange?.(next); },
+    { defer: true } ));
+
+    const applyValue = (next: string | string[] | undefined) => {
+        if (next === undefined) return;
+
+        if (props.multiple) {
+            if (!Array.isArray(next)) {
+                if (DEV) console.warn(`Dropdown: Expected an array of strings for the 'value' prop when 'multiple' is true, but received:`, next);
+                return;
+            }
+
+            setSelectedValues((prev) => {
+                if (prev.length === next.length && prev.every((v, i) => v === next[i])) return prev;
+
+                return next.filter(v => options.has(v));
+            })
+            return;
+        }
+
+        const value = next as string;
+        setSelected(options.has(value) ? value : '');
+    };
+
+    createEffect(on(() => props.value, applyValue, { defer: true }));
+
     const registerOption = (value: string, label: string | JSX.Element, element: HTMLElement, selected?: boolean) => {
         options.set(value, {label, element});
+        if (props.value !== undefined) return; 
+
         if (selected) selectOption(value);
     };
     const unregisterOption = (value: string) => options.delete(value);
@@ -74,43 +105,35 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
         }
 
         if (props.multiple) {
-            const selected = setSelectedValues(prev =>
+            setSelectedValues(prev =>
                 prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]
             );
-            props.onChange?.(selected);
             return;
         }
 
         setSelected(value);
-
-        if (selected() !== "" && firstRender()) return setFirstRender(false);
-        props.onChange?.(value);
     }
 
     const deselectOption = (value: string) => {
         if (props.multiple) {
-            const selected = setSelectedValues(prev => prev.filter(v => v !== value));
-            props.onChange?.(selected);
+            setSelectedValues(prev => prev.filter(v => v !== value));
             return;
         }
 
         if (selected() === value) {
             setSelected('');
-            props.onChange?.('');
         }
     }
 
     const deselectAll = () => {
         if (props.multiple) {
             if (selectedValues().length === 0) return;
-            const selected = setSelectedValues([]);
-            props.onChange?.(selected);
+            setSelectedValues([]);
             return;
         }
 
         if (selected() === '') return;
         setSelected('');
-        props.onChange?.('');
     }
 
     const isSelected = (value: string) =>
@@ -193,6 +216,10 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
     onMount(() => {
         waitForFrames(() => {
             handlePosition()
+        });
+        queueMicrotask(() => {
+            applyValue(props.value);
+            setReady(true);
         });
         if (!props.ref || !element) return;
 
