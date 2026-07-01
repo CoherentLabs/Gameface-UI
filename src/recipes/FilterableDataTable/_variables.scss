@@ -1,0 +1,39 @@
+// Color palette + shared sizing for this recipe's SCSS modules.
+// None of these exist in the project's global src/assets/scss/_variables.scss,
+// so each module in this folder pulls them in locally via `@use './variables' as *;`
+// (or `'../variables'` from a subfolder) instead of assuming a shared theme file.
+@use 'sass:color';
+
+// ── Accent (emphasis / glow) ──
+$accent: #90E8F1;
+$accent-glow: rgba(#90E8F1, 0.30);
+$accent-muted: color.scale($accent, $saturation: -40%, $lightness: -20%);
+
+// ── Interactive (controls: search, filter, pagination, sliders) ──
+$interactive: #4B9FFF;
+$interactive-glow: rgba(#4B9FFF, 0.25);
+$interactive-muted: color.scale($interactive, $saturation: -40%, $lightness: -20%);
+
+// ── Text ──
+$text-color: #e9e9e9;
+$text-secondary: #c4cdda;
+
+// ── States ──
+$error: #E05C72;
+$warning: #E8A84A;
+$success: #59F46B;
+
+// ── Backgrounds ──
+$bg-surface: #0C1522;
+$bg-elevated: #0f1e30; // main panel / table surface
+$bg-overlay: #192C3E;
+
+// $weight% of $a mixed over $b
+$interactive-surface: color.mix($interactive, $bg-elevated, 7%);
+
+// ── Radius ──
+$panel-radius: 0.75rem;
+$component-radius: 0.2rem;
+
+// ── Font size ──
+$root-font-3: 1rem;

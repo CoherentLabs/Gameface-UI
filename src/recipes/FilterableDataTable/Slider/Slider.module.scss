@@ -1,0 +1,42 @@
+@use '../variables' as *;
+
+.slider {
+    width: auto;
+    flex: 1;
+    margin: 0;
+    height: 0.25rem;
+
+    &-value {
+        color: $interactive;
+        font-size: 1.05em;
+        font-weight: bold;
+    }
+
+    &-row {
+        width: 100%;
+    }
+
+    &-bound {
+        color: $text-secondary;
+        font-size: 0.9em;
+    }
+
+    &-track {
+        background-color: $interactive-glow;
+    }
+
+    &-fill {
+        background-color: $interactive-muted;
+    }
+
+    &-handle {
+        background-color: $interactive;
+        width: 0.75rem;
+        height: 0.75rem;
+
+        &:hover,
+        &:active {
+            box-shadow: 0 0 0.5rem 0.1rem $interactive-glow;
+        }
+    }
+}

@@ -1,0 +1,17 @@
+@font-face {
+  font-family: Exo;
+  src: url(./assets/Exo2-Regular.ttf);
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: Orbitron;
+  src: url(./assets/Orbitron-Regular.ttf);
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: Orbitron;
+  src: url(./assets/Orbitron-Bold.ttf);
+  font-weight: 700;
+}
