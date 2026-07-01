@@ -1,0 +1,101 @@
+---
+title: Dropdown with Chips
+description: A multi-select dropdown that shows each selection as a removable chip below the trigger.
+topic: recipes
+recipe:
+  author: Coherent Labs
+  difficulty: intermediate
+  tags:
+    - ui
+    - dropdown
+    - form
+  thumbnail: ./thumb.png
+---
+
+import previewVideo from './preview.webm';
+
+<video src={previewVideo} autoplay loop muted></video>
+
+## Overview
+
+A multi-select built on top of the [Dropdown component](/components/basic/dropdown/). Each selected option is mirrored as a removable **chip** below the trigger, so the current selection stays visible without opening the menu.
+
+- **Multi-select** via the Dropdown's `multiple` prop
+- **Removable chips** for every selection, with a one-click remove
+- **Per-option visuals** (here, country flags) driven by a shortcode map
+
+## How it works
+
+The recipe is two pieces stacked in a wrapper:
+
+1. The **Dropdown** in `multiple` mode. The placeholder shows a count (`4 selected`) instead of a single value, and each option renders its label plus a small image.
+2. The **chips row**, driven by the same `value` array. Each chip's remove button calls `dropdownRef.deselectOption(value)` to sync the selection back through the dropdown.
+
+State lives outside the component — you pass `value` in and get changes back through `onChange`:
+
+```tsx
+const [selected, setSelected] = createSignal<string[]>([]);
+
+<ChipMultiSelect value={selected()} onChange={setSelected} />
+```
+
+## How to download
+
+## Usage
+
+The component is driven by two-way binding. Provide a `value` signal array and the setter on the `onChange` callback to receive updates:
+
+```tsx
+const [selectedCountries, setSelectedCountries] = createSignal<string[]>([]);
+```
+
+```tsx
+<div style={{width: '20vmax'}}>
+    <ChipMultiSelect value={selectedCountries()} onChange={setSelectedCountries} />
+</div>
+```
+
+## Wiring up real images
+
+To keep the recipe asset-free, options and chips render a **placeholder** — a gray box with the country's shortcode:
+
+```tsx
+<Flex
+    justify-content="center"
+    align-items="center"
+    class={styles['dropdown-option-content-image']}
+    style={{ 'background-color': 'gray', 'color': 'white', 'text-align': 'center' }}
+>{country.code}</Flex>
+```
+
+To use real flags, swap that for the `BackgroundImage` block already sitting commented out next to it, in **both** places (the option and the chip):
+
+```tsx
+<BackgroundImage
+    class={styles['dropdown-option-content-image']}
+    src={FLAG_SRC[country.code]} />
+```
+
+`FLAG_SRC` is built in `utils/imageMap.ts` — it globs an assets folder and maps each file's name (the shortcode) to its URL:
+
+```ts
+const flagModules = import.meta.glob('@assets/icons/flags/*.svg', { eager: true });
+
+const FLAG_SRC: Record<string, string> = {};
+for (const path in flagModules) {
+    const code = path.slice(path.lastIndexOf('/') + 1).replace('.svg', '');
+    FLAG_SRC[code] = flagModules[path].default;
+}
+```
+
+So the only thing you need to provide is the assets themselves: drop SVGs into `@assets/icons/flags/`, named by the shortcode used in `utils/countriesList.ts` (`ar.svg`, `br.svg`, `jp.svg`, …). The map wires them up automatically — no manual imports.
+
+:::tip
+The glob pattern and file extension are the contract. If your assets are PNGs or live elsewhere, update the path in `imageMap.ts` (and the `.replace('.svg', '')`) to match.
+:::
+
+## Customizing
+
+- **Options** — edit `utils/countriesList.ts`; each entry is `{ name, code }`.
+- **Placeholder text** — change the `Dropdown.Placeholder` content (e.g. `${value.length} selected` / `Any`).
+- **Colors & sizing** — the look is driven by the variables at the top of `ChipMultiSelect.module.scss` (`$interactive`, `$bg-elevated`, radius, chip/image sizes).

@@ -1,0 +1,82 @@
+---
+title: Filterable Data Table
+description: A sortable, searchable data table with a collapsible advanced-filter panel and pagination.
+topic: recipes
+recipe:
+  author: Coherent Labs
+  difficulty: advanced
+  tags:
+    - table
+    - filter
+    - search
+    - pagination
+  thumbnail: ./thumb.png
+---
+
+## Overview
+
+A self-contained roster table demonstrating how several of the library's components (Dropdown, Slider, TwoHandleSlider, ToggleButton, Pagination, Progress Bar) combine into one composite view.
+
+- **Sortable columns** - click a header to sort ascending/descending on that field
+- **Debounced search** filtering by name
+- **Collapsible filter panel** with position toggles, a nationality multi-select, an age range, and four min-value sliders (condition, appearances, goals, assists)
+- **Pagination** over the filtered result set
+
+The state is fully self-contained - there's no `value`/`onChange` to wire up. You drop it in, and it manages search, filters, sort, and the current page itself.
+
+## How it works
+
+The table is composed from a handful of pieces, each responsible for one concern:
+
+1. **`columns.tsx`** is the single source of truth for the table's layout - both `TableHeader` and `TableRow` iterate the same `ROSTER_COLUMNS` array, so the header and the row cells always stay in lockstep. Each column declares how its header behaves (`sort`, `cycle`, `static`, or `none`) and how its cell renders.
+2. **`store/playersStore.ts`** holds the player list in a Solid store, seeded from the bundled mock dataset in `utils/mockPlayers.ts`. It also derives `countries()` (the distinct nationality list, for the filter dropdown) and `numericStats()` (min/max per numeric stat, so the sliders' bounds always match the actual data) with `createMemo`.
+3. **`Filter.tsx`** is a self-contained draft/apply flow: it keeps its own `draft` store, and only pushes changes up (via `setAppliedFilters`) when you hit **Apply**, so adjusting several sliders doesn't refilter the table on every drag.
+4. **`FilterableDataTable.tsx`** ties it together - it combines the search text and the applied filters into one `filteredPlayers` memo, slices out the current page, and resets to page 1 whenever the search or filters change.
+
+## Usage
+
+No props - just render it:
+
+```tsx
+import FilterableDataTable from './FilterableDataTable';
+
+<FilterableDataTable />
+```
+
+The core functionality (searching, sorting, filtering, paginating a list) isn't tied to player data specifically - you can adapt this recipe to any dataset. Your data doesn't need to match the `player` shape in `types.ts`; swap in your own type and your own array in `utils/mockPlayers.ts` (or wherever you source data from), and `store/playersStore.ts` picks it up since it seeds the store straight from that module. Expect to rewire the pieces that assume player-specific fields to your own properties - `columns.tsx` (what each column shows and sorts by), `utils/filters.ts` (which fields are filterable), and `Filter.tsx` (the filter controls themselves).
+
+## Wiring up real images
+
+This table renders **placeholders** in every spot that would otherwise need an image asset, so the recipe stays asset-free. There are three spots, each with the original code commented out right next to the placeholder:
+
+- **Player photo** - the leftmost column, in `columns.tsx`. The placeholder is a gray box with the player's initials; the original renders `<BackgroundImage src={p().image} />`.
+- **Nationality flag (table column)** - also in `columns.tsx`, shows the raw country code instead of a flag image.
+- **Nationality flag (filter dropdown)** - in `Dropdown/Dropdown.tsx`, in both the option list and the selected chips.
+
+The two flag spots are both backed by `utils/flagImages.ts`, which globs an assets folder:
+
+```ts
+const flagModules = import.meta.glob('@assets/icons/flags/*.svg', { eager: true });
+```
+
+Drop flag SVGs into `@assets/icons/flags/`, named by the country code used in the mock data (`ar.svg`, `br.svg`, `jp.svg`, ...), and swap the placeholder for the commented-out `BackgroundImage` in all three spots.
+
+Player photos aren't glob-mapped the same way - each mock player's `image` field is just a bare identifier (e.g. `'fr-one'`) rather than a real path, since photos are more numerous and varied than flags. Wire up a similar glob map keyed by that identifier if you want real portraits.
+
+## Customizing
+
+### Customizing table structure
+
+Add, remove, or reorder entries in `columns.tsx`'s `ROSTER_COLUMNS`. Each column controls its own header behavior and cell rendering, so the header and rows never need to be edited separately.
+
+### Customizing filters
+
+The filter fields and their defaults live in `utils/filters.ts` (`PlayerFilters`, `DEFAULT_FILTERS`). Adding a new filterable stat means adding it there, to `Filter.tsx`'s draft handling, and to the `filteredPlayers` predicate in `FilterableDataTable.tsx`.
+
+### Customizing rows per page
+
+The `PLAYERS_PER_PAGE` constant at the top of `FilterableDataTable.tsx`.
+
+### Customizing colors & sizing
+
+This recipe doesn't depend on the project's shared theme; its own palette and mixins (`glow-border`, `glow-emphasis`, `interactive-component`) live in `_variables.scss` / `_mixins.scss` at the recipe root, imported by every module in the folder.
