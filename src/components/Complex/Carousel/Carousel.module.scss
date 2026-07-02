@@ -1,5 +1,5 @@
 .carousel {
-    height: 15vmax;
+    height: 15rem;
     position: relative;
 
     &-items {
@@ -32,7 +32,7 @@
             cursor: pointer;
             width: 5vh;
             height: 5vh;
-            padding-right: 1vmax;
+            padding-right: 1rem;
             transition: transform 0.2s;
         }
 

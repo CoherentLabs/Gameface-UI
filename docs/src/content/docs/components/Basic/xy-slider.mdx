@@ -1,6 +1,7 @@
 ---
 title: XYSlider
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `XYSlider` component allows users to select a value in a two-dimensional space, providing a more intuitive way to select values that require both horizontal and vertical input.
 
@@ -10,17 +11,13 @@ The slider automatically handles the selection of a value between a minimum and 
 
 Using the `XYSlider` component is straightforward. You can import it and use it in your application as follows:
 
+<CodePreviewGFUI>
 ```tsx
 import XYSlider from '@components/Basic/XYSlider/XYSlider';
 
-const App = () => {
-    return (
-        <XYSlider maxX={150} maxY={150} value={{x: 50, y: 50}} />
-    );
-};
-
-export default App;
+<XYSlider maxX={150} maxY={150} value={{x: 50, y: 50}} />
 ```
+</CodePreviewGFUI>
 
 ## API
 

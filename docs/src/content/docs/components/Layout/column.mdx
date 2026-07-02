@@ -1,6 +1,7 @@
 ---
 title: Column
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Column` components are structural elements designed to create grid layouts when used in conjunction with the Row component. Each `Column` component represents a fraction of the row's width, ranging from `Column.One` (1/12th of the row's width) to `Column.Twelve` (the entire row's width).
 
@@ -10,27 +11,25 @@ These components leverage a flexbox-based grid system, making it easy to create 
 
 The primary use case for the `Column` components is to define the width of content within a `Row` component. If you don't specify a size, `<Column>` equals `<Column.Twelve>`.
 
+<CodePreviewGFUI>
 ```tsx
 import Row from '@components/Layout/Row/Row';
 import Column from "@components/Layout/Column/Column";
 
-const App = () => {
-    return (
-        <Row>
-            <Column.Two>I take 2/12 of the row</Column.Two>
-            <Column.Ten>I take 10/12 of the row</Column.Ten>
-        </Row>
-        <Row>
-            <Column.Twelve>I take the full row</Column.Twelve>
-        </Row>
-        <Row>
-            <Column>I also take the full row</Column>
-        </Row>
-    );
-};
-
-export default App;
+<>
+    <Row>
+        <Column.Two style={{'background-color': '#505f49'}}>I take 2/12 of the row</Column.Two>
+        <Column.Ten>I take 10/12 of the row (the rest of the row)</Column.Ten>
+    </Row>
+    <Row>
+        <Column.Twelve >I take the full row</Column.Twelve>
+    </Row>
+    <Row>
+        <Column>I also take the full row</Column>
+    </Row>
+</>
 ```
+</CodePreviewGFUI>
 
 You can also nest rows and columns to create more complex layouts.
 

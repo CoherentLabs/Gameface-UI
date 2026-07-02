@@ -3,6 +3,7 @@ title: Progress Circle
 tableOfContents:
   maxHeadingLevel: 4
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Progress.Circle` component is used to visually indicate the progress of a task or operation. 
 It provides a circular indicator that fills up, giving users feedback on the completion status.
@@ -19,6 +20,7 @@ The `Progress.Circle` will react to changes in the `progress` prop and update it
 
 In the following example, we simulate a task that progresses from `0` to `100` over time using a signal and an interval.
 
+<CodePreviewGFUI>
 ```tsx
 import Progress from '@components/Feedback/Progress/Progress';
 import { createSignal, onMount } from 'solid-js';
@@ -32,7 +34,7 @@ const App = () => {
                 return prev;
             }
             return prev + 1;
-        }), 10);
+        }), 100);
     };
 
     onMount(() => {
@@ -45,9 +47,8 @@ const App = () => {
         </Progress.Circle>
     );
 };
-
-export default App;
 ```
+</CodePreviewGFUI>
 
 :::caution
 The `Progress.Circle` component is a controlled component, meaning that it relies on the `progress` prop to determine its state. It does not manage its own state internally.

@@ -5,26 +5,6 @@ sidebar:
 ---
 import { FileTree } from '@astrojs/starlight/components'
 
-import CodePreviewGFUI from '../../../components/CodePreviewGFUI/CodePreviewGFUI.astro'
-
-<CodePreviewGFUI>
-```tsx
-import { render } from 'solid-js/web';
-import Dropdown from '@components/Basic/Dropdown/Dropdown';
-export default (root) => render(() => {
-  console.log('root:', root, 'isConnected:', root.isConnected);
-  return (
-          <Dropdown>
-            <Dropdown.Options>
-                <Dropdown.Option selected value="red">red</Dropdown.Option>
-                <Dropdown.Option value="green">green</Dropdown.Option>
-                <Dropdown.Option value="blue">blue</Dropdown.Option>
-            </Dropdown.Options>
-        </Dropdown>
-)}, root);
-```
-</CodePreviewGFUI>
-
 The GamefaceUI template provides dedicated folders for storing all asset files and components used in UI creation. It is essential to place your components and assets in these folders because the template project is configured to support alias imports in `.tsx` files using the `@...` syntax.
 
 ## Aliases

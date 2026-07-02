@@ -1,6 +1,7 @@
 ---
 title: InlineTextBlock
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `InlineTextBlock` component is used to create a text block element that can display all its children inline. It renders a `p` element with the `cohinline` attribute, allowing you to have text with images, for example, on a single line.
 
@@ -8,21 +9,17 @@ The `InlineTextBlock` component is used to create a text block element that can 
 
 Using the `InlineTextBlock` component is straightforward. After importing it, you can include any child elements, such as text or images, inside the component.
 
+<CodePreviewGFUI>
 ```tsx
 import InlineTextBlock from '@components/Basic/InlineTextBlock/InlineTextBlock';
 
-const App = () => {
-    return (
-        <>
-            <InlineTextBlock>
-                Text with <img src="url"/> image.
-            </InlineTextBlock>
-        </>
-    );
-};
-
-export default App;
+<>
+    <InlineTextBlock>
+        Text with <img width="50" height="50" src="https://images.pexels.com/photos/7623316/pexels-photo-7623316.jpeg"/> image.
+    </InlineTextBlock>
+</>
 ```
+</CodePreviewGFUI>
 
 ## API
 

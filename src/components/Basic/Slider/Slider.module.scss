@@ -1,17 +1,17 @@
 .slider {
     display: flex;
     flex-direction: column;
-    width: 15vmax;
-    height: 0.35vmax;
-    margin: 0 1.5vmax;
+    width: 15rem;
+    height: 0.35rem;
+    margin: 0 1.5rem;
 }
 
 .with-thumb {
-    margin-top: 3vmax;
+    margin-top: 3rem;
 }
 
 .with-grid {
-    margin-bottom: 2vmax;
+    margin-bottom: 2rem;
 }
 
 .track {
@@ -32,8 +32,8 @@
 }
 
 .handle {
-    width: 1vmax;
-    height: 1vmax;
+    width: 1rem;
+    height: 1rem;
     border-radius: 50%;
     background-color: $secondaryColor;
     position: absolute;
@@ -44,12 +44,12 @@
 
     &:hover,
     &:active {
-        box-shadow: 0 0 0 0.1vmax rgba($secondaryColor, 0.5);
+        box-shadow: 0 0 0 0.1rem rgba($secondaryColor, 0.5);
     }
 }
 
 .thumb {
-    padding: 0.25vmax 0.75vmax;
+    padding: 0.25rem 0.75rem;
     border-radius: $borderRadius;
     background-color: $secondaryColor;
     color: white;
@@ -62,10 +62,10 @@
 
 .grid {
     width: 100%;
-    height: 0.75vmax;
+    height: 0.75rem;
     display: flex;
     justify-content: space-between;
-    font-size: 1vmax;
+    font-size: 1rem;
     transform: translateY(20%);
 
     &-pol {
@@ -73,7 +73,7 @@
         height: 100%;
 
         &-container {
-            width: 0.1vmax;
+            width: 0.1rem;
             height: 100%;
             display: flex;
             flex-direction: column;
@@ -87,7 +87,7 @@
         }
 
         &-value {
-            width: 4vmax;
+            width: 4rem;
             display: flex;
             justify-content: center;
             overflow-wrap: break-word;

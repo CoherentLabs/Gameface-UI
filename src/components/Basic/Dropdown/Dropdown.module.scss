@@ -7,10 +7,10 @@
     }
 
     &-option {
-        padding: 0.8vmax;
+        padding: 0.8rem;
         width: 100%;
         display: flex;
-        border-radius: 0.3vmax;
+        border-radius: 0.3rem;
 
         &:hover,
         &:focus {
@@ -35,10 +35,10 @@
     }
 
     &-options {
-        max-height: 23vmax;
+        max-height: 23rem;
         position: absolute;
-        border-radius: 0.3vmax;
-        border: 0.2vmax solid transparent;
+        border-radius: 0.3rem;
+        border: 0.2rem solid transparent;
         overflow: hidden;
         background-color: white;
         color: black;
@@ -64,9 +64,9 @@
     }
 
     &-trigger {
-        padding: 0.8vmax;
-        border: 0.1vmax solid $primaryColor;
-        border-radius: 0.3vmax;
+        padding: 0.8rem;
+        border: 0.1rem solid $primaryColor;
+        border-radius: 0.3rem;
         background-color: white;
         width: 35vh;
         display: flex;
@@ -96,7 +96,7 @@
 
     &-icon {
         width: 10%;
-        height: 1.25vmax;
+        height: 1.25rem;
         display: flex;
         justify-content: center;
         align-items: center;

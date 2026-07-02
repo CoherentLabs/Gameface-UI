@@ -1,6 +1,6 @@
 .stepper {
-    width: 10vmax;
-    height: 3vmax;
+    width: 10rem;
+    height: 3rem;
     display: flex;
     align-items: center;
     flex-direction: row;
@@ -13,7 +13,7 @@
         flex-direction: row;
         background-color: $primaryColor;
         border-radius: $borderRadius;
-        padding: 0.3vmax 0;
+        padding: 0.3rem 0;
 
         &-hidden {
             pointer-events: none;

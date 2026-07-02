@@ -1,6 +1,7 @@
 ---
 title: Tooltip
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Tooltip` component is a flexible and customizable way to display contextual information when users hover, focus, or click on an element. It improves usability by providing additional context without overcrowding the interface.
 
@@ -11,7 +12,7 @@ The `Tooltip` works by wrapping a target element inside a relatively positioned 
 The component uses event listeners to detect user interaction with the target element and shows or hides the tooltip accordingly. It also supports multiple placement options (`top`, `bottom`, `left`, `right`, or `auto`) to ensure the tooltip is displayed in the most visible position based on available space.
 
 Using the `Tooltip` component is simple. Import the `createTooltip` factory function, configure it if necessary, and wrap any element with the `Tooltip` wrapper:
-
+<CodePreviewGFUI>
 ```tsx
 import createTooltip from '@components/Feedback/Tooltip/tooltip';
 import { ParentComponent } from 'solid-js';
@@ -32,10 +33,8 @@ const App = () => {
         </Tooltip>
     );
 };
-
-export default App;
 ```
-
+</CodePreviewGFUI>
 ## API
 
 ### `createTooltip(options: TooltipOptions)`

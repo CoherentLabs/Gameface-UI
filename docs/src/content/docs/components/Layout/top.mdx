@@ -1,6 +1,7 @@
 ---
 title: Top
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Top` component is a structural element designed to act as a wrapper of the top-level elements in your page. The `Top` component is meant to be used as a wrapper of your top menus, navigation bars, etc. Typically, the `Top` component is used alongside the `Content` and `Bottom` components to achieve better page structure.
 
@@ -8,24 +9,20 @@ The `Top` component is a structural element designed to act as a wrapper of the 
 
 The primary use case for the `Top` component is as a top level section container.
 
+<CodePreviewGFUI>
 ```tsx
 import Layout from '@components/Layout/Layout/Layout';
 import Top from '@components/Layout/Top/Top';
 import Content from '@components/Layout/Content/Content';
 import Bottom from '@components/Layout/Bottom/Bottom';
 
-const App = () => {
-    return (
-        <Layout>
-            <Top basis={30} style={{ display: 'flex', flexDirection: 'column' }}>Top Menu</Top>
-            <Content>Main Content</Content>
-            <Bottom>Bottom Section</Bottom>
-        </Layout>
-    );
-};
-
-export default App;
+<Layout>
+    <Top basis={30} style={{ display: 'flex', flexDirection: 'column' }}>Top Menu</Top>
+    <Content>Main Content</Content>
+    <Bottom>Bottom Section</Bottom>
+</Layout>
 ```
+</CodePreviewGFUI>
 
 ## API
 

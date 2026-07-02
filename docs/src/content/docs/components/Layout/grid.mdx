@@ -1,6 +1,7 @@
 ---
 title: Grid
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Grid` component is a flexible, dynamic container that arranges content in a structured grid layout. It provides a mechanism for creating interactive grids where individual cells can be updated dynamically.
 
@@ -16,22 +17,18 @@ The previous method of importing `GridTile` separately is still supported for ba
 
 The `Grid` component must be provided with number of rows and columns through the `rows` and `cols` props. You can dynamically add or remove items in specific cells using the provided methods.
 
+<CodePreviewGFUI>
 ```tsx
 import Grid from '@components/Layout/Grid/Grid';
 import Block from '@components/Layout/Block/Block';
 
-const App = () => {
-    return (
-        <Grid cols={3} rows={3} gap="1vmax" style={{ width: '30vmax', height: '30vmax' }} >
-            <Grid.Tile row={2} col={2}><Block>Placed in row 2 column 2</Block></Grid.Tile>
-            <Grid.Tile row={3} col={2}><Block>Placed in row 3 column 2</Block></Grid.Tile>
-            <Grid.Tile row={3} col={3}><Block>Placed in row 3 column 3</Block></Grid.Tile>
-        </Grid>
-    );
-};
-
-export default App;
+<Grid cols={3} rows={3} gap="1vmax" style={{ width: '30vmax', height: '30vmax' }} >
+    <Grid.Tile row={2} col={2}><Block>Placed in row 2 column 2</Block></Grid.Tile>
+    <Grid.Tile row={3} col={2}><Block>Placed in row 3 column 2</Block></Grid.Tile>
+    <Grid.Tile row={3} col={3}><Block>Placed in row 3 column 3</Block></Grid.Tile>
+</Grid>
 ```
+</CodePreviewGFUI>
 
 ## API
 

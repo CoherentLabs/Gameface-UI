@@ -5,12 +5,12 @@
 }
 
 .control {
-    width: 1.5vmax;
-    height: 1.5vmax;
+    width: 1.5rem;
+    height: 1.5rem;
     position: relative;
-    margin-right: 0.35vmax;
+    margin-right: 0.35rem;
     border-radius: $borderRadius;
-    border: 0.1vmax solid $secondaryColor;
+    border: 0.1rem solid $secondaryColor;
     background-color: $primaryColor;
     display: flex;
     justify-content: center;
@@ -19,7 +19,7 @@
 
 .before {
     margin-right: 0;
-    margin-left: 0.35vmax;
+    margin-left: 0.35rem;
 }
 
 .disabled {

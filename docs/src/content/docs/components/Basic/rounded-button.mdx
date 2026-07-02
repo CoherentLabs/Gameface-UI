@@ -1,6 +1,7 @@
 ---
 title: RoundedButton
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `RoundedButton` component is used to create rounded button elements in the UI with the help of the `Button` component.
 
@@ -8,22 +9,18 @@ The `RoundedButton` component is used to create rounded button elements in the U
 
 The `RoundedButton` component accepts the same properties as the `Button` component so it can be configured in the same way. The main difference is that the `RoundedButton` component will render a button with rounded corners.
 
+<CodePreviewGFUI>
 ```tsx
 import RoundedButton from '@components/Basic/RoundedButton/RoundedButton';
 
-const App = () => {
-    return (
-        <>
-            <RoundedButton disabled size='large'>Large button</RoundedButton>
-            <RoundedButton size='middle'>Button with middle size</RoundedButton>
-            <RoundedButton size='small'>Small size button</RoundedButton>
-            <RoundedButton textFit={false} size='small'>Small size button with no fitting the text</RoundedButton>
-        </>
-    );
-};
-
-export default App;
+<>
+    <RoundedButton disabled size='large'>Large button</RoundedButton>
+    <RoundedButton size='middle'>Button with middle size</RoundedButton>
+    <RoundedButton size='small'>Small size button</RoundedButton>
+    <RoundedButton textFit={false} size='small'>Small size button with no fitting the text</RoundedButton>
+</>
 ```
+</CodePreviewGFUI>
 
 ## API
 

@@ -1,6 +1,7 @@
 ---
 title: ToggleButton
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `ToggleButton` component is a versatile UI element that allows users to toggle between two states, such as "on" and "off."
 
@@ -8,20 +9,16 @@ The `ToggleButton` component is a versatile UI element that allows users to togg
 
 To use the `ToggleButton` component, you can customize its labels and behavior as shown below:
 
+<CodePreviewGFUI>
 ```tsx
 import ToggleButton from '@components/Basic/ToggleButton/ToggleButton';
 
-const App = () => {
-    return (
-        <ToggleButton>
-            <ToggleButton.LabelLeft>Off</ToggleButton.LabelLeft>
-            <ToggleButton.LabelRight>On</ToggleButton.LabelRight>
-        </ToggleButton>
-    );
-};
-
-export default App;
+<ToggleButton>
+    <ToggleButton.LabelLeft>Off</ToggleButton.LabelLeft>
+    <ToggleButton.LabelRight>On</ToggleButton.LabelRight>
+</ToggleButton>
 ```
+</CodePreviewGFUI>
 
 ## API
 

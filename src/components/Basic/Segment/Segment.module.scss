@@ -23,8 +23,8 @@
         &:after {
             content: '';
             position: absolute;
-            width: 0.1vmax;
-            left: -0.15vmax;
+            width: 0.1rem;
+            left: -0.15rem;
             height: 65%;
             z-index: 1;
             border-radius: 10px;
@@ -41,7 +41,7 @@
             width: 100%;
             height: 100%;
             display: flex;
-            padding: 0 0.2vmax;
+            padding: 0 0.2rem;
             position: absolute;
             top: 0;
             left: 0;
@@ -56,7 +56,7 @@
             width: 100%;
             height: 100%;
             display: flex;
-            padding: 0 0.2vmax;
+            padding: 0 0.2rem;
             position: absolute;
             top: 0;
             left: 0;
@@ -72,7 +72,7 @@
     background-color: $secondaryColor;
     height: 100%;
     border-radius: 10px;
-    padding: 0 0.2vmax;
+    padding: 0 0.2rem;
     position: absolute;
     top: 0;
     left: 0;
@@ -118,7 +118,7 @@
 
 
 .content {
-    padding: 0.5vmax 0.75vmax;
+    padding: 0.5rem 0.75rem;
     position: relative;
     z-index: 3;
     transition: opacity ease-in-out 0.35s;

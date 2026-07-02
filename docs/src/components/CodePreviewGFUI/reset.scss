@@ -1,64 +1,178 @@
-/* Copyright (C) Microsoft Corporation. All rights reserved. */
+/*
+ * Gameface Fidelity Reset
+ * ----------------------
+ * Load this file BEFORE any author stylesheets.
+ * Companion script: reset.js (load at end of <body>).
+ *
+ * Purpose: makes a Chromium browser approximate Gameface rendering:
+ *   - border-box sizing everywhere
+ *   - Flex-only layout model (implicit column, explicit flex stays row)
+ *   - No visible scrollbars (content still scrollable)
+ *   - Inline via [cohinline] attribute  (p[cohinline] convention)
+ *   - Browser UA defaults stripped
+ */
 
-/* Combination of resets and trying to maintain cross browser compatibility - https://docs.coherent-labs.com/cpp-gameface/what_is_gfp/htmlfeaturesupport/ */
-
-/* CSS that can be applied to both gameface and browsers lives in in reset.pcss. CSS that is invalid in Gameface and shows warnings lives in reset-browser.pcss */
+/* ─── Box model ─────────────────────────────────────────────────────────── */
 
 *,
 *::before,
 *::after {
-	/* stylelint-disable-next-line property-allowed-list */
-	box-sizing: border-box;
+    box-sizing: border-box;
 }
 
-* {
-	margin: 0;
-	padding: 0;
-}
+/* ─── Base typography root ───────────────────────────────────────────────── */
 
 html {
-	background-color: transparent;
-	font-size: 0.16px; /* 1px = 0.16rem, so 100rem = 16px */
+    font-size: 16px;
+    line-height: 1;
+    -webkit-text-size-adjust: 100%;
 }
+
+/* ─── Viewport body ──────────────────────────────────────────────────────── */
+/*                                                                            */
+/*  Gameface renders the UI as a fixed-size overlay clipped to the viewport. */
+/*  overflow: hidden matches the engine's viewport clipping.                  */
+/*  user-select: none matches game UIs being non-selectable by default.       */
 
 body {
-	position: absolute;
-	width: 100vw;
-	height: 100vh;
-	overflow: hidden;
-
-	/* Font size is purposefully large and noticable, as all text should use pre-defined styles */
-	font-family: sans-serif;
-	font-size: 100rem;
-	font-weight: 400;
-	line-height: 1.5;
-	user-select: none;
-}
-
-body * {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    user-select: none;
+	background-color: transparent;
 	display: flex;
 	flex-direction: column;
-	flex-shrink: 0;
-	min-width: 0;
-	min-height: 0;
+	align-items: center;
+	justify-content: center;
+	background-color: #24292e;
+	color: white;
 }
+
+/* ─── Universal UA-default strip ────────────────────────────────────────── */
+
+* {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    list-style: none;
+    text-decoration: none;
+    vertical-align: baseline;
+}
+
+/* ─── Anchor ─────────────────────────────────────────────────────────────── */
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* ─── Form controls ─────────────────────────────────────────────────────── */
+
+button,
+input,
+select,
+textarea,
+optgroup,
+option {
+    -webkit-appearance: none;
+    appearance: none;
+    background: none;
+    color: inherit;
+    font: inherit;
+    border: none;
+    outline: none;
+}
+
+textarea {
+    resize: none;
+    overflow: auto;
+}
+
+/* ─── Media ──────────────────────────────────────────────────────────────── */
+
+img,
+video,
+canvas,
+svg {
+    display: block;
+    max-width: 100%;
+}
+
+/* ─── Tables ─────────────────────────────────────────────────────────────── */
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* ─── Scrollbars: hidden but content remains scrollable ─────────────────── */
+/*     Gameface has no native scrollbar rendering.                           */
+
+* {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+    display: none;
+}
+
+/* ─── Flex item defaults ─────────────────────────────────────────────────── */
+/*                                                                            */
+/*  Yoga (Gameface's layout engine) does not shrink flex items by default    */
+/*  and has no concept of minimum intrinsic size constraints.                 */
+/*  flex-shrink: 0  prevents the browser from compressing items in ways      */
+/*  Gameface never would.                                                     */
+/*  min-width/height: 0  removes the browser's auto minimum that stops flex  */
+/*  items shrinking below their content size.                                 */
+
+body * {
+    flex-shrink: 0;
+    min-width: 0;
+    min-height: 0;
+}
+
+/* ─── Row-direction exceptions ───────────────────────────────────────────── */
+/*                                                                            */
+/*  These elements carry semantic inline/row intent and should default to    */
+/*  row direction even when the JS pass has not run (e.g. before             */
+/*  DOMContentLoaded) or for elements the JS intentionally skips.            */
+/*  This complements — rather than replaces — the JS flex pass.             */
 
 span,
 p,
 button {
-	flex-direction: row;
+    flex-direction: row;
 }
 
-input,
-button,
-textarea,
-select {
-	font-family: inherit;
-	font-style: inherit;
+/* ─── Implicit flex model hook (applied by reset.js) ────────────────────── */
+/*                                                                            */
+/*  reset.js reads the computed display of each element.  If it is NOT       */
+/*  already "flex" or "none", it adds the .gf-block class so the element     */
+/*  stacks its children vertically — matching Gameface's implicit block       */
+/*  model (which treats everything as flex with flex-direction: column).      */
+/*                                                                            */
+/*  Elements the author wrote `display: flex` on are left untouched, so      */
+/*  they keep the browser's native `row` default, matching Gameface.          */
+/*                                                                            */
+/*  Author rules that override display (e.g. `.hidden { display: none }`)    */
+/*  win because they carry higher specificity or are declared after this      */
+/*  file in the cascade.                                                      */
+
+.gf-block {
+    display: flex;
+    flex-direction: column;
 }
 
-img,
-picture {
-	max-width: 100%;
-	max-height: 100%;
+/* ─── Inline simulation ──────────────────────────────────────────────────── */
+/*                                                                            */
+/*  Gameface has no true display:inline; the engine uses a                   */
+/*  `<p cohinline>` convention to render inline-like text spans.             */
+/*  This rule approximates it in the browser.                                */
+
+[cohinline] {
+    display: inline;
 }

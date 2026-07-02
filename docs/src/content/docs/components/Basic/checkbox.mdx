@@ -1,6 +1,7 @@
 ---
 title: Checkbox
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Checkbox` component is used to create a checkbox element in the UI.
 
@@ -8,22 +9,18 @@ The `Checkbox` component is used to create a checkbox element in the UI.
 
 The `Checkbox` component allows the user to select or deselect a value.
 
+<CodePreviewGFUI>
 ```tsx
 import Checkbox from '@components/Basic/Checkbox/Checkbox';
 
-const App = () => {
-    return (
-        <>
-            <Checkbox value="v-sync">V-Sync</Checkbox>
-            <Checkbox value="fullscreen" checked>Fullscreen Mode</Checkbox>
-            <Checkbox value="motion blur" checked>Motion Blur</Checkbox>
-            <Checkbox value="anti-aliasing">Anti-Aliasing</Checkbox>
-        </>
-    );
-};
-
-export default App;
+<>
+    <Checkbox value="v-sync">V-Sync</Checkbox>
+    <Checkbox value="fullscreen" checked>Fullscreen Mode</Checkbox>
+    <Checkbox value="motion blur" checked>Motion Blur</Checkbox>
+    <Checkbox value="anti-aliasing">Anti-Aliasing</Checkbox>
+</>
 ```
+</CodePreviewGFUI>
 
 ## API
 

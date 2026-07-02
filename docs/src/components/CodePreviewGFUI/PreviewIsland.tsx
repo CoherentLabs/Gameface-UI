@@ -1,6 +1,7 @@
 // PreviewIsland.tsx — the Solid island that does the runtime work
 
 import { onMount, JSX } from 'solid-js';
+import { applyCohFontFitPolyfill } from './cohFontFitPolyfill';
 
 // Environment CSS, imported as compiled strings at build time.
 // ?inline runs the file through Vite's PostCSS/SCSS pipeline and returns CSS text.
@@ -37,7 +38,6 @@ export default function PreviewIsland(props: PreviewIslandProps) {
 
     const setupIframe = async () => {
         const doc = iframeRef.contentDocument;
-        console.log('setupIframe fired, doc =', doc);
         if (!doc) return;
 
         // 1. Inject environment resets into the iframe head (under component styles).
@@ -51,8 +51,6 @@ export default function PreviewIsland(props: PreviewIslandProps) {
         //    Kept here for the cases where it does matter; safe to no-op otherwise.
         applyPolyfills(iframeRef.contentWindow as Window & typeof globalThis);
 
-        console.log('props.hash =', props.hash);
-
         const { js, css } = await resolveDemoUrl(props.hash);
 
         if (css) {
@@ -61,20 +59,23 @@ export default function PreviewIsland(props: PreviewIslandProps) {
             doc.head.appendChild(style);
         }
 
+        // Author-provided CSS (demo-specific styling not covered by any component's own module.scss).
+        if (props.css) {
+            const customCss = Array.isArray(props.css) ? props.css.join('\n') : props.css;
+            const customStyle = doc.createElement('style');
+            customStyle.textContent = customCss;
+            doc.head.appendChild(customStyle);
+        }
+
         const absolute = new URL(js, window.location.origin).href;
         const win = iframeRef.contentWindow as any;
         const mod = await win.eval(`import("${absolute}")`);
         mod.default(doc.body);
-
-        console.log('ready set, body =', doc.body);
+        applyCohFontFitPolyfill(doc, iframeRef.contentWindow as Window & typeof globalThis);
     };
 
     onMount(() => {
-        console.log('onMount ran');
         const doc = iframeRef.contentDocument;
-        console.log('doc at onMount:', doc, 'body:', doc?.body);
-
-        console.log('code at onMount:', componentCode());
 
         if (doc?.body) {
             // srcdoc already parsed, body exists — set up now
@@ -89,12 +90,14 @@ export default function PreviewIsland(props: PreviewIslandProps) {
         <iframe
             ref={iframeRef}
             title="Gameface preview"
-            srcdoc="<!DOCTYPE html><html><head></head><body></body></html>"
+            srcdoc="<!DOCTYPE html><html><head><meta name='viewport' content='width=1920, initial-scale=1.0, shrink-to-fit=no'></head><body></body></html>"
             style={{
                 width: '100%',
-                height: `300px`,
+                height: `100%`,
                 border: 'none',
                 display: 'block',
+                'margin-top': '0',
+                'min-height': '400px',
             }}
         ></iframe>
     );
@@ -102,28 +105,82 @@ export default function PreviewIsland(props: PreviewIslandProps) {
 
 // Stub — adapt from your polyfills.ts, but operate on the passed window.
 function applyPolyfills(win: Window & typeof globalThis) {
-    if (!win) return;
-    // e.g. (win.HTMLElement.prototype.scroll as any) = null;
-    // e.g. patch win.setInterval for zero-delay support
-    // Gameface does not support scroll
-    (win.HTMLElement.prototype.scroll as any) = null;
+    /**
+     * Decide whether an element should become an implicit flex-column container.
+     * Skips:
+     *   - elements with the [cohinline] attribute (rendered inline by CSS)
+     *   - elements already computed as display:flex (author wrote display:flex)
+     *   - elements with display:none (hidden; Gameface also leaves these alone)
+     *
+     * @param {Element} el
+     */
+    function convertElement(el) {
+        if (el.hasAttribute('cohinline')) {
+            return;
+        }
 
-    // setInterval with no delay polyfill
-    const originalSetInterval = win.setInterval;
-    win.setInterval = ((callback: Function, delay = 0) => {
-        return originalSetInterval(callback, delay);
-    }) as typeof win.setInterval;
+        var computed = window.getComputedStyle(el).display;
 
-    // Promise.withResolvers polyfill
-    if (!win.Promise.withResolvers) {
-        win.Promise.withResolvers = function <T>() {
-            let resolve!: (value: T | PromiseLike<T>) => void;
-            let reject!: (reason?: any) => void;
-            const promise = new win.Promise<T>((res, rej) => {
-                resolve = res;
-                reject = rej;
-            });
-            return { promise, resolve, reject };
-        };
+        if (computed === 'flex' || computed === 'none') {
+            return;
+        }
+
+        el.classList.add('gf-block');
+    }
+
+    /**
+     * Run convertElement on `root` and every descendant element.
+     *
+     * @param {Element} root
+     */
+    function processSubtree(root) {
+        convertElement(root);
+
+        var descendants = root.querySelectorAll('*');
+        for (var i = 0; i < descendants.length; i++) {
+            convertElement(descendants[i]);
+        }
+    }
+
+    /**
+     * Initial pass — run once the full DOM is available.
+     */
+    function initialPass() {
+        processSubtree(document.body);
+    }
+
+    /**
+     * MutationObserver — re-runs the conversion on any element added to the DOM
+     * at runtime (dynamically rendered components, engine data-bind updates, etc.)
+     */
+    var observer = new MutationObserver(function (mutations) {
+        for (var m = 0; m < mutations.length; m++) {
+            var added = mutations[m].addedNodes;
+            for (var n = 0; n < added.length; n++) {
+                var node = added[n];
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                    processSubtree(node);
+                }
+            }
+        }
+    });
+
+    /**
+     * Bootstrap.
+     */
+    function init() {
+        initialPass();
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        // DOM already parsed (script deferred or placed at end of body)
+        init();
     }
 }

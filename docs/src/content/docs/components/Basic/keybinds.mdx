@@ -5,6 +5,7 @@ tableOfContents:
 ---
 
 import { Badge } from '@astrojs/starlight/components'
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Keybinds` component is an easy way to set up keyboard + mouse binding logic in your UI.
 It works together with the `Keybind` component, which represents a single action slot. `Keybinds` provides context, conflict handling, and programmatic control.
@@ -13,24 +14,20 @@ It works together with the `Keybind` component, which represents a single action
 
 Wrap all your `Keybind` items in a `Keybinds` component. Each `Keybind` needs an `action` and can optionally get an initial `value`.
 
+<CodePreviewGFUI>
 ```tsx
 import Keybinds from '@components/Basic/Keybinds/Keybinds';
 import Keybind from '@components/Basic/Keybinds/Keybind';
 
-const App = () => {
-    return (
-        <Keybinds>
-            <Keybind action="forward" value="W" />
-            <Keybind action="backward" value="S" />
-            <Keybind action="left" value="A" />
-            <Keybind action="right" value="D" />
-            <Keybind action="jump" /> 
-        </Keybinds>
-    );
-};
-
-export default App;
+<Keybinds>
+    <Keybind action="forward" value="W" />
+    <Keybind action="backward" value="S" />
+    <Keybind action="left" value="A" />
+    <Keybind action="right" value="D" />
+    <Keybind action="jump" /> 
+</Keybinds>
 ```
+</CodePreviewGFUI>
 
 :::note
 If a `Keybind` does not have a `value` prop, it will be initialized with `null` (unbound).

@@ -1,6 +1,7 @@
 ---
 title: Scroll
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Scroll` component is a container that automatically detects when its inner content is too big to fit within its set size. When this happens, it displays a scrollbar so that users can scroll through the content. This makes it ideal for displaying dynamic or lengthy information while keeping the layout neat.
 
@@ -8,26 +9,22 @@ The `Scroll` component is a container that automatically detects when its inner 
 
 Wrap any content you want to make scrollable within the `Scroll` component. You can set a maximum width and height using inline styles or CSS classes. When the content inside the component grows larger than these dimensions, the component will show a scrollbar so users can navigate the hidden parts.
 
+<CodePreviewGFUI>
 ```tsx
 import Scroll from '@components/Layout/Scroll/Scroll'
 import Block from '@components/Layout/Block/Block';
 import TextBlock from '@components/Basic/TextBlock/TextBlock';
 
-const App = () => {
-    return (
-        <Scroll style={{"max-width": '200px', "max-height": '100px',}}>
-            <Scroll.Content>
-                <TextBlock>
-                    I am a very long and dynamic text that can be scrolled - lorem Eaque, perspiciatis ad iusto expedita consectetur rerum tempora non nisi, porro tenetur repudiandae. 
-                    Voluptatem magni dolore consequuntur officia nemo quidem minus. Possimus, quibusdam.
-                </TextBlock> 
-            </Scroll.Content>
-        </Scroll>
-    );
-};
-
-export default App;
+<Scroll style={{"max-width": '200px', "max-height": '100px',}}>
+    <Scroll.Content>
+        <TextBlock>
+            I am a very long and dynamic text that can be scrolled - lorem Eaque, perspiciatis ad iusto expedita consectetur rerum tempora non nisi, porro tenetur repudiandae. 
+            Voluptatem magni dolore consequuntur officia nemo quidem minus. Possimus, quibusdam.
+        </TextBlock> 
+    </Scroll.Content>
+</Scroll>
 ```
+</CodePreviewGFUI>
 
 In this example, the text is wrapped inside the `Scroll` component, and the maximum dimensions are set to 200px by 200px. If the text is longer than that, a scrollbar appears so the user can scroll through the content.
 

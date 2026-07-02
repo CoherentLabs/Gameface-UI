@@ -1,5 +1,6 @@
 import starlight from '@astrojs/starlight';
 import solid from '@astrojs/solid-js';
+import solidSvg from 'vite-plugin-solid-svg';
 import { defineConfig } from 'astro/config';
 import starlightLinksValidator from 'starlight-links-validator';
 import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-sections';
@@ -18,7 +19,13 @@ export default defineConfig({
         remarkPlugins: [remarkGfuiDemo],
     },
     vite: {
-        plugins: [gfuiDemoPlugin()],
+        plugins: [
+            gfuiDemoPlugin(),
+            solidSvg({
+                defaultAsComponent: false,
+                svgo: { enabled: false },
+            }),
+        ],
         build: {
             cssCodeSplit: true,
             minify: false, // for easier debugging of emitted demo chunks and manifest
@@ -30,6 +37,7 @@ export default defineConfig({
                 '@components': path.resolve(__dirname, '../src/components'),
                 '@custom-components': path.resolve(__dirname, '../src/custom-components'),
                 '@assets': path.resolve(__dirname, '../src/assets'),
+                '@docs-components': path.resolve(__dirname, './src/components'),
             },
         },
         css: {

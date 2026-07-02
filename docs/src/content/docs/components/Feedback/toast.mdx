@@ -1,6 +1,8 @@
 ---
 title: Toast
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
+
 The `Toast` component is a notification element that displays brief messages to the user. 
 It allows users to receive feedback about an operation or to display important information.
 
@@ -8,6 +10,7 @@ It allows users to receive feedback about an operation or to display important i
 
 To include a toast in your UI, call the `createToast` function with the desired options and include the `Toaster` component in your JSX.
 
+<CodePreviewGFUI>
 ```tsx
 import useToast from '@components/Feedback/Toast/toast';
 
@@ -30,8 +33,8 @@ const App = () => {
     );
 };
 
-export default App;
 ```
+</CodePreviewGFUI>
 
 ## API
 

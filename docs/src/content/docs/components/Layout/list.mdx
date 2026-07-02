@@ -1,6 +1,8 @@
 ---
 title: List
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
+
 The `List` component displays structured content as a vertical stack of items. 
 It supports unordered and ordered formats, automatic nesting, and configurable bullets. 
 Each item also exposes an inline Icon slot so you can override the bullet/icon for that specific item.
@@ -12,10 +14,10 @@ It's ideal for UI elements like settings menus, objectives, inventories, or any 
 To use `List`, wrap `List.Item` components inside the `List`. You can optionally specify the list type (unordered or ordered)
 and set the bullet style for the list with the `bullet-type` prop, or override it per item by placing `List.Icon` inside that item.
 
-
+<CodePreviewGFUI>
 ```tsx
 import List from '@components/Layout/List/List';
-import starIcon from '@assets/starIcon.svg'
+import starIcon from '@assets/icons/round-star.svg';
 
 const App = () => {
     return (
@@ -35,9 +37,8 @@ const App = () => {
         </List>
     );
 };
-
-export default App;
 ```
+</CodePreviewGFUI>
 
 ## API
 
