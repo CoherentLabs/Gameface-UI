@@ -23,6 +23,7 @@ const TwoHandleSliderTest = () => {
         { label: "Step start up", action: () => { sliderRef.stepStart(1) } },
         { label: "Step end down", action: () => { sliderRef.stepEnd(-1) } },
         { label: "Set value via prop", action: () => { setControlled({ start: 10, end: 90 }) } },
+        { label: "Shift both handles past the previous end with ref", action: () => { sliderRef.changeValue({ start: 70, end: 90 }) } },
     ];
 
     const reset = () => {

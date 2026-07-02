@@ -30,9 +30,9 @@ interface SliderProps extends ComponentProps {
 }
 
 const Slider: ParentComponent<SliderProps> = (props) => {
-    const min = () => props.min || 0;
-    const max = () => props.max || 100;
-    const step = () => props.step || 1;
+    const min = () => props.min ?? 0;
+    const max = () => props.max ?? 100;
+    const step = () => props.step ?? 1;
     const [value, setValue] = createSignal(clamp(props.value ?? 50, min(), max()));
     // purely for navigation state
     const [navEngaged, setNavEngaged] = createSignal(false);

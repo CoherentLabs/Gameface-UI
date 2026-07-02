@@ -39,7 +39,7 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
 
     // Two-way binding: sync external value changes into the input
     createEffect(on(() => props.value, (newValue) => {
-        if (newValue === undefined || newValue === '') {
+        if (!newValue) {
             setValue('');
             if (inputRef.current) inputRef.current.value = '';
             return;
@@ -50,7 +50,7 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
 
         const clamped = clampValue(parsed).newValue;
         setValue(clamped);
-        if (inputRef.current) inputRef.current.value = clamped as any as string;
+        if (inputRef.current) inputRef.current.value = String(clamped);
     }, { defer: true }));
 
     const transformValue = (value: string) => {
@@ -124,7 +124,7 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
     const applyValue = (newValue: number | string) => {
         if (!inputRef.current) return;
         delayUpdate.cancel(); // drop any pending debounced onChange so this synchronous value wins
-        inputRef.current.value = newValue as any as string;
+        inputRef.current.value = String(newValue);
         setValue(newValue);
         props.onChange?.(newValue);
     }

@@ -45,12 +45,12 @@ const XYSlider: ParentComponent<XYSliderProps> = (props) => {
         width: 0,
         height: 0,
     };
-    const minX = () => props.minX || 0;
-    const maxX = () => props.maxX || 100;
-    const minY = () => props.minY || 0;
-    const maxY = () => props.maxY || 100;
+    const minX = () => props.minX ?? 0;
+    const maxX = () => props.maxX ?? 100;
+    const minY = () => props.minY ?? 0;
+    const maxY = () => props.maxY ?? 100;
     // Gamepad navigation
-    const step = () => props.step || 1;
+    const step = () => props.step ?? 1;
     const maxBoost = createMemo(() => Math.max(maxX(), minX()) / 10 ); // 10% of max axis value
     const accelRate = createMemo(() => maxBoost() / 10);   // 10% of max boost
     let speedBoost = { x: 0, y: 0 };

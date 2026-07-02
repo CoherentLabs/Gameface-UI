@@ -51,15 +51,18 @@ const DropdownTest = () => {
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
+    const selectOptionMultiple = () => multipleRef?.selectOption("test0");
+    const deselectOptionMultiple = () => multipleRef?.deselectOption("test0");
+
     onMount(() => {
         document.addEventListener('reset', reset)
-        document.addEventListener('selectOptionMultiple', () => multipleRef?.selectOption("test0"))
-        document.addEventListener('deselectOptionMultiple', () => multipleRef?.deselectOption("test0"))
+        document.addEventListener('selectOptionMultiple', selectOptionMultiple)
+        document.addEventListener('deselectOptionMultiple', deselectOptionMultiple)
     })
     onCleanup(() => {
         document.removeEventListener('reset', reset)
-        document.removeEventListener('selectOptionMultiple', () => multipleRef?.selectOption("test0"))
-        document.removeEventListener('deselectOptionMultiple', () => multipleRef?.deselectOption("test0"))
+        document.removeEventListener('selectOptionMultiple', selectOptionMultiple)
+        document.removeEventListener('deselectOptionMultiple', deselectOptionMultiple)
     })
 
     return (

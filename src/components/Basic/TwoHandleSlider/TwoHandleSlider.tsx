@@ -13,7 +13,7 @@ import { stopImmediatePropagation } from "@components/utils/stopPropagation";
 import { calculatePercent, getTrackGeometry, snapToStepAndNormalize, TrackGeometry } from "../Slider/sliderMath";
 import { Handle, SliderHandle } from "../Slider/SliderHandle";
 
-type TwoHandleSliderValue = {
+export type TwoHandleSliderValue = {
     start: number,
     end: number
 }
@@ -38,9 +38,9 @@ interface SliderProps extends ComponentProps {
 }
 
 const TwoHandleSlider: ParentComponent<SliderProps> = (props) => {
-    const min = () => props.min || 0;
-    const max = () => props.max || 100;
-    const step = () => props.step || 1;
+    const min = () => props.min ?? 0;
+    const max = () => props.max ?? 100;
+    const step = () => props.step ?? 1;
     const [startValue, setStartValue] = createSignal(clamp(props.value?.start ?? min(), min(), max()));
     const [endValue, setEndValue] = createSignal(clamp(props.value?.end ?? max(), startValue() + step(), max()));
     const [activeHandle, setActiveHandle] = createSignal<'start' | 'end'>('start');
@@ -166,13 +166,11 @@ const TwoHandleSlider: ParentComponent<SliderProps> = (props) => {
 
     /** Sets both handles at once, snapping each to step and keeping them from crossing. */
     const changeValue = (newValue: TwoHandleSliderValue) => {
-        const clampedValue = {
-            start: snapValue(clampStartValue(newValue.start)),
-            end: snapValue(clampEndValue(newValue.end))
-        };
+        const start = Math.min(newValue.start, newValue.end - step());
+        const end = Math.max(newValue.end, newValue.start + step());
 
-        setStartValue(clampedValue.start);
-        setEndValue(clampedValue.end);
+        setStartValue(snapValue(start));
+        setEndValue(snapValue(end));
     }
 
     /** Sets the start handle, snapped to step and capped one step below the end handle. */
@@ -237,6 +235,10 @@ const TwoHandleSlider: ParentComponent<SliderProps> = (props) => {
     onCleanup(() => {
         handleMouseUp();
         if (commitTimeout) clearTimeout(commitTimeout);
+        if(sliding) {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        }
     })
 
     const defaultActions = {
@@ -258,14 +260,16 @@ const TwoHandleSlider: ParentComponent<SliderProps> = (props) => {
                     percent={startPercent} 
                     handleMouseDown={handleMouseDownStartHandle} 
                     parentChildren={props.children} 
-                    active={() => activeHandle() === 'start' && navEngaged()} />
+                    active={() => activeHandle() === 'start' && navEngaged()} 
+                    dragged={() => activeHandle() === 'start'} />
                 <SliderThumb value={startValue} percent={startPercent} parentChildren={props.children} />
                 {/* Right */}
                 <SliderHandle 
                     percent={endPercent} 
                     handleMouseDown={handleMouseDownEndHandle} 
                     parentChildren={props.children} 
-                    active={() => activeHandle() === 'end' && navEngaged()} />
+                    active={() => activeHandle() === 'end' && navEngaged()}
+                    dragged={() => activeHandle() === 'end'} />
                 <SliderThumb value={endValue} percent={endPercent} parentChildren={props.children} />
                 <SliderFill
                     percent={middlePercent}

@@ -15,6 +15,7 @@ import Checkbox from "@components/Basic/Checkbox/Checkbox";
 import styles from './Inventory.module.scss';
 import Relative from "@components/Layout/Relative/Relative";
 import Absolute from "@components/Layout/Absolute/Absolute";
+import TwoHandleSlider from "@components/Basic/TwoHandleSlider/TwoHandleSlider";
 
 const Inventory = () => {
 	return (
@@ -127,6 +128,9 @@ const Inventory = () => {
 							</ToggleButton>
 						</Flex>
 					</Column.Four>
+				</Tab>
+				<Tab location="crafting">
+					<TwoHandleSlider />
 				</Tab>
 			</Row>
 		</Tabs >

@@ -47,11 +47,11 @@
 
     &:hover,
     &:active {
-        box-shadow: 0 0 0 0.1vmax rgba($secondaryColor, 0.5);
+        box-shadow: 0 0 0 0.1rem rgba($secondaryColor, 0.5);
     }
 
     &-active {
-        box-shadow: 0 0 0 0.25vmax rgba($secondaryColor, 0.5);
+        box-shadow: 0 0 0 0.25rem rgba($secondaryColor, 0.5);
     }
 }
 

@@ -14,6 +14,7 @@ interface SliderHandleComponentProps extends TokenComponentProps {
     handleMouseDown: (e: MouseEvent) => void
     percent: () => number
     active?: () => boolean
+    dragged?: () => boolean
 }
 
 export const Handle = createTokenComponent<SliderHandleProps>();
@@ -33,8 +34,14 @@ export const SliderHandle = (props: SliderHandleComponentProps) => {
     });
 
     const handleStyle = createMemo(() => {
-        const position = { left: `${props.percent()}%` }
-        return { ...HandleToken()?.style, ...position, ...(props.active?.() && HandleToken()?.styleActive) }
+        const zIndex = props.dragged?.() ? 20 : 10;
+        const offSet = `${props.percent()}%`
+        return { 
+            ...HandleToken()?.style, 
+            left: offSet, 
+            'z-index': zIndex,
+            ...(props.active?.() && HandleToken()?.styleActive) 
+        }
     })
 
     return (

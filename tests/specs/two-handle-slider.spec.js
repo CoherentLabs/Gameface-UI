@@ -66,6 +66,23 @@ describe('TwoHandleSlider', function () {
         assert.equal(await startEl.text(), 50, 'Start handle should stop one step below the end handle');
     })
 
+    it('Should raise the z-index of the last dragged handle', async () => {
+        const slider = await gf.get(`.${selectors.slider}`);
+        const handles = await slider.findAll(`.${selectors.sliderHandle}`);
+
+        await handles[0].dragBy(-10, 0);
+        let startStyles = await handles[0].styles();
+        let endStyles = await handles[1].styles();
+        assert.equal(startStyles['z-index'], '20', 'Dragged start handle should have the higher z-index');
+        assert.equal(endStyles['z-index'], '10', 'Untouched end handle should keep the lower z-index');
+
+        await handles[1].dragBy(10, 0);
+        startStyles = await handles[0].styles();
+        endStyles = await handles[1].styles();
+        assert.equal(endStyles['z-index'], '20', 'Dragged end handle should now have the higher z-index');
+        assert.equal(startStyles['z-index'], '10', 'Previously dragged start handle should drop back to the lower z-index');
+    })
+
     it('Should change both handles via ref', async () => {
         await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
         const startEl = await gf.get(`.${selectors.assertionStartElement}`);
@@ -73,6 +90,18 @@ describe('TwoHandleSlider', function () {
 
         assert.equal(await startEl.text(), 30, 'Start handle should change to 30');
         assert.equal(await endEl.text(), 70, 'End handle should change to 70');
+    })
+
+    it('Should shift both handles correctly when the new range starts past the previous end (regression)', async () => {
+        // Both handles move at once here, so a fix that clamps each new value against the
+        // other handle's stale (pre-update) signal instead of the incoming pair would wrongly
+        // cap start at (previous end - step) instead of letting it reach the new target.
+        await gf.click(`.${selectors.scenarioBtn}.scenario-7`);
+        const startEl = await gf.get(`.${selectors.assertionStartElement}`);
+        const endEl = await gf.get(`.${selectors.assertionEndElement}`);
+
+        assert.equal(await startEl.text(), 70, 'Start handle should reach 70, not clamp against the stale previous end (60 - step)');
+        assert.equal(await endEl.text(), 90, 'End handle should move to 90');
     })
 
     it('Should change the start handle via ref', async () => {
