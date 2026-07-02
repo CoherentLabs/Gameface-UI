@@ -25,13 +25,13 @@ import { For } from 'solid-js';
 import Flex from '@components/Layout/Flex/Flex';
 import Carousel from '@components/Complex/Carousel/Carousel';
 
-<Carousel style={{ width: '30vmax' }} itemWidth={40} itemGap={5} itemsAlignment='center'>
+<Carousel style={{ width: '30rem' }} itemWidth={40} itemGap={5} itemsAlignment='center'>
     <Carousel.Items style={{ height: '80%' }}>
         <For each={['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5']}>
             {(item) =>
                 <Carousel.Item
-                    style-selected={{ transform: 'scale(1.1)', border: '0.2vmax solid #868599' }}
-                    style={{ overflow: 'hidden', transition: 'transform 300ms', 'border-radius': '1vmax' }}
+                    style-selected={{ transform: 'scale(1.1)', border: '0.2rem solid #868599' }}
+                    style={{ overflow: 'hidden', transition: 'transform 300ms', 'border-radius': '1rem' }}
                 >
                     <Flex align-items='center' justify-content='center' style={{ background: '#3e3d5d', height: '100%' }}>
                         {item}

@@ -4,6 +4,8 @@ tableOfContents:
   maxHeadingLevel: 4
 ---
 
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
+
 The `Tutorial` component provides a declarative way to build guided walkthroughs directly inside your UI.
 Each `Tutorial.Step` wraps real elements, highlights them, and displays a tooltip with title and content, creating a structured onboarding or feature tour.
 
@@ -19,29 +21,44 @@ For detailed usage instructions, examples, and customization options, refer to t
 Check out [our blog post](https://coherent-labs.com/blog/uitutorials/gamefaceui-menu-tutorial/) to see how we used the `Tutorial` component to build an interactive walkthrough for our Menu UI.
 :::
 
+<CodePreviewGFUI>
+
 ```tsx
 import Tutorial, {TutorialRef} from "@components/Complex/Tutorial/Tutorial";
+import Flex from "@components/Layout/Flex/Flex";
 
 const App = () => {
     let ref!: TutorialRef;
     return (
-        <>
-            <button onclick={() => ref!.tour()}>Start tutorial?</button>
-            <Tutorial ref={ref} outset={5} >
-                <Tutorial.Step order={1} title="Welcome" content="This is the main menu.">
-                    <button>Play</button>
-                </Tutorial.Step>
+        <Flex direction="column" gap="2rem" align="start">
+            <button
+                onclick={() => ref!.tour()}
+                style={{ padding: '0.8rem 1.6rem', 'border-radius': '0.4rem', border: '0.1rem solid #0084ff', 'background-color': '#0084ff26', color: '#0084ff' }}
+            >
+                Start tutorial?
+            </button>
 
-                <Tutorial.Step order={2} title="Settings" content="Change your preferences here." position="bottom">
-                    <button>Settings</button>
-                </Tutorial.Step>
+            <Tutorial ref={ref} outset={5} >
+                <Flex directon="row" gap="1rem" align="center">
+                    <Tutorial.Step order={1} title="Welcome" content="This is the main menu.">
+                        <button style={{ padding: '0.8rem 1.6rem', 'border-radius': '0.4rem', border: '0.1rem solid #3ecf8e', 'background-color': '#3ecf8e26', color: '#3ecf8e' }}>
+                            Play
+                        </button>
+                    </Tutorial.Step>
+
+                    <Tutorial.Step order={2} title="Settings" content="Change your preferences here." position="bottom">
+                        <button style={{ padding: '0.8rem 1.6rem', 'border-radius': '0.4rem', border: '0.1rem solid #f2a541', 'background-color': '#f2a54126', color: '#f2a541' }}>
+                            Settings
+                        </button>
+                    </Tutorial.Step>
+                </Flex>
             </Tutorial>
-        </>
+        </Flex>
     );
 };
-
-export default App;
 ```
+
+</CodePreviewGFUI>
 
 ## API
 
