@@ -1,11 +1,13 @@
 import { Input, Placeholder } from "../shared/tokens";
-import { Show, createMemo, ParentComponent, createSignal } from "solid-js";
+import { Show, createMemo, ParentComponent, createSignal, onCleanup, createEffect, on } from "solid-js";
 import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
 import { InputBase } from "../InputBase/InputBase";
 import { TextInputProps, TextInputRef } from "../shared/types";
 import InputControlButton from "./InputControlButton";
 import InputWrapper from "../InputBase/InputWrapper";
 import styles from './NumberInput.module.scss';
+import { debounce } from "@components/utils/debounce";
+import { DEFAULT_DELAY } from "../shared/constants";
 
 type valueType = number | string;
 export interface NumberInputRef extends Omit<TextInputRef, "value" | "changeValue"> {
@@ -35,6 +37,22 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
 
     const inputRef = { current: undefined as HTMLInputElement | undefined };
 
+    // Two-way binding: sync external value changes into the input
+    createEffect(on(() => props.value, (newValue) => {
+        if (!newValue) {
+            setValue('');
+            if (inputRef.current) inputRef.current.value = '';
+            return;
+        }
+
+        const parsed = Number(newValue);
+        if (isNaN(parsed)) return;
+
+        const clamped = clampValue(parsed).newValue;
+        setValue(clamped);
+        if (inputRef.current) inputRef.current.value = String(clamped);
+    }, { defer: true }));
+
     const transformValue = (value: string) => {
         const isNegative = value.length && value[0] === '-';
         const newValue = value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');
@@ -57,8 +75,8 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
         const parsed = Number(inputValue);
         const { newValue, hasClamped } = clampValue(parsed);
 
-        props.onChange?.(newValue)
-        setValue(newValue)
+        setValue(newValue);
+        props.delay ? delayUpdate(newValue) : props.onChange?.(newValue);
         //@ts-ignore
         input.value = hasClamped ? newValue : inputValue;
     }
@@ -68,7 +86,7 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
             return console.error(`${value} is not a valid value! Please provide a number.`)
         }
 
-        const { newValue } = clampValue(value);
+        const newValue = clampValue(value).newValue;
         applyValue(newValue);
     }
 
@@ -82,7 +100,7 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
 
         const currValue = Number(inputRef.current.value);
         const step = props.step || 1;
-        const { newValue } = clampValue(currValue + step);
+        const newValue = clampValue(currValue + step).newValue;
 
         applyValue(newValue);
     }
@@ -95,16 +113,20 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
 
         const currValue = Number(inputRef.current.value);
         const step = props.step || 1;
-        const { newValue } = clampValue(currValue - step);
+        const newValue = clampValue(currValue - step).newValue;
 
         applyValue(newValue);
     }
 
+    const delayUpdate = debounce((newValue: number | string) =>
+        props.onChange?.(newValue), typeof props.delay === 'number' ? props.delay : DEFAULT_DELAY);
+
     const applyValue = (newValue: number | string) => {
         if (!inputRef.current) return;
-        inputRef.current.value = newValue as any as string;
+        delayUpdate.cancel(); // drop any pending debounced onChange so this synchronous value wins
+        inputRef.current.value = String(newValue);
+        setValue(newValue);
         props.onChange?.(newValue);
-        setValue(newValue)
     }
 
     function clampValue(value: number) {
@@ -122,6 +144,8 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
 
         return { newValue, hasClamped };
     }
+
+    onCleanup(() => delayUpdate.cancel());
 
     const increaseBtnPosition = createMemo(() => IncreaseControlToken()?.position ?? 'after');
     const decreaseBtnPosition = createMemo(() => DecreaseControlToken()?.position ?? 'after');

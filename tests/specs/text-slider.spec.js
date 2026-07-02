@@ -58,6 +58,13 @@ describe('TextSlider', function () {
         assert.equal(await thumb.text(), 'Hard', 'Slider\'s thumb should move to the center');
     })
 
+    it('Should update value via the value prop (two-way binding)', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-2`);
+        const thumb = await gf.get(`.${selectors.sliderThumb}`);
+
+        assert.equal(await thumb.text(), 'Hard', 'TextSlider value should update to \'Hard\' via the value prop');
+    })
+
     describe('reactivity', () => {
         const scenarios = [
             { selector: `.${selectors.slider}`, desc: 'root' },

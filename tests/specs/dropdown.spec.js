@@ -146,11 +146,9 @@ describe('Dropdown options', function () {
         const dropdown = await gf.get(`.${selectors.base}`);
         const trigger = await dropdown.find(`.${selectors.trigger}`);
 
-
         await trigger.click();
         const option = await gf.get(`.${selectors.option}2`);
         await option.click();
-
 
         const optionClasses = await option.classes();
         const optionStyles = await option.styles();
@@ -230,4 +228,211 @@ describe('Dropdown track and handle', function () {
             });
         }
     });
+});
+
+describe('Dropdown multiple', function () {
+    this.afterEach(async () => {
+        await gf.trigger('reset');
+    })
+
+    it('Should keep the options open when selecting an option', async () => {
+        const dropdown = await gf.get(`.${selectors.multiple}`);
+        const trigger = await dropdown.find(`.${selectors.multipleTrigger}`);
+        const options = await dropdown.find(`.${selectors.multipleOptions}`);
+
+        await trigger.click();
+        await gf.click(`.${selectors.multipleOption}0`);
+
+        assert.ok(await options.waitForVisibility(true), 'Dropdown options should stay open after selecting an option');
+    })
+
+    it('Should allow selecting several options at once', async () => {
+        const dropdown = await gf.get(`.${selectors.multiple}`);
+        const trigger = await dropdown.find(`.${selectors.multipleTrigger}`);
+
+        await trigger.click();
+
+        await gf.click(`.${selectors.multipleOption}0`);
+        await gf.click(`.${selectors.multipleOption}1`);
+
+        const firstOption = await gf.get(`.${selectors.multipleOption}0`);
+        const secondOption = await gf.get(`.${selectors.multipleOption}1`);
+
+        assert.ok((await firstOption.classes()).includes('option-selected'), 'First selected option should have the selected class');
+        assert.ok((await secondOption.classes()).includes('option-selected'), 'Second selected option should have the selected class');
+    })
+
+    it('Should deselect an option when selecting it again', async () => {
+        const dropdown = await gf.get(`.${selectors.multiple}`);
+        const trigger = await dropdown.find(`.${selectors.multipleTrigger}`);
+        const option = await gf.get(`.${selectors.multipleOption}0`);
+
+
+        await trigger.click();
+        await option.click();
+        assert.ok((await option.classes()).includes('option-selected'), 'Option should be selected after the first click');
+
+        await option.click();
+        assert.ok(!(await option.classes()).includes('option-selected'), 'Option should be deselected after clicking it again');
+    })
+
+    it('Should retrieve all selected values via onChange prop', async () => {
+        const assertionEl = await gf.get(`.${selectors.multipleAssertionElement}`);
+        const dropdown = await gf.get(`.${selectors.multiple}`);
+        const trigger = await dropdown.find(`.${selectors.multipleTrigger}`);
+
+
+        await trigger.click();
+        await gf.click(`.${selectors.multipleOption}0`);
+        await gf.click(`.${selectors.multipleOption}1`);
+        assert.equal(await assertionEl.text(), 'test0,test1', 'onChange should report every selected value');
+
+        await gf.click(`.${selectors.multipleOption}0`);
+        assert.equal(await assertionEl.text(), 'test1', 'onChange should report the remaining values after a deselection');
+    })
+
+    it('Should select and deselect options via ref', async () => {
+        const assertionEl = await gf.get(`.${selectors.multipleAssertionElement}`);
+        const option = await gf.get(`.${selectors.multipleOption}0`);
+
+
+        await gf.executeScript(() => document.dispatchEvent(new Event('selectOptionMultiple')));
+        assert.ok((await option.classes()).includes('option-selected'), 'Option should be selected through the ref');
+        assert.equal(await assertionEl.text(), 'test0', 'Selecting via ref should update the reported values');
+
+        await gf.executeScript(() => document.dispatchEvent(new Event('deselectOptionMultiple')));
+        assert.ok(!(await option.classes()).includes('option-selected'), 'Option should be deselected through the ref');
+        assert.equal(await assertionEl.text(), '', 'Deselecting via ref should update the reported values');
+    })
+});
+
+describe('Dropdown two-way binding', function () {
+    // The single dropdown is bound with `value={selected()}` + `onChange={setSelected}`,
+    // so the page's `selected` signal is the single source of truth in both directions.
+    const triggerText = async () => (await gf.children(`.${selectors.trigger}`))[0].text();
+
+    this.afterEach(async () => {
+        await gf.trigger('reset');
+    })
+
+    it('Should reflect an externally changed value in the UI (value prop -> selection)', async () => {
+        // scenario-6 sets the bound signal to "test2" without any user interaction.
+        await gf.click(`.${selectors.scenarioBtn}.scenario-6`);
+
+        const option = await gf.get(`.${selectors.option}2`);
+        await gf.retryIfFails(async () => {
+            assert.equal(await triggerText(), 'test2', 'Trigger should show the externally set value');
+            assert.ok((await option.classes()).includes('option-selected'), 'The matching option should gain the selected class');
+        });
+    })
+
+    it('Should propagate a UI selection back to the bound value (selection -> value prop)', async () => {
+        const assertionEl = await gf.get(`.${selectors.assertionElement}`);
+        const trigger = await gf.get(`.${selectors.trigger}`);
+
+        await trigger.click();
+        await gf.click(`.${selectors.option}1`);
+
+        await gf.retryIfFails(async () => {
+            assert.equal(await assertionEl.text(), 'test1', 'Bound signal should receive the value chosen in the UI');
+            assert.equal(await triggerText(), 'test1', 'Trigger should reflect the chosen option');
+        });
+    })
+
+    it('Should stay in sync across changes from both directions', async () => {
+        const assertionEl = await gf.get(`.${selectors.assertionElement}`);
+        const trigger = await gf.get(`.${selectors.trigger}`);
+
+        // UI -> signal
+        await trigger.click();
+        await gf.click(`.${selectors.option}0`);
+        await gf.retryIfFails(async () => {
+            assert.equal(await assertionEl.text(), 'test0', 'Signal should follow the UI selection');
+            assert.equal(await triggerText(), 'test0', 'Trigger should follow the UI selection');
+        });
+
+        // signal -> UI
+        await gf.click(`.${selectors.scenarioBtn}.scenario-6`);
+        await gf.retryIfFails(async () => {
+            assert.equal(await assertionEl.text(), 'test2', 'Signal should hold the externally set value');
+            assert.equal(await triggerText(), 'test2', 'Trigger should follow the externally set value');
+        });
+    })
+
+    it('Should clear the selection when bound to a value with no matching option', async () => {
+        // Seed a valid selection first so we can observe it being cleared.
+        await gf.click(`.${selectors.scenarioBtn}.scenario-6`);
+        await gf.retryIfFails(async () => assert.equal(await triggerText(), 'test2', 'Precondition: a valid value is selected'));
+
+        // scenario-7 sets the bound signal to a value that is not a registered option.
+        await gf.click(`.${selectors.scenarioBtn}.scenario-7`);
+
+        const assertionEl = await gf.get(`.${selectors.assertionElement}`);
+        await gf.retryIfFails(async () => {
+            assert.ok((await triggerText()).includes('Select any option'), 'Trigger should fall back to the placeholder');
+            assert.equal(await assertionEl.text(), '', 'An invalid bound value should be normalised back to an empty selection');
+        });
+    })
+
+    // The multiple dropdown is bound with `value={multipleSelected()}` + `onChange={setMultipleSelected}`.
+    it('Should reflect an externally changed value array in the UI (multiple)', async () => {
+        // scenario-8 sets the bound signal to ['test0', 'test2'] with no user interaction.
+        await gf.click(`.${selectors.scenarioBtn}.scenario-8`);
+
+        const assertionEl = await gf.get(`.${selectors.multipleAssertionElement}`);
+        const option0 = await gf.get(`.${selectors.multipleOption}0`);
+        const option1 = await gf.get(`.${selectors.multipleOption}1`);
+        const option2 = await gf.get(`.${selectors.multipleOption}2`);
+
+        await gf.retryIfFails(async () => {
+            assert.equal(await assertionEl.text(), 'test0,test2', 'Bound signal should drive the selected values');
+            assert.ok((await option0.classes()).includes('option-selected'), 'test0 should be selected');
+            assert.ok(!(await option1.classes()).includes('option-selected'), 'test1 should not be selected');
+            assert.ok((await option2.classes()).includes('option-selected'), 'test2 should be selected');
+        });
+    })
+
+    it('Should propagate UI selections back to the bound value array (multiple)', async () => {
+        const assertionEl = await gf.get(`.${selectors.multipleAssertionElement}`);
+        const trigger = await gf.get(`.${selectors.multipleTrigger}`);
+
+        await trigger.click();
+        await gf.click(`.${selectors.multipleOption}0`);
+        await gf.click(`.${selectors.multipleOption}1`);
+
+        await gf.retryIfFails(async () => {
+            assert.equal(await assertionEl.text(), 'test0,test1', 'Bound signal should collect every value chosen in the UI');
+        });
+    })
+
+    it('Should drop values with no matching option when bound externally (multiple)', async () => {
+        // scenario-9 sets ['test1', 'does-not-exist']; the unknown value should be filtered out.
+        await gf.click(`.${selectors.scenarioBtn}.scenario-9`);
+
+        const assertionEl = await gf.get(`.${selectors.multipleAssertionElement}`);
+        const option1 = await gf.get(`.${selectors.multipleOption}1`);
+
+        await gf.retryIfFails(async () => {
+            assert.equal(await assertionEl.text(), 'test1', 'Only the valid value should remain selected');
+            assert.ok((await option1.classes()).includes('option-selected'), 'The valid option should be selected');
+        });
+    })
+
+    it('Should stay in sync across both directions (multiple)', async () => {
+        const assertionEl = await gf.get(`.${selectors.multipleAssertionElement}`);
+        const trigger = await gf.get(`.${selectors.multipleTrigger}`);
+
+        // UI -> signal
+        await trigger.click();
+        await gf.click(`.${selectors.multipleOption}0`);
+        await gf.retryIfFails(async () => assert.equal(await assertionEl.text(), 'test0', 'Signal should follow the UI selection'));
+
+        // signal -> UI (replaces the current selection with a new array)
+        await gf.click(`.${selectors.scenarioBtn}.scenario-8`);
+        const option2 = await gf.get(`.${selectors.multipleOption}2`);
+        await gf.retryIfFails(async () => {
+            assert.equal(await assertionEl.text(), 'test0,test2', 'Signal should hold the externally set array');
+            assert.ok((await option2.classes()).includes('option-selected'), 'UI should reflect the externally set array');
+        });
+    })
 });

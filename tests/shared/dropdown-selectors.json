@@ -9,5 +9,10 @@
     "handle": "dropdown-handle",
     "invertedDropdown": "dropdown-inverted",
     "assertionElement": "assertion-element",
-    "scenarioBtn": "scenario-btn"
+    "scenarioBtn": "scenario-btn",
+    "multiple": "dropdown-multiple",
+    "multipleOptions": "dropdown-multiple-options",
+    "multipleOption": "dropdown-multiple-option",
+    "multipleTrigger": "dropdown-multiple-trigger",
+    "multipleAssertionElement": "multiple-assertion-element"
 }

@@ -29,6 +29,10 @@
     width: 50%;
     height: 100%;
     position: relative;
+
+    &-two-handle {
+        width: 100%;
+    }
 }
 
 .handle {
@@ -38,13 +42,16 @@
     background-color: $secondaryColor;
     position: absolute;
     top: -100%;
-    right: 0;
     z-index: 10;
     transform: translateX(-50%);
 
     &:hover,
     &:active {
-        box-shadow: 0 0 0 0.1vmax rgba($secondaryColor, 0.5);
+        box-shadow: 0 0 0 0.1rem rgba($secondaryColor, 0.5);
+    }
+
+    &-active {
+        box-shadow: 0 0 0 0.25rem rgba($secondaryColor, 0.5);
     }
 }
 

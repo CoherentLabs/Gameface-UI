@@ -1,7 +1,6 @@
-import { Component, createSignal, JSX } from "solid-js";
+import { Component, JSX } from "solid-js";
 import { IconMap } from "./IconTypes";
 import styles from './Icon.module.scss';
-import baseStyles from '../ImageBase/ImageBase.module.scss';
 import fallbackImg from './fallback.png?url';
 import baseComponent from "@components/BaseComponent/BaseComponent";
 import { ComponentProps, ExcludedEvents } from "@components/types/ComponentProps";
@@ -15,35 +14,25 @@ export interface IconProps extends Omit<Events, ExcludedEvents> {
 }
 
 const iconClasses = (base: string, props: IconProps) => {
-	return `${base} ${props.fill ? baseStyles.fill : ""}`
+	return `${base} ${props.fill ? styles.fill : ""}`
 } 
 
 const modules = import.meta.glob('@assets/icons/**/*.{png,svg}', { eager: true }) as Record<string, { default: string }>
-// Fallback Icon to prevent app crash when file has been deleted
-const MissingIcon: Component<ComponentProps & {fill?: boolean}> = (props) => {
-	props.componentClasses = () => iconClasses(styles.fallback, props);
- 
-	return <img use:baseComponent={props} src={fallbackImg} />;
-}
 
 const IconComponent = (src: string): Component<ComponentProps & {fill?: boolean}> => {
 	return (props) => {
-		const [hasError, setHasError] = createSignal(false);
-
 		props.componentClasses = () => iconClasses(styles.icon, props);
 
 		return (
-			<>
-				{hasError() ? (
-					<MissingIcon {...props} />
-				) : (
-					<img
-						use:baseComponent={props}
-						src={src}
-						onError={() => setHasError(true)}
-					/>
-				)}
-			</>
+			<img
+				use:baseComponent={props}
+				src={src}
+				onError={(e) => {
+					const img = e.target as HTMLImageElement;
+					img.onerror = null; // don't loop if the fallback itself throws an error
+					img.src = fallbackImg;
+				}}
+			/>
 		);
 	};
 };

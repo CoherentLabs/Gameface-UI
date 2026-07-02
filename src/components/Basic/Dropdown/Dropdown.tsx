@@ -1,4 +1,4 @@
-import { Accessor, createContext, createMemo, createSignal, createUniqueId, DEV, JSX, onMount, ParentComponent } from 'solid-js';
+import { Accessor, createContext, createEffect, createMemo, createSignal, createUniqueId, DEV, JSX, on, onMount, ParentComponent } from 'solid-js';
 import { DropdownOptions, Handle, Options, Track } from './DropdownOptions';
 import { Option } from './DropdownOption';
 import { DropdownTrigger, Icon, Placeholder, Trigger } from './DropdownTrigger';
@@ -16,13 +16,20 @@ export interface CommonDropdownSlotProps {
 
 export interface DropdownRef extends BaseComponentRef {
     selected: Accessor<string>;
+    selectedValues: Accessor<string[]>;
     selectOption: (value: string) => void
+    deselectOption: (value: string) => void
+    deselectAll: () => void
+    toggle: (isOpened: boolean) => void
 }
 
 export const DropdownContext = createContext<DropdownContextValue>();
 
 interface DropdownContextValue {
     selected: Accessor<string>;
+    selectedValues: Accessor<string[]>;
+    isSelected: (value: string) => boolean;
+    multiple: Accessor<boolean>;
     selectOption: (value: string) => void
     open: Accessor<boolean>;
     toggle: (isOpened: boolean) => void;
@@ -34,17 +41,20 @@ interface DropdownContextValue {
 }
 
 interface DropdownProps extends ComponentProps {
+    value?: string | string[],
     disabled?: boolean
     'class-disabled'?: string
-    onChange?: (value: string) => void;
+    multiple?: boolean
+    onChange?: (value: string | string[]) => void;
 }
 
 const Dropdown: ParentComponent<DropdownProps> = (props) => {
     let element!: HTMLDivElement;
     const [selected, setSelected] = createSignal('');
-    const [firstRender, setFirstRender] = createSignal(true);
+    const [selectedValues, setSelectedValues] = createSignal<string[]>([]);
     const [open, setOpen] = createSignal(false);
     const [isInverted, setIsInverted] = createSignal(false);
+    const [ready, setReady] = createSignal(false);
     
     const nav = useNavigation();
     let previousNavScope: string | undefined;
@@ -52,8 +62,38 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
 
     const options = new Map<string, {label: string | JSX.Element, element: HTMLElement}>();
 
+    createEffect(on(
+        () => props.multiple ? selectedValues() : selected(),
+        (next) => { if (ready()) props.onChange?.(next); },
+    { defer: true } ));
+
+    const applyValue = (next: string | string[] | undefined) => {
+        if (next === undefined) return;
+
+        if (props.multiple) {
+            if (!Array.isArray(next)) {
+                if (DEV) console.warn(`Dropdown: Expected an array of strings for the 'value' prop when 'multiple' is true, but received:`, next);
+                return;
+            }
+
+            setSelectedValues((prev) => {
+                if (prev.length === next.length && prev.every((v, i) => v === next[i])) return prev;
+
+                return next.filter(v => options.has(v));
+            })
+            return;
+        }
+
+        const value = next as string;
+        setSelected(options.has(value) ? value : '');
+    };
+
+    createEffect(on(() => props.value, applyValue, { defer: true }));
+
     const registerOption = (value: string, label: string | JSX.Element, element: HTMLElement, selected?: boolean) => {
         options.set(value, {label, element});
+        if (props.value !== undefined) return; 
+
         if (selected) selectOption(value);
     };
     const unregisterOption = (value: string) => options.delete(value);
@@ -64,11 +104,42 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
             return;
         }
 
-        setSelected(value);
+        if (props.multiple) {
+            setSelectedValues(prev =>
+                prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]
+            );
+            return;
+        }
 
-        if (selected() !== "" && firstRender()) return setFirstRender(false);
-        props.onChange?.(value);
+        setSelected(value);
     }
+
+    const deselectOption = (value: string) => {
+        if (props.multiple) {
+            setSelectedValues(prev => prev.filter(v => v !== value));
+            return;
+        }
+
+        if (selected() === value) {
+            setSelected('');
+        }
+    }
+
+    const deselectAll = () => {
+        if (props.multiple) {
+            if (selectedValues().length === 0) return;
+            setSelectedValues([]);
+            return;
+        }
+
+        if (selected() === '') return;
+        setSelected('');
+    }
+
+    const isSelected = (value: string) =>
+        props.multiple ? selectedValues().includes(value) : selected() === value;
+
+    const multiple = () => !!props.multiple;
 
     const dropdownClasses = createMemo(() => {
         const classes = [style.dropdown];
@@ -146,24 +217,35 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
         waitForFrames(() => {
             handlePosition()
         });
+        queueMicrotask(() => {
+            applyValue(props.value);
+            setReady(true);
+        });
         if (!props.ref || !element) return;
 
         (props.ref as unknown as (ref: any) => void)({
             selected,
+            selectedValues,
             selectOption,
+            deselectOption,
+            deselectAll,
+            toggle,
             element,
         });
     });
 
     const DropdownContextValue = {
-        selected, 
-        selectOption, 
-        open, 
-        toggle, 
-        registerOption, 
+        selected,
+        selectedValues,
+        isSelected,
+        multiple,
+        selectOption,
+        open,
+        toggle,
+        registerOption,
         unregisterOption,
         handleNavigationClose,
-        options, 
+        options,
         isInverted
     }
 

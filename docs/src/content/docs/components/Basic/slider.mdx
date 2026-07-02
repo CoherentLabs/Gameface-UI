@@ -31,11 +31,12 @@ export default App;
 | `style`    | `JSX.CSSProperties`                    | `{}`        | Inline styles to apply directly to the component's root element.                                                                                                                             |
 | `class`    | `string`                               | `""`        | Additional CSS classes to apply to the component                                                                                                                                             |
 | `ref`      | `SliderRef  \| undefined`            | `undefined` | A reference to the component that gives you access to its methods and the underlying HTML element. Useful if you need to set the value of the slider programmatically.                                                             |
-| `value`       | `number`                            | `undefined`   | The current value of the slider. Use this to control or set the slider's position. |
+| `value`       | `number`                            | `undefined`   | The current value of the slider. Use this to control or set the slider's position. The prop is reactive - updating it externally moves the handle. |
 | `min`         | `number`                            | `undefined`   | The minimum value that the slider can select. |
 | `max`         | `number`                            | `undefined`   | The maximum value that the slider can select. |
 | `step`        | `number`                            | `undefined`   | The amount by which the slider value changes when the handle is moved. Determines the granularity of the slider. |
-| `onChange` | `(value: number) => void`              | `undefined` | A function that is called every time the slider's value has changed. It can be used to retrieve the up to date value of the slider. |
+| `onChange` | `(value: number) => void`              | `undefined` | A function that is called whenever the slider's value changes. It only fires when the value actually changes, not on every mouse move. |
+| `onChangeEnd` | `(value: number) => void`           | `undefined` | A function that is called when the user finishes interacting with the slider (e.g. on mouse release). Useful for committing the final value without reacting to every intermediate change. |
 | `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Extends or overrides the component's default navigation action handlers. See [Implemented Navigation Actions](#implemented-navigation-actions) for details. |
 | `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, the slider's actions will execute. Can be a CSS selector or HTMLElement. |
 
@@ -55,6 +56,7 @@ To interact with the `Slider` programmatically, you can use the `SliderRef` inte
 | Method         | Parameters         | Return Value | Description                                      |
 |----------------|-------------------|--------------|--------------------------------------------------|
 | `changeValue`  | `newValue: number`| `void`       | Programmatically sets a new value for the slider. |
+| `stepValue`    | `direction: 1 \| -1` | `void`    | Steps the value up (`1`) or down (`-1`) by the `step` amount. |
 
 ## Slots
 
@@ -126,6 +128,8 @@ Customizes the draggable handle of the slider. Use this slot to apply custom sty
 |-----------|------|---------|-------------|
 | `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the slider handle. |
 | `class`   | `string` | `""` | Additional CSS classes to style the slider handle. |
+| `styleActive` | `JSX.CSSProperties` | `{}` | Inline styles applied to the handle while it is active (the slider is focused via keyboard/gamepad navigation). Merged on top of `style`. |
+| `classActive` | `string` | `""` | CSS class applied to the handle while it is active, replacing the default active styling. |
 
 #### Usage
 
@@ -136,7 +140,7 @@ const App = () => {
     return (
         <>
             <Slider min={0} max={100} value={35} step={1}>
-+               <Slider.Handle style={{'background-color': 'red'}}></Slider.Handle>
++               <Slider.Handle style={{'background-color': 'red'}} styleActive={{'background-color': 'green'}}></Slider.Handle>
             </Slider>
         </>
     );
@@ -271,6 +275,30 @@ const App = () => {
     return (
         <>
             <Slider onChange={(value) => setSliderValue(value)} value={50} max={100} min={0} step={1} />
+            <div>{sliderValue()}</div>
+        </>
+    );
+};
+
+export default App;
+```
+
+### React only to the final value
+
+- The `onChange` prop fires every time the value changes while dragging. If you only care about the final value once the user finishes interacting (e.g. to avoid expensive work on every step), use the `onChangeEnd` prop instead.
+
+`onChangeEnd` is called when the user releases the handle after a drag, and after navigation actions (`move-left` / `move-right`) settle.
+
+```tsx
+import Slider from '@components/Basic/Slider/Slider';
+import { createSignal} from 'solid-js';
+
+const App = () => {
+    const [sliderValue, setSliderValue] = createSignal(50);
+
+    return (
+        <>
+            <Slider onChangeEnd={(value) => setSliderValue(value)} value={50} max={100} min={0} step={1} />
             <div>{sliderValue()}</div>
         </>
     );

@@ -4,7 +4,38 @@ title: Changelog
 
 import { Badge } from '@astrojs/starlight/components'
 
-## 3.0.1 :badge[Latest]{variant="note"}
+## 3.1.0 :badge[Latest]{variant="note"}
+
+- <Badge text="Feature" variant="success" size="small" /> [Dropdown](/components/basic/dropdown#props): Exposed `toggle` method in the `ref` to programmatically open/close the dropdown.
+
+- <Badge text="Feature" variant="success" size="small" /> [Dropdown](/components/basic/dropdown#props): Added a `multiple` prop that allows selecting several options at once. When enabled, the dropdown stays open while selecting, clicking a selected option deselects it, and `onChange` returns an array of the selected values. The exposed `ref` gains a `selectedValues` accessor and a `deselectOption` method.
+
+- <Badge text="Feature" variant="success" size="small" /> [Slider](/components/basic/slider#props): Added an `onChangeEnd` prop that fires once the user finishes interacting with the slider (e.g. on mouse release), useful for committing the final value.
+
+- <Badge text="New" variant="tip" size="small" /> Added [TwoHandleSlider](/components/basic/two-handle-slider) component for selecting a numeric range with a lower (start) and an upper (end) handle.
+
+- <Badge text="Feature" variant="success" size="small" /> Added `Track`, `Fill`, `Thumb`, `Handle` and `Grid` slots for the [TwoHandleSlider](/components/basic/two-handle-slider/#slots) component.
+
+- <Badge text="Feature" variant="success" size="small" /> [Slider](/components/basic/slider#props) & [TextSlider](/components/basic/text-slider#props): The `value` prop is now reactive - updating it externally moves the slider (two-way binding).
+
+- <Badge text="Feature" variant="success" size="small" /> [Dropdown](/components/basic/dropdown#props): Added a `value` prop that controls and sets the selection. It is reactive - updating it externally changes the selection (two-way binding) - accepts an array in `multiple` mode, and takes precedence over the `selected` prop on `Dropdown.Option`.
+
+- <Badge text="Feature" variant="success" size="small" /> [Slider](/components/basic/slider#methods): Exposed a `stepValue` method in the `ref` to step the value up or down by the `step` amount programmatically.
+
+- <Badge text="Feature" variant="note" size="small" /> [Dropdown](/components/basic/dropdown): The dropdown trigger now spans the full width (`100%`) of the dropdown component, making it easier to restyle.
+
+- <Badge text="Feature" variant="note" size="small" /> [Slider](/components/basic/slider#props) & [TextSlider](/components/basic/text-slider#props): `onChange` now only fires when the value actually changes instead of on every mouse move.
+
+- <Badge text="Feature" variant="note" size="small" /> [Icon](/components/media/icon): Improved rendering performance by swapping directly to the fallback image on error instead of rendering a separate fallback component.
+
+- <Badge text="Feature" variant="success" size="small" /> [TextInput](/components/basic/text-input#props), [PasswordInput](/components/basic/password-input#props) & [NumberInput](/components/basic/number-input#props): Added a `delay` prop that debounces the `onChange` callback by the given amount in milliseconds.
+
+- <Badge text="Fix" variant="danger" size="small" /> [NumberInput](/components/basic/number-input#props): The `value` prop is now reactive — updating it is reflected in the input (two-way binding), matching the other input components.
+
+- <Badge text="Fix" variant="danger" size="small" /> [ToggleButton](/components/basic/toggle-button): Make the `<ToggleButton.Indicator>` scale off the size of the
+`<ToggleButton.Control>` element instead of the indicator's size. This ensures that the indicator scales correctly when the button size changes.
+
+## 3.0.1
 
 ### 🛠 Navigation Improvements
 

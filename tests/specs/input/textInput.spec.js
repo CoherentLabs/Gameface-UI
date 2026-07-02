@@ -41,6 +41,32 @@ describe('TextInput', function () {
         assert.ok(!(await getPlaceholder()), 'Placeholder should not be in the DOM after typing in the input');
     })
 
+    it('Should debounce onChange when delay prop is set', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-4`);
+        const input = await gf.get(`.${selectors.input}`);
+        const assertEl = await gf.get(`.${selectors.assertionElement}`);
+
+        await input.type('test');
+        assert.equal(await assertEl.text(), '', 'onChange should not fire immediately when delay is set');
+
+        await new Promise(resolve => setTimeout(resolve, 400));
+        assert.equal(await assertEl.text(), 'test', 'onChange should fire after the delay expires');
+    })
+
+    it('Should update the input when the value prop changes', async () => {
+        const getPlaceholder = async () => {
+            try {
+                return await gf.get(`.${selectors.inputPlaceholder}`);
+            } catch {
+                return null;
+            }
+        };
+
+        assert.ok(await getPlaceholder(), 'Placeholder should be visible initially');
+        await gf.click(`.${selectors.scenarioBtn}.scenario-5`);
+        assert.ok(!(await getPlaceholder()), 'Placeholder should be hidden after the value prop changes');
+    })
+
     describe('reactivity', () => {
         const scenarios = [
             { selector: `.${selectors.root}`, desc: 'root' },

@@ -16,4 +16,5 @@ export interface TextInputProps extends ComponentProps {
     'max-symbols'?: number
     'class-disabled'?: string
     onChange?: (value: string) => void;
+    delay?: number | boolean
 }
