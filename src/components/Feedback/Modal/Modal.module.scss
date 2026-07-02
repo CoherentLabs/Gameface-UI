@@ -22,11 +22,11 @@
 
     &-window {
         display: flex;
-        padding: 1vmax;
+        padding: 1rem;
         flex-direction: column;
         position: absolute;
-        width: 40vmax;
-        min-height: 20vmax;
+        width: 40rem;
+        min-height: 20rem;
         background-color: white;
         animation: moveWindow 0.3s forwards;
     }

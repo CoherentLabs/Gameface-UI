@@ -1,6 +1,7 @@
 ---
 title: Layout
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Layout` component is a structural element designed to act as a page container in your application. The `Layout` component is meant to be used as a general top-level wrapper of your page.
 
@@ -8,24 +9,20 @@ The `Layout` component is a structural element designed to act as a page contain
 
 The default use case for the `Layout` component is as a container for major sections of your app, such as the main content area or an overall page layout wrapper.
 
+<CodePreviewGFUI>
 ```tsx
 import Layout from '@components/Layout/Layout/Layout';
 import Top from '@components/Layout/Top/Top';
 import Content from '@components/Layout/Content/Content';
 import Bottom from '@components/Layout/Bottom/Bottom';
 
-const App = () => {
-    return (
-        <Layout style={{ height: '100vh' }}>
-            <Top>Top Section</Top>
-            <Content>Main Content</Content>
-            <Bottom>Bottom Section</Bottom>
-        </Layout>
-    );
-};
-
-export default App;
+<Layout style={{ height: '100vh' }}>
+    <Top>Top Section</Top>
+    <Content>Main Content</Content>
+    <Bottom>Bottom Section</Bottom>
+</Layout>
 ```
+</CodePreviewGFUI>
 
 ## API
 

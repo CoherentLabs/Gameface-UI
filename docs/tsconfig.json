@@ -6,6 +6,7 @@
       "@components/*": ["../src/components/*"],
       "@custom-components/*": ["../src/custom-components/*"],
       "@assets/*": ["../src/assets/*"],
+      "@docs-components/*": ["./src/components/*"],
     }
   }
 }

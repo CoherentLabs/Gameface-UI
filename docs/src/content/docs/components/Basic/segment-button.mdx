@@ -1,6 +1,7 @@
 ---
 title: Segment.Button
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Segment.Button` slot represents a single option within a `Segment`. It renders a clickable button with a transition.
 
@@ -9,23 +10,19 @@ The `Segment.Button` slot represents a single option within a `Segment`. It rend
 To create a `Segment.Button` you need to wrap it in the `Segment` component and provide a value to it. You must also provide the `selected` prop to the `Segment.Button` you wish
 to be selected by default.
 
+<CodePreviewGFUI>
 ```tsx
-import Segment from '@components/Basic/Segment';
+import Segment from '@components/Basic/Segment/Segment';
 
-const App = () => {
-    return (
-        <>
-            <Segment>
-                <Segment.Button selected value="red">red</Segment.Button>
-                <Segment.Button value="green">green</Segment.Button>
-                <Segment.Button value="blue">blue</Segment.Button>
-            </Segment>
-        </>
-    );
-};
-
-export default App;
+<>
+    <Segment>
+        <Segment.Button selected value="red">red</Segment.Button>
+        <Segment.Button value="green">green</Segment.Button>
+        <Segment.Button value="blue">blue</Segment.Button>
+    </Segment>
+</>
 ```
+</CodePreviewGFUI>
 
 :::note
 If multiple `Segment.Button` components have the `selected` prop, only the last one with `selected` will be active by default.

@@ -1,6 +1,7 @@
 ---
 title: Button
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Button` component is used to create button elements in the UI.
 
@@ -8,22 +9,18 @@ The `Button` component is used to create button elements in the UI.
 
 The `Button` component provides various configuration options to create different types of buttons. For example, you can create disabled buttons, larger or smaller buttons, rounded buttons, and more.
 
+<CodePreviewGFUI>
 ```tsx
 import Button from '@components/Basic/Button/Button';
 
-const App = () => {
-    return (
-        <>
-            <Button disabled size='large'>Large button</Button>
-            <Button size='middle'>Rounded button with middle size</Button>
-            <Button size='small'>Small size button</Button>
-            <Button textFit={false} size='small'>Small size button with no fitting the text</Button>
-        </>
-    );
-};
-
-export default App;
+<>
+    <Button disabled size='large'>Large button</Button>
+    <Button size='middle'>Rounded button with middle size</Button>
+    <Button size='small'>Small size button</Button>
+    <Button textFit={false} size='small'>Small size button with no fitting the text</Button>
+</>
 ```
+</CodePreviewGFUI>
 
 ## API
 

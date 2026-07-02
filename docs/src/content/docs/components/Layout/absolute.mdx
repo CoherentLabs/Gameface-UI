@@ -1,6 +1,7 @@
 ---
 title: Absolute
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Absolute` component is a structural element designed to wrap content and position it precisely, independent of the normal document structure. It is ideal for creating dynamic notifications, pop-ups, overlays, moving nameplates, and other UI elements that require precise placement.
 
@@ -10,23 +11,19 @@ By default, the `Absolute` component positions its content relative to the close
 
 The primary use case for the `Absolute` component is to position nested content precisely within a document. The component lets you define offsets using the `top`, `left`, `right`, and `bottom` properties.
 
+<CodePreviewGFUI>
 ```tsx
 import Relative from '@components/Layout/Relative/Relative';
 import Absolute from '@components/Layout/Absolute/Absolute';
 import Block from '@components/Layout/Block/Block';
 
-const App = () => {
-    return (
-        <Relative>
-            <Absolute top="50px" right="50px">
-                <Block>Content with top and right offset by 50px</Block>
-            </Absolute>
-        </Relative>
-    );
-};
 
-export default App;
+    <Absolute top="50px" right="50px">
+        <Block>Content with top and right offset by 50px</Block>
+    </Absolute>
+
 ```
+</CodePreviewGFUI>
 
 ## API
 

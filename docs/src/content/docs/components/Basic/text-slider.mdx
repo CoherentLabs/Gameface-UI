@@ -1,23 +1,21 @@
 ---
 title: TextSlider
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
+
 The `TextSlider` component enables users to select a string value from a predefined set of options by dragging a handle along a track.
 
 ## Usage
 
 To use the `TextSlider` component, specify the selectable options using the `values` prop.
 
+<CodePreviewGFUI>
 ```tsx
 import TextSlider from '@components/Basic/TextSlider/TextSlider';
 
-const App = () => {
-    return (
-        <TextSlider values={['Easy', 'Medium', 'Hard']} />
-    );
-};
-
-export default App;
+<TextSlider values={['Easy', 'Medium', 'Hard']} />
 ```
+</CodePreviewGFUI>
 
 ## API
 

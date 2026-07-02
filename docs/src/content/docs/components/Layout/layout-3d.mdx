@@ -1,6 +1,7 @@
 ---
 title: Layout3D
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Layout3D` component is a structural element designed to act as a container for 3D transformations. It sets up a 3D scene by defining a `distance` property, which controls the perspective. This perspective determines how far the user is from the z-plane of the 3D scene, affecting how 3D transformations appear.
 
@@ -8,24 +9,20 @@ The `Layout3D` component is a structural element designed to act as a container 
 
 The default use case for the `Layout` component is as a container for 3D scenes. It pairs seamlessly with the `Transform` component to apply 3D transformations.
 
+<CodePreviewGFUI>
 ```tsx
 import Layout3D from '@components/Layout/Layout3D/Layout3D';
 import Transform from '@components/Layout/Transform/Transform';
 
-const App = () => {
-    return (
-        <Layout3D distance='2500px'>
-            <Transform matrix={{
-                scale={x: 2, z: 2},
-                translate={z: 150}
-            }}>Element scaled by 2 by the x and y axes and translated towards the user by 150px. 
-            </Transform>
-        </Layout3D>
-    );
-};
-
-export default App;
+<Layout3D distance='1000px'>
+    <Transform matrix={{
+        rotate: { y: 60 },
+        scale: {x: 2, z: 2},
+    }}>Element rotated by 60° on the y-axis. 
+    </Transform>
+</Layout3D>
 ```
+</CodePreviewGFUI>
 
 ## API
 
@@ -85,8 +82,8 @@ const App = () => {
     return (
         <Layout3D ref={layout3DRef} distance='2500px'>
             <Transform matrix={{
-                scale={x: 2, z: 2},
-                translate={z: 150}
+                scale: {x: 2, z: 2},
+                translate: {z: 150}
             }}>Element scaled by 2 by the x and y axes and translated towards the user by 150px. 
             </Transform>
         </Layout3D>

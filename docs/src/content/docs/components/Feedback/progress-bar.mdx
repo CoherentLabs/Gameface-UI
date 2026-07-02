@@ -1,6 +1,7 @@
 ---
 title: Progress Bar
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Progress.Bar` component is used to visually indicate the progress of a task or operation. 
 It provides a horizontal bar that fills up as a task or operation progresses, giving users feedback on the completion status.
@@ -13,6 +14,7 @@ The `Progress.Bar` will react to changes in the `progress` prop and update its v
 
 In the following example, we simulate a task that progresses from `0` to `100` over time using a signal and an interval.
 
+<CodePreviewGFUI>
 ```tsx
 import Progress from '@components/Feedback/Progress/Progress';
 import { createSignal, onMount } from 'solid-js';
@@ -26,7 +28,7 @@ const App = () => {
                 return prev;
             }
             return prev + 1;
-        }), 10);
+        }), 100);
     };
 
     onMount(() => {
@@ -37,10 +39,8 @@ const App = () => {
         <Progress.Bar progress={progress()} />
     );
 };
-
-export default App;
 ```
-
+</CodePreviewGFUI>
 :::caution
 The `Progress.Bar` component is a controlled component, meaning that it relies on the `progress` prop to determine its state. It does not manage its own state internally.
 :::

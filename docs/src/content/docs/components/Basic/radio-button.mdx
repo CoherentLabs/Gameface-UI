@@ -1,6 +1,7 @@
 ---
 title: Radio.Button
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Radio.Button` slot represents a single option within a `Radio`. It renders a clickable control with a label.
 
@@ -9,23 +10,19 @@ The `Radio.Button` slot represents a single option within a `Radio`. It renders 
 To create a `Radio.Button` you need to wrap it in the `Radio` component and provide a value to it. You must also provide the `selected` prop to the `Radio.Button` you wish
 to be selected by default.
 
+<CodePreviewGFUI>
 ```tsx
 import Radio from '@components/Basic/RadioGroup/Radio';
 
-const App = () => {
-    return (
-        <>
-            <Radio>
-                <Radio.Button selected value="red">red</Radio.Button>
-                <Radio.Button value="green">green</Radio.Button>
-                <Radio.Button value="blue">blue</Radio.Button>
-            </Radio>
-        </>
-    );
-};
-
-export default App;
+<>
+    <Radio>
+        <Radio.Button selected value="red">red</Radio.Button>
+        <Radio.Button value="green">green</Radio.Button>
+        <Radio.Button value="blue">blue</Radio.Button>
+    </Radio>
+</>
 ```
+</CodePreviewGFUI>
 
 ## API
 

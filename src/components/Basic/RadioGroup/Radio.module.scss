@@ -4,7 +4,7 @@
     &-button {
         display: flex;
         align-items: center;
-        margin-right: 0.75vmax;
+        margin-right: 0.75rem;
         cursor: pointer;
     }
 }
@@ -24,18 +24,18 @@
 }
 
 .control {
-    width: 1.25vmax;
-    height: 1.25vmax;
+    width: 1.25rem;
+    height: 1.25rem;
     position: relative;
-    margin-right: 0.35vmax;
+    margin-right: 0.35rem;
     border-radius: 50%;
-    border: 0.1vmax solid $secondaryColor;
+    border: 0.1rem solid $secondaryColor;
     background-color: $primaryColor;
 }
 
 .before {
     margin-right: 0;
-    margin-left: 0.35vmax;
+    margin-left: 0.35rem;
 }
 
 .disabled {

@@ -1,6 +1,7 @@
 ---
 title: Content
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Content` component is a structural element designed to act as a wrapper of the main section of your page. Typically, the `Content` component is used alongside the `Top` and `Bottom` components to achieve better page structure.
 
@@ -8,24 +9,20 @@ The `Content` component is a structural element designed to act as a wrapper of 
 
 The primary use case for the `Content` component is as a container for the main content area of the page.
 
+<CodePreviewGFUI>
 ```tsx
 import Layout from '@components/Layout/Layout/Layout';
 import Top from '@components/Layout/Top/Top';
 import Content from '@components/Layout/Content/Content';
 import Bottom from '@components/Layout/Bottom/Bottom';
 
-const App = () => {
-    return (
-        <Layout>
-            <Top>Top Menu</Top>
-            <Content style={{ display: 'flex', flexDirection: 'column'}}>Main Content</Content>
-            <Bottom >Bottom Section</Bottom>
-        </Layout>
-    );
-};
-
-export default App;
+<Layout>
+    <Top>Top Menu</Top>
+    <Content style={{ display: 'flex', flexDirection: 'column'}}>Main Content</Content>
+    <Bottom >Bottom Section</Bottom>
+</Layout>
 ```
+</CodePreviewGFUI>
 
 ## API
 

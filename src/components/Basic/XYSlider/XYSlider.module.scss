@@ -1,9 +1,9 @@
 .XYSlider {
     position: relative;
-    width: 10vmax;
-    height: 10vmax;
+    width: 10rem;
+    height: 10rem;
     border: 1px solid $secondaryColor;
-    border-radius: 0.1vmax;
+    border-radius: 0.1rem;
 }
 
 .background {
@@ -14,11 +14,11 @@
 
 .handle {
     position: absolute;
-    width: 1vmax;
-    height: 1vmax;
+    width: 1rem;
+    height: 1rem;
     background: transparent;
     border-radius: 50%;
-    border: 0.15vmax solid $textColor;
+    border: 0.15rem solid $textColor;
     transform: translate(-50%, -50%);
     cursor: pointer;
 }

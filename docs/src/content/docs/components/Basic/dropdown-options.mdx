@@ -1,29 +1,27 @@
 ---
 title: Dropdown.Options
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
+
 The `Dropdown.Options` slot serves as the container for all the options within the `Dropdown` component.
 
 ## Usage
 
 To use `Dropdown.Options`, wrap it inside the `Dropdown` component.
 
+<CodePreviewGFUI>
 ```tsx
 import Dropdown from '@components/Basic/Dropdown/Dropdown';
 
-const App = () => {
-    return (
-        <Dropdown>
-            <Dropdown.Options>
-                <Dropdown.Option selected value="red">red</Dropdown.Option>
-                <Dropdown.Option value="green">green</Dropdown.Option>
-                <Dropdown.Option value="blue">blue</Dropdown.Option>
-            </Dropdown.Options>
-        </Dropdown>
-    );
-};
-
-export default App;
+<Dropdown>
+    <Dropdown.Options>
+        <Dropdown.Option selected value="red">red</Dropdown.Option>
+        <Dropdown.Option value="green">green</Dropdown.Option>
+        <Dropdown.Option value="blue">blue</Dropdown.Option>
+    </Dropdown.Options>
+</Dropdown>
 ```
+</CodePreviewGFUI>
 
 ## API
 

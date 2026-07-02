@@ -1,6 +1,7 @@
 ---
 title: Flex
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Flex` component is a structural element designed to simplify the creation of flexible and responsive layouts. It is a wrapper that provides easy application for applying CSS flexbox properties. The Flex component supports various configurations for direction, wrapping, alignment, and spacing.
 
@@ -8,29 +9,25 @@ The `Flex` component is a structural element designed to simplify the creation o
 
 The primary use case for the `Flex` component is as a container for flexible and responsive layouts. It abstracts common flexbox properties into easy-to-use props.
 
+<CodePreviewGFUI>
 ```tsx
 import Flex from '@components/Layout/Flex/Flex';
 import Block from '@components/Layout/Block/Block';
 
-const App = () => {
-    return (
-        <Flex
-            direction="row"
-            wrap="wrap"
-            justify-content="space-between"
-            align-items="center"
-            gap="1vmax"
-            style={{ height: '100vh' }}
-        >
-            <Block>Item 1</Block>
-            <Block>Item 2</Block>
-            <Block>Item 3</Block>
-        </Flex>
-    );
-};
-
-export default App;
+<Flex
+    direction="row"
+    wrap="wrap"
+    justify-content="space-between"
+    align-items="center"
+    gap="1vmax"
+    style={{ height: '100vh' }}
+>
+    <Block>Item 1</Block>
+    <Block>Item 2</Block>
+    <Block>Item 3</Block>
+</Flex>
 ```
+</CodePreviewGFUI>
 
 ## API
 

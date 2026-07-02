@@ -1,6 +1,7 @@
 ---
 title: Segment
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Segment` component lets you render a set of mutually-exclusive options in your UI, where only one choice can be selected at a time.
 It functions the same way as the [Radio component](/components/basic/radio) 
@@ -12,23 +13,19 @@ For more information about the `Segment.Button` slot, check out the [Segment.But
 
 To create a Segment options in your UI, you need to wrap the `Segment.Button` slots with the `Segment` component. 
 
+<CodePreviewGFUI>
 ```tsx
-import Segment from '@components/Basic/Segment';
+import Segment from '@components/Basic/Segment/Segment';
 
-const App = () => {
-    return (
-        <>
-            <Segment>
-                <Segment.Button selected value="red">red</Segment.Button>
-                <Segment.Button value="green">green</Segment.Button>
-                <Segment.Button value="blue">blue</Segment.Button>
-            </Segment>
-        </>
-    );
-};
-
-export default App;
+<>
+    <Segment>
+        <Segment.Button selected value="red">red</Segment.Button>
+        <Segment.Button value="green">green</Segment.Button>
+        <Segment.Button value="blue">blue</Segment.Button>
+    </Segment>
+</>
 ```
+</CodePreviewGFUI>
 
 ## API
 

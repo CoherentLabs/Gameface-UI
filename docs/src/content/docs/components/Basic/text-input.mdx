@@ -1,6 +1,7 @@
 ---
 title: TextInput
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `TextInput` component provides a highly customizable input field for handling text data. 
 It supports various slots for injecting UI elements before or after the input, as well as customizing the input and placeholder behavior directly.
@@ -12,17 +13,13 @@ This makes it suitable for use in both simple and complex form UIs.
 
 To use the `TextInput` component, simply import it and pass any required props.
 
+<CodePreviewGFUI>
 ```tsx
-import TextInput from '@components/Basic/TextInput/TextInput';
+import TextInput from '@components/Basic/Input/TextInput/TextInput';
 
-const App = () => {
-    return (
-        <TextInput />
-    );
-};
-
-export default App;
+<TextInput />
 ```
+</CodePreviewGFUI>
 
 ## API
 

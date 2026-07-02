@@ -19,7 +19,7 @@ export const MenuItem: ParentComponent<MenuItemComponentProps> = (props) => {
 
     const rotation = createMemo(() => context.degreesPerSlice() * props.index())
     const isSelected = createMemo(() => context.selected() === props.index());
-    const offset = createMemo(() => props.item.offset ?? '1vmax');
+    const offset = createMemo(() => props.item.offset ?? '1rem');
 
     // Subscribe to isSelected changes to trigger onChange when new item becomes selected
     createEffect(on(isSelected, (selected) => {

@@ -1,3 +1,7 @@
+html {
+  font-size: 1vmax;
+}
+
 body {
   width: 100vw;
   height: 100vh;

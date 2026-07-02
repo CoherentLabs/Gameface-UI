@@ -1,6 +1,8 @@
 ---
 title: Stepper
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
+
 The `Stepper` component enables users to navigate through a set of options. It integrates seamlessly with the `Stepper.Items` and `Stepper.Item` slots.
 
 For more details about `Stepper.Items` and `Stepper.Item`, refer to the [Stepper.Items documentation](/components/basic/stepper-items).
@@ -9,23 +11,19 @@ For more details about `Stepper.Items` and `Stepper.Item`, refer to the [Stepper
 
 To include a stepper in your UI, wrap the `Stepper.Items` and `Stepper.Item` slots within the `Stepper` component:
 
+<CodePreviewGFUI>
 ```tsx
 import Stepper from '@components/Basic/Stepper/Stepper';
 
-const App = () => {
-    return (
-        <Stepper>
-            <Stepper.Items>
-                <Stepper.Item selected value="red">red</Stepper.Item>
-                <Stepper.Item value="green">green</Stepper.Item>
-                <Stepper.Item value="blue">blue</Stepper.Item>
-            </Stepper.Items>
-        </Stepper>
-    );
-};
-
-export default App;
+<Stepper>
+    <Stepper.Items>
+        <Stepper.Item selected value="red">red</Stepper.Item>
+        <Stepper.Item value="green">green</Stepper.Item>
+        <Stepper.Item value="blue">blue</Stepper.Item>
+    </Stepper.Items>
+</Stepper>
 ```
+</CodePreviewGFUI>
 
 ## API
 

@@ -1,6 +1,7 @@
 ---
 title: Transform
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Transform` component is a versatile utility component designed for applying CSS transformations such as `translate`, `rotate`, `scale`, and `skew`. It also allows you to define a `transform-origin`, specifying the point from which transformations originate. The `Transform` component is ideal for creating dynamic visual effects, animations, and 3D interactions.
 
@@ -8,25 +9,21 @@ The `Transform` component is a versatile utility component designed for applying
 
 The `Transform` component can be used to apply individual `translate`, `rotate`, `scale`, or `skew` transformation or a combination of them with the `matrix` property.
 
+<CodePreviewGFUI>
 ```tsx
 import Content from '@components/Layout/Content/Content';
 import Transform from '@components/Layout/Transform/Transform';
 
-const App = () => {
-    return (
-        <Content>
-            <Transform rotate={{z: 15}} origin="top right">
-                Rotated by 15°, originating from the top right corner of the element.
-            </Transform>
-            <Transform matrix={{ translate: {x: 15}, skew: {x: 15}, scale: {x: 1.5, y: 1.5} }} >
-                Moved to the right by 15px, skewed by 15deg and increased the width and height of the element by 1.5
-            </Transform>
-        </Content>
-    );
-};
-
-export default App;
+<Content>
+    <Transform rotate={{z: 15}} origin="top right">
+        Rotated by 15°, originating from the top right corner of the element.
+    </Transform>
+    <Transform matrix={{ translate: {x: 15}, skew: {x: 15}, scale: {x: 1.5, y: 1.5} }} >
+        Moved to the right by 15px, skewed by 15deg and increased the width and height of the element by 1.5
+    </Transform>
+</Content>
 ```
+</CodePreviewGFUI>
 
 ## API
 
