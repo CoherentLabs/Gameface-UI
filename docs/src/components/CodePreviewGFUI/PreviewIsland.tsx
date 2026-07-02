@@ -49,7 +49,7 @@ export default function PreviewIsland(props: PreviewIslandProps) {
         //    Note: with the Portal approach the demo's JS actually runs in the
         //    PARENT runtime, so these only affect code that runs inside the iframe.
         //    Kept here for the cases where it does matter; safe to no-op otherwise.
-        applyPolyfills(iframeRef.contentWindow as Window & typeof globalThis);
+        applyPolyfills(iframeRef.contentWindow as Window & typeof globalThis, iframeRef.contentDocument as Document);
 
         const { js, css } = await resolveDemoUrl(props.hash);
 
@@ -104,7 +104,7 @@ export default function PreviewIsland(props: PreviewIslandProps) {
 }
 
 // Stub — adapt from your polyfills.ts, but operate on the passed window.
-function applyPolyfills(win: Window & typeof globalThis) {
+function applyPolyfills(win: Window & typeof globalThis, doc: Document) {
     /**
      * Decide whether an element should become an implicit flex-column container.
      * Skips:
@@ -119,7 +119,7 @@ function applyPolyfills(win: Window & typeof globalThis) {
             return;
         }
 
-        var computed = window.getComputedStyle(el).display;
+        var computed = win.getComputedStyle(el).display;
 
         if (computed === 'flex' || computed === 'none') {
             return;
@@ -146,7 +146,7 @@ function applyPolyfills(win: Window & typeof globalThis) {
      * Initial pass — run once the full DOM is available.
      */
     function initialPass() {
-        processSubtree(document.body);
+        processSubtree(doc.body);
     }
 
     /**
@@ -171,14 +171,14 @@ function applyPolyfills(win: Window & typeof globalThis) {
     function init() {
         initialPass();
 
-        observer.observe(document.body, {
+        observer.observe(doc.body, {
             childList: true,
             subtree: true,
         });
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
+    if (doc.readyState === 'loading') {
+        doc.addEventListener('DOMContentLoaded', init);
     } else {
         // DOM already parsed (script deferred or placed at end of body)
         init();
