@@ -3,7 +3,6 @@ import solid from '@astrojs/solid-js';
 import solidSvg from 'vite-plugin-solid-svg';
 import { defineConfig } from 'astro/config';
 import starlightLinksValidator from 'starlight-links-validator';
-import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-sections';
 import coherentTheme from 'coherent-docs-theme'
 import starlightSidebarTopics from 'starlight-sidebar-topics';
 import coherentTheme, { generateDocsChangelog, generateVersionWithPackageJSON } from 'coherent-docs-theme';
@@ -150,9 +149,7 @@ export default defineConfig({
     },
     integrations: [
         starlight({
-            expressiveCode: {
-                plugins: [pluginCollapsibleSections()],
-            },
+            expressiveCode: {},
             favicon: '/favicon-32x32.png',
             credits: false,
             customCss: ['./src/styles/custom.css'],

@@ -2,7 +2,7 @@
 // CodePreviewGFUI.astro — thin wrapper. Mostly exists to give you a code panel
 // next to the preview and to keep MDX usage clean.
 import { Tabs, TabItem } from '@astrojs/starlight/components';
-import { Code } from 'astro:components';
+import { Code } from 'astro-expressive-code/components';
 import PreviewIsland from './PreviewIsland.tsx';
 
 interface Props {
@@ -23,11 +23,11 @@ const height = rawHeight != null ? Number(rawHeight) : undefined;
     </div>
     <div class="gfui-preview__code">
         <Tabs>
-            <TabItem label="index.tsx"><Code code={code} lang="tsx" /></TabItem>
+            {code && <TabItem label="index.tsx"><Code code={code} lang="tsx" /></TabItem>}
             {
                 css && (
                     <TabItem label="style.css">
-                        <Code code={css} lang="css" />
+                        <Code code={Array.isArray(css) ? css.join('\n') : css} lang="css" />
                     </TabItem>
                 )
             }
