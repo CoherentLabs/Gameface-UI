@@ -36,6 +36,30 @@ export default function PreviewIsland(props: PreviewIslandProps) {
 
     const componentCode = () => props.code ?? '';
 
+    const setupAutoHeight = () => {
+        const doc = iframeRef.contentDocument;
+        const win = iframeRef.contentWindow as Window & typeof globalThis;
+        if (!doc || !win) return;
+
+        let last = 0;
+        const measure = () => {
+            // body.scrollHeight, NOT documentElement — see caveat below
+            const h = doc.body.scrollHeight;
+            if (Math.abs(h - last) < 1) return; // guard against observer thrash
+            last = h;
+            iframeRef.style.height = `${Math.max(h, 80)}px`;
+        };
+
+        measure();
+
+        // Re-measure on interactions (accordion expand), async renders, engine data-binds
+        const RO = win.ResizeObserver;
+        if (RO) new RO(measure).observe(doc.body);
+
+        // Text metrics settle after fonts load — re-measure once they're ready
+        doc.fonts?.ready.then(measure);
+    };
+
     const setupIframe = async () => {
         const doc = iframeRef.contentDocument;
         if (!doc) return;
@@ -72,6 +96,13 @@ export default function PreviewIsland(props: PreviewIslandProps) {
         const mod = await win.eval(`import("${absolute}")`);
         mod.default(doc.body);
         applyCohFontFitPolyfill(doc, iframeRef.contentWindow as Window & typeof globalThis);
+
+        console.log('[PreviewIsland] fixed height:', props.height);
+        if (props.height == null) {
+            setupAutoHeight();
+        } else {
+            iframeRef.style.height = `${props.height}px`;
+        }
     };
 
     onMount(() => {
@@ -93,11 +124,11 @@ export default function PreviewIsland(props: PreviewIslandProps) {
             srcdoc="<!DOCTYPE html><html><head><meta name='viewport' content='width=1920, initial-scale=1.0, shrink-to-fit=no'></head><body></body></html>"
             style={{
                 width: '100%',
-                height: `100%`,
                 border: 'none',
                 display: 'block',
                 'margin-top': '0',
-                'min-height': '400px',
+                height: props.height ? `${props.height}px` : 'auto',
+                'min-height': props.height ? undefined : '80px', // tiny floor so empty demos don't collapse
             }}
         ></iframe>
     );
