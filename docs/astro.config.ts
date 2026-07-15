@@ -72,6 +72,9 @@ export default defineConfig({
     build: {
       cssCodeSplit: true,
       minify: false,
+      rollupOptions: {
+        external: [/coherent-gameface/],
+      },
     },
     resolve: {
       preserveSymlinks: true,
