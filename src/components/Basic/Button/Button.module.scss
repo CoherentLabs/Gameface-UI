@@ -2,29 +2,29 @@
     background-color: $primaryColor;
     color: $textColor;
     border: 0;
-    font-size: 1vmax;
-    padding: 0.25vmax 1vmax;
+    font-size: 1rem;
+    padding: 0.25rem 1rem;
 
     &-text-fit {
         coh-font-fit: fit;
     }
 
     &-small {
-        width: 6vmax;
-        height: 2vmax;
-        padding: 0.20vmax 0.60vmax;
+        width: 6rem;
+        height: 2rem;
+        padding: 0.20rem 0.60rem;
     }
 
     &-middle {
-        width: 8vmax;
-        height: 2.5vmax;
-        padding: 0.30vmax 0.80vmax;
+        width: 8rem;
+        height: 2.5rem;
+        padding: 0.30rem 0.80rem;
     }
 
     &-large {
-        width: 10vmax;
-        height: 3vmax;
-        padding: 0.40vmax 1vmax;
+        width: 10rem;
+        height: 3rem;
+        padding: 0.40rem 1rem;
     }
 
     &-disabled {

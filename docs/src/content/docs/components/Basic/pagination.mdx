@@ -1,6 +1,8 @@
 ---
 title: Pagination
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
+
 The `Pagination` component provides a UI control for navigating between multiple pages. 
 It supports optional numbered indicators, looping behavior, and customizable navigation controls.
 
@@ -10,17 +12,13 @@ It's ideal for interfaces such as menus, level selectors, or any UI where page-b
 
 To use `Pagination`, specify the total number of pages with `pageSize` and the current page index with `pageIndex`.
 
+<CodePreviewGFUI>
 ```tsx
 import Pagination from '@components/Basic/Pagination/Pagination';
 
-const App = () => {
-    return (
-        <Pagination pageSize={10} pageIndex={3} />
-    )
-};
-
-export default App;
+<Pagination pageSize={10} pageIndex={3} />
 ```
+</CodePreviewGFUI>
 
 ## API
 

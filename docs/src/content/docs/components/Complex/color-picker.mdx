@@ -3,6 +3,7 @@ title: Color picker
 ---
 
 import { Steps } from '@astrojs/starlight/components';
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `ColorPicker` component is a powerful UI element designed for seamless color selection. It is ideal for applications such as design tools, image editors, or any interface requiring color customization.
 
@@ -18,17 +19,13 @@ Internally, the component utilizes the following basic components:
 
 To use the `ColorPicker` component, simply import and render it as shown below:
 
+<CodePreviewGFUI>
 ```tsx
 import ColorPicker from '@components/Complex/ColorPicker/ColorPicker';
 
-const App = () => {
-    return (
-        <ColorPicker />
-    );
-};
-
-export default App;
+<ColorPicker />
 ```
+</CodePreviewGFUI>
 
 ## API
 

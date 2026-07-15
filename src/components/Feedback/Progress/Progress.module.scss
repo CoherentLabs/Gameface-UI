@@ -1,7 +1,7 @@
 .bar {
-    width: 10vmax;
-    height: 1vmax;
-    border: 0.1vmax solid $primaryColor;
+    width: 10rem;
+    height: 1rem;
+    border: 0.1rem solid $primaryColor;
 
     &-fill {
         height: 100%;
@@ -11,8 +11,8 @@
 }
 
 .circle {
-    width: 5vmax;
-    height: 5vmax;
+    width: 5rem;
+    height: 5rem;
     position: relative;
 
     &-svg {
@@ -40,7 +40,7 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        font-size: 1.25vmax;
+        font-size: 1.25rem;
         color: $disabledColor;
         transform: translate(-50%, -50%);
     }

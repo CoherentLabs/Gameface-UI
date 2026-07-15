@@ -1,29 +1,27 @@
 ---
 title: Stepper.Items
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
+
 The `Stepper.Items` slot acts as a container for all the `Stepper.Item` components within the `Stepper`.
 
 ## Usage
 
 To use `Stepper.Items`, place it inside the `Stepper` component as shown below:
 
+<CodePreviewGFUI>
 ```tsx
 import Stepper from '@components/Basic/Stepper/Stepper';
 
-const App = () => {
-    return (
-        <Stepper>
-            <Stepper.Items>
-                <Stepper.Item selected value="red">red</Stepper.Item>
-                <Stepper.Item value="green">green</Stepper.Item>
-                <Stepper.Item value="blue">blue</Stepper.Item>
-            </Stepper.Items>
-        </Stepper>
-    );
-};
-
-export default App;
+<Stepper>
+    <Stepper.Items>
+        <Stepper.Item selected value="red">red</Stepper.Item>
+        <Stepper.Item value="green">green</Stepper.Item>
+        <Stepper.Item value="blue">blue</Stepper.Item>
+    </Stepper.Items>
+</Stepper>
 ```
+</CodePreviewGFUI>
 
 ## API
 

@@ -1,6 +1,8 @@
 ---
 title: Accordion Menu
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
+
 The `Accordion` component is a vertically stacked set of interactive headings that each reveal an associated section of content. 
 It allows users to expand and collapse sections to show or hide their content.
 
@@ -9,26 +11,22 @@ It allows users to expand and collapse sections to show or hide their content.
 To include an accordion in your UI, wrap one or more `Accordion.Panel` components within the `Accordion` component. 
 Each panel contains an `Accordion.Heading` and an `Accordion.Body`:
 
+<CodePreviewGFUI>
 ```tsx
 import Accordion from '@components/Basic/Accordion/Accordion';
 
-const App = () => {
-    return (
-        <Accordion>
-            <Accordion.Panel>
-                <Accordion.Heading>Heading 1</Accordion.Heading>
-                <Accordion.Body>Accordion content</Accordion.Body>
-            </Accordion.Panel>
-            <Accordion.Panel>
-                <Accordion.Heading>Heading 2</Accordion.Heading>
-                <Accordion.Body>Accordion content</Accordion.Body>
-            </Accordion.Panel>
-        </Accordion>
-    );
-};
-
-export default App;
+<Accordion>
+    <Accordion.Panel>
+        <Accordion.Heading>Heading 1</Accordion.Heading>
+        <Accordion.Body>Accordion content</Accordion.Body>
+    </Accordion.Panel>
+    <Accordion.Panel>
+        <Accordion.Heading>Heading 2</Accordion.Heading>
+        <Accordion.Body>Accordion content</Accordion.Body>
+    </Accordion.Panel>
+</Accordion>
 ```
+</CodePreviewGFUI>
 
 ## API
 
@@ -274,9 +272,9 @@ const App = () => {
 
     const handleKeyPress = (e: KeyboardEvent) => {
         if (e.keyCode === 13) {
-            accordionRef.expand('heading-1');
+            accordion.expand('heading-1');
         } else if (e.keyCode === 27) {
-            accordionRef.collapse('heading-1');
+            accordion.collapse('heading-1');
         }
     };
 

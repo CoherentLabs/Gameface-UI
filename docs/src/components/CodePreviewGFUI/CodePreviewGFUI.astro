@@ -1,0 +1,68 @@
+---
+// CodePreviewGFUI.astro — thin wrapper. Mostly exists to give you a code panel
+// next to the preview and to keep MDX usage clean.
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Code } from 'astro-expressive-code/components';
+import PreviewIsland from './PreviewIsland.tsx';
+
+interface Props {
+    css?: string | string[];
+    height?: number;
+    // Raw source string for the displayed code panel (see note below).
+    code?: string;
+    hash?: string;
+}
+const { css, height: rawHeight, code, hash } = Astro.props;
+// Coerce to number so `height="400"` (string attr) works the same as `height={400}`.
+const height = rawHeight != null ? Number(rawHeight) : undefined;
+---
+
+<div class="gfui-preview">
+    <div class="gfui-preview__stage">
+        <PreviewIsland height={height} css={css} code={code} hash={hash} client:load />
+    </div>
+    <div class="gfui-preview__code">
+        <Tabs>
+            {code && <TabItem label="index.tsx"><Code code={code} lang="tsx" /></TabItem>}
+            {
+                css && (
+                    <TabItem label="style.css">
+                        <Code code={Array.isArray(css) ? css.join('\n') : css} lang="css" />
+                    </TabItem>
+                )
+            }
+        </Tabs>
+    </div>
+</div>
+
+<style>
+    .gfui-preview {
+        border: 1px solid var(--sl-color-gray-5, #d0d0d0);
+        border-radius: 8px;
+        overflow: hidden;
+        margin: 1.5rem 0;
+        /* plain block flow: stage, then code, top to bottom */
+    }
+
+    .gfui-preview__stage {
+        background: var(--sl-color-gray-6, #f6f6f6); /* offset from page bg */
+        padding: 1.5rem;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center; /* Kobalte centers the demo */
+        border-bottom: 1px solid var(--sl-color-gray-5, #d0d0d0); /* divider */
+    }
+
+    .gfui-preview__stage iframe {
+        margin-top: 0;
+        background-color: transparent;
+        width: 100%;
+        border: 0;
+    }
+
+    /* keep the tab frame flush; kill Starlight's default top margin */
+    .gfui-preview__code :global(.tablist-wrapper),
+    .gfui-preview__code :global(.starlight-tabs) {
+        margin-top: 0;
+    }
+</style>

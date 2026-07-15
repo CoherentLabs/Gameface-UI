@@ -1,6 +1,7 @@
 ---
 title: Slider
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Slider` component allows users to select a numeric value from a specified range by dragging a handle along a track.
 
@@ -8,19 +9,15 @@ The `Slider` component allows users to select a numeric value from a specified r
 
 To use the `Slider` component, specify the minimum (`min`), maximum (`max`), initial value (`value`), and step size (`step`).  
 
+<CodePreviewGFUI>
 ```tsx
 import Slider from '@components/Basic/Slider/Slider';
 
-const App = () => {
-    return (
-        <>
-            <Slider min={0} max={100} value={35} step={1} />
-        </>
-    );
-};
-
-export default App;
+<>
+    <Slider min={0} max={100} value={35} step={1} />
+</>
 ```
+</CodePreviewGFUI>
 
 ## API
 

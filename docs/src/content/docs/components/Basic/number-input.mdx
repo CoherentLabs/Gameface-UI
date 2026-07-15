@@ -1,6 +1,7 @@
 ---
 title: NumberInput
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The NumberInput component is similar to [TextInput](/components/basic/text-input/) but is specifically designed for numeric input.
 It ensures that only valid numbers can be entered and includes optional increment and decrement controls for adjusting the value.
@@ -11,17 +12,13 @@ The component ensures numeric safety (preserving formatting, clamping min/max), 
 
 To use the `NumberInput` component, simply import it and pass any required props.
 
+<CodePreviewGFUI>
 ```tsx
-import NumberInput from '@components/Basic/NumberInput/NumberInput';
+import NumberInput from '@components/Basic/Input/NumberInput/NumberInput';
 
-const App = () => {
-    return (
-        <NumberInput />
-    );
-};
-
-export default App;
+<NumberInput />
 ```
+</CodePreviewGFUI>
 
 ## API
 

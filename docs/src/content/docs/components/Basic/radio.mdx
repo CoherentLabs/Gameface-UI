@@ -1,6 +1,7 @@
 ---
 title: Radio
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Radio` component lets you render a set of mutually-exclusive options in your UI, where only one choice can be selected at a time.
 Under the hood it uses Solid's context API and it works in conjunction with the `Radio.Button` slot.
@@ -11,23 +12,19 @@ For more information about the `Radio.Button` slot, check out the [Radio.Button 
 
 To create a radio options in your UI, you need to wrap the `Radio.Button` slots with the `Radio` component. 
 
+<CodePreviewGFUI>
 ```tsx
 import Radio from '@components/Basic/RadioGroup/Radio';
 
-const App = () => {
-    return (
-        <>
-            <Radio>
-                <Radio.Button selected value="red">red</Radio.Button>
-                <Radio.Button value="green">green</Radio.Button>
-                <Radio.Button value="blue">blue</Radio.Button>
-            </Radio>
-        </>
-    );
-};
-
-export default App;
+<>
+    <Radio>
+        <Radio.Button selected value="red">red</Radio.Button>
+        <Radio.Button value="green">green</Radio.Button>
+        <Radio.Button value="blue">blue</Radio.Button>
+    </Radio>
+</>
 ```
+</CodePreviewGFUI>
 
 ## API
 

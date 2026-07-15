@@ -5,6 +5,7 @@ tableOfContents:
 ---
 
 import { Steps } from '@astrojs/starlight/components';
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `RadialMenu` component is an interactive circular menu designed for quick selection among multiple options arranged radially around a center point. 
 It supports mouse and controller input, visual indicators, and customizable slice spacing, making it ideal for in-game weapon wheels, tool selectors, or compact UI menus.
@@ -17,6 +18,7 @@ To use the `Radial-menu` component, simply import it and include it in your JSX.
 For detailed usage instructions, examples, and customization options, refer to the [Guide](/components/complex/radial-menu#guide) section.
 :::
 
+<CodePreviewGFUI>
 ```tsx collapse={1-8}
 // Assets import
 import Weapon1 from "@assets/wheel/weapon1.png";
@@ -30,35 +32,29 @@ import { For } from 'solid-js';
 import RadialMenu from "@components/Complex/RadialMenu/RadialMenu";
 import BackgroundImage from "@components/Media/BackgroundImage/BackgroundImage";
 
-const wheelItems = [
-    { id: "shotgun", img: Weapon1 },
-    { id: "pistol", img: Weapon2 },
-    { id: "rifle", img: Weapon3 },
-    { id: "sniper", img: Weapon4 },
-    { id: "smg", img: Weapon5 },
-    { id: "grenade", img: Weapon6 },
-]
-const App = () => {
-    return (
-        <RadialMenu opened>
-            <RadialMenu.Content  style={{width: '50%', height: '50%'}}>
-                <BackgroundImage style={{width: '80%', height: '80%'}} src={Center} options={{size: 'contain', position: "center" }} />
-            </RadialMenu.Content>
-            <For each={wheelItems}>
-                {(item) => (
-                    <RadialMenu.Item id={item.id}>
-                        <div style={{ width: '5vmax', height: '5vmax' }}>
-                            <BackgroundImage fill src={item.img} options={{size: 'contain', position: "center" }} />
-                        </div>
-                    </RadialMenu.Item>
-                )}
-            </For>
-        </RadialMenu>
-    );
-};
-
-export default App;
+<RadialMenu opened>
+    <RadialMenu.Content  style={{width: '50%', height: '50%'}}>
+        <BackgroundImage style={{width: '80%', height: '80%'}} src={Center} options={{size: 'contain', position: "center" }} />
+    </RadialMenu.Content>
+    <For each={[
+        { id: "shotgun", img: Weapon1 },
+        { id: "pistol", img: Weapon2 },
+        { id: "rifle", img: Weapon3 },
+        { id: "sniper", img: Weapon4 },
+        { id: "smg", img: Weapon5 },
+        { id: "grenade", img: Weapon6 },
+    ]}>
+        {(item) => (
+            <RadialMenu.Item id={item.id}>
+                <div style={{ width: '5vmax', height: '5vmax' }}>
+                    <BackgroundImage fill src={item.img} options={{size: 'contain', position: "center" }} />
+                </div>
+            </RadialMenu.Item>
+        )}
+    </For>
+</RadialMenu>
 ```
+</CodePreviewGFUI>
 
 ## API
 

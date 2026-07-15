@@ -1,6 +1,7 @@
 ---
 title: Bottom
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Bottom` component is a structural element designed to act as a wrapper of the bottom section of your page. Typically, the `Bottom` component is used alongside the `Top` and `Content` components to achieve better page structure.
 
@@ -8,24 +9,20 @@ The `Bottom` component is a structural element designed to act as a wrapper of t
 
 The default use case for the `Bottom` component is as a bottom level section container.
 
+<CodePreviewGFUI>
 ```tsx
 import Layout from '@components/Layout/Layout/Layout';
 import Top from '@components/Layout/Top/Top';
 import Content from '@components/Layout/Content/Content';
 import Bottom from '@components/Layout/Bottom/Bottom';
 
-const App = () => {
-    return (
-        <Layout>
-            <Top>Top Menu</Top>
-            <Content>Main Content</Content>
-            <Bottom basis={30} style={{ display: 'flex', flexDirection: 'column'}}>Bottom Section</Bottom>
-        </Layout>
-    );
-};
-
-export default App;
+<Layout>
+    <Top>Top Menu</Top>
+    <Content>Main Content</Content>
+    <Bottom>Bottom Section</Bottom>
+</Layout>
 ```
+</CodePreviewGFUI>
 
 ## API
 

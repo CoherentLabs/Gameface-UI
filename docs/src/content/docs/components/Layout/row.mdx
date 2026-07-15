@@ -1,6 +1,7 @@
 ---
 title: Row
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Row` component is a structural wrapper designed to be used to define a row in the layout where `Column` components will be used. It uses a flexbox-based layout system to create responsive rows of content.
 
@@ -8,24 +9,22 @@ The `Row` component is a structural wrapper designed to be used to define a row 
 
 The primary use case for the `Row` component is as a container for `Column` components, enabling the creation of grid-like structures.
 
+<CodePreviewGFUI>
 ```tsx
 import Row from '@components/Layout/Row/Row';
-import { Column2, Column10, Column12 } from '@components/Layout/Column/Column'
+import { Column2, Column10, Column12 } from '@components/Layout/Column/Column';
 
-const App = () => {
-    return (
-        <Row>
-            <Column2>I take 2/12 of the row</Column2>
-            <Column10>I take 10/12 of the row</Column10>
-        </Row>
-        <Row>
-            <Column12>I take the full row</Column12>
-        </Row>
-    );
-};
-
-export default App;
+<>
+    <Row>
+        <Column2>I take 2/12 of the row</Column2>
+        <Column10>I take 10/12 of the row</Column10>
+    </Row>
+    <Row>
+        <Column12>I take the full row</Column12>
+    </Row>
+</>
 ```
+</CodePreviewGFUI>
 
 ## API
 

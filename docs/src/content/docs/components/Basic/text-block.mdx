@@ -1,6 +1,7 @@
 ---
 title: TextBlock
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `TextBlock` component is used to render text. Internally, it simply outputs an HTML `p` element containing the text.
 
@@ -8,21 +9,17 @@ The `TextBlock` component is used to render text. Internally, it simply outputs 
 
 Using the `TextBlock` component is simple. After importing it, you can add text as a child element.
 
+<CodePreviewGFUI>
 ```tsx
 import TextBlock from '@components/Basic/TextBlock/TextBlock';
 
-const App = () => {
-    return (
-        <>
-            <TextBlock>
-                Text content.
-            </TextBlock>
-        </>
-    );
-};
-
-export default App;
+<>
+    <TextBlock>
+        Text content.
+    </TextBlock>
+</>
 ```
+</CodePreviewGFUI>
 
 ## API
 

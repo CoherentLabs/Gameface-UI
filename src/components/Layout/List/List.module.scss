@@ -1,4 +1,4 @@
-$icon-offset: 2vmax;
+$icon-offset: 2rem;
 
 .list {
     padding-left: $icon-offset;
@@ -6,7 +6,7 @@ $icon-offset: 2vmax;
     &-item {
         display: flex;
         align-items: center;
-        margin-bottom: 0.2vmax;
+        margin-bottom: 0.2rem;
         position: relative;
 
         &-nested {
@@ -21,15 +21,15 @@ $icon-offset: 2vmax;
     position: absolute;
     text-align: right;
     left: -$icon-offset;
-    width: 1.5vmax;
-    height: 1.5vmax;
+    width: 1.5rem;
+    height: 1.5rem;
 
     &-disc,
     &-circle,
     &-square {
-        width: 0.35vmax;
-        height: 0.35vmax;
-        left: -$icon-offset + 1vmax;
+        width: 0.35rem;
+        height: 0.35rem;
+        left: -$icon-offset + 1rem;
     }
 
     &-disc,
@@ -43,11 +43,11 @@ $icon-offset: 2vmax;
     }
 
     &-circle {
-        border: 0.1vmax solid white;
+        border: 0.1rem solid white;
     }
 
     &-number {
-        width: 1.5vmax;
+        width: 1.5rem;
         height: initial;
     }
 

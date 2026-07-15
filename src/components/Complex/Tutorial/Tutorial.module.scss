@@ -5,7 +5,7 @@
     height: 0;
     z-index: 9999998;
     border: 2px solid white;
-    box-shadow: 0 0 5px 100vmax rgba(0, 0, 0, 0.394);
+    box-shadow: 0 0 5px 100rem rgba(0, 0, 0, 0.394);
     transition: width 0.3s ease-in, height 0.3s ease-in, left 0.3s ease-in, top 0.3s ease-in, opacity 0.3s ease-in;
     opacity: 0;
     visibility: hidden;
@@ -29,12 +29,12 @@
 
 .tooltip {
     background-color: $primaryColor;
-    border: 0.1vmax solid $secondaryColor;
+    border: 0.1rem solid $secondaryColor;
     display: flex;
     justify-content: center;
     flex-direction: column;
-    padding: 0.75vmax 1vmax;
-    border-radius: 0.5vmax;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
     color: white;
 
     &-reference {
@@ -79,22 +79,22 @@
 
     &-heading {
         margin: 0;
-        margin-bottom: 0.25vmax;
+        margin-bottom: 0.25rem;
     }
 
     &-content {
-        margin: 0.75vmax 0;
+        margin: 0.75rem 0;
     }
 
     &-control {
-        padding: 0.5vmax 0.75vmax;
-        border: 0.1vmax solid $secondaryColor;
+        padding: 0.5rem 0.75rem;
+        border: 0.1rem solid $secondaryColor;
         background-color: $primaryColor;
         transition: background-color 0.2s ease-in-out;
-        border-radius: 0.2vmax;
+        border-radius: 0.2rem;
 
         &-first {
-            margin-right: 0.5vmax;
+            margin-right: 0.5rem;
         }
 
         &:hover {
@@ -104,8 +104,8 @@
 
     &-progress {
         background-color: #b8b8b8;
-        margin-bottom: 0.5vmax;
-        border-radius: 0.35vmax;
+        margin-bottom: 0.5rem;
+        border-radius: 0.35rem;
         overflow: hidden;
         width: 100%;
     }

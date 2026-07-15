@@ -1,17 +1,17 @@
 .scroll {
     overflow: hidden;
     position: relative;
-    
+    height: 100%;
 
     &-bar {
         position: absolute;
         top: 0;
         right: 0;
-        width: 0.9vmax;
+        width: 0.9rem;
         height: 100%;
         background-color: $disabledTextColor;
         cursor: pointer;
-        border-radius: 0.3vmax;
+        border-radius: 0.3rem;
     }
 }
 
@@ -20,7 +20,7 @@
     max-height: 100%;
 
     &-overflow {
-        padding-right: 0.9vmax;
+        padding-right: 0.9rem;
     }
 }
 
@@ -30,7 +30,7 @@
     right: 0;
     width: 100%;
     background-color: $secondaryColor;
-    border-radius: 0.3vmax;
+    border-radius: 0.2rem;
     cursor: pointer;
 
     &:hover,

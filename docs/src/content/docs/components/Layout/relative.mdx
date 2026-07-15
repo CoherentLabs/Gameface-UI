@@ -1,6 +1,7 @@
 ---
 title: Relative
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Relative` component is a structural element designed to offset content or act as a **bounding box** for Absolute components. By applying offsets using the `top`, `left`, `right`, and `bottom` props, the `Relative` component allows precise positioning of nested content relative to its original position.
 
@@ -8,20 +9,16 @@ The `Relative` component is a structural element designed to offset content or a
 
 The primary use case for the `Relative` component is to offset nested content within the document structure or serve as a container for `Absolute` components.
 
+<CodePreviewGFUI>
 ```tsx
 import Relative from '@components/Layout/Relative/Relative';
 import Block from '@components/Layout/Block/Block';
 
-const App = () => {
-    return (
-        <Relative top="50px" right="50px">
-            <Block>Content with top and right offset by 50px</Block>
-        </Relative>
-    );
-};
-
-export default App;
+<Relative top="50px" right="50px">
+    <Block>Content with top and right offset by 50px</Block>
+</Relative>
 ```
+</CodePreviewGFUI>
 
 ## API
 

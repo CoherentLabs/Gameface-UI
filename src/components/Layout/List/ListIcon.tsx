@@ -29,7 +29,7 @@ const ListIcon: ParentComponent<ListIconComponent> = (props) => {
 
     const IconStyle = createMemo(() => {
         const base = IconToken()?.style ?? {};
-        const url = listContext?.bulletBgUrl();
+        const url = typeof listContext?.bulletBgUrl() === 'string' ? listContext?.bulletBgUrl() : listContext?.bulletBgUrl()?.src;
         if (!url || IconToken()?.children) return base;
 
         return {

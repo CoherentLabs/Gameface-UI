@@ -1,6 +1,7 @@
 ---
 title: GridTile
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `GridTile` component is content wrapper component made to be used only within the `Grid` component. It is used to specify on which row and column the content inside it should be placed on the `Grid`.
 
@@ -14,23 +15,19 @@ The previous method of importing `GridTile` separately is still supported for ba
 
 The `GridTile` component must be provided with the specific row and column through the `rows` and `cols` props. You can dynamically move, remove and replace the tile in specific cells using the provided methods.
 
+<CodePreviewGFUI>
 ```tsx
 import Grid from '@components/Layout/Grid/Grid';
 import GridTile from '@components/Layout/GridTile/GridTile';
 import Block from '@components/Layout/Block/Block';
 
-const App = () => {
-    return (
-        <Grid cols={3} rows={3} >
-            <GridTile row={2} col={2}><Block>Placed in row 2 column 2</Block></GridTile>
-            <GridTile row={3} col={2}><Block>Placed in row 3 column 2</Block></GridTile>
-            <GridTile row={3} col={3}><Block>Placed in row 3 column 3</Block></GridTile>
-        </Grid>
-    );
-};
-
-export default App;
+<Grid cols={3} rows={3} >
+    <GridTile row={2} col={2}><Block>Placed in row 2 column 2</Block></GridTile>
+    <GridTile row={3} col={2}><Block>Placed in row 3 column 2</Block></GridTile>
+    <GridTile row={3} col={3}><Block>Placed in row 3 column 3</Block></GridTile>
+</Grid>
 ```
+</CodePreviewGFUI>
 
 ## API
 

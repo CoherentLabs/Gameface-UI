@@ -3,6 +3,7 @@ title: Carousel
 tableOfContents:
   maxHeadingLevel: 4
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 The `Carousel` component is a flexible and feature-rich solution for displaying a series of items in a sliding format. It offers support for features like pagination, navigation controls, and customizable item slots, making it ideal for showcasing images, cards, or other content in a carousel layout.
 
@@ -18,36 +19,30 @@ To use the `Carousel` component, simply import it and include it in your JSX. Yo
 For detailed usage instructions, examples, and customization options, refer to the [Guide](/components/complex/carousel#guide) section.
 :::
 
+<CodePreviewGFUI>
 ```tsx
 import { For } from 'solid-js';
 import Flex from '@components/Layout/Flex/Flex';
 import Carousel from '@components/Complex/Carousel/Carousel';
 
-const App = () => {
-    const items = ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5'];
-
-    return (
-        <Carousel style={{ width: '30vmax' }} itemWidth={40} itemGap={5} itemsAlignment='center'>
-            <Carousel.Items style={{ height: '80%' }}>
-                <For each={items}>
-                    {(item) =>
-                        <Carousel.Item
-                            style-selected={{ transform: 'scale(1.1)', border: '0.2vmax solid #868599' }}
-                            style={{ overflow: 'hidden', transition: 'transform 300ms', 'border-radius': '1vmax' }}
-                        >
-                            <Flex align-items='center' justify-content='center' style={{ background: '#3e3d5d', height: '100%' }}>
-                                {item}
-                            </Flex>
-                        </Carousel.Item>}
-                </For>
-            </Carousel.Items>
-            <Carousel.Pagination />
-        </Carousel>
-    );
-};
-
-export default App;
+<Carousel style={{ width: '30rem' }} itemWidth={40} itemGap={5} itemsAlignment='center'>
+    <Carousel.Items style={{ height: '80%' }}>
+        <For each={['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5']}>
+            {(item) =>
+                <Carousel.Item
+                    style-selected={{ transform: 'scale(1.1)', border: '0.2rem solid #868599' }}
+                    style={{ overflow: 'hidden', transition: 'transform 300ms', 'border-radius': '1rem' }}
+                >
+                    <Flex align-items='center' justify-content='center' style={{ background: '#3e3d5d', height: '100%' }}>
+                        {item}
+                    </Flex>
+                </Carousel.Item>}
+        </For>
+    </Carousel.Items>
+    <Carousel.Pagination />
+</Carousel>
 ```
+</CodePreviewGFUI>
 
 ## API
 
