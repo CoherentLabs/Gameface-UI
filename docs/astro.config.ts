@@ -5,11 +5,23 @@ import { defineConfig } from 'astro/config';
 import starlightLinksValidator from 'starlight-links-validator';
 import coherentTheme from 'coherent-docs-theme';
 import starlightSidebarTopics from 'starlight-sidebar-topics';
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'url';
 import { componentSidebarItems, recipesSidebarItems } from './src/config/sidebarItems';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const mainPkg = JSON.parse(fs.readFileSync(path.join(__dirname, '../package.json'), 'utf-8'));
+const docsPkg = JSON.parse(fs.readFileSync(path.join(__dirname, './package.json'), 'utf-8'));
+const docsPackages = new Set([
+  ...Object.keys(docsPkg.dependencies ?? {}),
+  ...Object.keys(docsPkg.devDependencies ?? {}),
+]);
+const gfuiExternals = [
+  ...Object.keys(mainPkg.dependencies ?? {}),
+  ...Object.keys(mainPkg.devDependencies ?? {}),
+].filter(pkg => !docsPackages.has(pkg));
 
 const sidebarTopics = [
   {
@@ -73,7 +85,7 @@ export default defineConfig({
       cssCodeSplit: true,
       minify: false,
       rollupOptions: {
-        external: [/coherent-gameface/],
+        external: (id: string) => gfuiExternals.some(pkg => id === pkg || id.startsWith(pkg + '/')),
       },
     },
     resolve: {
