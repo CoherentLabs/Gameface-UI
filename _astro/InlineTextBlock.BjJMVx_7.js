@@ -1,0 +1,20 @@
+import { g as getNextElement, u as use, i as insert, t as template } from './web.DT9QqbDn.js';
+import { n as navigationActions, b as baseComponent } from './BaseComponent.dZiros1M.js';
+
+var _tmpl$ = /* @__PURE__ */ template(`<p cohinline>`);
+const InlineTextBlock = (props) => {
+  return (() => {
+    var _el$ = getNextElement(_tmpl$);
+    use(navigationActions, _el$, () => ({
+      anchor: props.anchor,
+      ...props.onAction
+    }));
+    use(baseComponent, _el$, () => props);
+    var _ref$ = props.ref;
+    typeof _ref$ === "function" ? use(_ref$, _el$) : props.ref = _el$;
+    insert(_el$, () => props.children);
+    return _el$;
+  })();
+};
+
+export { InlineTextBlock as I };
