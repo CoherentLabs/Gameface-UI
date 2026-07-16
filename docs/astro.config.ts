@@ -5,23 +5,19 @@ import { defineConfig } from 'astro/config';
 import starlightLinksValidator from 'starlight-links-validator';
 import coherentTheme from 'coherent-docs-theme';
 import starlightSidebarTopics from 'starlight-sidebar-topics';
-import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'url';
 import { componentSidebarItems, recipesSidebarItems } from './src/config/sidebarItems';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const mainPkg = JSON.parse(fs.readFileSync(path.join(__dirname, '../package.json'), 'utf-8'));
-const docsPkg = JSON.parse(fs.readFileSync(path.join(__dirname, './package.json'), 'utf-8'));
-const docsPackages = new Set([
-  ...Object.keys(docsPkg.dependencies ?? {}),
-  ...Object.keys(docsPkg.devDependencies ?? {}),
-]);
-const gfuiExternals = [
-  ...Object.keys(mainPkg.dependencies ?? {}),
-  ...Object.keys(mainPkg.devDependencies ?? {}),
-].filter(pkg => !docsPackages.has(pkg));
+// Packages that src/ components import but that only exist in docs/node_modules on CI
+// (root node_modules is deleted by the deploy script). Vite aliases bypass ancestor-
+// directory traversal, so these are always resolved from docs/node_modules regardless
+// of where the importing file lives.
+function resolveDocsDep(pkg: string): string {
+    return path.resolve(__dirname, 'node_modules', pkg);
+}
 
 const sidebarTopics = [
   {
@@ -84,9 +80,6 @@ export default defineConfig({
     build: {
       cssCodeSplit: true,
       minify: false,
-      rollupOptions: {
-        external: (id: string) => gfuiExternals.some(pkg => id === pkg || id.startsWith(pkg + '/')),
-      },
     },
     resolve: {
       preserveSymlinks: true,
@@ -96,6 +89,8 @@ export default defineConfig({
         '@custom-components': path.resolve(__dirname, '../src/custom-components'),
         '@assets': path.resolve(__dirname, '../src/assets'),
         '@docs-components': path.resolve(__dirname, './src/components'),
+        'coherent-gameface-interaction-manager': resolveDocsDep('coherent-gameface-interaction-manager'),
+        '@solid-primitives/jsx-tokenizer': resolveDocsDep('@solid-primitives/jsx-tokenizer'),
       },
     },
     css: {
