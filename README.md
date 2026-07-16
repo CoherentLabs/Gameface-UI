@@ -15,18 +15,10 @@ To use the components, you have two options: you can either download the complet
 To get started with the boilerplate, navigate to the directory where you want to set up your UI and run the following command:
 
 ```bash
-npx degit CoherentLabs/Gameface-UI
+npm create gameface-app -- -t gameface-ui -y
 ```
 
-This command will download the entire boilerplate into your current directory.
-
-If you prefer to create a new directory for the boilerplate, use:
-
-```bash
-npx degit CoherentLabs/Gameface-UI NEW_FOLDER
-```
-
-Where `NEW_FOLDER` is the name of your new folder.
+This command will run an installation wizard which will ask you to provide a name for your project and then will download the boilerplate and install its dependencies. 
 
 ### Using the components only
 
@@ -42,7 +34,7 @@ To create a new view, follow the structure of `src/views/hud` or `src/views/menu
 
 ## Build & run the project in production
 
-To create a production build, run `npm run build` from this folder. This will generate a production build within the `dist` directory.
+To create a production build, run `npm run build` from the folder you specified during installation. This will generate a production build within the `dist` directory.
 
 Each view located in `src/views` will be built into `dist/${viewName}`. For instance, `src/views/hud` will be built in `dist/hud`.
 
@@ -50,7 +42,7 @@ To run the project, open the specific view by loading the `index.html` in the co
 
 ## Run in development
 
-To start the project in development mode, run `npm run dev` from this folder. This will start a server on `localhost:${port}`, typically on port `3000`.
+To start the project in development mode, run `npm run dev` from the folder you specified during installation. This will start a server on `localhost:${port}`, typically on port `3000`.
 
 To view a specific page during development, navigate to the following URL, for example: `http://localhost:3000/hud/` to load the hud view.
 
