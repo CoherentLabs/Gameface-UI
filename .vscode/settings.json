@@ -1,0 +1,10 @@
+{
+  "eslint.validate": [
+    "javascript", // Enables Javascript files validation (.js)
+    "javascriptreact", // Enables Javascript React files validation (.jsx)
+    "typescript", // Enables Typescript files validation (.ts)
+    "typescriptreact", // Enables Typescript React files validation (.tsx)
+    "css", // Enables CSS files validation (.css)
+    "scss", // Enables SCSS files validation (.scss)
+  ]
+}
