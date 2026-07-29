@@ -1,0 +1,44 @@
+import { c as createComponent, m as mergeProps, r as render } from './web.BVcuNnQ8.js';
+import { L as LayoutBase } from './LayoutBase.BItrAvwF.js';
+import { T as Transform } from './Transform.Dinj1db7.js';
+import './BaseComponent.DPzDIAqq.js';
+import './store.BQv4smX3.js';
+
+const layout3D = "_layout3D_1dobg_1";
+const styles = {
+	layout3D: layout3D
+};
+
+const Layout3D = (props) => {
+  return createComponent(LayoutBase, mergeProps({
+    get componentStyles() {
+      return {
+        perspective: `${props.distance}`
+      };
+    }
+  }, props, {
+    get componentClasses() {
+      return styles.layout3D;
+    }
+  }));
+};
+
+const _1scxvy3 = (root) => render(() => createComponent(Layout3D, {
+  distance: "1000px",
+  get children() {
+    return createComponent(Transform, {
+      matrix: {
+        rotate: {
+          y: 60
+        },
+        scale: {
+          x: 2,
+          z: 2
+        }
+      },
+      children: "Element rotated by 60° on the y-axis. "
+    });
+  }
+}), root);
+
+export { _1scxvy3 as default };
