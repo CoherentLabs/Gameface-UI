@@ -18,7 +18,7 @@ To get started with the boilerplate, navigate to the directory where you want to
 npm create gameface-app -- -t gameface-ui -y
 ```
 
-This command will run an installation wizard which will ask you to provide a name for your project and then will download the boilerplate and install its dependencies. 
+This command runs an installation wizard that asks you to name your project, then downloads the boilerplate and installs its dependencies.
 
 ### Using the components only
 
