@@ -1,0 +1,5 @@
+{
+  "name": "State",
+  "version": "1.0.0",
+  "description": "Conditional rendering driven by a state value"
+}

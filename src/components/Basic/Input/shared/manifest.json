@@ -1,0 +1,5 @@
+{
+  "name": "InputShared",
+  "kind": "lib",
+  "description": "Shared internals for the Input family (TextInput, NumberInput, PasswordInput)"
+}
