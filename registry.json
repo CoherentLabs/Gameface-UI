@@ -4,11 +4,11 @@
   "repo": "CoherentLabs/Gameface-UI",
   "version": "3.1.0",
   "tag": "v3.1.0",
-  "generatedAt": "2026-07-31T14:29:44.879Z",
+  "generatedAt": "2026-08-04T09:04:44.632Z",
   "entries": {
     "BaseComponent": {
-      "kind": "lib",
       "name": "BaseComponent",
+      "kind": "lib",
       "description": "Base component for all other components to extend from",
       "files": [
         {
@@ -27,10 +27,10 @@
       ]
     },
     "Basic/Accordion": {
-      "kind": "component",
       "name": "Accordion",
       "version": "1.0.0",
       "description": "Expandable panels that show and hide content sections",
+      "kind": "component",
       "category": "Basic",
       "files": [
         {
@@ -70,10 +70,10 @@
       ]
     },
     "Basic/Button": {
-      "kind": "component",
       "name": "Button",
       "version": "1.0.0",
       "description": "Clickable button",
+      "kind": "component",
       "category": "Basic",
       "files": [
         {
@@ -94,10 +94,10 @@
       ]
     },
     "Basic/Checkbox": {
-      "kind": "component",
       "name": "Checkbox",
       "version": "1.0.0",
       "description": "Toggleable checkbox with a label",
+      "kind": "component",
       "category": "Basic",
       "files": [
         {
@@ -128,10 +128,10 @@
       ]
     },
     "Basic/Dropdown": {
-      "kind": "component",
       "name": "Dropdown",
       "version": "1.0.0",
       "description": "Selectable list with a scrollable options panel",
+      "kind": "component",
       "category": "Basic",
       "files": [
         {
@@ -175,10 +175,10 @@
       ]
     },
     "Basic/InlineTextBlock": {
-      "kind": "component",
       "name": "InlineTextBlock",
       "version": "1.0.0",
       "description": "Inline text element",
+      "kind": "component",
       "category": "Basic",
       "files": [
         {
@@ -195,10 +195,10 @@
       ]
     },
     "Basic/Input/InputBase": {
-      "kind": "component",
       "name": "InputBase",
       "version": "1.0.0",
       "description": "Shared base for the input components",
+      "kind": "component",
       "category": "Basic",
       "files": [
         {
@@ -227,10 +227,10 @@
       ]
     },
     "Basic/Input/NumberInput": {
-      "kind": "component",
       "name": "NumberInput",
       "version": "1.0.0",
       "description": "Numeric input with increment and decrement",
+      "kind": "component",
       "category": "Basic",
       "files": [
         {
@@ -265,10 +265,10 @@
       ]
     },
     "Basic/Input/PasswordInput": {
-      "kind": "component",
       "name": "PasswordInput",
       "version": "1.0.0",
       "description": "Password input with a visibility toggle",
+      "kind": "component",
       "category": "Basic",
       "files": [
         {
@@ -303,8 +303,8 @@
       ]
     },
     "Basic/Input/shared": {
-      "kind": "lib",
       "name": "InputShared",
+      "kind": "lib",
       "description": "Shared internals for the Input family (TextInput, NumberInput, PasswordInput)",
       "files": [
         {
@@ -342,10 +342,10 @@
       ]
     },
     "Basic/Input/TextInput": {
-      "kind": "component",
       "name": "TextInput",
       "version": "1.0.0",
       "description": "Single-line text input",
+      "kind": "component",
       "category": "Basic",
       "files": [
         {
@@ -363,10 +363,10 @@
       ]
     },
     "Basic/Keybinds": {
-      "kind": "component",
       "name": "Keybinds",
       "version": "1.0.0",
       "description": "Displays gamepad and keyboard key glyphs for bindings",
+      "kind": "component",
       "category": "Basic",
       "files": [
         {
@@ -403,10 +403,10 @@
       ]
     },
     "Basic/Pagination": {
-      "kind": "component",
       "name": "Pagination",
       "version": "1.0.0",
       "description": "Page navigation control",
+      "kind": "component",
       "category": "Basic",
       "files": [
         {
@@ -440,10 +440,10 @@
       ]
     },
     "Basic/RadioGroup": {
-      "kind": "component",
       "name": "RadioGroup",
       "version": "1.0.0",
       "description": "Group of mutually exclusive radio options",
+      "kind": "component",
       "category": "Basic",
       "files": [
         {
@@ -482,10 +482,10 @@
       ]
     },
     "Basic/RoundedButton": {
-      "kind": "component",
       "name": "RoundedButton",
       "version": "1.0.0",
       "description": "Button with fully rounded corners",
+      "kind": "component",
       "category": "Basic",
       "files": [
         {
@@ -505,10 +505,10 @@
       ]
     },
     "Basic/Segment": {
-      "kind": "component",
       "name": "Segment",
       "version": "1.0.0",
       "description": "Segmented control for switching between options",
+      "kind": "component",
       "category": "Basic",
       "files": [
         {
@@ -543,10 +543,10 @@
       ]
     },
     "Basic/Slider": {
-      "kind": "component",
       "name": "Slider",
       "version": "1.0.0",
       "description": "Draggable value slider",
+      "kind": "component",
       "category": "Basic",
       "files": [
         {
@@ -599,10 +599,10 @@
       ]
     },
     "Basic/State": {
-      "kind": "component",
       "name": "State",
       "version": "1.0.0",
       "description": "Conditional rendering driven by a state value",
+      "kind": "component",
       "category": "Basic",
       "files": [
         {
@@ -619,10 +619,10 @@
       ]
     },
     "Basic/Stepper": {
-      "kind": "component",
       "name": "Stepper",
       "version": "1.0.0",
       "description": "Numeric stepper with increment and decrement controls",
+      "kind": "component",
       "category": "Basic",
       "files": [
         {
@@ -659,10 +659,10 @@
       ]
     },
     "Basic/TextBlock": {
-      "kind": "component",
       "name": "TextBlock",
       "version": "1.0.0",
       "description": "Block of text",
+      "kind": "component",
       "category": "Basic",
       "files": [
         {
@@ -679,10 +679,10 @@
       ]
     },
     "Basic/TextSlider": {
-      "kind": "component",
       "name": "TextSlider",
       "version": "1.0.0",
       "description": "Slider that snaps between labeled text values",
+      "kind": "component",
       "category": "Basic",
       "files": [
         {
@@ -712,10 +712,10 @@
       ]
     },
     "Basic/ToggleButton": {
-      "kind": "component",
       "name": "ToggleButton",
       "version": "1.0.0",
       "description": "On/off toggle switch",
+      "kind": "component",
       "category": "Basic",
       "files": [
         {
@@ -750,10 +750,10 @@
       ]
     },
     "Basic/TwoHandleSlider": {
-      "kind": "component",
       "name": "TwoHandleSlider",
       "version": "1.0.0",
       "description": "Range slider with two handles",
+      "kind": "component",
       "category": "Basic",
       "files": [
         {
@@ -779,10 +779,10 @@
       ]
     },
     "Basic/XYSlider": {
-      "kind": "component",
       "name": "XYSlider",
       "version": "1.0.0",
       "description": "Two-dimensional slider for picking an X/Y value",
+      "kind": "component",
       "category": "Basic",
       "files": [
         {
@@ -815,10 +815,10 @@
       ]
     },
     "Complex/Carousel": {
-      "kind": "component",
       "name": "Carousel",
       "version": "1.0.0",
       "description": "Sliding carousel with items and pagination",
+      "kind": "component",
       "category": "Complex",
       "files": [
         {
@@ -866,10 +866,10 @@
       ]
     },
     "Complex/ColorPicker": {
-      "kind": "component",
       "name": "ColorPicker",
       "version": "1.0.0",
       "description": "Color picker with HSV, RGB and HEX input",
+      "kind": "component",
       "category": "Complex",
       "files": [
         {
@@ -902,10 +902,10 @@
       ]
     },
     "Complex/RadialMenu": {
-      "kind": "component",
       "name": "RadialMenu",
       "version": "1.0.0",
       "description": "Radial wheel selection menu",
+      "kind": "component",
       "category": "Complex",
       "files": [
         {
@@ -945,10 +945,10 @@
       ]
     },
     "Complex/Tutorial": {
-      "kind": "component",
       "name": "Tutorial",
       "version": "1.0.0",
       "description": "Step-by-step guided tutorial overlay",
+      "kind": "component",
       "category": "Complex",
       "files": [
         {
@@ -987,10 +987,10 @@
       ]
     },
     "Feedback/Modal": {
-      "kind": "component",
       "name": "Modal",
       "version": "1.0.0",
       "description": "Modal dialog window",
+      "kind": "component",
       "category": "Feedback",
       "files": [
         {
@@ -1025,10 +1025,10 @@
       ]
     },
     "Feedback/Progress": {
-      "kind": "component",
       "name": "Progress",
       "version": "1.0.0",
       "description": "Progress bar and circular progress indicators",
+      "kind": "component",
       "category": "Feedback",
       "files": [
         {
@@ -1059,10 +1059,10 @@
       ]
     },
     "Feedback/Toast": {
-      "kind": "component",
       "name": "Toast",
       "version": "1.0.0",
       "description": "Transient toast notifications",
+      "kind": "component",
       "category": "Feedback",
       "files": [
         {
@@ -1084,10 +1084,10 @@
       ]
     },
     "Feedback/Tooltip": {
-      "kind": "component",
       "name": "Tooltip",
       "version": "1.0.0",
       "description": "Hover tooltip",
+      "kind": "component",
       "category": "Feedback",
       "files": [
         {
@@ -1110,10 +1110,10 @@
       ]
     },
     "Layout/Absolute": {
-      "kind": "component",
       "name": "Absolute",
       "version": "1.0.0",
       "description": "Absolutely positioned container",
+      "kind": "component",
       "category": "Layout",
       "files": [
         {
@@ -1134,10 +1134,10 @@
       ]
     },
     "Layout/Block": {
-      "kind": "component",
       "name": "Block",
       "version": "1.0.0",
       "description": "Block-level container",
+      "kind": "component",
       "category": "Layout",
       "files": [
         {
@@ -1154,10 +1154,10 @@
       ]
     },
     "Layout/Bottom": {
-      "kind": "component",
       "name": "Bottom",
       "version": "1.0.0",
       "description": "Bottom-anchored container",
+      "kind": "component",
       "category": "Layout",
       "files": [
         {
@@ -1178,10 +1178,10 @@
       ]
     },
     "Layout/Column": {
-      "kind": "component",
       "name": "Column",
       "version": "1.0.0",
       "description": "Vertical flex column",
+      "kind": "component",
       "category": "Layout",
       "files": [
         {
@@ -1202,10 +1202,10 @@
       ]
     },
     "Layout/Content": {
-      "kind": "component",
       "name": "Content",
       "version": "1.0.0",
       "description": "Content container",
+      "kind": "component",
       "category": "Layout",
       "files": [
         {
@@ -1226,10 +1226,10 @@
       ]
     },
     "Layout/Flex": {
-      "kind": "component",
       "name": "Flex",
       "version": "1.0.0",
       "description": "Flexbox container",
+      "kind": "component",
       "category": "Layout",
       "files": [
         {
@@ -1251,10 +1251,10 @@
       ]
     },
     "Layout/Grid": {
-      "kind": "component",
       "name": "Grid",
       "version": "1.0.0",
       "description": "CSS grid container",
+      "kind": "component",
       "category": "Layout",
       "files": [
         {
@@ -1281,10 +1281,10 @@
       ]
     },
     "Layout/GridTile": {
-      "kind": "component",
       "name": "GridTile",
       "version": "1.0.0",
       "description": "Cell within a Grid",
+      "kind": "component",
       "category": "Layout",
       "files": [
         {
@@ -1306,10 +1306,10 @@
       ]
     },
     "Layout/Layout": {
-      "kind": "component",
       "name": "Layout",
       "version": "1.0.0",
       "description": "Top-level layout container",
+      "kind": "component",
       "category": "Layout",
       "files": [
         {
@@ -1333,10 +1333,10 @@
       ]
     },
     "Layout/Layout3D": {
-      "kind": "component",
       "name": "Layout3D",
       "version": "1.0.0",
       "description": "3D-transformed layout container",
+      "kind": "component",
       "category": "Layout",
       "files": [
         {
@@ -1373,10 +1373,10 @@
       ]
     },
     "Layout/List": {
-      "kind": "component",
       "name": "List",
       "version": "1.0.0",
       "description": "Vertical list of items with optional icons",
+      "kind": "component",
       "category": "Layout",
       "files": [
         {
@@ -1406,10 +1406,10 @@
       ]
     },
     "Layout/Relative": {
-      "kind": "component",
       "name": "Relative",
       "version": "1.0.0",
       "description": "Relatively positioned container",
+      "kind": "component",
       "category": "Layout",
       "files": [
         {
@@ -1430,10 +1430,10 @@
       ]
     },
     "Layout/Row": {
-      "kind": "component",
       "name": "Row",
       "version": "1.0.0",
       "description": "Horizontal flex row",
+      "kind": "component",
       "category": "Layout",
       "files": [
         {
@@ -1454,10 +1454,10 @@
       ]
     },
     "Layout/Scroll": {
-      "kind": "component",
       "name": "Scroll",
       "version": "1.0.0",
       "description": "Scrollable container with a custom scrollbar",
+      "kind": "component",
       "category": "Layout",
       "files": [
         {
@@ -1493,10 +1493,10 @@
       ]
     },
     "Layout/Tab": {
-      "kind": "component",
       "name": "Tab",
       "version": "1.0.0",
       "description": "Single tab panel",
+      "kind": "component",
       "category": "Layout",
       "files": [
         {
@@ -1513,10 +1513,10 @@
       ]
     },
     "Layout/TabLink": {
-      "kind": "component",
       "name": "TabLink",
       "version": "1.0.0",
       "description": "Tab trigger link",
+      "kind": "component",
       "category": "Layout",
       "files": [
         {
@@ -1534,10 +1534,10 @@
       ]
     },
     "Layout/Tabs": {
-      "kind": "component",
       "name": "Tabs",
       "version": "1.0.0",
       "description": "Tabbed interface container",
+      "kind": "component",
       "category": "Layout",
       "files": [
         {
@@ -1551,10 +1551,10 @@
       ]
     },
     "Layout/Top": {
-      "kind": "component",
       "name": "Top",
       "version": "1.0.0",
       "description": "Top-anchored container",
+      "kind": "component",
       "category": "Layout",
       "files": [
         {
@@ -1575,10 +1575,10 @@
       ]
     },
     "Layout/Transform": {
-      "kind": "component",
       "name": "Transform",
       "version": "1.0.0",
       "description": "Applies CSS transforms to its children",
+      "kind": "component",
       "category": "Layout",
       "files": [
         {
@@ -1595,10 +1595,10 @@
       ]
     },
     "Media/BackgroundImage": {
-      "kind": "component",
       "name": "BackgroundImage",
       "version": "1.0.0",
       "description": "Element with a background image",
+      "kind": "component",
       "category": "Media",
       "files": [
         {
@@ -1618,10 +1618,13 @@
       ]
     },
     "Media/Icon": {
-      "kind": "component",
       "name": "Icon",
       "version": "1.0.0",
       "description": "Renders an icon from the icon set",
+      "explicit-dependency": [
+        "scripts/generate-icon-types.js"
+      ],
+      "kind": "component",
       "category": "Media",
       "files": [
         {
@@ -1637,8 +1640,8 @@
           "hash": "45ff9f8100e229edbd9d00fe31fc9ec732eab7a90d8ee8ef24fd37bd62047312"
         },
         {
-          "path": "src/components/Media/Icon/IconTypes.ts",
-          "hash": "c71b434b284b68e6513bc477482e05d76b63131019d5a84ec3113afe681c92e9"
+          "path": "scripts/generate-icon-types.js",
+          "hash": "5f64113d9cc041b54d9f7d163d1566efb17d881709aaf078d6a6750ca2db016b"
         }
       ],
       "dependsOn": [
@@ -1651,10 +1654,10 @@
       ]
     },
     "Media/Image": {
-      "kind": "component",
       "name": "Image",
       "version": "1.0.0",
       "description": "Image element",
+      "kind": "component",
       "category": "Media",
       "files": [
         {
@@ -1672,10 +1675,10 @@
       ]
     },
     "Media/ImageBase": {
-      "kind": "component",
       "name": "ImageBase",
       "version": "1.0.0",
       "description": "Shared base for the image components",
+      "kind": "component",
       "category": "Media",
       "files": [
         {
@@ -1696,10 +1699,10 @@
       ]
     },
     "Media/LiveView": {
-      "kind": "component",
       "name": "LiveView",
       "version": "1.0.0",
       "description": "Embeds a live in-game view",
+      "kind": "component",
       "category": "Media",
       "files": [
         {
@@ -1715,10 +1718,10 @@
       ]
     },
     "Media/MaskImage": {
-      "kind": "component",
       "name": "MaskImage",
       "version": "1.0.0",
       "description": "Image masked by an alpha mask",
+      "kind": "component",
       "category": "Media",
       "files": [
         {
@@ -1790,10 +1793,10 @@
       "npmDependencies": []
     },
     "Utility/EventBus": {
-      "kind": "component",
       "name": "EventBus",
       "version": "1.0.0",
       "description": "Publish/subscribe event bus for cross-component communication",
+      "kind": "component",
       "category": "Utility",
       "files": [
         {
@@ -1805,10 +1808,10 @@
       "npmDependencies": []
     },
     "Utility/Navigation": {
-      "kind": "component",
       "name": "Navigation",
       "version": "1.0.0",
       "description": "Directional (gamepad/keyboard) focus navigation for UI areas",
+      "kind": "component",
       "category": "Utility",
       "files": [
         {
@@ -1982,6 +1985,38 @@
       ],
       "dependsOn": [],
       "npmDependencies": []
+    },
+    "TestRecipe": {
+      "name": "ChipMultiSelect",
+      "version": "1.0.0",
+      "description": "A multi-select component using chips",
+      "kind": "recipe",
+      "files": [
+        {
+          "path": "src/recipes/TestRecipe/ChipMultiSelect.module.scss",
+          "hash": "82a6b9c268d63d0af3809bdc526a4b31b4fcb625c451f55692c84e061e52daf0"
+        },
+        {
+          "path": "src/recipes/TestRecipe/ChipMultiSelect.tsx",
+          "hash": "4279215ec3832d66edca596bc9d3cd811b6eb7272c4e64b7654d0941ae5a6e2d"
+        },
+        {
+          "path": "src/recipes/TestRecipe/utils/countriesList.ts",
+          "hash": "99932dfe2980ffc9368686a2f8e80f9b56782c7a3541c17486ca111e35f6febe"
+        },
+        {
+          "path": "src/recipes/TestRecipe/utils/ImageMap.ts",
+          "hash": "4e27e902c76d93b7513a4426d68c0e52f69c7ae52087bf2e33492e97e2097e47"
+        }
+      ],
+      "dependsOn": [
+        "Basic/Dropdown",
+        "Layout/Flex",
+        "Media/BackgroundImage"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
     }
   }
 }

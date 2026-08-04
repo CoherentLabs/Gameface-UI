@@ -1,5 +1,6 @@
 {
   "name": "Icon",
   "version": "1.0.0",
-  "description": "Renders an icon from the icon set"
+  "description": "Renders an icon from the icon set",
+  "explicit-dependency": ["scripts/generate-icon-types.js"]
 }
