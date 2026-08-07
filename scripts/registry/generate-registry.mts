@@ -2,24 +2,9 @@ import fs from 'node:fs';
 import ts from 'typescript';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import type { ComponentData, Manifest } from './types.ts';
 
-interface Manifest {
-    name: string,
-    version?: string,
-    description?: string
-    kind: 'component' | 'lib' | 'recipe',
-    'explicit-dependency'?: string[],
-}
-
-interface ComponentData extends Partial<Manifest> {
-    kind: 'component' | 'lib' | 'recipe';
-    files: { path: string; hash: string }[];
-    category?: string;
-    dependsOn?: string[];
-    npmDependencies?: string[];
-}
-
-const ROOT = path.join(import.meta.dirname, '..');
+const ROOT = path.join(import.meta.dirname, '..', '..');
 const COMPONENTS_PATH = path.join(ROOT, 'src', 'components');
 const RECIPE_PATH = path.join(ROOT, 'src', 'recipes');
 const GITIGNORE_PATH = path.join(ROOT, '.gitignore');

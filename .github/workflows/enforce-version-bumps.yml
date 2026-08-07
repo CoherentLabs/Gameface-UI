@@ -18,3 +18,14 @@ jobs:
           echo "----- changed files -----"
           git diff --name-only origin/${{ github.base_ref }}...HEAD
           echo "-------------------------"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - name: Regenerate registry
+        run: node scripts/registry/generate-registry.mts
+      - name: Check version bumps
+        run: node scripts/registry/check-version-bumps.mts
+        env:
+          BASE_REF: ${{ github.base_ref }}
