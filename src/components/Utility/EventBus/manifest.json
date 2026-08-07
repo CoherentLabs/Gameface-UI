@@ -1,0 +1,5 @@
+{
+  "name": "EventBus",
+  "version": "1.0.0",
+  "description": "Publish/subscribe event bus for cross-component communication"
+}
