@@ -87,6 +87,19 @@ console.log('Changed files :', changed.length);
 console.log('Edited entries:', [...touched]);
 
 if (violations.length) {
-  console.error('Version bump required:', violations);
+  for (const v of violations) {
+    const manifest = manifestPath(v.id, entries[v.id].kind);   // points the annotation at the manifest
+    console.log(`::error file=${manifest},line=1,title=Version bump required::${v.id} changed (via dependency) but wasn't bumped - still ${v.newVer}, base is ${v.oldVer}`);
+  }
+
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    const rows = violations.map(v => `| \`${v.id}\` | ${v.oldVer} | ${v.newVer} |`).join('\n');
+    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
+      `## ❌ Version bumps required\n\n` +
+      `These entries changed directly or through a dependency but weren't bumped:\n\n` +
+      `| Entry | base version | your PR |\n|---|---|---|\n${rows}\n`
+    );
+  }
+
   process.exit(1);
 }
