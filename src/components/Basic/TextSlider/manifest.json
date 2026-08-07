@@ -1,5 +1,5 @@
 {
   "name": "TextSlider",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Slider that snaps between labeled text values"
 }
