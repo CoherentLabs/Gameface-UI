@@ -1,7 +1,7 @@
 name: enforce-version-bumps
 on:
   pull_request:
-    branches: [master]
+    branches: [master, cli-temp]   # cli-temp is temporary — remove after merge to master
 
 jobs:
   version-check:
