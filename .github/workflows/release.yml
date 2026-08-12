@@ -6,6 +6,8 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write         # push the tag + create the release and upload its asset
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
@@ -20,8 +22,25 @@ jobs:
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
 
+      - name: Resolve version
+        run: echo "VERSION=$(jq -r .version package.json)" >> "$GITHUB_ENV"
+
+      - run: npm install --no-audit --no-fund
+
+      # registry.json is gitignored: built here, shipped as a release asset, never committed.
+      - name: Generate registry
+        run: npm run gen-registry
+
       - name: Tag current commit with version
         run: |
-          VERSION=$(jq -r .version package.json)
           git tag -a v$VERSION -m "Changelog: https://gameface-ui.coherent-labs.com/changelog/$VERSION"
           git push origin "v$VERSION"
+
+      - name: Publish release with the registry attached
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "v$VERSION" registry.json \
+            --verify-tag \
+            --title "v$VERSION" \
+            --notes "Changelog: https://gameface-ui.coherent-labs.com/changelog/$VERSION"

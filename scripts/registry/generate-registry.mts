@@ -217,14 +217,3 @@ fs.writeFileSync(
     JSON.stringify(output, null, 2),
     'utf-8'
 );
-
-const pkgPath = path.join(ROOT, 'package.json');
-const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
-
-pkg['gameface-ui-components'] = Object.fromEntries(
-    [...REGISTRY.values()]
-        .filter((entry) => entry.kind === 'component' && entry.name && entry.version)
-        .map((entry) => [entry.name!, entry.version!])
-);
-
-fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
