@@ -18,20 +18,30 @@ const INITIAL_DATA: ChartSeries[] = [
     },
 ];
 
+/**
+ * Long enough that a driver reading path geometry over the debugger protocol
+ * still lands mid-tween. A realistic 300ms animation finishes before the reads
+ * come back, which makes any "is it moving?" assertion race.
+ */
+const TEST_ANIMATION_MS = 2500;
+
 const ChartTest = () => {
     const [data, setData] = createSignal<ChartSeries[]>(INITIAL_DATA);
     const [animation, setAnimation] = createSignal<ChartAnimation | undefined>(undefined);
+    const [animationState, setAnimationState] = createSignal<'idle' | 'running' | 'done'>('idle');
 
     const setPoints = (points: ChartSeries['points']) => setData([{ ...INITIAL_DATA[0], points }]);
 
     const scenarios = [
         {
             label: 'Change values',
+            // Deliberately a different total (60) to the initial data (44), so
+            // an assertion on the donut hole cannot pass by coincidence.
             action: () => setPoints([
-                { type: 'strength', value: 4 },
-                { type: 'agility', value: 22 },
-                { type: 'stamina', value: 7 },
-                { type: 'intellect', value: 11 },
+                { type: 'strength', value: 10 },
+                { type: 'agility', value: 25 },
+                { type: 'stamina', value: 15 },
+                { type: 'intellect', value: 10 },
             ]),
         },
         {
@@ -44,7 +54,14 @@ const ChartTest = () => {
         },
         {
             label: 'Enable animation',
-            action: () => setAnimation({ duration: 400, easing: 'ease-out' }),
+            action: () => setAnimation({
+                duration: TEST_ANIMATION_MS,
+                easing: 'ease-out',
+                // Exposed through the DOM so the lifecycle can be asserted
+                // directly instead of inferred from geometry timing.
+                onStart: () => setAnimationState('running'),
+                onEnd: () => setAnimationState('done'),
+            }),
         },
         {
             label: 'Negative value',
@@ -63,22 +80,27 @@ const ChartTest = () => {
     const reset = () => {
         setData(INITIAL_DATA);
         setAnimation(undefined);
+        setAnimationState('idle');
     };
 
     const TestBoilerplate = () => (
-        <For each={scenarios}>
-            {(scenario, index) => (
-                <button class={`${selectors.scenarioBtn} scenario-${index()}`} onClick={scenario.action}>
-                    {scenario.label}
-                </button>
-            )}
-        </For>
+        <>
+            <For each={scenarios}>
+                {(scenario, index) => (
+                    <button class={`${selectors.scenarioBtn} scenario-${index()}`} onClick={scenario.action}>
+                        {scenario.label}
+                    </button>
+                )}
+            </For>
+            <div class={selectors.animationState}>{animationState()}</div>
+        </>
     );
 
     onMount(() => document.addEventListener('reset', reset));
     onCleanup(() => document.removeEventListener('reset', reset));
 
     return (
+        <>
         <Tab location="chart-pie">
             <TestBoilerplate />
 
@@ -110,6 +132,46 @@ const ChartTest = () => {
                 <div class={`${styles.probe} ${styles['probe-overlay']} ${selectors.overlayProbe}`} />
             </div>
         </Tab>
+
+        <Tab location="chart-donut">
+            <TestBoilerplate />
+
+            {/* Native SVG hit-testing: the hole simply has no geometry in it. */}
+            <div class={styles.wrapper}>
+                <Chart.Donut
+                    class={selectors.donutBase}
+                    data={data()}
+                    animation={animation()}
+                    interactive
+                >
+                    <Chart.Donut.Slice class={selectors.donutSlice} padAngle={1} cornerRadius={4} />
+                    <Chart.Labels class={selectors.donutHoleLabel} placement="hole" />
+                    <Chart.Legend position="bottom" />
+                    <Chart.Tooltip class={selectors.donutTooltip} />
+                </Chart.Donut>
+                <div class={`${styles.probe} ${styles['probe-donut-ring']} ${selectors.donutRingProbe}`} />
+                <div class={`${styles.probe} ${styles['probe-donut-hole']} ${selectors.donutHoleProbe}`} />
+            </div>
+
+            {/* Overlay resolver: the hole must be rejected by radius, not by
+                the absence of geometry. Custom hole content via the slot. */}
+            <div class={styles.wrapper}>
+                <Chart.Donut
+                    class={selectors.donutOverlayBase}
+                    data={data()}
+                    interactive="overlay"
+                    innerRadius="40%"
+                >
+                    <Chart.Donut.Slice class={selectors.donutOverlaySlice} />
+                    <Chart.Donut.Hole class={selectors.donutCustomHole}>Loadout</Chart.Donut.Hole>
+                    <Chart.Legend position="bottom" />
+                    <Chart.Tooltip class={selectors.donutOverlayTooltip} />
+                </Chart.Donut>
+                <div class={`${styles.probe} ${styles['probe-donut-ring']} ${selectors.donutOverlayRingProbe}`} />
+                <div class={`${styles.probe} ${styles['probe-donut-hole']} ${selectors.donutOverlayHoleProbe}`} />
+            </div>
+        </Tab>
+        </>
     );
 };
 

@@ -144,7 +144,31 @@ $chartTooltipBg: rgba(#25262a, 0.92);
     }
 }
 
-.pie {
+.pie,
+.donut {
     // Chart-type hook for consumers; geometry is driven entirely from JS.
     min-height: 0;
+}
+
+// Sized and positioned from JS to match the ring's inner circle exactly.
+.hole {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transform: translate(-50%, -50%);
+    // The hole sits over the hit overlay; it must not interrupt the hover.
+    pointer-events: none;
+
+    &-value {
+        color: $chartInk;
+        font-size: 1.5rem;
+    }
+
+    &-label {
+        color: $chartMuted;
+        font-size: 0.75rem;
+    }
 }

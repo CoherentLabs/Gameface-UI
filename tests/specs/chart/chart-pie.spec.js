@@ -15,6 +15,8 @@ const count = async (selector) => {
     }
 };
 
+const animationState = async () => gf.text(`.${selectors.animationState}`);
+
 const sliceGeometry = async (selector) => {
     const slices = await gf.getAll(selector);
     const paths = [];
@@ -98,17 +100,33 @@ describe('Chart.Pie', function () {
     });
 
     it('Should animate between data sets', async () => {
+        // The test view uses a deliberately long duration. Reading four path
+        // attributes is several protocol round trips, so a realistic 300ms
+        // animation would already be finished by the time they come back and
+        // every "is it still moving?" assertion would race.
         await gf.click(`.${selectors.scenarioBtn}.scenario-3`); // enable animation
         const before = await sliceGeometry(`.${selectors.slice}`);
 
         await gf.click(`.${selectors.scenarioBtn}.scenario-0`); // change values
+
+        // Read fresh each time: a cached element handle goes stale as the
+        // chart re-renders around it.
+        assert.equal(await animationState(), 'running', 'onStart should have fired');
+
         const during = await sliceGeometry(`.${selectors.slice}`);
-
-        await gf.sleep(600);
-        const settled = await sliceGeometry(`.${selectors.slice}`);
-
         assert.notEqual(during, before, 'Geometry should start moving immediately');
-        assert.notEqual(settled, during, 'Geometry should keep moving after the first frame');
+
+        await gf.sleep(3500);
+
+        assert.equal(await animationState(), 'done', 'onEnd should have fired');
+        const settled = await sliceGeometry(`.${selectors.slice}`);
+        assert.notEqual(settled, during, 'Geometry should keep moving until it settles');
+    });
+
+    it('Should not animate when no animation is configured', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`); // change values only
+
+        assert.equal(await animationState(), 'idle', 'No tween should run without the prop');
     });
 
     it('Should show a tooltip on hover', async () => {
@@ -117,6 +135,9 @@ describe('Chart.Pie', function () {
         // coordinates to aim at. The probe is a click-through element parked
         // over a known slice.
         const probe = await gf.get(`.${selectors.probe}`);
+        // Scroll first: hover() resolves its coordinates before scrolling, so
+        // an off-screen target gets pointed at where it used to be.
+        await probe.scrollIntoView();
         await probe.hover();
 
         assert.equal(await count(`.${selectors.tooltip}`), 1, 'Tooltip should appear');
@@ -127,6 +148,7 @@ describe('Chart.Pie', function () {
 
     it('Should resolve the same point in overlay mode as in svg mode', async () => {
         const probe = await gf.get(`.${selectors.overlayProbe}`);
+        await probe.scrollIntoView();
         await probe.hover();
 
         assert.equal(await count(`.${selectors.overlayTooltip}`), 1, 'Overlay tooltip should appear');

@@ -1,0 +1,139 @@
+---
+title: Chart Donut
+tableOfContents:
+  maxHeadingLevel: 4
+---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
+
+The `Chart.Donut` component is a [`Chart.Pie`](/components/feedback/chart-pie/) with its middle cut out.
+The ring reads the same way, and the hole gives you somewhere to put a total, a currently-selected value, or any markup you like.
+
+Everything on the Pie page — the data model, the palette, animation, interactivity, the legend and tooltip slots — applies here unchanged. This page covers only what the donut adds.
+
+## Usage
+
+<CodePreviewGFUI>
+```tsx
+import Chart from '@components/Feedback/Chart/Chart';
+import { createSignal } from 'solid-js';
+
+const App = () => {
+    const [stats, setStats] = createSignal([
+        {
+            label: 'Loadout',
+            points: [
+                { type: 'strength', value: 13 },
+                { type: 'agility', value: 9 },
+                { type: 'stamina', value: 16 },
+                { type: 'intellect', value: 6 },
+            ],
+        },
+    ]);
+
+    return (
+        <Chart.Donut data={stats()} interactive>
+            <Chart.Labels placement="hole" />
+            <Chart.Legend position="bottom" />
+        </Chart.Donut>
+    );
+};
+```
+</CodePreviewGFUI>
+
+### The inner radius
+
+`innerRadius` accepts a share of the outer radius or a pixel value. It defaults to `'60%'`.
+
+```tsx
+<Chart.Donut data={stats()} innerRadius="40%" />   {/* a thicker ring */}
+<Chart.Donut data={stats()} innerRadius={48} />    {/* 48px, whatever the size */}
+```
+
+The value is clamped into `[0, outerRadius]`, so an oversized number flattens the ring rather than
+producing an inverted shape. An `innerRadius` of `0` gives you a pie.
+
+:::note
+The hole is a real gap, not a decoration drawn on top. Pointing at it resolves to no slice in both
+hit-testing modes, so a tooltip will not follow the pointer across the middle of the chart.
+:::
+
+### Filling the hole
+
+There are two ways, and they compose.
+
+**`Chart.Labels placement="hole"`** puts a derived value there: the total of the visible slices, or
+the hovered slice's value and label while the pointer is on the ring.
+
+```tsx
+<Chart.Donut data={stats()} interactive>
+    <Chart.Labels placement="hole" format={(point) => `${point.value} pts`} />
+</Chart.Donut>
+```
+
+**`Chart.Donut.Hole`** takes over completely — its children replace the derived content:
+
+```tsx
+<Chart.Donut data={stats()}>
+    <Chart.Donut.Hole>
+        <Image src={crest} />
+    </Chart.Donut.Hole>
+</Chart.Donut>
+```
+
+Leave `Chart.Donut.Hole` empty to style the container while `Chart.Labels` supplies the content —
+the slot is the box, the labels are what goes in it:
+
+```tsx
+<Chart.Donut data={stats()} interactive>
+    <Chart.Donut.Hole class="my-hole-frame" />
+    <Chart.Labels placement="hole" />
+</Chart.Donut>
+```
+
+The hole container is sized to the inner circle and is `pointer-events: none`, so whatever you put
+in it never interrupts a hover on the ring beneath.
+
+## API
+
+### Props
+
+Identical to [`Chart.Pie`](/components/feedback/chart-pie/), plus:
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `innerRadius` | `number \| string` | `'60%'` | The size of the hole, as pixels (`48`, `'48px'`) or a share of the outer radius (`'60%'`). Clamped to the outer radius. |
+
+### Behaviour notes
+
+- **The hole shows the total** of the *visible* slices. Hiding a slice from the legend lowers it.
+- **During an animation** the total is mid-tween, so it is shown to one decimal place until it settles on a whole number.
+- Everything else — negatives treated as zero, missing categories counted as zero, extra series ignored — behaves exactly as it does for a pie.
+
+## Slots
+
+### `Chart.Donut.Slice`
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `class` | `string` | `""` | CSS classes applied to every slice. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to every slice. |
+| `padAngle` | `number` | `0` | Degrees of gap between slices. |
+| `cornerRadius` | `number` | `0` | Rounds the slice corners, in pixels. |
+| `hoverOffset` | `number` | `0` | Pixels the hovered slice pops outward. Requires `interactive`. |
+
+### `Chart.Donut.Hole`
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `class` | `string` | `""` | CSS classes applied to the hole container. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to the hole container. |
+| `children` | `JSX.Element` | `undefined` | Content for the hole. Replaces anything `Chart.Labels placement="hole"` would render. |
+
+### `Chart.Legend`, `Chart.Tooltip`, `Chart.Labels`
+
+Shared with every chart type — see [`Chart.Pie`](/components/feedback/chart-pie/) for their props.
+`Chart.Labels` gains one placement here:
+
+| `placement` | Effect |
+|---|---|
+| `'hole'` | Renders the total, or the hovered slice's value and label, in the middle of the ring. The slot's `class` and `style` apply to the hole container. |

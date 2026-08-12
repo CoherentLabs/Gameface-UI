@@ -42,8 +42,15 @@ export interface MarkEventProps {
 export interface ChartHoverApi {
     hovered: Accessor<ChartPointEvent | null>;
     isHovered: (seriesIndex: number, pointIndex: number) => boolean;
-    /** Spread onto a mark element. Empty unless the mode is `svg`. */
-    markProps: (seriesIndex: number, pointIndex: number) => MarkEventProps;
+    /**
+     * Spread onto a mark element. Empty unless the mode is `svg`.
+     *
+     * Takes accessors rather than values so the returned object is stable for
+     * the life of the element: marks are rendered with `Index`, whose children
+     * run once per position, and the indices behind a position can change as
+     * slices come and go.
+     */
+    markProps: (seriesIndex: () => number, pointIndex: () => number) => MarkEventProps;
     /** Spread onto the hit overlay. Empty unless the mode is `overlay`. */
     overlayProps: () => JSX.HTMLAttributes<HTMLDivElement>;
 }
@@ -101,27 +108,32 @@ export const useChartHover = (options: UseChartHoverOptions): ChartHoverApi => {
         return !!current && current.seriesIndex === seriesIndex && current.pointIndex === pointIndex;
     };
 
-    const markProps = (seriesIndex: number, pointIndex: number): MarkEventProps => {
-        if (options.mode() !== 'svg') return {};
-
+    const markProps = (seriesIndex: () => number, pointIndex: () => number): MarkEventProps => {
         const eventFor = (event: MouseEvent) => {
             const position = toLocal(event) ?? { x: 0, y: 0 };
-            return options.toEvent({ seriesIndex, pointIndex, position });
+            return options.toEvent({ seriesIndex: seriesIndex(), pointIndex: pointIndex(), position });
         };
+
+        // The mode is checked per event rather than up front, so the handlers
+        // can stay attached for the element's whole life.
+        const whenSvg = <T extends (...args: any[]) => void>(handler: T) =>
+            ((...args: Parameters<T>) => {
+                if (options.mode() === 'svg') handler(...args);
+            }) as T;
 
         return {
             // mouseenter/mouseleave do not bubble, so these are per-mark
             // listeners. Above ~100 marks prefer interactive="overlay".
-            onMouseEnter: (event: MouseEvent) => {
+            onMouseEnter: whenSvg((event: MouseEvent) => {
                 onEnter();
                 publish(eventFor(event));
-            },
-            onMouseMove: (event: MouseEvent) => publish(eventFor(event)),
-            onMouseLeave: () => publish(null),
-            onClick: (event: MouseEvent) => {
+            }),
+            onMouseMove: whenSvg((event: MouseEvent) => publish(eventFor(event))),
+            onMouseLeave: whenSvg(() => publish(null)),
+            onClick: whenSvg((event: MouseEvent) => {
                 const next = eventFor(event);
                 if (next) options.onClick?.(next);
-            },
+            }),
         };
     };
 

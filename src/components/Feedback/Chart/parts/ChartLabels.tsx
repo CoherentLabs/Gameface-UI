@@ -1,4 +1,4 @@
-import { Component, For } from 'solid-js';
+import { Component, Index } from 'solid-js';
 import styles from '../Chart.module.scss';
 import { LabelsTokenProps } from '../slots';
 
@@ -32,19 +32,21 @@ const TRANSFORMS: Record<ChartLabelAnchor['align'], string> = {
  */
 const ChartLabels: Component<ChartLabelsProps> = (props) => (
     <div class={styles.labels}>
-        <For each={props.anchors}>{(anchor) => (
+        {/* Index, not For: anchors are rebuilt on every animation frame, and
+            reference keying would recreate every label element each time. */}
+        <Index each={props.anchors}>{(anchor) => (
             <div
                 class={[styles.label, props.token.class].filter(Boolean).join(' ')}
                 style={{
-                    left: `${anchor.x}px`,
-                    top: `${anchor.y}px`,
-                    transform: TRANSFORMS[anchor.align],
+                    left: `${anchor().x}px`,
+                    top: `${anchor().y}px`,
+                    transform: TRANSFORMS[anchor().align],
                     ...props.token.style,
                 }}
             >
-                {anchor.text}
+                {anchor().text}
             </div>
-        )}</For>
+        )}</Index>
     </div>
 );
 

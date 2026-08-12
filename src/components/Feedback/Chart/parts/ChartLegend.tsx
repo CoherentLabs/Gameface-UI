@@ -1,4 +1,4 @@
-import { Component, For, Show } from 'solid-js';
+import { Component, Index, Show } from 'solid-js';
 import styles from '../Chart.module.scss';
 import { LegendEntry } from '../types';
 import { LegendTokenProps } from '../slots';
@@ -32,22 +32,24 @@ const ChartLegend: Component<ChartLegendProps> = (props) => {
 
     return (
         <div class={classes()} style={props.token.style}>
-            <For each={props.entries}>{(entry) => (
+            {/* Index, not For: the entry objects are rebuilt whenever the chart
+                re-renders, including on every animation frame. */}
+            <Index each={props.entries}>{(entry) => (
                 <div
-                    class={entryClasses(entry)}
+                    class={entryClasses(entry())}
                     tabindex={isInteractive() ? 0 : undefined}
-                    onClick={() => isInteractive() && props.onToggle(entry)}
+                    onClick={() => isInteractive() && props.onToggle(entry())}
                 >
                     <Show when={props.token.content} fallback={
                         <>
-                            <span class={styles['legend-marker']} style={{ 'background-color': entry.color }} />
-                            <span class={styles['legend-label']}>{entry.label}</span>
+                            <span class={styles['legend-marker']} style={{ 'background-color': entry().color }} />
+                            <span class={styles['legend-label']}>{entry().label}</span>
                         </>
                     }>
-                        {props.token.content!(entry)}
+                        {props.token.content!(entry())}
                     </Show>
                 </div>
-            )}</For>
+            )}</Index>
         </div>
     );
 };

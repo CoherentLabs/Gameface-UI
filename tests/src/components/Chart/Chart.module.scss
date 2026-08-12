@@ -31,3 +31,18 @@
     left: 18.5rem;
     top: 8.25rem;
 }
+
+// Both donuts carry a bottom legend, so both plots are 480x316: centre
+// (240,158), outer radius 158, inner radius 94.8 at the default 60%.
+
+// Centre (344,88): radius 125, angle 56 degrees — inside the ring.
+.probe-donut-ring {
+    left: 21.25rem;
+    top: 5.25rem;
+}
+
+// Dead centre, inside the hole. Must resolve to nothing.
+.probe-donut-hole {
+    left: 14.75rem;
+    top: 9.625rem;
+}

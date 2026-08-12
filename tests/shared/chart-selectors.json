@@ -1,6 +1,7 @@
 {
   "assertionElement": "assertion-element",
   "scenarioBtn": "scenario-btn",
+  "animationState": "chart-animation-state",
   "base": "chart-base",
   "slice": "chart-slice",
   "legend": "chart-legend",
@@ -11,5 +12,17 @@
   "overlayBase": "chart-overlay-base",
   "overlaySlice": "chart-overlay-slice",
   "overlayTooltip": "chart-overlay-tooltip",
+  "donutBase": "chart-donut-base",
+  "donutSlice": "chart-donut-slice",
+  "donutTooltip": "chart-donut-tooltip",
+  "donutHoleLabel": "chart-donut-hole-label",
+  "donutRingProbe": "chart-donut-ring-probe",
+  "donutHoleProbe": "chart-donut-hole-probe",
+  "donutOverlayBase": "chart-donut-overlay-base",
+  "donutOverlaySlice": "chart-donut-overlay-slice",
+  "donutOverlayTooltip": "chart-donut-overlay-tooltip",
+  "donutCustomHole": "chart-donut-custom-hole",
+  "donutOverlayRingProbe": "chart-donut-overlay-ring-probe",
+  "donutOverlayHoleProbe": "chart-donut-overlay-hole-probe",
   "reactive": "reactive"
 }

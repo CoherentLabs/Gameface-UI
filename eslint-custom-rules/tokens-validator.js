@@ -33,12 +33,14 @@ const componentsWithSlotTokens = {
   RADIAL_MENU: 'RadialMenu',
   RADIAL_MENU_INDICATOR: 'RadialMenu.Indicator',
   CHART_PIE: 'Chart.Pie',
+  CHART_DONUT: 'Chart.Donut',
 }
 
 // Legend, Tooltip and Labels work inside any chart type. Add new chart types
 // here as they land so the shared slots keep validating.
 const chartParents = [
   componentsWithSlotTokens.CHART_PIE,
+  componentsWithSlotTokens.CHART_DONUT,
 ]
 
 const tokenComponetsParents = {
@@ -46,6 +48,8 @@ const tokenComponetsParents = {
   'Chart.Tooltip': chartParents,
   'Chart.Labels': chartParents,
   'Chart.Pie.Slice': componentsWithSlotTokens.CHART_PIE,
+  'Chart.Donut.Slice': componentsWithSlotTokens.CHART_DONUT,
+  'Chart.Donut.Hole': componentsWithSlotTokens.CHART_DONUT,
 
   'Scroll.Bar': componentsWithSlotTokens.SCROLL,
   'Scroll.Content': componentsWithSlotTokens.SCROLL,
