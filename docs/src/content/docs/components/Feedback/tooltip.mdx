@@ -5,6 +5,16 @@ import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.as
 
 The `Tooltip` component is a flexible and customizable way to display contextual information when users hover, focus, or click on an element. It improves usability by providing additional context without overcrowding the interface.
 
+## Installation
+
+Every component ships with the boilerplate. If you are working in your own project, add `Tooltip` with the [Gameface CLI](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/):
+
+```bash
+npx gameface-cli add Tooltip
+```
+
+The CLI pulls in whatever `Tooltip` depends on. To refresh an existing copy, [update it](/docs/getting-started/updating-components) instead.
+
 ## Usage
 
 The `Tooltip` works by wrapping a target element inside a relatively positioned container and displaying a tooltip message absolutely positioned relative to that target. This ensures the tooltip stays aligned with the element it describes. The tooltip's style and behavior can be customized to fit your UI.

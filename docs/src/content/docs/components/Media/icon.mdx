@@ -7,6 +7,14 @@ import { Steps } from '@astrojs/starlight/components';
 The `Icon` component provides a structured, auto-generated way to render your UI icons. Unlike standard images, 
 it maps your `src/assets/icons` directory into a nested component tree, allowing you to access icons via dot notation.
 
+## Installation
+
+:::note[Available in Gameface UI projects only]
+`Icon` comes with the boilerplate and cannot be added to an existing project with the CLI. It depends on a generated type file and an icon-generation script that only exist in the full template, so an installed copy would not build.
+
+To use it, [start from the boilerplate](/docs/getting-started/how-to-use#using-the-boilerplate). The CLI documentation explains this in [components that need a full Gameface project](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/existing-projects/#components-that-need-a-full-gameface-project).
+:::
+
 ## Usage
 
 The `Icon` component eliminates the need to manually import image files. Instead, it exposes your folder structure directly as a component object.

@@ -66,7 +66,6 @@ const walk = (folderPath: string) => {
         let manifest;
 
         let files: { path: string; hash: string }[] = [];
-        //Basic/Accordion/Accordion.module.scss
         for (const entry of fs.readdirSync(folderPath, { withFileTypes: true })) {
             if (entry.name === 'manifest.json') {
                 manifest = JSON.parse(fs.readFileSync(path.join(folderPath, entry.name), 'utf-8')) as Manifest;

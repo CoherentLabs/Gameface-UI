@@ -1,0 +1,79 @@
+---
+title: Updating components
+sidebar:
+    order: 3
+---
+
+Every GamefaceUI component carries its own version, independent of the library's. A fix to `Slider` bumps `Slider`, and nothing else moves. That means you can pick up an improvement to one component without pulling in unrelated changes across your whole UI.
+
+The [Gameface CLI](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/) tracks what you have installed in your `package.json`, under `gameface-ui-components`:
+
+```jsonc
+"gameface-ui-components": {
+    "Dropdown": "1.0.0",
+    "Slider": "1.2.0"
+}
+```
+
+Updating is the difference between that record and the versions the library currently publishes.
+
+## Updating everything
+
+The usual command. Run it from the root of your project:
+
+```bash
+npx gameface-cli update
+```
+
+This looks at every component you have installed, works out which ones are behind, and brings them all up to date in a single pass. Shared dependencies are fetched once no matter how many components need them, so updating twenty components is not twenty downloads.
+
+## Updating a single component
+
+If you would rather move one component at a time:
+
+```bash
+npx gameface-cli update Dropdown
+```
+
+If that component is already current, the CLI tells you so and does nothing.
+
+## What updating changes, and what it leaves alone
+
+`update` only ever touches components it installed for you. Everything else in your project is yours.
+
+| Files | Updated? |
+|---|---|
+| Components and the tools they own | **Yes**, this is what the command is for |
+| Your views, and anything in `src/custom-components` | Never touched |
+| Config files: `tsconfig`, Vite config, `package.json`, ESLint | Never rewritten |
+
+Build and config files are deliberately excluded. They are the files you are meant to edit, so overwriting them would throw away your work. When a library release does need a configuration change, it is described in the changelog for that version and applied by hand.
+
+:::caution
+Do not edit the source of an installed component. `update` replaces a component's files wholesale, so local edits are lost the next time that component moves.
+
+To change how a component looks or behaves, use its props, or copy it into `src/custom-components` and edit your copy there. Found a bug? Please 
+[open an issue](https://github.com/CoherentLabs/Gameface-UI/issues) or a [pull request](https://github.com/CoherentLabs/Gameface-UI/pulls) so the fix reaches everyone.
+:::
+
+## Getting new components
+
+`update` refreshes what you already have. It never installs something new. When the library ships a component you do not have yet, add it explicitly:
+
+```bash
+npx gameface-cli add RadialMenu
+```
+
+To see what is available, including anything added since you last looked:
+
+```bash
+npx gameface-cli list
+```
+
+Installed components are marked, so whatever is unmarked is new to your project.
+
+## Library versions and component versions
+
+The library has a version of its own, separate from any individual component's. It tells you which release your components are being fetched from, and it is the version whose [changelog](/changelog) is worth reading when it moves, since a library release may carry migration notes that no command can apply for you.
+
+Component versions answer a narrower question: has this particular component changed since I installed it? That is the question `update` acts on.

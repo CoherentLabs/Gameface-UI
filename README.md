@@ -22,11 +22,15 @@ This command runs an installation wizard that asks you to name your project, the
 
 ### Using the components only
 
-If you already have a SolidJS project set up, you can directly integrate the components. Simply create a new folder for the components and run the following command inside it:
+If you already have a SolidJS project set up, use the [Gameface CLI](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/) to add only the components you need. Run it from the root of your project:
 
 ```bash
-npx degit CoherentLabs/Gameface-UI/src/components
+npx gameface-cli add Dropdown
 ```
+
+The CLI creates the folders it needs, writes the component's files, pulls in everything that component depends on, installs any npm packages it requires, and records what it installed in your `package.json` under `gameface-ui-components`.
+
+Use `npx gameface-cli list` to see what is available, and `npx gameface-cli update` to bring installed components up to date.
 
 ## Creating a view
 

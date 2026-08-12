@@ -5,6 +5,16 @@ import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.as
 
 The `Scroll` component is a container that automatically detects when its inner content is too big to fit within its set size. When this happens, it displays a scrollbar so that users can scroll through the content. This makes it ideal for displaying dynamic or lengthy information while keeping the layout neat.
 
+## Installation
+
+Every component ships with the boilerplate. If you are working in your own project, add `Scroll` with the [Gameface CLI](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/):
+
+```bash
+npx gameface-cli add Scroll
+```
+
+The CLI pulls in whatever `Scroll` depends on. To refresh an existing copy, [update it](/docs/getting-started/updating-components) instead.
+
 ## Usage 
 
 Wrap any content you want to make scrollable within the `Scroll` component. You can set a maximum width and height using inline styles or CSS classes. When the content inside the component grows larger than these dimensions, the component will show a scrollbar so users can navigate the hidden parts.

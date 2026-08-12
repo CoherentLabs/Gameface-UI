@@ -4,6 +4,16 @@ title: MaskImage
 
 The `MaskImage` component allows you to create a container with an image that will be used as a mask layer over the content inside the component. It supports images in `.png`, `.jpg`, or `.svg` formats that can be imported directly from your assets folder.
 
+## Installation
+
+Every component ships with the boilerplate. If you are working in your own project, add `MaskImage` with the [Gameface CLI](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/):
+
+```bash
+npx gameface-cli add MaskImage
+```
+
+The CLI pulls in whatever `MaskImage` depends on. To refresh an existing copy, [update it](/docs/getting-started/updating-components) instead.
+
 ## Usage
 
 The `MaskImage` component is used to wrap other UI elements, masking them with an image. All the content inside the component will be visible in the colored area of the image.

@@ -57,7 +57,7 @@ for (const [id, data] of Object.entries<any>(entries)) {
     dependents.get(dep)!.push(id);
   }
 }
-    
+
 // must-bump = touched + all dependents
 const mustBump = new Set<string>();
 const stack = [...touched];
@@ -70,14 +70,16 @@ while (stack.length) {
 
 // Check whether the manifest has been bumped
 const violations: { id: string, oldVer: string, newVer: string }[] = [];
+let verified = 0;   // entries that existed on base and were actually compared
 
 for (const id of mustBump) {
   const data = entries[id];
-  const manifest = manifestPath(id, data.kind); 
+  const manifest = manifestPath(id, data.kind);
   const oldVer = manifest ? baseVersion(manifest) : null;
-  const newVer = entries[id].version as string;
+  const newVer = data.version as string;
 
   if (oldVer === null) continue;                              // new entry, nothing to bump against
+  verified++;
   if (compareVersions(newVer, oldVer) <= 0) {
     violations.push({id, oldVer, newVer })
   }
@@ -102,4 +104,12 @@ if (violations.length) {
   }
 
   process.exit(1);
+}
+
+console.log(`✓ Version check passed — ${verified} bumped, ${mustBump.size - verified} skipped (new entry or lib)`);
+
+if (process.env.GITHUB_STEP_SUMMARY) {
+  fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
+    `## ✅ Version bumps OK\n\nEvery entry this PR affects is bumped (${verified} checked).\n`
+  );
 }
