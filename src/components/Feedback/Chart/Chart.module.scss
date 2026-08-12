@@ -3,6 +3,9 @@
 $chartMuted: #898781;
 $chartInk: $textColor;
 $chartTooltipBg: rgba(#25262a, 0.92);
+$chartGridline: #2c2c2a;
+$chartBaseline: #383835;
+$chartSurfaceRing: #1a1a19;
 
 .chart {
     display: flex;
@@ -35,20 +38,25 @@ $chartTooltipBg: rgba(#25262a, 0.92);
     top: 0;
 }
 
+// Sized with width/height rather than four zero offsets on purpose. Writing
+// `left/top/right/bottom: 0` lets the CSS minifier collapse them into the
+// `inset` shorthand, which Gameface does not support — the element then
+// computes to auto on every side and collapses to 0x0. That breaks only in
+// production builds, where it silently disables overlay hit-testing.
 .overlay {
     position: absolute;
     left: 0;
     top: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
 }
 
 .labels {
     position: absolute;
     left: 0;
     top: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     // Labels must never steal the pointer from the hit overlay beneath them.
     pointer-events: none;
 }
@@ -60,9 +68,8 @@ $chartTooltipBg: rgba(#25262a, 0.92);
     white-space: nowrap;
 }
 
-.slice {
-    // stroke, not a gap in the geometry, so slices stay separable where two
-    // similar hues meet.
+.slice,
+.bar-mark {
     stroke-width: 0;
 }
 
@@ -145,9 +152,50 @@ $chartTooltipBg: rgba(#25262a, 0.92);
 }
 
 .pie,
-.donut {
+.donut,
+.bar,
+.line,
+.area {
     // Chart-type hook for consumers; geometry is driven entirely from JS.
     min-height: 0;
+}
+
+.series-stroke {
+    fill: none;
+    // Rounded joins keep a 2px line from spiking at sharp direction changes.
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.area-fill {
+    stroke-width: 0;
+}
+
+.series-point {
+    // A surface-coloured ring separates overlapping markers where two series
+    // cross, so identity survives the collision.
+    stroke: $chartSurfaceRing;
+    stroke-width: 2;
+}
+
+.gridline {
+    stroke: $chartGridline;
+    stroke-width: 1;
+}
+
+.baseline {
+    stroke: $chartBaseline;
+    stroke-width: 1;
+}
+
+// Axis text wears muted ink, never a series colour: the marks carry identity.
+.axis-label {
+    position: absolute;
+    color: $chartMuted;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
 }
 
 // Sized and positioned from JS to match the ring's inner circle exactly.

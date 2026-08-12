@@ -1,0 +1,184 @@
+---
+title: Chart Bar
+tableOfContents:
+  maxHeadingLevel: 4
+---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
+
+The `Chart.Bar` component compares values across categories, and across several series at once.
+It is the first cartesian chart in the family, so it introduces axes and gridlines alongside the shared legend, tooltip and label slots.
+
+## Usage
+
+Each entry in `data` is a series; each of its points is one category. Two series over the same
+categories give you a grouped bar chart.
+
+<CodePreviewGFUI>
+```tsx
+import Chart from '@components/Feedback/Chart/Chart';
+import { createSignal } from 'solid-js';
+
+const App = () => {
+    const [stats] = createSignal([
+        {
+            label: 'Player',
+            points: [
+                { type: 'strength', value: 13 },
+                { type: 'agility', value: 9 },
+                { type: 'stamina', value: 16 },
+            ],
+        },
+        {
+            label: 'Enemy',
+            points: [
+                { type: 'strength', value: 7 },
+                { type: 'agility', value: 18 },
+                { type: 'stamina', value: 11 },
+            ],
+        },
+    ]);
+
+    return (
+        <Chart.Bar data={stats()}>
+            <Chart.YAxis />
+            <Chart.XAxis />
+            <Chart.Grid horizontal />
+            <Chart.Legend position="bottom" />
+        </Chart.Bar>
+    );
+};
+```
+</CodePreviewGFUI>
+
+:::caution
+The chart fills its container, so that container must have a size. Axis labels are HTML positioned
+in the margin around the plot, so a very small container leaves little room for the bars themselves.
+:::
+
+### Layout and orientation
+
+```tsx
+<Chart.Bar data={stats()} layout="stacked" />
+<Chart.Bar data={stats()} orientation="horizontal" />
+```
+
+| Prop | Values | Effect |
+|---|---|---|
+| `layout` | `'grouped'` (default) | Each series gets its own bar side by side within the category. |
+| | `'stacked'` | Series accumulate. Positives stack upward from zero and negatives downward, so a stack containing both does not cancel itself into a misleading total. |
+| `orientation` | `'vertical'` (default) | Categories run along the bottom, values up the side. |
+| | `'horizontal'` | Categories run down the side, values along the bottom. Useful when category names are long. |
+
+Stacked segments are separated by a 2px gap in the surface colour, so two similar hues stay
+distinguishable where they meet. Only the outermost segment of a stack is rounded.
+
+### The baseline and negative values
+
+The value domain **always includes zero**, and bars grow from that baseline. A negative value simply
+grows the other way and is rounded on its far end.
+
+```tsx
+// domain becomes roughly [-10, 10]; the baseline sits mid-plot
+<Chart.Bar data={[{ label: 'Delta', points: [
+    { type: 'strength', value: 6 },
+    { type: 'agility', value: -9 },
+] }]} />
+```
+
+Override the domain when you need a fixed scale — common when several charts must be comparable:
+
+```tsx
+<Chart.Bar data={stats()} domain={[0, 100]} />
+```
+
+By default the computed domain is rounded outward so ticks land on readable numbers (a maximum of
+18 gives an axis ending at 20). Pass `nice={false}` to use the exact extent instead.
+
+:::note
+There is deliberately **no secondary axis**. Two measures of different scale belong in two charts,
+or indexed to a common base — a dual-axis chart lets the author imply any correlation they like by
+sliding one scale against the other.
+:::
+
+### Interactivity
+
+Identical to the other chart types: absent by default, `interactive` turns it on, and
+`interactive="overlay"` swaps native SVG hit-testing for a single overlay that resolves the hovered
+bar mathematically.
+
+```tsx
+<Chart.Bar data={stats()} interactive onPointClick={(e) => inspect(e.series.label, e.point.type)}>
+    <Chart.Tooltip content={(e) => <div>{e.series.label}: {e.point.value}</div>} />
+</Chart.Bar>
+```
+
+## API
+
+### Props
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to the chart's root element. |
+| `class` | `string` | `""` | Additional CSS classes applied to the chart. |
+| `data` | `ChartSeries[]` | `[]` | The series to plot. Reactive. |
+| `layout` | `'grouped' \| 'stacked'` | `'grouped'` | Whether series sit side by side or accumulate. |
+| `orientation` | `'vertical' \| 'horizontal'` | `'vertical'` | Which axis the categories run along. |
+| `domain` | `[number, number]` | computed | Fixes the value domain instead of deriving it from the data. |
+| `nice` | `boolean` | `true` | Rounds the computed domain out to readable tick values. |
+| `palette` | `string[]` | built-in | Overrides the default categorical palette. |
+| `animation` | `ChartAnimation` | `undefined` | Enables tweening between data sets. |
+| `interactive` | `boolean \| 'svg' \| 'overlay'` | `false` | Enables hover, tooltip and click. |
+| `onPointHover` | `(event: ChartPointEvent \| null) => void` | `undefined` | Fires when the hovered bar changes. |
+| `onPointClick` | `(event: ChartPointEvent) => void` | `undefined` | Fires when a bar is clicked. |
+| `onSeriesToggle` | `(seriesIndex: number, visible: boolean) => void` | `undefined` | Fires when a series is toggled from the legend. |
+
+See [`Chart.Pie`](/components/feedback/chart-pie/) for the shared `ChartSeries`, `ChartPoint`,
+`ChartAnimation` and `ChartPointEvent` types.
+
+### Behaviour notes
+
+- **The legend lists series here**, not categories — clicking an entry hides that series, and the survivors widen to fill the freed space.
+- **Missing categories** count as zero, so series need not declare the same points.
+- **Bars are `<path>` elements**, not `<rect>`. Gameface documents attribute animation on primitives as less reliable than on a path, and a path also allows rounding one end only.
+
+## Slots
+
+### `Chart.Bar.Fill`
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `class` | `string` | `""` | CSS classes applied to every bar. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to every bar. |
+| `width` | `number \| string` | band width | Bar thickness in pixels, or a share of its band (`'60%'`). |
+| `gap` | `number` | `0` | Pixels between bars within a group. |
+| `groupGap` | `number` | `0.2` | Gap between category groups, as a share of the band. |
+| `cornerRadius` | `number` | `4` | Rounds the data end, in pixels. |
+
+### `Chart.XAxis` / `Chart.YAxis`
+
+Which one is the value axis depends on `orientation`: `YAxis` is the value axis when vertical,
+`XAxis` when horizontal. Omit a slot to hide that axis entirely.
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `class` | `string` | `""` | CSS classes applied to every tick label on this axis. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to every tick label. |
+| `ticks` | `number` | `5` | A hint for how many ticks to aim for. Values are still chosen to be round. |
+| `format` | `(value: number \| string) => string` | `undefined` | Formats the tick label. |
+| `line` | `boolean` | `true` | Draws the zero baseline. |
+| `hide` | `boolean` | `false` | Hides the axis while keeping its space reserved. |
+
+### `Chart.Grid`
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `class` | `string` | `""` | CSS classes applied to every gridline. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to every gridline. |
+| `horizontal` | `boolean` | `true` | Lines across the value axis. |
+| `vertical` | `boolean` | `false` | Lines along the category axis. |
+| `ticks` | `number` | `5` | How many gridlines to aim for. |
+
+### `Chart.Legend`, `Chart.Tooltip`, `Chart.Labels`
+
+Shared with every chart type — see [`Chart.Pie`](/components/feedback/chart-pie/). On a bar chart
+`Chart.Labels` centres a value inside each bar, and `format` receives that bar's point and series.

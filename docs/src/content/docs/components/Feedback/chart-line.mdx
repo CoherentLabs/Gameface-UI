@@ -1,0 +1,151 @@
+---
+title: Chart Line
+tableOfContents:
+  maxHeadingLevel: 4
+---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
+
+The `Chart.Line` component traces values across categories. It shares the cartesian machinery of
+[`Chart.Bar`](/components/feedback/chart-bar/) — the same axes, gridlines, legend and domain
+handling — and differs in how it is hovered.
+
+## Usage
+
+<CodePreviewGFUI>
+```tsx
+import Chart from '@components/Feedback/Chart/Chart';
+import { createSignal } from 'solid-js';
+
+const App = () => {
+    const [stats] = createSignal([
+        {
+            label: 'Player',
+            points: [
+                { type: 'strength', value: 13 },
+                { type: 'agility', value: 9 },
+                { type: 'stamina', value: 16 },
+            ],
+        },
+        {
+            label: 'Enemy',
+            points: [
+                { type: 'strength', value: 7 },
+                { type: 'agility', value: 18 },
+                { type: 'stamina', value: 11 },
+            ],
+        },
+    ]);
+
+    return (
+        <Chart.Line data={stats()} interactive>
+            <Chart.Line.Point show="always" />
+            <Chart.YAxis />
+            <Chart.XAxis />
+            <Chart.Grid horizontal />
+            <Chart.Legend position="bottom" />
+        </Chart.Line>
+    );
+};
+```
+</CodePreviewGFUI>
+
+Vertices sit at **category centres**, so a line drawn over the same data as a bar chart lands over
+the middle of each bar rather than on the boundary between two categories.
+
+### Curves
+
+```tsx
+<Chart.Line data={stats()} curve="smooth" />
+```
+
+| Value | Shape |
+|---|---|
+| `'linear'` (default) | Straight segments between vertices. |
+| `'smooth'` | A monotone curve — it will not overshoot beyond the values, so it never invents a peak that is not in the data. |
+| `'step'` | Holds each value then steps at the midpoint. |
+| `'step-before'` / `'step-after'` | Steps at the start or the end of each interval. |
+
+### Gaps
+
+A category that a series does not declare counts as zero by default, and the line runs straight
+through it. Set `connectNulls={false}` to treat it as missing instead, which breaks the line:
+
+```tsx
+<Chart.Line data={stats()} connectNulls={false} />
+```
+
+:::caution
+An undeclared category with values on **both** sides breaks the line into two visible runs, but a
+declared point sitting alone between two gaps has no segment to draw and renders as nothing. Show
+point markers (`<Chart.Line.Point show="always" />`) whenever your data is sparse.
+:::
+
+### Hovering
+
+Line and area charts default to `overlay` hit-testing rather than native SVG events, and that is a
+deliberate difference from the other chart types. A 2px stroke is effectively impossible to point
+at, so the chart resolves **the nearest vertex** instead: the category comes from the pointer's
+x position, and the series from whichever line is vertically closest.
+
+The tooltip then snaps to that vertex rather than following the pointer, which is what makes a
+crosshair readable.
+
+```tsx
+<Chart.Line data={stats()} interactive>
+    <Chart.Tooltip content={(e) => <div>{e.series.label}: {e.point.value}</div>} />
+</Chart.Line>
+```
+
+Passing `interactive="svg"` forces per-element hit-testing, but you will be asking people to hover
+a hairline — it is rarely the right choice here.
+
+## API
+
+### Props
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to the chart's root element. |
+| `class` | `string` | `""` | Additional CSS classes applied to the chart. |
+| `data` | `ChartSeries[]` | `[]` | The series to plot. Reactive. |
+| `curve` | `CurveType` | `'linear'` | Interpolation between vertices. |
+| `connectNulls` | `boolean` | `true` | Whether an undeclared category breaks the line. |
+| `domain` | `[number, number]` | computed | Fixes the value domain. |
+| `nice` | `boolean` | `true` | Rounds the computed domain out to readable ticks. |
+| `palette` | `string[]` | built-in | Overrides the default categorical palette. |
+| `animation` | `ChartAnimation` | `undefined` | Enables tweening between data sets. |
+| `interactive` | `boolean \| 'svg' \| 'overlay'` | `false` | Enables hover, tooltip and click. `true` resolves to `overlay`. |
+| `onPointHover` | `(event: ChartPointEvent \| null) => void` | `undefined` | Fires when the nearest vertex changes. |
+| `onPointClick` | `(event: ChartPointEvent) => void` | `undefined` | Fires on click. |
+| `onSeriesToggle` | `(seriesIndex: number, visible: boolean) => void` | `undefined` | Fires when a series is toggled from the legend. |
+
+See [`Chart.Pie`](/components/feedback/chart-pie/) for the shared data and event types.
+
+## Slots
+
+### `Chart.Line.Stroke`
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `class` | `string` | `""` | CSS classes applied to every line. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to every line. |
+| `width` | `number` | `2` | Stroke width in pixels. |
+| `curve` | `CurveType` | inherits `curve` | Overrides the chart's curve. |
+| `dash` | `string` | `undefined` | SVG dash pattern, e.g. `'6 4'`. |
+
+### `Chart.Line.Point`
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `class` | `string` | `""` | CSS classes applied to every marker. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to every marker. |
+| `radius` | `number` | `4` | Marker radius. The default is 8px across, the smallest that stays comfortably readable. |
+| `show` | `'always' \| 'hover' \| 'never'` | `'hover'` | When markers appear. |
+
+Markers carry a 2px surface-coloured ring so that where two series cross, the two points stay
+separable rather than merging into one blob.
+
+### `Chart.XAxis`, `Chart.YAxis`, `Chart.Grid`, `Chart.Legend`, `Chart.Tooltip`, `Chart.Labels`
+
+Shared with the other cartesian charts — see [`Chart.Bar`](/components/feedback/chart-bar/).
+`Chart.Labels` places a value just above each vertex.

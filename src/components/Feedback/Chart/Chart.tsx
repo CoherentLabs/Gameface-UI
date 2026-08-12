@@ -1,7 +1,10 @@
 import { ParentComponent } from 'solid-js';
 import Pie from './charts/Pie';
 import Donut from './charts/Donut';
-import { Labels, Legend, Tooltip } from './slots';
+import Bar from './charts/Bar';
+import Line from './charts/Line';
+import Area from './charts/Area';
+import { Grid, Labels, Legend, Tooltip, XAxis, YAxis } from './slots';
 
 export * from './types';
 export { DEFAULT_PALETTE, LIGHT_PALETTE } from './core/palette';
@@ -11,7 +14,13 @@ const Chart: ParentComponent = () => <></>;
 export default Object.assign(Chart, {
     Pie,
     Donut,
+    Bar,
+    Line,
+    Area,
     Legend,
     Tooltip,
     Labels,
+    XAxis,
+    YAxis,
+    Grid,
 });

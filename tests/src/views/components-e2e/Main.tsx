@@ -67,6 +67,9 @@ const Main = () => {
         "progress-circle",
         "chart-pie",
         "chart-donut",
+        "chart-bar",
+        "chart-line",
+        "chart-area",
 
         // Complex components
         "color-picker",

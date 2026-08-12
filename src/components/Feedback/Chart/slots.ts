@@ -26,6 +26,26 @@ export interface LabelsTokenProps extends TokenBase {
     leaderLines?: boolean;
 }
 
+export interface AxisTokenProps extends TokenBase {
+    /** A hint, not a guarantee — tick values are chosen for round numbers. */
+    ticks?: number;
+    format?: (value: number | string) => string;
+    /** Draws the axis line itself. Defaults to true. */
+    line?: boolean;
+    hide?: boolean;
+}
+
+export interface GridTokenProps extends TokenBase {
+    /** Lines across the value axis. Defaults to true. */
+    horizontal?: boolean;
+    /** Lines along the category axis. Defaults to false. */
+    vertical?: boolean;
+    ticks?: number;
+}
+
 export const Legend = createTokenComponent<LegendTokenProps>();
 export const Tooltip = createTokenComponent<TooltipTokenProps>();
 export const Labels = createTokenComponent<LabelsTokenProps>();
+export const XAxis = createTokenComponent<AxisTokenProps>();
+export const YAxis = createTokenComponent<AxisTokenProps>();
+export const Grid = createTokenComponent<GridTokenProps>();

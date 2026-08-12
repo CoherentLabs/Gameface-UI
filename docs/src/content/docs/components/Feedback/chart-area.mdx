@@ -1,0 +1,101 @@
+---
+title: Chart Area
+tableOfContents:
+  maxHeadingLevel: 4
+---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
+
+The `Chart.Area` component is a [`Chart.Line`](/components/feedback/chart-line/) whose region down to
+the baseline is filled. Everything on the Line page — curves, gaps, nearest-vertex hovering, axes
+and the legend — applies here unchanged. This page covers what the fill adds.
+
+## Usage
+
+<CodePreviewGFUI>
+```tsx
+import Chart from '@components/Feedback/Chart/Chart';
+import { createSignal } from 'solid-js';
+
+const App = () => {
+    const [load] = createSignal([
+        {
+            label: 'Player',
+            points: [
+                { type: 'strength', value: 13 },
+                { type: 'agility', value: 9 },
+                { type: 'stamina', value: 16 },
+            ],
+        },
+    ]);
+
+    return (
+        <Chart.Area data={load()} interactive>
+            <Chart.YAxis />
+            <Chart.XAxis />
+            <Chart.Legend position="bottom" />
+        </Chart.Area>
+    );
+};
+```
+</CodePreviewGFUI>
+
+### Overlapping or stacked
+
+By default several series **overlap**, each filled from the baseline. The fill is translucent
+(`0.25`) so the series behind stays visible, and each area keeps a full-strength outline so its
+shape is still readable where the fills muddle together.
+
+```tsx
+<Chart.Area data={load()} stacked />
+```
+
+With `stacked`, each series sits on the one below it and the filled bands add up to the total.
+The lower edge of a band traces the upper edge of the one beneath, so the bands meet exactly.
+
+:::note
+Reach for `stacked` only when the values genuinely sum to something meaningful — a total. Stacked
+bands make individual series hard to compare, because only the bottom one sits on a flat baseline.
+For comparison, prefer overlapping areas or a [line chart](/components/feedback/chart-line/).
+:::
+
+### Turning the outline off
+
+```tsx
+<Chart.Area data={load()}>
+    <Chart.Area.Stroke width={0} />
+</Chart.Area>
+```
+
+## API
+
+### Props
+
+Identical to [`Chart.Line`](/components/feedback/chart-line/), plus:
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `stacked` | `boolean` | `false` | Accumulate series instead of overlapping them. |
+
+## Slots
+
+### `Chart.Area.Fill`
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `class` | `string` | `""` | CSS classes applied to every filled region. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to every filled region. |
+| `opacity` | `number` | `0.25` | Fill opacity. Raise it only when series do not overlap. |
+| `curve` | `CurveType` | inherits `curve` | Overrides the chart's curve. |
+
+### `Chart.Area.Stroke`
+
+Same props as [`Chart.Line.Stroke`](/components/feedback/chart-line/). Set `width={0}` for a fill
+with no outline.
+
+### `Chart.Area.Point`
+
+Same props as [`Chart.Line.Point`](/components/feedback/chart-line/).
+
+### `Chart.XAxis`, `Chart.YAxis`, `Chart.Grid`, `Chart.Legend`, `Chart.Tooltip`, `Chart.Labels`
+
+Shared with the other cartesian charts — see [`Chart.Bar`](/components/feedback/chart-bar/).

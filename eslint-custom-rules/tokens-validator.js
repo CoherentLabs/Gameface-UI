@@ -34,6 +34,9 @@ const componentsWithSlotTokens = {
   RADIAL_MENU_INDICATOR: 'RadialMenu.Indicator',
   CHART_PIE: 'Chart.Pie',
   CHART_DONUT: 'Chart.Donut',
+  CHART_BAR: 'Chart.Bar',
+  CHART_LINE: 'Chart.Line',
+  CHART_AREA: 'Chart.Area',
 }
 
 // Legend, Tooltip and Labels work inside any chart type. Add new chart types
@@ -41,15 +44,34 @@ const componentsWithSlotTokens = {
 const chartParents = [
   componentsWithSlotTokens.CHART_PIE,
   componentsWithSlotTokens.CHART_DONUT,
+  componentsWithSlotTokens.CHART_BAR,
+  componentsWithSlotTokens.CHART_LINE,
+  componentsWithSlotTokens.CHART_AREA,
+]
+
+// Axes and gridlines only mean something on a cartesian chart.
+const cartesianChartParents = [
+  componentsWithSlotTokens.CHART_BAR,
+  componentsWithSlotTokens.CHART_LINE,
+  componentsWithSlotTokens.CHART_AREA,
 ]
 
 const tokenComponetsParents = {
   'Chart.Legend': chartParents,
   'Chart.Tooltip': chartParents,
   'Chart.Labels': chartParents,
+  'Chart.XAxis': cartesianChartParents,
+  'Chart.YAxis': cartesianChartParents,
+  'Chart.Grid': cartesianChartParents,
   'Chart.Pie.Slice': componentsWithSlotTokens.CHART_PIE,
   'Chart.Donut.Slice': componentsWithSlotTokens.CHART_DONUT,
   'Chart.Donut.Hole': componentsWithSlotTokens.CHART_DONUT,
+  'Chart.Bar.Fill': componentsWithSlotTokens.CHART_BAR,
+  'Chart.Line.Stroke': componentsWithSlotTokens.CHART_LINE,
+  'Chart.Line.Point': componentsWithSlotTokens.CHART_LINE,
+  'Chart.Area.Fill': componentsWithSlotTokens.CHART_AREA,
+  'Chart.Area.Stroke': componentsWithSlotTokens.CHART_AREA,
+  'Chart.Area.Point': componentsWithSlotTokens.CHART_AREA,
 
   'Scroll.Bar': componentsWithSlotTokens.SCROLL,
   'Scroll.Content': componentsWithSlotTokens.SCROLL,

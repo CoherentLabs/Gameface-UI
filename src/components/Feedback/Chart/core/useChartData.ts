@@ -6,6 +6,14 @@ export interface NormalisedData {
     categories: string[];
     /** Row-major, `matrix[seriesIndex * categories.length + categoryIndex]`. Missing points are 0. */
     matrix: Float64Array;
+    /**
+     * Which cells the data actually declared, in the same layout as `matrix`.
+     *
+     * A missing point counts as 0 for bars and pies, but a line needs to tell
+     * "no value here" from "a value of zero" — one is a gap, the other is a
+     * vertex on the axis.
+     */
+    present: Uint8Array;
     /** Stable per-series identity used to match values across data changes. */
     seriesKeys: string[];
     series: ChartSeries[];
@@ -34,17 +42,21 @@ export const normalise = (data: ChartSeries[]): NormalisedData => {
     }
 
     const matrix = new Float64Array(series.length * categories.length);
+    const present = new Uint8Array(series.length * categories.length);
 
     for (let s = 0; s < series.length; s++) {
         const offset = s * categories.length;
 
         for (const point of series[s].points ?? []) {
             const value = point.value;
-            matrix[offset + categoryIndex.get(point.type)!] = Number.isFinite(value) ? value : 0;
+            const cell = offset + categoryIndex.get(point.type)!;
+
+            matrix[cell] = Number.isFinite(value) ? value : 0;
+            present[cell] = 1;
         }
     }
 
-    return { categories, matrix, seriesKeys: series.map(seriesKey), series };
+    return { categories, matrix, present, seriesKeys: series.map(seriesKey), series };
 };
 
 export interface ChartDataModel {

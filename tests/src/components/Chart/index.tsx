@@ -25,8 +25,68 @@ const INITIAL_DATA: ChartSeries[] = [
  */
 const TEST_ANIMATION_MS = 2500;
 
+/** Two series over the same categories, for grouped and stacked layouts. */
+const MULTI_SERIES: ChartSeries[] = [
+    {
+        id: 'player',
+        label: 'Player',
+        points: [
+            { type: 'strength', value: 13 },
+            { type: 'agility', value: 9 },
+            { type: 'stamina', value: 16 },
+        ],
+    },
+    {
+        id: 'enemy',
+        label: 'Enemy',
+        points: [
+            { type: 'strength', value: 7 },
+            { type: 'agility', value: 18 },
+            { type: 'stamina', value: 11 },
+        ],
+    },
+];
+
+/** Values either side of zero, so the baseline and negative bars are exercised. */
+const DIVERGING: ChartSeries[] = [
+    {
+        id: 'delta',
+        label: 'Delta',
+        points: [
+            { type: 'strength', value: 6 },
+            { type: 'agility', value: -9 },
+            { type: 'stamina', value: 5 },
+            { type: 'intellect', value: -3 },
+        ],
+    },
+];
+
+/** The second series skips a category, so the line has a genuine gap. */
+const SPARSE: ChartSeries[] = [
+    {
+        id: 'full',
+        label: 'Full',
+        points: [
+            { type: 'strength', value: 10 },
+            { type: 'agility', value: 14 },
+            { type: 'stamina', value: 8 },
+        ],
+    },
+    {
+        id: 'partial',
+        label: 'Partial',
+        points: [
+            { type: 'strength', value: 4 },
+            { type: 'stamina', value: 12 },
+        ],
+    },
+];
+
 const ChartTest = () => {
     const [data, setData] = createSignal<ChartSeries[]>(INITIAL_DATA);
+    const [multiSeries] = createSignal<ChartSeries[]>(MULTI_SERIES);
+    const [diverging] = createSignal<ChartSeries[]>(DIVERGING);
+    const [sparse] = createSignal<ChartSeries[]>(SPARSE);
     const [animation, setAnimation] = createSignal<ChartAnimation | undefined>(undefined);
     const [animationState, setAnimationState] = createSignal<'idle' | 'running' | 'done'>('idle');
 
@@ -169,6 +229,131 @@ const ChartTest = () => {
                 </Chart.Donut>
                 <div class={`${styles.probe} ${styles['probe-donut-ring']} ${selectors.donutOverlayRingProbe}`} />
                 <div class={`${styles.probe} ${styles['probe-donut-hole']} ${selectors.donutOverlayHoleProbe}`} />
+            </div>
+        </Tab>
+
+        <Tab location="chart-bar">
+            <TestBoilerplate />
+
+            <div class={styles.wrapper}>
+                <Chart.Bar
+                    class={selectors.barBase}
+                    data={multiSeries()}
+                    animation={animation()}
+                    interactive
+                >
+                    <Chart.Bar.Fill class={selectors.barMark} />
+                    <Chart.YAxis class={selectors.barValueLabel} />
+                    <Chart.XAxis class={selectors.barCategoryLabel} />
+                    <Chart.Grid horizontal />
+                    <Chart.Legend class={selectors.barLegend} position="bottom" />
+                    <Chart.Tooltip class={selectors.barTooltip} />
+                </Chart.Bar>
+                <div class={`${styles.probe} ${styles['probe-bar']} ${selectors.barProbe}`} />
+            </div>
+
+            <div class={styles.wrapper}>
+                <Chart.Bar
+                    class={selectors.stackedBase}
+                    data={multiSeries()}
+                    layout="stacked"
+                >
+                    <Chart.Bar.Fill class={selectors.stackedMark} />
+                    <Chart.YAxis />
+                    <Chart.XAxis />
+                </Chart.Bar>
+            </div>
+
+            <div class={styles.wrapper}>
+                <Chart.Bar
+                    class={selectors.horizontalBase}
+                    data={multiSeries()}
+                    orientation="horizontal"
+                >
+                    <Chart.Bar.Fill class={selectors.horizontalMark} />
+                    <Chart.XAxis />
+                    <Chart.YAxis />
+                </Chart.Bar>
+            </div>
+
+            {/* Values either side of zero, to check the baseline. */}
+            <div class={styles.wrapper}>
+                <Chart.Bar
+                    class={selectors.divergingBase}
+                    data={diverging()}
+                >
+                    <Chart.Bar.Fill class={selectors.divergingMark} />
+                    <Chart.YAxis />
+                    <Chart.XAxis />
+                </Chart.Bar>
+            </div>
+        </Tab>
+
+        <Tab location="chart-line">
+            <TestBoilerplate />
+
+            <div class={styles.wrapper}>
+                <Chart.Line
+                    class={selectors.lineBase}
+                    data={multiSeries()}
+                    animation={animation()}
+                    interactive
+                >
+                    <Chart.Line.Stroke class={selectors.lineStroke} />
+                    <Chart.Line.Point class={selectors.linePoint} show="always" />
+                    <Chart.YAxis />
+                    <Chart.XAxis />
+                    <Chart.Grid horizontal />
+                    <Chart.Legend class={selectors.lineLegend} position="bottom" />
+                    <Chart.Tooltip class={selectors.lineTooltip} />
+                </Chart.Line>
+                <div class={`${styles.probe} ${styles['probe-line']} ${selectors.lineProbe}`} />
+            </div>
+
+            {/* A series that skips a category, to exercise gaps. */}
+            <div class={styles.wrapper}>
+                <Chart.Line
+                    class={selectors.gapBase}
+                    data={sparse()}
+                    connectNulls={false}
+                    curve="smooth"
+                >
+                    <Chart.Line.Stroke class={selectors.gapStroke} />
+                    <Chart.YAxis />
+                    <Chart.XAxis />
+                </Chart.Line>
+            </div>
+        </Tab>
+
+        <Tab location="chart-area">
+            <TestBoilerplate />
+
+            <div class={styles.wrapper}>
+                <Chart.Area
+                    class={selectors.areaBase}
+                    data={multiSeries()}
+                    interactive
+                >
+                    <Chart.Area.Fill class={selectors.areaFill} />
+                    <Chart.Area.Stroke class={selectors.areaStroke} />
+                    <Chart.YAxis />
+                    <Chart.XAxis />
+                    <Chart.Legend position="bottom" />
+                    <Chart.Tooltip class={selectors.areaTooltip} />
+                </Chart.Area>
+                <div class={`${styles.probe} ${styles['probe-line']} ${selectors.areaProbe}`} />
+            </div>
+
+            <div class={styles.wrapper}>
+                <Chart.Area
+                    class={selectors.stackedAreaBase}
+                    data={multiSeries()}
+                    stacked
+                >
+                    <Chart.Area.Fill class={selectors.stackedAreaFill} />
+                    <Chart.YAxis />
+                    <Chart.XAxis />
+                </Chart.Area>
             </div>
         </Tab>
         </>

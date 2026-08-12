@@ -46,3 +46,17 @@
     left: 14.75rem;
     top: 9.625rem;
 }
+
+// Inside the first series' bar for the first category. Verified against the
+// rendered geometry rather than derived on paper.
+.probe-bar {
+    left: 4.9375rem;
+    top: 9.75rem;
+}
+
+// Near the first vertex of a line/area chart. Nearest-x hit-testing means this
+// only has to be closest to that vertex, not on top of the 2px stroke.
+.probe-line {
+    left: 4.9375rem;
+    top: 9.75rem;
+}
