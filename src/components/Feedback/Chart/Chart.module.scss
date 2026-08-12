@@ -155,7 +155,8 @@ $chartSurfaceRing: #1a1a19;
 .donut,
 .bar,
 .line,
-.area {
+.area,
+.spider {
     // Chart-type hook for consumers; geometry is driven entirely from JS.
     min-height: 0;
 }
@@ -169,6 +170,22 @@ $chartSurfaceRing: #1a1a19;
 
 .area-fill {
     stroke-width: 0;
+}
+
+.spider-shape {
+    stroke-linejoin: round;
+}
+
+// Web and spokes are chrome: recessive, so the data reads above them.
+.spider-web {
+    fill: none;
+    stroke: $chartGridline;
+    stroke-width: 1;
+}
+
+.spider-spoke {
+    stroke: $chartGridline;
+    stroke-width: 1;
 }
 
 .series-point {

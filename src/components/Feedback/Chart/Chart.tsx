@@ -4,6 +4,7 @@ import Donut from './charts/Donut';
 import Bar from './charts/Bar';
 import Line from './charts/Line';
 import Area from './charts/Area';
+import Spider from './charts/Spider';
 import { Grid, Labels, Legend, Tooltip, XAxis, YAxis } from './slots';
 
 export * from './types';
@@ -17,6 +18,7 @@ export default Object.assign(Chart, {
     Bar,
     Line,
     Area,
+    Spider,
     Legend,
     Tooltip,
     Labels,

@@ -37,6 +37,7 @@ const componentsWithSlotTokens = {
   CHART_BAR: 'Chart.Bar',
   CHART_LINE: 'Chart.Line',
   CHART_AREA: 'Chart.Area',
+  CHART_SPIDER: 'Chart.Spider',
 }
 
 // Legend, Tooltip and Labels work inside any chart type. Add new chart types
@@ -47,6 +48,7 @@ const chartParents = [
   componentsWithSlotTokens.CHART_BAR,
   componentsWithSlotTokens.CHART_LINE,
   componentsWithSlotTokens.CHART_AREA,
+  componentsWithSlotTokens.CHART_SPIDER,
 ]
 
 // Axes and gridlines only mean something on a cartesian chart.
@@ -72,6 +74,9 @@ const tokenComponetsParents = {
   'Chart.Area.Fill': componentsWithSlotTokens.CHART_AREA,
   'Chart.Area.Stroke': componentsWithSlotTokens.CHART_AREA,
   'Chart.Area.Point': componentsWithSlotTokens.CHART_AREA,
+  'Chart.Spider.Shape': componentsWithSlotTokens.CHART_SPIDER,
+  'Chart.Spider.Web': componentsWithSlotTokens.CHART_SPIDER,
+  'Chart.Spider.Axis': componentsWithSlotTokens.CHART_SPIDER,
 
   'Scroll.Bar': componentsWithSlotTokens.SCROLL,
   'Scroll.Content': componentsWithSlotTokens.SCROLL,

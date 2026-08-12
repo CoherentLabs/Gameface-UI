@@ -70,6 +70,7 @@ const Main = () => {
         "chart-bar",
         "chart-line",
         "chart-area",
+        "chart-spider",
 
         // Complex components
         "color-picker",

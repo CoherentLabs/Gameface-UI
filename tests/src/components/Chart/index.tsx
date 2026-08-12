@@ -82,11 +82,38 @@ const SPARSE: ChartSeries[] = [
     },
 ];
 
+/** Five axes, the shape a stat radar usually takes. */
+const RADAR: ChartSeries[] = [
+    {
+        id: 'player',
+        label: 'Player',
+        points: [
+            { type: 'strength', value: 13 },
+            { type: 'agility', value: 9 },
+            { type: 'stamina', value: 16 },
+            { type: 'intellect', value: 6 },
+            { type: 'spirit', value: 11 },
+        ],
+    },
+    {
+        id: 'enemy',
+        label: 'Enemy',
+        points: [
+            { type: 'strength', value: 7 },
+            { type: 'agility', value: 18 },
+            { type: 'stamina', value: 11 },
+            { type: 'intellect', value: 14 },
+            { type: 'spirit', value: 4 },
+        ],
+    },
+];
+
 const ChartTest = () => {
     const [data, setData] = createSignal<ChartSeries[]>(INITIAL_DATA);
     const [multiSeries] = createSignal<ChartSeries[]>(MULTI_SERIES);
     const [diverging] = createSignal<ChartSeries[]>(DIVERGING);
     const [sparse] = createSignal<ChartSeries[]>(SPARSE);
+    const [radar] = createSignal<ChartSeries[]>(RADAR);
     const [animation, setAnimation] = createSignal<ChartAnimation | undefined>(undefined);
     const [animationState, setAnimationState] = createSignal<'idle' | 'running' | 'done'>('idle');
 
@@ -354,6 +381,38 @@ const ChartTest = () => {
                     <Chart.YAxis />
                     <Chart.XAxis />
                 </Chart.Area>
+            </div>
+        </Tab>
+
+        <Tab location="chart-spider">
+            <TestBoilerplate />
+
+            <div class={styles.wrapper}>
+                <Chart.Spider
+                    class={selectors.spiderBase}
+                    data={radar()}
+                    animation={animation()}
+                    interactive
+                >
+                    <Chart.Spider.Shape class={selectors.spiderShape} />
+                    <Chart.Spider.Web class={selectors.spiderWeb} levels={4} />
+                    <Chart.Spider.Axis class={selectors.spiderAxis} />
+                    <Chart.Legend class={selectors.spiderLegend} position="bottom" />
+                    <Chart.Tooltip class={selectors.spiderTooltip} />
+                </Chart.Spider>
+                <div class={`${styles.probe} ${styles['probe-spider']} ${selectors.spiderProbe}`} />
+            </div>
+
+            {/* A fixed outer ring: low stats must not fill the web. */}
+            <div class={styles.wrapper}>
+                <Chart.Spider
+                    class={selectors.spiderFixedBase}
+                    data={radar()}
+                    maxValue={100}
+                >
+                    <Chart.Spider.Shape class={selectors.spiderFixedShape} />
+                    <Chart.Spider.Web shape="circle" levels={5} class={selectors.spiderCircleWeb} />
+                </Chart.Spider>
             </div>
         </Tab>
         </>

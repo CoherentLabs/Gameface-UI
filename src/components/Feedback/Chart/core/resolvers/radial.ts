@@ -17,6 +17,81 @@ const normaliseAngle = (angle: number) => {
     return wrapped < 0 ? wrapped + TAU : wrapped;
 };
 
+/** Shortest distance between two angles, ignoring which way round. */
+const angularGap = (a: number, b: number) => {
+    const gap = Math.abs(normaliseAngle(a) - normaliseAngle(b));
+    return gap > Math.PI ? TAU - gap : gap;
+};
+
+export interface SpiderVertex {
+    seriesIndex: number;
+    categoryIndex: number;
+    /** Radians, clockwise from 12 o'clock. */
+    angle: number;
+    /** Distance from the centre, in pixels. */
+    radius: number;
+}
+
+/**
+ * Resolves a pointer position over a spider chart.
+ *
+ * A spider series is one closed path spanning every category, so native SVG
+ * hit-testing could only ever answer "which series" — never "which point".
+ * Here the category comes from the nearest spoke by angle, and the series from
+ * whichever vertex on that spoke is nearest the pointer's radius.
+ */
+export const createSpiderResolver = (
+    centre: () => { x: number; y: number },
+    vertices: () => SpiderVertex[],
+    outerRadius: () => number,
+): ChartHitResolver => (x, y) => {
+    const { x: cx, y: cy } = centre();
+    const dx = x - cx;
+    const dy = y - cy;
+    const radius = Math.sqrt(dx * dx + dy * dy);
+
+    // A little slack past the outer ring keeps the outermost vertices hoverable.
+    if (radius > outerRadius() + 8) return null;
+
+    const points = vertices();
+    if (points.length === 0) return null;
+
+    const angle = normaliseAngle(Math.atan2(dx, -dy));
+
+    let nearestAngle = Infinity;
+    for (let i = 0; i < points.length; i++) {
+        const gap = angularGap(points[i].angle, angle);
+        if (gap < nearestAngle) nearestAngle = gap;
+    }
+
+    let best: SpiderVertex | null = null;
+    let bestGap = Infinity;
+
+    for (let i = 0; i < points.length; i++) {
+        const point = points[i];
+        if (angularGap(point.angle, angle) > nearestAngle + 1e-6) continue;
+
+        const gap = Math.abs(point.radius - radius);
+        if (gap < bestGap) {
+            bestGap = gap;
+            best = point;
+        }
+    }
+
+    if (!best) return null;
+
+    const hit: ChartHit = {
+        seriesIndex: best.seriesIndex,
+        pointIndex: best.categoryIndex,
+        position: {
+            x: cx + Math.sin(best.angle) * best.radius,
+            y: cy - Math.cos(best.angle) * best.radius,
+        },
+    };
+
+    return hit;
+};
+
 /**
  * Resolves a pointer position inside a pie, donut or spider chart.
  *

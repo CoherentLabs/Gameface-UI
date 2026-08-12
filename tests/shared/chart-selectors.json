@@ -52,5 +52,15 @@
   "areaProbe": "chart-area-probe",
   "stackedAreaBase": "chart-stacked-area-base",
   "stackedAreaFill": "chart-stacked-area-fill",
+  "spiderBase": "chart-spider-base",
+  "spiderShape": "chart-spider-shape",
+  "spiderWeb": "chart-spider-web",
+  "spiderAxis": "chart-spider-axis",
+  "spiderLegend": "chart-spider-legend",
+  "spiderTooltip": "chart-spider-tooltip",
+  "spiderProbe": "chart-spider-probe",
+  "spiderFixedBase": "chart-spider-fixed-base",
+  "spiderFixedShape": "chart-spider-fixed-shape",
+  "spiderCircleWeb": "chart-spider-circle-web",
   "reactive": "reactive"
 }
