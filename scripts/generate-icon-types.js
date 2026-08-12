@@ -34,11 +34,15 @@ function generateIconTypes() {
         const indent = " ".repeat(indentLevel);
         let lines = [];
         
+        // An icon filename is not necessarily a valid TS identifier - a hyphen
+        // in it (round-star.svg) would otherwise emit an unparseable interface.
+        const propertyName = (key) => (/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(key) ? key : JSON.stringify(key));
+
         for (const key in obj) {
             if (obj[key] === "COMPONENT") {
-                lines.push(`${indent}${key}: Component<IconProps>;`);
+                lines.push(`${indent}${propertyName(key)}: Component<IconProps>;`);
             } else {
-                lines.push(`${indent}${key}: {`);
+                lines.push(`${indent}${propertyName(key)}: {`);
                 lines.push(generateTypeString(obj[key], indentLevel + 2));
                 lines.push(`${indent}};`);
             }

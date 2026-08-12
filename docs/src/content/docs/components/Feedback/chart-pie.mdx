@@ -1,0 +1,207 @@
+---
+title: Chart Pie
+tableOfContents:
+  maxHeadingLevel: 4
+---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
+
+The `Chart.Pie` component renders a proportional breakdown of a single set of values as a circle of slices.
+It is built on inline SVG for the geometry and regular HTML for every piece of text, which keeps labels, legends and tooltips fully styleable.
+
+## Usage
+
+Give the chart a `data` array. Each entry is a series, and each series holds the points to plot.
+A pie shows **one** series, so its points become the slices.
+
+`data` is reactive: feed it from a signal and the chart follows every change.
+
+<CodePreviewGFUI>
+```tsx
+import Chart from '@components/Feedback/Chart/Chart';
+import { createSignal } from 'solid-js';
+
+const App = () => {
+    const [stats, setStats] = createSignal([
+        {
+            label: 'Loadout',
+            points: [
+                { type: 'strength', value: 13 },
+                { type: 'agility', value: 9 },
+                { type: 'stamina', value: 16 },
+                { type: 'intellect', value: 6 },
+            ],
+        },
+    ]);
+
+    return (
+        <Chart.Pie data={stats()}>
+            <Chart.Labels placement="outside" />
+            <Chart.Legend position="bottom" />
+        </Chart.Pie>
+    );
+};
+```
+</CodePreviewGFUI>
+
+:::caution
+The chart fills its container, so that container must have a size. A `Chart.Pie` inside an
+element with no height renders nothing.
+:::
+
+### Colours
+
+Every slice takes its colour from the built-in categorical palette, assigned by index.
+Override the whole palette with the `palette` prop, a single series with `color` on the series,
+or an individual slice with `color` on the point:
+
+```tsx
+// point.color  ??  series.color  ??  palette[index % palette.length]
+<Chart.Pie data={stats()} palette={['#e5484d', '#30a46c', '#3987e5']} />
+```
+
+The palette ships eight colours, ordered so that neighbouring slices stay distinguishable for
+colourblind viewers. Past eight slices the colours repeat and stop being a reliable identifier —
+prefer fewer slices or group the tail into an "other" entry.
+
+### Animation
+
+Pass an `animation` object and the chart tweens between data sets. Without the prop there is no
+animation and no per-frame work at all.
+
+```tsx
+<Chart.Pie data={stats()} animation={{ duration: 300, easing: 'ease-out' }} />
+```
+
+Values are interpolated and the geometry is rebuilt each frame, so a slice that appears grows out
+of nothing rather than popping in. Changing the data mid-animation continues from wherever the
+slices currently are instead of snapping back.
+
+### Interactivity
+
+Interactivity is **off by default** — a chart with no `interactive` prop attaches no listeners and
+lets pointer input pass straight through to the game. Turn it on with `interactive`:
+
+```tsx
+<Chart.Pie data={stats()} interactive onPointClick={(e) => select(e.point.type)}>
+    <Chart.Tooltip content={(e) => <div>{e.point.label}: {e.point.value}</div>} />
+</Chart.Pie>
+```
+
+| Value | Behaviour |
+|---|---|
+| omitted / `false` | No listeners. The SVG is set to `pointer-events: none`. |
+| `true` | Native SVG pointer events on each slice — the hit area is exactly the arc. |
+| `"svg"` | Forces native SVG pointer events. |
+| `"overlay"` | Resolves the hovered slice mathematically from a single transparent overlay. One listener no matter how many slices, and no dependency on SVG hit-testing. |
+
+:::caution
+Native SVG hit-testing requires **Gameface 3.1.1 or newer**. On older versions use
+`interactive="overlay"`, which works on any version. It is also the better choice for very large
+data sets, since native mode attaches listeners per slice.
+:::
+
+## API
+
+### Props
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to the chart's root element. |
+| `class` | `string` | `""` | Additional CSS classes applied to the chart. |
+| `data` | `ChartSeries[]` | `[]` | The series to plot. A pie renders the first one; each of its points is a slice. Reactive. |
+| `palette` | `string[]` | built-in | Overrides the default categorical palette. |
+| `animation` | `ChartAnimation` | `undefined` | Enables tweening between data sets. Omit for no animation. |
+| `interactive` | `boolean \| 'svg' \| 'overlay'` | `false` | Enables hover, tooltip and click. See above. |
+| `startAngle` | `number` | `0` | Degrees, clockwise from 12 o'clock. |
+| `endAngle` | `number` | `360` | Degrees. Use with `startAngle` for a partial pie. |
+| `onPointHover` | `(event: ChartPointEvent \| null) => void` | `undefined` | Fires when the hovered slice changes; `null` on leave. |
+| `onPointClick` | `(event: ChartPointEvent) => void` | `undefined` | Fires when a slice is clicked. |
+| `onSeriesToggle` | `(seriesIndex: number, visible: boolean) => void` | `undefined` | Fires when a series is toggled from the legend. |
+
+### Types
+
+```ts
+interface ChartPoint {
+    type: string;      // category key, and the identity used across data changes
+    value: number;
+    color?: string;    // overrides the series colour
+    label?: string;    // display text, defaults to `type`
+    meta?: Record<string, unknown>;   // forwarded to tooltips and callbacks
+}
+
+interface ChartSeries {
+    points: ChartPoint[];
+    id?: string;       // stable identity across data changes, defaults to the index
+    label?: string;
+    color?: string;
+    class?: string;
+    style?: JSX.CSSProperties;
+}
+
+interface ChartAnimation {
+    duration?: number;   // ms, default 300. 0 snaps.
+    easing?: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | ((t: number) => number);
+    delay?: number;
+    stagger?: number;    // extra delay per slice
+    onStart?: () => void;
+    onEnd?: () => void;
+}
+```
+
+### Behaviour notes
+
+- **Negative values** have no meaning in a pie. They are treated as `0` and the slice is not drawn, though the category keeps its legend entry.
+- **Missing categories.** A category declared by one series but not another counts as `0`.
+- **An all-zero or empty data set** renders no slices rather than an error.
+- **Extra series** are ignored — a pie draws the first one. Use one chart per series.
+
+## Slots
+
+### `Chart.Pie.Slice`
+
+Styles the slice geometry.
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `class` | `string` | `""` | CSS classes applied to every slice. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to every slice. |
+| `padAngle` | `number` | `0` | Degrees of gap between slices. |
+| `cornerRadius` | `number` | `0` | Rounds the slice corners, in pixels. |
+| `hoverOffset` | `number` | `0` | Pixels the hovered slice pops outward. Requires `interactive`. |
+
+### `Chart.Labels`
+
+Direct labels drawn as HTML over the chart.
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `class` | `string` | `""` | CSS classes applied to every label. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to every label. |
+| `placement` | `'inside' \| 'outside'` | `'inside'` | Where the label sits relative to its slice. |
+| `show` | `'always' \| 'hover' \| 'never'` | `'always'` | When labels are visible. |
+| `format` | `(point: ChartPoint, series: ChartSeries) => string` | `undefined` | Builds the label text. Defaults to the point's `label`, then its `type`. |
+
+### `Chart.Legend`
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `class` | `string` | `""` | CSS classes applied to the legend container. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to the legend container. |
+| `position` | `'top' \| 'bottom' \| 'left' \| 'right'` | `'bottom'` | Which edge the legend sits on. |
+| `interactive` | `boolean` | `true` | Whether clicking an entry toggles its slice. |
+| `content` | `(entry: LegendEntry) => JSX.Element` | `undefined` | Replaces the markup of a single entry. |
+
+A pie has one series, so its legend lists **slices**. Clicking an entry hides that slice and the
+remaining slices grow to fill the circle. Hiding a slice never changes the colours of the others.
+
+### `Chart.Tooltip`
+
+Only rendered while a point is hovered, so it requires `interactive`.
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `class` | `string` | `""` | CSS classes applied to the tooltip. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to the tooltip. |
+| `position` | `'top' \| 'bottom' \| 'left' \| 'right' \| 'auto'` | `'auto'` | Which side of the pointer the tooltip sits on. `auto` flips away from the viewport edge. |
+| `offset` | `number` | `12` | Pixels between the pointer and the tooltip. |
+| `content` | `(event: ChartPointEvent) => JSX.Element` | `undefined` | Replaces the tooltip markup. |

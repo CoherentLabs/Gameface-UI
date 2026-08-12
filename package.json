@@ -17,6 +17,8 @@
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^9.27.0",
+    "@types/d3-array": "^3.2.2",
+    "@types/d3-shape": "^3.1.8",
     "concurrently": "^9.2.1",
     "eslint": "^10.7.0",
     "eslint-plugin-gameface": "^1.1.0",
@@ -35,6 +37,8 @@
     "@types/node": "^22.9.0",
     "coherent-gameface-interaction-manager": "^3.0.1",
     "cors-env": "^1.0.2",
+    "d3-array": "^3.2.4",
+    "d3-shape": "^3.2.0",
     "dotenv": "^17.2.0",
     "glob": "^11.0.0",
     "solid-js": "^1.9.3",

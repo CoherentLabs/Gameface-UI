@@ -32,9 +32,21 @@ const componentsWithSlotTokens = {
   PROGRESS_CIRCLE: 'Progress.Circle',
   RADIAL_MENU: 'RadialMenu',
   RADIAL_MENU_INDICATOR: 'RadialMenu.Indicator',
+  CHART_PIE: 'Chart.Pie',
 }
 
+// Legend, Tooltip and Labels work inside any chart type. Add new chart types
+// here as they land so the shared slots keep validating.
+const chartParents = [
+  componentsWithSlotTokens.CHART_PIE,
+]
+
 const tokenComponetsParents = {
+  'Chart.Legend': chartParents,
+  'Chart.Tooltip': chartParents,
+  'Chart.Labels': chartParents,
+  'Chart.Pie.Slice': componentsWithSlotTokens.CHART_PIE,
+
   'Scroll.Bar': componentsWithSlotTokens.SCROLL,
   'Scroll.Content': componentsWithSlotTokens.SCROLL,
   'Scroll.Handle': componentsWithSlotTokens.SCROLL_BAR,
@@ -143,19 +155,28 @@ function isParentMatchingPath(node, path, wrapperName) {
   return isUsedAsDirectChild(node, wrapperName ? currentNode.parent : currentNode);
 }
 
-function isUsedAsDirectChild(node, parent) {
-  const name = getComponentName(node);
-  const parentWrapperName = tokenComponetsParents[name];
+// A slot may be valid under more than one parent - the shared Chart slots work
+// inside every chart type - so an entry can be a single name or a list.
+function allowedParents(name) {
+  const parents = tokenComponetsParents[name];
+  if (!parents) return null;
 
-  if (node.type === 'JSXElement' && getComponentName(parent) === parentWrapperName) return true;
+  return Array.isArray(parents) ? parents : [parents];
+}
+
+function isUsedAsDirectChild(node, parent) {
+  const parentWrapperNames = allowedParents(getComponentName(node));
+  if (!parentWrapperNames) return false;
+
+  if (node.type === 'JSXElement' && parentWrapperNames.includes(getComponentName(parent))) return true;
 
   return false;
 }
 
 function validateComponent(node, context) {
   const name = getComponentName(node);
-  const parentWrapperName = tokenComponetsParents[name];
-  if (!parentWrapperName) return;
+  const parentWrapperNames = allowedParents(name);
+  if (!parentWrapperNames) return;
 
   let parent = node.parent;
 
@@ -186,7 +207,7 @@ function validateComponent(node, context) {
 
   context.report({
     node,
-    message: `<${name}> must be used inside a <${parentWrapperName}>.`,
+    message: `<${name}> must be used inside a <${parentWrapperNames.join('> or <')}>.`,
   });
 }
 

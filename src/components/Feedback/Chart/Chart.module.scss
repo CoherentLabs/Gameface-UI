@@ -1,0 +1,150 @@
+// Chart chrome. Series colours are applied per mark as SVG fills, so only the
+// surrounding ink lives here.
+$chartMuted: #898781;
+$chartInk: $textColor;
+$chartTooltipBg: rgba(#25262a, 0.92);
+
+.chart {
+    display: flex;
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+    // The legend is always first in the DOM; the flex direction decides which
+    // edge it ends up on.
+    &-top { flex-direction: column; }
+    &-bottom { flex-direction: column-reverse; }
+    &-left { flex-direction: row; }
+    &-right { flex-direction: row-reverse; }
+}
+
+// The measured element. Everything inside is absolutely positioned so nothing
+// can feed its own size back into the ResizeObserver.
+.plot {
+    position: relative;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    min-width: 0;
+    min-height: 0;
+}
+
+.svg {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.labels {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    // Labels must never steal the pointer from the hit overlay beneath them.
+    pointer-events: none;
+}
+
+.label {
+    position: absolute;
+    color: $chartInk;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+.slice {
+    // stroke, not a gap in the geometry, so slices stay separable where two
+    // similar hues meet.
+    stroke-width: 0;
+}
+
+.is-hovered {
+    // Deliberately opacity rather than a colour shift: the series colour is the
+    // identity channel and must not change on hover.
+    opacity: 0.85;
+}
+
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    &-top,
+    &-bottom {
+        flex-direction: row;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+
+    &-left,
+    &-right {
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    &-entry {
+        display: flex;
+        align-items: center;
+        margin-right: 0.75rem;
+        margin-bottom: 0.25rem;
+
+        &-hidden {
+            opacity: 0.4;
+        }
+    }
+
+    &-marker {
+        width: 0.65rem;
+        height: 0.65rem;
+        margin-right: 0.35rem;
+        border-radius: $borderRadius;
+        flex-shrink: 0;
+    }
+
+    &-label {
+        color: $chartInk;
+        font-size: 0.75rem;
+    }
+}
+
+.tooltip {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: $borderRadius;
+    background-color: $chartTooltipBg;
+    color: $chartInk;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    // The tooltip sits above the hit overlay and would otherwise interrupt the
+    // very hover that spawned it.
+    pointer-events: none;
+
+    &-label {
+        color: $chartMuted;
+        margin-right: 0.35rem;
+    }
+
+    &-value {
+        color: $chartInk;
+    }
+}
+
+.pie {
+    // Chart-type hook for consumers; geometry is driven entirely from JS.
+    min-height: 0;
+}

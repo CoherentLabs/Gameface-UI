@@ -1,0 +1,15 @@
+{
+  "assertionElement": "assertion-element",
+  "scenarioBtn": "scenario-btn",
+  "base": "chart-base",
+  "slice": "chart-slice",
+  "legend": "chart-legend",
+  "label": "chart-label",
+  "tooltip": "chart-tooltip",
+  "probe": "chart-probe",
+  "overlayProbe": "chart-overlay-probe",
+  "overlayBase": "chart-overlay-base",
+  "overlaySlice": "chart-overlay-slice",
+  "overlayTooltip": "chart-overlay-tooltip",
+  "reactive": "reactive"
+}

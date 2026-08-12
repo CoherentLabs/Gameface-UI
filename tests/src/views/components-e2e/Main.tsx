@@ -36,6 +36,7 @@ import KeybindsTest from '../../components/Keybinds/KeybindsTest';
 import ProgressTest from '../../components/Progress';
 import RadialMenuTest from '../../components/RadialMenu/RadialMenuTest';
 import TutorialTest from '../../components/Tutorial/TutorialTest';
+import ChartTest from '../../components/Chart';
 
 const Main = () => {
     const components = [
@@ -64,6 +65,7 @@ const Main = () => {
         'toaster',
         "progress-bar",
         "progress-circle",
+        "chart-pie",
 
         // Complex components
         "color-picker",
@@ -128,6 +130,7 @@ const Main = () => {
                 <ProgressTest />
                 <RadialMenuTest />
                 <TutorialTest />
+                <ChartTest />
             </Tabs>
         </div>
     );
