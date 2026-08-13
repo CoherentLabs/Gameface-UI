@@ -1,0 +1,2022 @@
+{
+  "schemaVersion": 1,
+  "name": "gameface-ui",
+  "repo": "CoherentLabs/Gameface-UI",
+  "version": "3.1.0",
+  "tag": "v3.1.0",
+  "generatedAt": "2026-08-12T13:21:37.491Z",
+  "entries": {
+    "BaseComponent": {
+      "name": "BaseComponent",
+      "kind": "lib",
+      "description": "Base component for all other components to extend from",
+      "files": [
+        {
+          "path": "src/components/BaseComponent/BaseComponent.tsx",
+          "hash": "c1919bd98b987d7cc702217841ff898399a3b8c399e5cb33395b469907823d32"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "Utility/Navigation",
+        "Utility/EventBus",
+        "utils/waitForFrames"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Basic/Accordion": {
+      "name": "Accordion",
+      "version": "1.0.0",
+      "description": "Expandable panels that show and hide content sections",
+      "kind": "component",
+      "category": "Basic",
+      "files": [
+        {
+          "path": "src/components/Basic/Accordion/Accordion.module.scss",
+          "hash": "2f13f6f75ff6b1812a66537854a5422aa251c799a2e580fcb35e52045d65af85"
+        },
+        {
+          "path": "src/components/Basic/Accordion/Accordion.tsx",
+          "hash": "3e366b36d4c0ce9fd13c91fd6c9b04fe000a128012662aa2289b3fe87981c73c"
+        },
+        {
+          "path": "src/components/Basic/Accordion/AccordionBody.tsx",
+          "hash": "f6ca6c069efa0b33895ac740310631e21775a531f087bba287bb3e8c44f82af3"
+        },
+        {
+          "path": "src/components/Basic/Accordion/AccordionHeading.tsx",
+          "hash": "501545cc3b4234988dd53deee1cc3d8a5ea0d1d07300fe365899110f2d1b9867"
+        },
+        {
+          "path": "src/components/Basic/Accordion/AccordionIcon.svg",
+          "hash": "602f8248ebba0e245e9fb6004f73e19c82c1ef809557054dd24e27ed0194535d"
+        },
+        {
+          "path": "src/components/Basic/Accordion/AccordionPanel.tsx",
+          "hash": "b1870c61b927e9e9bb66e9e9a9ea0d47d8c37795296e7073dc8bce190b9b8304"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "utils/tokenComponents",
+        "BaseComponent",
+        "utils/waitForFrames",
+        "utils/mergeNavigationActions"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Basic/Button": {
+      "name": "Button",
+      "version": "1.0.0",
+      "description": "Clickable button",
+      "kind": "component",
+      "category": "Basic",
+      "files": [
+        {
+          "path": "src/components/Basic/Button/Button.module.scss",
+          "hash": "c3362c5250cc9aabde12a45b479116c2baca64aa00a16ca5cad51262b160d45f"
+        },
+        {
+          "path": "src/components/Basic/Button/Button.tsx",
+          "hash": "3d5f778170babcffb674af2d647df5fefdc5062384f48680a430dfe0a1689d0e"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "BaseComponent"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Basic/Checkbox": {
+      "name": "Checkbox",
+      "version": "1.0.0",
+      "description": "Toggleable checkbox with a label",
+      "kind": "component",
+      "category": "Basic",
+      "files": [
+        {
+          "path": "src/components/Basic/Checkbox/Checkbox.module.scss",
+          "hash": "c911e94b52e190ddbe6edc9c88517b51b798d3582ce3b6ee6331ab9e8a8a19aa"
+        },
+        {
+          "path": "src/components/Basic/Checkbox/Checkbox.tsx",
+          "hash": "7418e5396ff9f18896978d7792d93929cadfa3c6855bbab27ee4d0387f7884a0"
+        },
+        {
+          "path": "src/components/Basic/Checkbox/CheckboxControl.tsx",
+          "hash": "9c60207ee34252b9cad71c961187b69dddbd0fd60f476e016e2e0be229045577"
+        },
+        {
+          "path": "src/components/Basic/Checkbox/CheckboxIndicator.tsx",
+          "hash": "4bb71de224b78f8aaad1c10b9f147e6b78c8eb65c28ff7f9650030c3bf358103"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "utils/tokenComponents",
+        "BaseComponent",
+        "utils/mergeNavigationActions"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Basic/Dropdown": {
+      "name": "Dropdown",
+      "version": "1.0.0",
+      "description": "Selectable list with a scrollable options panel",
+      "kind": "component",
+      "category": "Basic",
+      "files": [
+        {
+          "path": "src/components/Basic/Dropdown/Dropdown.module.scss",
+          "hash": "55469813d9e5386dbeadb54640dc596b9bc09405b5d74120d82b9d3f73f3cd08"
+        },
+        {
+          "path": "src/components/Basic/Dropdown/Dropdown.tsx",
+          "hash": "7e45b364fe0873c3e93a513fac05e899a3174c6ab66d7ae6e8660a768c7c8a99"
+        },
+        {
+          "path": "src/components/Basic/Dropdown/DropdownIcon.svg",
+          "hash": "dbddfb790c642f258d3d61fbfa408c074d7623731c329913140e52c0d9f5f9cc"
+        },
+        {
+          "path": "src/components/Basic/Dropdown/DropdownOption.tsx",
+          "hash": "d7c8d377243bbf29295730d77e9e00e6515a5e3be00be9d09a9a41ba60f0c199"
+        },
+        {
+          "path": "src/components/Basic/Dropdown/DropdownOptions.tsx",
+          "hash": "574f4bf692962a66938c7ca2dfdea6f243a1a103c6046b9f1afe2b752879d91c"
+        },
+        {
+          "path": "src/components/Basic/Dropdown/DropdownTrigger.tsx",
+          "hash": "ce14624fe7455a748fb1691fee29c7148db41d29bcc117f9b3b998fcec41e2e0"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "utils/waitForFrames",
+        "utils/getScrollableParent",
+        "BaseComponent",
+        "utils/mergeNavigationActions",
+        "Utility/Navigation",
+        "utils/tokenComponents",
+        "Layout/Scroll",
+        "Basic/InlineTextBlock"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Basic/InlineTextBlock": {
+      "name": "InlineTextBlock",
+      "version": "1.0.0",
+      "description": "Inline text element",
+      "kind": "component",
+      "category": "Basic",
+      "files": [
+        {
+          "path": "src/components/Basic/InlineTextBlock/InlineTextBlock.tsx",
+          "hash": "6d6e8c21fe393406499f748fa9dffc1b205630af105414aa9c25f64e32687ab7"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "BaseComponent"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Basic/Input/InputBase": {
+      "name": "InputBase",
+      "version": "1.0.0",
+      "description": "Shared base for the input components",
+      "kind": "component",
+      "category": "Basic",
+      "files": [
+        {
+          "path": "src/components/Basic/Input/InputBase/InputBase.module.scss",
+          "hash": "c99e823465e7aaf225dd3de69c3cefb03ba0a905d90b9b17cada06146abef091"
+        },
+        {
+          "path": "src/components/Basic/Input/InputBase/InputBase.tsx",
+          "hash": "8e69ea8d985e64616b2fa127b53ec19beea94e3ee46b1a4a12ae23d5c163cba2"
+        },
+        {
+          "path": "src/components/Basic/Input/InputBase/InputWrapper.tsx",
+          "hash": "6f574f9b41abe96cb1f8c6f1005760206b7edf9ee2e20ae96e7a6c253d56c3ec"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "utils/tokenComponents",
+        "Basic/Input/shared",
+        "utils/mergeNavigationActions",
+        "Utility/Navigation",
+        "BaseComponent"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Basic/Input/NumberInput": {
+      "name": "NumberInput",
+      "version": "1.0.0",
+      "description": "Numeric input with increment and decrement",
+      "kind": "component",
+      "category": "Basic",
+      "files": [
+        {
+          "path": "src/components/Basic/Input/NumberInput/arrow-down.svg",
+          "hash": "2675e781a4ca32e4c91dd61ca9a34057e7c37616ec2636a843411e2e3b19ac01"
+        },
+        {
+          "path": "src/components/Basic/Input/NumberInput/arrow-up.svg",
+          "hash": "0b8b26b40a19c7973972017b7861f0b84930a10d29416a400ebf2fd5a1739f39"
+        },
+        {
+          "path": "src/components/Basic/Input/NumberInput/InputControlButton.tsx",
+          "hash": "441cc96d00f0fc13ded3c7978661287cbf55fd4138b93a224ba9bec7c5511e5f"
+        },
+        {
+          "path": "src/components/Basic/Input/NumberInput/NumberInput.module.scss",
+          "hash": "040b98f902e8a99a9e9e3920e71580058aabd207272cb9f5aefb37479133a580"
+        },
+        {
+          "path": "src/components/Basic/Input/NumberInput/NumberInput.tsx",
+          "hash": "7749b9172345eb559a81301014c0b9ab779893e53d1a6693557557b710800692"
+        }
+      ],
+      "dependsOn": [
+        "Basic/Input/shared",
+        "utils/tokenComponents",
+        "Basic/Input/InputBase",
+        "utils/debounce"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Basic/Input/PasswordInput": {
+      "name": "PasswordInput",
+      "version": "1.0.0",
+      "description": "Password input with a visibility toggle",
+      "kind": "component",
+      "category": "Basic",
+      "files": [
+        {
+          "path": "src/components/Basic/Input/PasswordInput/eye-off.svg",
+          "hash": "19fd22aec3d437b42801d6b1881e127b2c96754ffa35b47635185ac43db7ffa3"
+        },
+        {
+          "path": "src/components/Basic/Input/PasswordInput/eye.svg",
+          "hash": "98fe655833ec7c0e2e10e9bc9f7181767f89e59aab2a31cbc8034a18b32f3772"
+        },
+        {
+          "path": "src/components/Basic/Input/PasswordInput/PasswordInput.module.scss",
+          "hash": "d713d98fef5ec05fa26d6db39ea2e2c1e3eecf584fc53b89dfb8a39d325b9ecc"
+        },
+        {
+          "path": "src/components/Basic/Input/PasswordInput/PasswordInput.tsx",
+          "hash": "93a252188776df3a5a27cc372b3491aba1e558ac102ecd5ce7c5b6929c5236f4"
+        },
+        {
+          "path": "src/components/Basic/Input/PasswordInput/VisibilityButton.tsx",
+          "hash": "8e4ab81fabd62b94006b1f12bc6556e4cded3e885aa08e6714eb815ff1be13fa"
+        }
+      ],
+      "dependsOn": [
+        "Basic/Input/shared",
+        "utils/tokenComponents",
+        "Basic/Input/InputBase",
+        "types/ComponentProps"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Basic/Input/shared": {
+      "name": "InputShared",
+      "kind": "lib",
+      "description": "Shared internals for the Input family (TextInput, NumberInput, PasswordInput)",
+      "files": [
+        {
+          "path": "src/components/Basic/Input/shared/AddonSlot.tsx",
+          "hash": "bca8ffef81a3ba74d918b01df812d4611dd6079b624de7775c28e9ed04f37233"
+        },
+        {
+          "path": "src/components/Basic/Input/shared/constants.ts",
+          "hash": "aca8603aa0818c04a6cd4c29b06943c016d8328531cb0482148005e00074e2c7"
+        },
+        {
+          "path": "src/components/Basic/Input/shared/TextInput.module.scss",
+          "hash": "494bb69cac059aee53b5ae65eaf87aaf1d5cdb9004eb8783ef898baf15de6895"
+        },
+        {
+          "path": "src/components/Basic/Input/shared/tokens.tsx",
+          "hash": "7ca13e8e45f09f47ce28002555e372b16ab377fe259f24227d1eb0bcd5b8c77f"
+        },
+        {
+          "path": "src/components/Basic/Input/shared/types.ts",
+          "hash": "6e8de405a5d6cfdd3066d6bae137ff2c4d79a4cdbdd23e23e14fd78de7862fc9"
+        },
+        {
+          "path": "src/components/Basic/Input/shared/useTextInput.tsx",
+          "hash": "4adc2c5200bfe22a9e356b83d1433335fb06106ebdc60895f0968ffb5d8dc7f0"
+        }
+      ],
+      "dependsOn": [
+        "utils/tokenComponents",
+        "types/ComponentProps",
+        "utils/debounce"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Basic/Input/TextInput": {
+      "name": "TextInput",
+      "version": "1.0.0",
+      "description": "Single-line text input",
+      "kind": "component",
+      "category": "Basic",
+      "files": [
+        {
+          "path": "src/components/Basic/Input/TextInput/TextInput.tsx",
+          "hash": "1dc2dde3d276e812fed6f4428d034cdf3c7fb562f2b8236c9f2c29eb9b83df36"
+        }
+      ],
+      "dependsOn": [
+        "Basic/Input/shared",
+        "utils/tokenComponents",
+        "Basic/Input/InputBase"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Basic/Keybinds": {
+      "name": "Keybinds",
+      "version": "1.0.0",
+      "description": "Displays gamepad and keyboard key glyphs for bindings",
+      "kind": "component",
+      "category": "Basic",
+      "files": [
+        {
+          "path": "src/components/Basic/Keybinds/Keybind.tsx",
+          "hash": "ba83b0c23bf5c76ae5c04ebcc7b986083fe5369d3c09d47806d443947591b5a4"
+        },
+        {
+          "path": "src/components/Basic/Keybinds/Keybinds.module.scss",
+          "hash": "5e96e27e21b574b59deed882df0f196d26689cf7d6c7d478a2698e2b7db29b78"
+        },
+        {
+          "path": "src/components/Basic/Keybinds/Keybinds.tsx",
+          "hash": "cc195217ca57855a58b59ad26d4a0804469f49035f0998ba67f022236a98a6e2"
+        },
+        {
+          "path": "src/components/Basic/Keybinds/util/glyphs.ts",
+          "hash": "1c811837a26f6ea68588c0fb79b7bf69e6db8634c5294d05130251a448fb06eb"
+        },
+        {
+          "path": "src/components/Basic/Keybinds/util/mappings.ts",
+          "hash": "dd414c42c85540a2082733ff91cf88fc56c9af566817d2dd4549d1ffcb76af0f"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "BaseComponent",
+        "utils/mergeNavigationActions",
+        "Utility/Navigation",
+        "Media/Icon"
+      ],
+      "npmDependencies": [
+        "solid-js",
+        "coherent-gameface-interaction-manager"
+      ]
+    },
+    "Basic/Pagination": {
+      "name": "Pagination",
+      "version": "1.0.0",
+      "description": "Page navigation control",
+      "kind": "component",
+      "category": "Basic",
+      "files": [
+        {
+          "path": "src/components/Basic/Pagination/Arrow.svg",
+          "hash": "ada1ac85d355985ae0d163bea87c484198df14f8d9313e81eb4e242eeae31123"
+        },
+        {
+          "path": "src/components/Basic/Pagination/Pagination.module.scss",
+          "hash": "e7911001f46cb98ac0bd1625f577833feddb59b26d82c67ddc1cf663b89be54c"
+        },
+        {
+          "path": "src/components/Basic/Pagination/Pagination.tsx",
+          "hash": "a8c49e8817f8135fe5fd9483fc6d0742570b486a987f4c1b313b8f94fc3f7ab9"
+        },
+        {
+          "path": "src/components/Basic/Pagination/PaginationControl.tsx",
+          "hash": "45ce0ece271349545a441ea543fad4a60beec8ef53d845ae19f22afe5999c2fb"
+        },
+        {
+          "path": "src/components/Basic/Pagination/PaginationItem.tsx",
+          "hash": "19a5e2d2e5e77db48fa18bea6dee3fdcf604c4bf141b3f3c1c3b2ae0987db625"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "utils/tokenComponents",
+        "BaseComponent"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Basic/RadioGroup": {
+      "name": "RadioGroup",
+      "version": "1.0.0",
+      "description": "Group of mutually exclusive radio options",
+      "kind": "component",
+      "category": "Basic",
+      "files": [
+        {
+          "path": "src/components/Basic/RadioGroup/Radio.module.scss",
+          "hash": "c08288110c9a6435ffc9d62ee0878a639f8f22f52d6bb302b85b92ff508757b7"
+        },
+        {
+          "path": "src/components/Basic/RadioGroup/Radio.tsx",
+          "hash": "f4b84d58f9e1282f47d7ffea878a65bfe83c023f12d425fa2f328efbcc3cc750"
+        },
+        {
+          "path": "src/components/Basic/RadioGroup/RadioButton.tsx",
+          "hash": "dacef094013e395dd0edb1fb46f89879c1b732f5e15730e39a2a628087068764"
+        },
+        {
+          "path": "src/components/Basic/RadioGroup/RadioButtonControl.tsx",
+          "hash": "fe73ff8b908823a2a7f659d68ef609041d7286bf142899d80e5b9d78b120a0dc"
+        },
+        {
+          "path": "src/components/Basic/RadioGroup/RadioButtonIndicator.tsx",
+          "hash": "0efb8501c149aca81cbabbd48225cddf45749b6c93bdb9ce7b992e5cedc96a9b"
+        },
+        {
+          "path": "src/components/Basic/RadioGroup/RadioButtons.tsx",
+          "hash": "453764eda711f2054ebbce610ca98440effaebd477f7d7508241c36ae627f611"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "BaseComponent",
+        "utils/mergeNavigationActions",
+        "utils/tokenComponents"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Basic/RoundedButton": {
+      "name": "RoundedButton",
+      "version": "1.0.0",
+      "description": "Button with fully rounded corners",
+      "kind": "component",
+      "category": "Basic",
+      "files": [
+        {
+          "path": "src/components/Basic/RoundedButton/RoundedButton.module.scss",
+          "hash": "336ad1a4d5cdd2cb0ed437f9ee55c837436250a7b17c3f6345c3d14276547135"
+        },
+        {
+          "path": "src/components/Basic/RoundedButton/RoundedButton.tsx",
+          "hash": "03e323f5a47a722b58f1afd3ee6eb29ae226e8cbed43c9b5033222e428cd1ea7"
+        }
+      ],
+      "dependsOn": [
+        "Basic/Button"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Basic/Segment": {
+      "name": "Segment",
+      "version": "1.0.0",
+      "description": "Segmented control for switching between options",
+      "kind": "component",
+      "category": "Basic",
+      "files": [
+        {
+          "path": "src/components/Basic/Segment/Segment.module.scss",
+          "hash": "1728c6cdf05ef7ac5e5b517e2a12aee242aed7d46ac86f79a571ab086daecf1f"
+        },
+        {
+          "path": "src/components/Basic/Segment/Segment.tsx",
+          "hash": "5c311137d9f39fb222366cd7eaa70ef86724975c5f247c99b716579574ff5257"
+        },
+        {
+          "path": "src/components/Basic/Segment/SegmentButton.tsx",
+          "hash": "ab5c8a09df510d03a82db3402cccb5201932d8920714df5b654d064bf9be79f6"
+        },
+        {
+          "path": "src/components/Basic/Segment/SegmentButtons.tsx",
+          "hash": "b0f61fe1b5f10de2e68fd4f65cb7b5683f31ebffd5ed70d8851eecae7e99ac1f"
+        },
+        {
+          "path": "src/components/Basic/Segment/SegmentIndicator.tsx",
+          "hash": "d519b36f4468148ddb59cb873e48020677dbcd3e02304f7ecdc7f8a6ec272294"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "BaseComponent",
+        "utils/mergeNavigationActions",
+        "utils/tokenComponents"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Basic/Slider": {
+      "name": "Slider",
+      "version": "1.0.0",
+      "description": "Draggable value slider",
+      "kind": "component",
+      "category": "Basic",
+      "files": [
+        {
+          "path": "src/components/Basic/Slider/Slider.module.scss",
+          "hash": "0aa275c0ba5312ef8bb0f9d6d4e55c67b2de4284e288e452771c90e8d72b4cba"
+        },
+        {
+          "path": "src/components/Basic/Slider/Slider.tsx",
+          "hash": "bef8fe709ff910e7f54e69196f33373d679b4d7a2064f6655c936ffd07a6d42c"
+        },
+        {
+          "path": "src/components/Basic/Slider/SliderFill.tsx",
+          "hash": "5a0af15025f6441f7242ad520622b56cc75bcad2fa9f8c78d4664499909775ee"
+        },
+        {
+          "path": "src/components/Basic/Slider/SliderGrid.tsx",
+          "hash": "43e0ffed58923626559c68128d4f782a4483346ab97e1b532a950dab39dc235a"
+        },
+        {
+          "path": "src/components/Basic/Slider/SliderHandle.tsx",
+          "hash": "3cb26288d25ed652742f2e3db5bf2eac79c29ed6ab88d69a8766e0ae90776800"
+        },
+        {
+          "path": "src/components/Basic/Slider/sliderMath.ts",
+          "hash": "be85fbc7dc386f5382767ef0a7b242508240f56d0b9cf0ee7e8cb931db96bef9"
+        },
+        {
+          "path": "src/components/Basic/Slider/SliderPol.tsx",
+          "hash": "da1dec74205e93f0844d0d5f28745e8f219b7f0a8e24714f0f9ad7d5435a844b"
+        },
+        {
+          "path": "src/components/Basic/Slider/SliderThumb.tsx",
+          "hash": "2f2549709ed10d0e36ae6045349c6123f3ef41b88ecde9b5fabef45da4b5ff52"
+        },
+        {
+          "path": "src/components/Basic/Slider/SliderTrack.tsx",
+          "hash": "e519fefa00f98486e5e4d1634b83c7d5d92bd7942bcb70e22bbb7cab200785f9"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "utils/clamp",
+        "utils/tokenComponents",
+        "BaseComponent",
+        "utils/mergeNavigationActions",
+        "utils/stopPropagation"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Basic/State": {
+      "name": "State",
+      "version": "1.0.0",
+      "description": "Conditional rendering driven by a state value",
+      "kind": "component",
+      "category": "Basic",
+      "files": [
+        {
+          "path": "src/components/Basic/State/State.tsx",
+          "hash": "297b88c1dfa04af73aae2779711825a19934393fba12dae725165ea704aa0f90"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "BaseComponent"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Basic/Stepper": {
+      "name": "Stepper",
+      "version": "1.0.0",
+      "description": "Numeric stepper with increment and decrement controls",
+      "kind": "component",
+      "category": "Basic",
+      "files": [
+        {
+          "path": "src/components/Basic/Stepper/Stepper.module.scss",
+          "hash": "dfdd86e348a24cdb9e0cc92b6d6b2cd389b74449d59f3115ab354f117fa0f5ba"
+        },
+        {
+          "path": "src/components/Basic/Stepper/Stepper.tsx",
+          "hash": "1e8fe51a38d4356fdeac5bedd4d2c16fe5c52c1741ff6283b722efc49e53b8ae"
+        },
+        {
+          "path": "src/components/Basic/Stepper/StepperArrow.svg",
+          "hash": "e65c1ebd1d6c9cd086d339e32799d52bfde91f8407081aa13dc4d6ed1e05f431"
+        },
+        {
+          "path": "src/components/Basic/Stepper/StepperControl.tsx",
+          "hash": "a4f274898c487fd31b93076880124e9bcdb4c4d5ca4f4d6ccc542d78b9c68fe6"
+        },
+        {
+          "path": "src/components/Basic/Stepper/StepperItem.tsx",
+          "hash": "5e9c0e96dd84d0fd565bc1049983df1fd768381fd8c28c305faf34178a88aa9f"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "utils/tokenComponents",
+        "BaseComponent",
+        "utils/mergeNavigationActions",
+        "Layout/Flex",
+        "Layout/Transform"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Basic/TextBlock": {
+      "name": "TextBlock",
+      "version": "1.0.0",
+      "description": "Block of text",
+      "kind": "component",
+      "category": "Basic",
+      "files": [
+        {
+          "path": "src/components/Basic/TextBlock/TextBlock.tsx",
+          "hash": "c569971c43410445cbf81c2e5855522ef493773b44026e96e44f2648c4f671ce"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "BaseComponent"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Basic/TextSlider": {
+      "name": "TextSlider",
+      "version": "1.0.0",
+      "description": "Slider that snaps between labeled text values",
+      "kind": "component",
+      "category": "Basic",
+      "files": [
+        {
+          "path": "src/components/Basic/TextSlider/TextSlider.tsx",
+          "hash": "547c3fe9e01aa068f5a64a174a393a3b78a1b1ae9d211052c5a996ed8e9472b0"
+        },
+        {
+          "path": "src/components/Basic/TextSlider/TextSliderGrid.tsx",
+          "hash": "c2feb60989d49f431e8656ba912991c142c6a77a6d7ed3c3c6c63196468ddf17"
+        },
+        {
+          "path": "src/components/Basic/TextSlider/TextSliderPol.tsx",
+          "hash": "aef75b8220ebefbf72c1e3a1ed0260a7b02024844278bc94b1efbdd8c27b3ca3"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "Basic/Slider",
+        "utils/clamp",
+        "utils/tokenComponents",
+        "BaseComponent",
+        "utils/mergeNavigationActions",
+        "utils/stopPropagation"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Basic/ToggleButton": {
+      "name": "ToggleButton",
+      "version": "1.0.0",
+      "description": "On/off toggle switch",
+      "kind": "component",
+      "category": "Basic",
+      "files": [
+        {
+          "path": "src/components/Basic/ToggleButton/ToggleButton.module.scss",
+          "hash": "2754550abe19bb4a3cc5cad15ecd9fdc5bf034598107cddf5e22181ef4b1b438"
+        },
+        {
+          "path": "src/components/Basic/ToggleButton/ToggleButton.tsx",
+          "hash": "fa47396da22f12fcf80feaa1e9249955ef3f5e7101d924cf78b7cf650e4377a0"
+        },
+        {
+          "path": "src/components/Basic/ToggleButton/ToggleButtonControl.tsx",
+          "hash": "cda9b965abca8990d1efb39488bf44c035591f9bfb55d8b78ec0b7b5fb4d0c3e"
+        },
+        {
+          "path": "src/components/Basic/ToggleButton/ToggleButtonHandle.tsx",
+          "hash": "d7db9a1c56044239902d670a5f6c0caac9a898ec5b465cd6fa19527d3b8a2294"
+        },
+        {
+          "path": "src/components/Basic/ToggleButton/ToggleButtonIndicator.tsx",
+          "hash": "76f82ba12eb279ce6c883eeb86338c3f05666eec095ecf20a295f3a89c68b3e8"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "utils/tokenComponents",
+        "BaseComponent",
+        "utils/mergeNavigationActions"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Basic/TwoHandleSlider": {
+      "name": "TwoHandleSlider",
+      "version": "1.0.0",
+      "description": "Range slider with two handles",
+      "kind": "component",
+      "category": "Basic",
+      "files": [
+        {
+          "path": "src/components/Basic/TwoHandleSlider/SliderFill.tsx",
+          "hash": "9dc2ab6e08a7b2dea42113ba5199ad3200c3fc7ed39c865fd32a174bc6d9d3ee"
+        },
+        {
+          "path": "src/components/Basic/TwoHandleSlider/TwoHandleSlider.tsx",
+          "hash": "240869e640e454515eb0676e0f1f4a7c9d05c28cc6dad4ec3727fa9d72735da9"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "Basic/Slider",
+        "utils/tokenComponents",
+        "utils/clamp",
+        "BaseComponent",
+        "utils/mergeNavigationActions",
+        "utils/stopPropagation"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Basic/XYSlider": {
+      "name": "XYSlider",
+      "version": "1.0.0",
+      "description": "Two-dimensional slider for picking an X/Y value",
+      "kind": "component",
+      "category": "Basic",
+      "files": [
+        {
+          "path": "src/components/Basic/XYSlider/XYSlider.module.scss",
+          "hash": "753c16b3c2737b788c5360c6698841145a06e25dfeb057ab8d5b851733276faa"
+        },
+        {
+          "path": "src/components/Basic/XYSlider/XYSlider.tsx",
+          "hash": "ac37fbef2b18576e40e219affc7c6c03729686a6414b43f60272918775648cd9"
+        },
+        {
+          "path": "src/components/Basic/XYSlider/XYSliderBackground.tsx",
+          "hash": "b99b364d36c29672453da65adeae7596faad5726665334592240cac09432f23e"
+        },
+        {
+          "path": "src/components/Basic/XYSlider/XYSliderHandle.tsx",
+          "hash": "460f5cc3c2b9080394b0edd882321d6863307dd835b9dc87b3bd0e98370dd8e0"
+        }
+      ],
+      "dependsOn": [
+        "utils/clamp",
+        "types/ComponentProps",
+        "BaseComponent",
+        "utils/mergeNavigationActions",
+        "Utility/Navigation",
+        "utils/tokenComponents"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Complex/Carousel": {
+      "name": "Carousel",
+      "version": "1.0.0",
+      "description": "Sliding carousel with items and pagination",
+      "kind": "component",
+      "category": "Complex",
+      "files": [
+        {
+          "path": "src/components/Complex/Carousel/Carousel.module.scss",
+          "hash": "c5e594c5775a9ceac6e6c1a62dfb13e5c1838a62f3c558fb5df9735ebc8f53e3"
+        },
+        {
+          "path": "src/components/Complex/Carousel/Carousel.tsx",
+          "hash": "2431f0013249a092bcb27ff86f05d274094cb2f32758e59ace6a9f1dc4648f78"
+        },
+        {
+          "path": "src/components/Complex/Carousel/CarouselArrow.svg",
+          "hash": "41eef86c643eeb7e88baaa2fdf53d2eeb0c03dc84ffe416a11c4d1edeacd0a04"
+        },
+        {
+          "path": "src/components/Complex/Carousel/CarouselItem.tsx",
+          "hash": "621befc7909049cb688dce324770b1ac62371b31de6245957b0180fc679547b3"
+        },
+        {
+          "path": "src/components/Complex/Carousel/CarouselItems.tsx",
+          "hash": "763094300f467bdd75509fc60853c60438ec1aecfe37ff9140043943ce7c049d"
+        },
+        {
+          "path": "src/components/Complex/Carousel/CarouselNext.tsx",
+          "hash": "759cfe36d81de33f83c006428e7fc709eadc218b432aee83683aba0ff7658cf4"
+        },
+        {
+          "path": "src/components/Complex/Carousel/CarouselPagination.tsx",
+          "hash": "9d3fbf906934dcc296a87ac79c56df0dc1e19095f8a1fee214d982052809193a"
+        },
+        {
+          "path": "src/components/Complex/Carousel/CarouselPrev.tsx",
+          "hash": "ad4dd89240e395ab7a46b53658bd4ab418c7bab43c6d696dcb24cd225d5d3d4a"
+        }
+      ],
+      "dependsOn": [
+        "Basic/Pagination",
+        "utils/waitForFrames",
+        "types/ComponentProps",
+        "BaseComponent",
+        "utils/tokenComponents"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Complex/ColorPicker": {
+      "name": "ColorPicker",
+      "version": "1.0.0",
+      "description": "Color picker with HSV, RGB and HEX input",
+      "kind": "component",
+      "category": "Complex",
+      "files": [
+        {
+          "path": "src/components/Complex/ColorPicker/ColorPicker.module.scss",
+          "hash": "76f75886db164554dc98e48c2e01beec6dadecd520d85f16a68ec92aebe83de7"
+        },
+        {
+          "path": "src/components/Complex/ColorPicker/ColorPicker.tsx",
+          "hash": "4ef10f7705b896df1171eb41a6afc9ebeaed48dd02fb638e9c42a32a9c9c2d95"
+        },
+        {
+          "path": "src/components/Complex/ColorPicker/colorPickerUtils.ts",
+          "hash": "61a42d85e6b1f5b773db318f830591df2e7aa35b805c014d6157c7bca80a0698"
+        },
+        {
+          "path": "src/components/Complex/ColorPicker/hexTransperancies.ts",
+          "hash": "be3785c6fdb5a8199375a57860d0f813552d9bafe71dc9d83d28805f4b04cbf2"
+        }
+      ],
+      "dependsOn": [
+        "Basic/XYSlider",
+        "Basic/Slider",
+        "Basic/Segment",
+        "BaseComponent",
+        "types/ComponentProps",
+        "Basic/Input/TextInput"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Complex/RadialMenu": {
+      "name": "RadialMenu",
+      "version": "1.0.0",
+      "description": "Radial wheel selection menu",
+      "kind": "component",
+      "category": "Complex",
+      "files": [
+        {
+          "path": "src/components/Complex/RadialMenu/MenuCenter.tsx",
+          "hash": "58ec2ef65db657559062954945f054774f20ad25724e70d19c8e6bf247650a5c"
+        },
+        {
+          "path": "src/components/Complex/RadialMenu/MenuIndicator.tsx",
+          "hash": "f04fa409fc1b7d83c3b3dd615a0ec041fbe69782473c8620cad4d02594c0f4ae"
+        },
+        {
+          "path": "src/components/Complex/RadialMenu/MenuItem.tsx",
+          "hash": "c56373ba1c10e5705f7671f64875d8d397b68a6385b72edddea4253d38b668e5"
+        },
+        {
+          "path": "src/components/Complex/RadialMenu/RadialMenu.module.scss",
+          "hash": "ffb176a0aaf2773608b86152f674804364cdde565fd5a90ea131922650bd5ba2"
+        },
+        {
+          "path": "src/components/Complex/RadialMenu/RadialMenu.tsx",
+          "hash": "bfb7e10faba9b652c2d6806f31457b1d5c6f0ac3426534c5b604fbcb87259f78"
+        },
+        {
+          "path": "src/components/Complex/RadialMenu/utils/index.ts",
+          "hash": "3322d7dfc0750d38d529e79bd70a6010c3b03c5ad7e43188771f1eb433f12fb4"
+        }
+      ],
+      "dependsOn": [
+        "utils/tokenComponents",
+        "types/ComponentProps",
+        "Layout/Absolute",
+        "BaseComponent",
+        "utils/clamp"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Complex/Tutorial": {
+      "name": "Tutorial",
+      "version": "1.0.0",
+      "description": "Step-by-step guided tutorial overlay",
+      "kind": "component",
+      "category": "Complex",
+      "files": [
+        {
+          "path": "src/components/Complex/Tutorial/Controls.tsx",
+          "hash": "550aafd597eb4c45624b76da548d180ccf43b884daff673d1b5508c9822cd2bd"
+        },
+        {
+          "path": "src/components/Complex/Tutorial/Step.tsx",
+          "hash": "8b74875bff05bde2363d6a3c1db352fc5ef6bb14bd33fd4b0491d20b10e46edc"
+        },
+        {
+          "path": "src/components/Complex/Tutorial/Tutorial.module.scss",
+          "hash": "c4b58a6638cd691b9beca0f6bf8f4824b319f8f6d2bfc370b3a44f71066d7815"
+        },
+        {
+          "path": "src/components/Complex/Tutorial/Tutorial.tsx",
+          "hash": "436cd1c8676aee57c822444c3a718b79cc65945b0e4cf88eaca9cee3ecc1143b"
+        },
+        {
+          "path": "src/components/Complex/Tutorial/TutorialTooltip.tsx",
+          "hash": "150ebd553920eeb7d8341202585b12df87208f043c573b8907ac7054f9ae43f8"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "BaseComponent",
+        "utils/waitForFrames",
+        "utils/clamp",
+        "utils/getScrollableParent",
+        "Feedback/Progress",
+        "Layout/Flex",
+        "utils/getSafePosition"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Feedback/Modal": {
+      "name": "Modal",
+      "version": "1.0.0",
+      "description": "Modal dialog window",
+      "kind": "component",
+      "category": "Feedback",
+      "files": [
+        {
+          "path": "src/components/Feedback/Modal/Modal.module.scss",
+          "hash": "0c9d6797e82da6c3d735534e60b83220e527b3d6a1df5539384c3ecaac6e1b57"
+        },
+        {
+          "path": "src/components/Feedback/Modal/Modal.tsx",
+          "hash": "a9cc5bd411786f2c329933e7967d7b3b2b1aa06e384a9d2316099f449965dba2"
+        },
+        {
+          "path": "src/components/Feedback/Modal/ModalCloseButton.tsx",
+          "hash": "3f6338d87eef6d866bd6e1eab3543e35394a263289af0d4f95f056e105a68b00"
+        },
+        {
+          "path": "src/components/Feedback/Modal/ModalCloseIcon.svg",
+          "hash": "4c5bdc858add63c13e7939e7e45fbc7a9e52d088f7168e5950b8cd6396732c4e"
+        },
+        {
+          "path": "src/components/Feedback/Modal/ModalWindow.tsx",
+          "hash": "47cd5057d26a2eac0c0fd46c25d2b1a8686619ac3037edab5d1338da9cfaee67"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "utils/tokenComponents",
+        "BaseComponent",
+        "Layout/Layout"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Feedback/Progress": {
+      "name": "Progress",
+      "version": "1.0.0",
+      "description": "Progress bar and circular progress indicators",
+      "kind": "component",
+      "category": "Feedback",
+      "files": [
+        {
+          "path": "src/components/Feedback/Progress/Progress.module.scss",
+          "hash": "b00dffbbb418d94540841eb7547d89d559615530129513affefb68738f5d8992"
+        },
+        {
+          "path": "src/components/Feedback/Progress/Progress.tsx",
+          "hash": "095ec9389716c8a9b30119c2e7a5b92b7d132f681f3d852e61d7c7d63f0e7a8b"
+        },
+        {
+          "path": "src/components/Feedback/Progress/ProgressBar.tsx",
+          "hash": "96e472f48670541b09d885b9cebd8cac1c682dce119c07de9514f3e9a1b8dff6"
+        },
+        {
+          "path": "src/components/Feedback/Progress/ProgressCircle.tsx",
+          "hash": "5f9e32b5085bd8caa6d0c193c82eb8d49503900773e168891da765d80941db5f"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "utils/clamp",
+        "utils/tokenComponents",
+        "BaseComponent"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Feedback/Toast": {
+      "name": "Toast",
+      "version": "1.0.0",
+      "description": "Transient toast notifications",
+      "kind": "component",
+      "category": "Feedback",
+      "files": [
+        {
+          "path": "src/components/Feedback/Toast/toast.module.scss",
+          "hash": "f1e8dfb41de7efdab0eddcfdda656de07a510dce367006fa70fe0ef0e96fc8ba"
+        },
+        {
+          "path": "src/components/Feedback/Toast/toast.tsx",
+          "hash": "9ae09764163a10e107a90394e2ca03761b0ded9660a2c87451088e46ec90b0b6"
+        }
+      ],
+      "dependsOn": [
+        "Layout/GridTile",
+        "Layout/Grid",
+        "Layout/Flex"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Feedback/Tooltip": {
+      "name": "Tooltip",
+      "version": "1.0.0",
+      "description": "Hover tooltip",
+      "kind": "component",
+      "category": "Feedback",
+      "files": [
+        {
+          "path": "src/components/Feedback/Tooltip/Tooltip.module.scss",
+          "hash": "0c6f92306d6727b435ac7e42a7e10f678e060447028393fde010860055357543"
+        },
+        {
+          "path": "src/components/Feedback/Tooltip/tooltip.tsx",
+          "hash": "42410b955d2e08d8bcc33bca94d91ae6af1a7fcaf31a94612bfaffa5de36a6a9"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "utils/getSafePosition",
+        "BaseComponent",
+        "utils/mergeNavigationActions"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Layout/Absolute": {
+      "name": "Absolute",
+      "version": "1.0.0",
+      "description": "Absolutely positioned container",
+      "kind": "component",
+      "category": "Layout",
+      "files": [
+        {
+          "path": "src/components/Layout/Absolute/Absolute.module.scss",
+          "hash": "761a498910335cc4bc91a9a64efd64536b84af6a364297ab54028037ee072e61"
+        },
+        {
+          "path": "src/components/Layout/Absolute/Absolute.tsx",
+          "hash": "102914f065ae652e233fdc13753abdcfe317caf249e78b5d0544b4933ce80f61"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "Layout/LayoutBase"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Layout/Block": {
+      "name": "Block",
+      "version": "1.0.0",
+      "description": "Block-level container",
+      "kind": "component",
+      "category": "Layout",
+      "files": [
+        {
+          "path": "src/components/Layout/Block/Block.tsx",
+          "hash": "afc65fcf1fce13c72343ed879273c41d1652a6acb72c1a996a484b95623d0fd7"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "Layout/LayoutBase"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Layout/Bottom": {
+      "name": "Bottom",
+      "version": "1.0.0",
+      "description": "Bottom-anchored container",
+      "kind": "component",
+      "category": "Layout",
+      "files": [
+        {
+          "path": "src/components/Layout/Bottom/Bottom.module.scss",
+          "hash": "044b8f9754a966845073e4f9b8ec57c8299e6a9273f5f67009129bab93f0e111"
+        },
+        {
+          "path": "src/components/Layout/Bottom/Bottom.tsx",
+          "hash": "9a07c7f815af33172aaf25c2057204eb6e2d26f63df20a4d35ce0528357ed94a"
+        }
+      ],
+      "dependsOn": [
+        "Layout/LayoutBase",
+        "types/LayoutBase"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Layout/Column": {
+      "name": "Column",
+      "version": "1.0.0",
+      "description": "Vertical flex column",
+      "kind": "component",
+      "category": "Layout",
+      "files": [
+        {
+          "path": "src/components/Layout/Column/Column.module.scss",
+          "hash": "299fe85b47fcbb0e859658fd6c18a890127d8369cf8c78c5933705103abdacdb"
+        },
+        {
+          "path": "src/components/Layout/Column/Column.tsx",
+          "hash": "ad87917d959e1cd44bd5d69c24a11f3f818d6e87b9f85f56bb8be8c10c43c675"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "Layout/LayoutBase"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Layout/Content": {
+      "name": "Content",
+      "version": "1.0.0",
+      "description": "Content container",
+      "kind": "component",
+      "category": "Layout",
+      "files": [
+        {
+          "path": "src/components/Layout/Content/Content.module.scss",
+          "hash": "d355e57b6a4d4aa58fa1f2663ee805355b32c857b80a0ec8227b5c6b8a6f66ee"
+        },
+        {
+          "path": "src/components/Layout/Content/Content.tsx",
+          "hash": "e5da1627cb154e3aff6f21b6091cfdad3cee1e991849e28d3c3bfab7c77549e8"
+        }
+      ],
+      "dependsOn": [
+        "Layout/LayoutBase",
+        "types/LayoutBase"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Layout/Flex": {
+      "name": "Flex",
+      "version": "1.0.0",
+      "description": "Flexbox container",
+      "kind": "component",
+      "category": "Layout",
+      "files": [
+        {
+          "path": "src/components/Layout/Flex/Flex.module.scss",
+          "hash": "fd223f120b3b8c6373c82949dd3c3bba162c5f2fadcd97055dadb20514020304"
+        },
+        {
+          "path": "src/components/Layout/Flex/Flex.tsx",
+          "hash": "d86ebe982c4a7ed7205e5aea5572049290ce8270ec1484804c36fd267566aa1c"
+        }
+      ],
+      "dependsOn": [
+        "Layout/LayoutBase",
+        "types/ComponentProps",
+        "utils/supportsGamefaceFeature"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Layout/Grid": {
+      "name": "Grid",
+      "version": "1.0.0",
+      "description": "CSS grid container",
+      "kind": "component",
+      "category": "Layout",
+      "files": [
+        {
+          "path": "src/components/Layout/Grid/Grid.module.scss",
+          "hash": "aeb8e4a74686bab8c45293d58151c343a71d552d9aa3be8a23c84ae067e928e2"
+        },
+        {
+          "path": "src/components/Layout/Grid/Grid.tsx",
+          "hash": "787a3b1847dd546006e6ef534f896f8e4fc380cc91cb12e904256a575c052c8e"
+        },
+        {
+          "path": "src/components/Layout/Grid/GridContext.ts",
+          "hash": "a3090f783830572dea9e8afa3ea1a2da0970db71ff1bc3bf0d0c67acf24b5ccc"
+        }
+      ],
+      "dependsOn": [
+        "Layout/LayoutBase",
+        "types/ComponentProps",
+        "utils/supportsGamefaceFeature",
+        "Layout/GridTile"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Layout/GridTile": {
+      "name": "GridTile",
+      "version": "1.0.0",
+      "description": "Cell within a Grid",
+      "kind": "component",
+      "category": "Layout",
+      "files": [
+        {
+          "path": "src/components/Layout/GridTile/GridTile.module.scss",
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "src/components/Layout/GridTile/GridTile.tsx",
+          "hash": "54f3e891eb4aa6ec932b5589b53c3a0db9dd7e62bb1e015cc95358dfdc669bb6"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "Layout/LayoutBase",
+        "Layout/Grid"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Layout/Layout": {
+      "name": "Layout",
+      "version": "1.0.0",
+      "description": "Top-level layout container",
+      "kind": "component",
+      "category": "Layout",
+      "files": [
+        {
+          "path": "src/components/Layout/Layout/Layout.module.scss",
+          "hash": "79a144ea939acd44c99754b09c99732fcd17f0c194e906250cc9a0b091fe0788"
+        },
+        {
+          "path": "src/components/Layout/Layout/Layout.tsx",
+          "hash": "2bef85507370bebf451ca68b499140f3bf3054b31794ad82769100f0a667ff88"
+        }
+      ],
+      "dependsOn": [
+        "Layout/LayoutBase",
+        "types/ComponentProps",
+        "Layout/Top",
+        "Layout/Bottom",
+        "Layout/Content"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Layout/Layout3D": {
+      "name": "Layout3D",
+      "version": "1.0.0",
+      "description": "3D-transformed layout container",
+      "kind": "component",
+      "category": "Layout",
+      "files": [
+        {
+          "path": "src/components/Layout/Layout3D/Layout3D.module.scss",
+          "hash": "586a816bed9c816c303f365beac94c831d3b8aa0b11c8b277a51478c13a949b2"
+        },
+        {
+          "path": "src/components/Layout/Layout3D/Layout3D.tsx",
+          "hash": "740cd31f48244e4e6e610a00148b690216a2dd3fad2d6a0c4a5bcca10f87fadf"
+        }
+      ],
+      "dependsOn": [
+        "Layout/LayoutBase",
+        "types/ComponentProps"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Layout/LayoutBase": {
+      "kind": "lib",
+      "files": [
+        {
+          "path": "src/components/Layout/LayoutBase.tsx",
+          "hash": "eac31a0f75f441b1261b15d74e94814d446a77b64b139cdd1bd1eadba4f5d680"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "BaseComponent"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Layout/List": {
+      "name": "List",
+      "version": "1.0.0",
+      "description": "Vertical list of items with optional icons",
+      "kind": "component",
+      "category": "Layout",
+      "files": [
+        {
+          "path": "src/components/Layout/List/List.module.scss",
+          "hash": "db0d596bbc5515e7106d1577674391b98821c274057b6c3a6a6c5a1f816f84ac"
+        },
+        {
+          "path": "src/components/Layout/List/List.tsx",
+          "hash": "500ad2d6088a0939ff2b417c76f9032965cba6288f3d64b4e05ad2e0eda23449"
+        },
+        {
+          "path": "src/components/Layout/List/ListIcon.tsx",
+          "hash": "39d03a8ed98713e3f78a64a647e8fae782c93c9cc16f45589ff9b4e72649237d"
+        },
+        {
+          "path": "src/components/Layout/List/ListItem.tsx",
+          "hash": "91b489ff174f928089c12581bb008a943a8014b98a7d265cf25cee867752e169"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "utils/tokenComponents",
+        "Layout/LayoutBase"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Layout/Relative": {
+      "name": "Relative",
+      "version": "1.0.0",
+      "description": "Relatively positioned container",
+      "kind": "component",
+      "category": "Layout",
+      "files": [
+        {
+          "path": "src/components/Layout/Relative/Relative.module.scss",
+          "hash": "de9bd932815d66688d78f59ed9010fae2764a2e81f8b9794bb1f437e3bc0bdab"
+        },
+        {
+          "path": "src/components/Layout/Relative/Relative.tsx",
+          "hash": "e64b6231bd817c7f7c8837ae0f5e03184aba7bb6d4ce5f243a94e91f9f070dd4"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "Layout/LayoutBase"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Layout/Row": {
+      "name": "Row",
+      "version": "1.0.0",
+      "description": "Horizontal flex row",
+      "kind": "component",
+      "category": "Layout",
+      "files": [
+        {
+          "path": "src/components/Layout/Row/Row.module.scss",
+          "hash": "204db2893514297c335f8ce0a187f1978021caf15c11981bb4ca6935baa93da4"
+        },
+        {
+          "path": "src/components/Layout/Row/Row.tsx",
+          "hash": "0aa1a387e531e5f6c538fdab1ea087fe8be1efa66b8df13a2158057d72d5e0d4"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "Layout/LayoutBase"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Layout/Scroll": {
+      "name": "Scroll",
+      "version": "1.0.0",
+      "description": "Scrollable container with a custom scrollbar",
+      "kind": "component",
+      "category": "Layout",
+      "files": [
+        {
+          "path": "src/components/Layout/Scroll/Scroll.module.scss",
+          "hash": "6690e6ba34881beb40ebaf105821f44d0a04da5c5cdd089f980026307dfaa257"
+        },
+        {
+          "path": "src/components/Layout/Scroll/Scroll.tsx",
+          "hash": "7367ff502af0e890f7976ae98504dd43bee5b04b66991f34b83a87d8103ae2c2"
+        },
+        {
+          "path": "src/components/Layout/Scroll/ScrollBar.tsx",
+          "hash": "f1a0c0ebedc2b04756520cd7fb1af8fce360166cc2fb8553e28e632c52c6ec58"
+        },
+        {
+          "path": "src/components/Layout/Scroll/ScrollContent.tsx",
+          "hash": "f0d44399320e3525d6d1abb976e7ccdc34c9e4057e594d7b815ef6f89d6aa4fa"
+        },
+        {
+          "path": "src/components/Layout/Scroll/ScrollHandle.tsx",
+          "hash": "98094889bd01055e1ae6baca1442cc87051024fe76c5355ee0a9e2971d382e99"
+        }
+      ],
+      "dependsOn": [
+        "Layout/LayoutBase",
+        "utils/clamp",
+        "types/ComponentProps",
+        "Utility/Navigation",
+        "utils/tokenComponents"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Layout/Tab": {
+      "name": "Tab",
+      "version": "1.0.0",
+      "description": "Single tab panel",
+      "kind": "component",
+      "category": "Layout",
+      "files": [
+        {
+          "path": "src/components/Layout/Tab/Tab.tsx",
+          "hash": "6ef8f8a9d04f2bbd718ace4036479dbaecc1372ca24c183f5f39608f9de5c890"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "Layout/Tabs"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Layout/TabLink": {
+      "name": "TabLink",
+      "version": "1.0.0",
+      "description": "Tab trigger link",
+      "kind": "component",
+      "category": "Layout",
+      "files": [
+        {
+          "path": "src/components/Layout/TabLink/TabLink.tsx",
+          "hash": "e7bd47581eb27529344002906a09f1d8ca6bb901da4ac46ba0658c6facdc06dd"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "Layout/Tabs",
+        "Layout/LayoutBase"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Layout/Tabs": {
+      "name": "Tabs",
+      "version": "1.0.0",
+      "description": "Tabbed interface container",
+      "kind": "component",
+      "category": "Layout",
+      "files": [
+        {
+          "path": "src/components/Layout/Tabs/Tabs.tsx",
+          "hash": "45c8e23b88ce7bb58fe938abbf348cb782abe2ec2e4f221530d49f5b114b8115"
+        }
+      ],
+      "dependsOn": [],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Layout/Top": {
+      "name": "Top",
+      "version": "1.0.0",
+      "description": "Top-anchored container",
+      "kind": "component",
+      "category": "Layout",
+      "files": [
+        {
+          "path": "src/components/Layout/Top/Top.module.scss",
+          "hash": "e3b5bd2259ac217aa1ca39d14571e385c6cbf108dfe931e3bfbbab3d80615fe2"
+        },
+        {
+          "path": "src/components/Layout/Top/Top.tsx",
+          "hash": "d479e02556595c1214e691304abdfe261620918786aa7f15a18a34cbde319431"
+        }
+      ],
+      "dependsOn": [
+        "Layout/LayoutBase",
+        "types/LayoutBase"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Layout/Transform": {
+      "name": "Transform",
+      "version": "1.0.0",
+      "description": "Applies CSS transforms to its children",
+      "kind": "component",
+      "category": "Layout",
+      "files": [
+        {
+          "path": "src/components/Layout/Transform/Transform.tsx",
+          "hash": "c959636e67c8d9ba1c487c873a0a9fe403260e7ca0e4999574255ce7dd3e60a7"
+        }
+      ],
+      "dependsOn": [
+        "Layout/LayoutBase",
+        "types/ComponentProps"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Media/BackgroundImage": {
+      "name": "BackgroundImage",
+      "version": "1.0.0",
+      "description": "Element with a background image",
+      "kind": "component",
+      "category": "Media",
+      "files": [
+        {
+          "path": "src/components/Media/BackgroundImage/BackgroundImage.module.scss",
+          "hash": "335825bf91a2c6fd5358c3b75dcaa86de61841010c4d7060e4ba5eb9fd0f9d9d"
+        },
+        {
+          "path": "src/components/Media/BackgroundImage/BackgroundImage.tsx",
+          "hash": "60b27ff2eae5abedede96eb087fcf940ee53e774d5454e5f452841b7cded9126"
+        }
+      ],
+      "dependsOn": [
+        "Media/ImageBase"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Media/Icon": {
+      "name": "Icon",
+      "version": "1.0.0",
+      "description": "Renders an icon from the icon set",
+      "explicit-dependency": [
+        "scripts/generate-icon-types.js"
+      ],
+      "kind": "component",
+      "category": "Media",
+      "files": [
+        {
+          "path": "src/components/Media/Icon/fallback.png",
+          "hash": "68e888ba118741d6180d3e4e8277b8788b2edaaceef16deb87d6284a195992b4"
+        },
+        {
+          "path": "src/components/Media/Icon/Icon.module.scss",
+          "hash": "b18df5ccfe34088cea532fb63d84d96d704492766287aa15d1fc675515266a31"
+        },
+        {
+          "path": "src/components/Media/Icon/Icon.tsx",
+          "hash": "45ff9f8100e229edbd9d00fe31fc9ec732eab7a90d8ee8ef24fd37bd62047312"
+        },
+        {
+          "path": "scripts/generate-icon-types.js",
+          "hash": "5f64113d9cc041b54d9f7d163d1566efb17d881709aaf078d6a6750ca2db016b"
+        }
+      ],
+      "dependsOn": [
+        "BaseComponent",
+        "types/ComponentProps",
+        "types/BaseComponent"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Media/Image": {
+      "name": "Image",
+      "version": "1.0.0",
+      "description": "Image element",
+      "kind": "component",
+      "category": "Media",
+      "files": [
+        {
+          "path": "src/components/Media/Image/Image.tsx",
+          "hash": "f229fc527c96d8c8c617f304189acd1538d69c24a339e4b8e22c7f64cf9438fe"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps",
+        "Media/ImageBase",
+        "BaseComponent"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Media/ImageBase": {
+      "name": "ImageBase",
+      "version": "1.0.0",
+      "description": "Shared base for the image components",
+      "kind": "component",
+      "category": "Media",
+      "files": [
+        {
+          "path": "src/components/Media/ImageBase/ImageBase.module.scss",
+          "hash": "387b8e54f7bd45b3562b39d93296ce9f6b51c19f6f0e90d7dafa077580361772"
+        },
+        {
+          "path": "src/components/Media/ImageBase/ImageBase.tsx",
+          "hash": "91afe805bab6aa46ffdd0a81e90d608949c75c6753b0d61664e4237a2dfcab16"
+        }
+      ],
+      "dependsOn": [
+        "Layout/LayoutBase",
+        "Media/Image"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Media/LiveView": {
+      "name": "LiveView",
+      "version": "1.0.0",
+      "description": "Embeds a live in-game view",
+      "kind": "component",
+      "category": "Media",
+      "files": [
+        {
+          "path": "src/components/Media/LiveView/LiveView.tsx",
+          "hash": "3c80516ab912ae68b32fb0510be1dda01ba01678446b193b637b3dcde6e96fca"
+        }
+      ],
+      "dependsOn": [
+        "Media/Image"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "Media/MaskImage": {
+      "name": "MaskImage",
+      "version": "1.0.0",
+      "description": "Image masked by an alpha mask",
+      "kind": "component",
+      "category": "Media",
+      "files": [
+        {
+          "path": "src/components/Media/MaskImage/MaskImage.module.scss",
+          "hash": "2f818a30031bd48ea1fd43b96858155d2ed90fc6ad83d989a7a40a1951768330"
+        },
+        {
+          "path": "src/components/Media/MaskImage/MaskImage.tsx",
+          "hash": "29377b3447c1efa7b3fea4e2b8b4cd3a131385c373f5bf7fc14cd1a24d37a3dd"
+        }
+      ],
+      "dependsOn": [
+        "Media/ImageBase"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "types/BaseComponent": {
+      "kind": "lib",
+      "files": [
+        {
+          "path": "src/components/types/BaseComponent.d.ts",
+          "hash": "05fc4fae67170956251c77abcbc60e273f431af22777ae82c431eb6463d50b45"
+        }
+      ],
+      "dependsOn": [],
+      "npmDependencies": []
+    },
+    "types/ComponentProps": {
+      "kind": "lib",
+      "files": [
+        {
+          "path": "src/components/types/ComponentProps.d.ts",
+          "hash": "01c02445db6783b4f3cb749b67078e33152f6ec48f2aa2fefb827d2bc88fd63c"
+        }
+      ],
+      "dependsOn": [
+        "types/BaseComponent",
+        "BaseComponent",
+        "Utility/Navigation"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    },
+    "types/index": {
+      "kind": "lib",
+      "files": [
+        {
+          "path": "src/components/types/index.d.ts",
+          "hash": "7bea34dd662493103869fa4aa95d082e3c1ba275a06ab609d72fb4df5c41096f"
+        }
+      ],
+      "dependsOn": [],
+      "npmDependencies": []
+    },
+    "types/LayoutBase": {
+      "kind": "lib",
+      "files": [
+        {
+          "path": "src/components/types/LayoutBase.d.ts",
+          "hash": "60ad49ec59beaeba58271215826d9a8fe51a2cdff32eea90c0e077b6e05fa8b8"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps"
+      ],
+      "npmDependencies": []
+    },
+    "Utility/EventBus": {
+      "name": "EventBus",
+      "version": "1.0.0",
+      "description": "Publish/subscribe event bus for cross-component communication",
+      "kind": "component",
+      "category": "Utility",
+      "files": [
+        {
+          "path": "src/components/Utility/EventBus/index.ts",
+          "hash": "3a2d8eecd6e6e0fb21ef057aebf81ca0bc709d1bbf0e6ed06868d1e4df76680a"
+        }
+      ],
+      "dependsOn": [],
+      "npmDependencies": []
+    },
+    "Utility/Navigation": {
+      "name": "Navigation",
+      "version": "1.0.0",
+      "description": "Directional (gamepad/keyboard) focus navigation for UI areas",
+      "kind": "component",
+      "category": "Utility",
+      "files": [
+        {
+          "path": "src/components/Utility/Navigation/actionMethods/actionMethods.types.ts",
+          "hash": "eca621770762381b93672653b0d77072aa518605eeb3780e47087deec26ae838"
+        },
+        {
+          "path": "src/components/Utility/Navigation/actionMethods/useActionMethods.ts",
+          "hash": "fb03fbaf52f107cc62921f37f519d623523c4db97b6b88df2c29c908435f5105"
+        },
+        {
+          "path": "src/components/Utility/Navigation/areaMethods/areaMethods.types.ts",
+          "hash": "96e6c9c065529efbef99cc56f1f11b3e5f62ce040bb60a6c85e1b1fe14b2f7d0"
+        },
+        {
+          "path": "src/components/Utility/Navigation/areaMethods/useAreaMethods.ts",
+          "hash": "b6b8687e1491fa4359f3e27ae11d48f6f4e64641be13b1f677fc4334aac0c98d"
+        },
+        {
+          "path": "src/components/Utility/Navigation/defaults.ts",
+          "hash": "614643bacf904e46dfc2dcb07105306e5bb5a04ca7c8ce72931e8d669a48087d"
+        },
+        {
+          "path": "src/components/Utility/Navigation/Navigation.tsx",
+          "hash": "92c0cb2842b90aae0dd732f1b3ebb6261c1f826c942c1a80fdba13783181577b"
+        },
+        {
+          "path": "src/components/Utility/Navigation/NavigationArea.tsx",
+          "hash": "11ddd8ccbedfb8436bf1e201c687bfdcf1ccb48888331ce4bfb00bc4653ff5e4"
+        },
+        {
+          "path": "src/components/Utility/Navigation/types.ts",
+          "hash": "2e1f18fb20b31fd358e5002df15822d3c4114d6f909cd0fa5c157005c8a16195"
+        }
+      ],
+      "dependsOn": [
+        "Utility/EventBus",
+        "utils/waitForFrames"
+      ],
+      "npmDependencies": [
+        "coherent-gameface-interaction-manager",
+        "solid-js"
+      ]
+    },
+    "utils/assignEventHandlers": {
+      "kind": "lib",
+      "files": [
+        {
+          "path": "src/components/utils/assignEventHandlers.ts",
+          "hash": "473981b662b2bb269200ea2a6d37f5626c2e24d07e9196334d160d4ad412fcf0"
+        }
+      ],
+      "dependsOn": [
+        "types/BaseComponent"
+      ],
+      "npmDependencies": []
+    },
+    "utils/clamp": {
+      "kind": "lib",
+      "files": [
+        {
+          "path": "src/components/utils/clamp.ts",
+          "hash": "3a8578d022c8296a08221bae18ca99bafcaebd082e145d45c0ffe073d253adcd"
+        }
+      ],
+      "dependsOn": [],
+      "npmDependencies": []
+    },
+    "utils/debounce": {
+      "kind": "lib",
+      "files": [
+        {
+          "path": "src/components/utils/debounce.ts",
+          "hash": "81534929db980675a6b100c1915237d53342bbe5d6c70b2f1b643fbbccfd130d"
+        }
+      ],
+      "dependsOn": [],
+      "npmDependencies": []
+    },
+    "utils/gamefaceVersion": {
+      "kind": "lib",
+      "files": [
+        {
+          "path": "src/components/utils/gamefaceVersion.ts",
+          "hash": "30d6e7b9d204cc56230e94564990aec10be0e72c405395e1933ed5a15a710b46"
+        }
+      ],
+      "dependsOn": [],
+      "npmDependencies": []
+    },
+    "utils/getSafePosition": {
+      "kind": "lib",
+      "files": [
+        {
+          "path": "src/components/utils/getSafePosition.ts",
+          "hash": "e2c8e7a9c9469856a79470e575df27d5c370843f9d978ec05d20fdf55ce6ef13"
+        }
+      ],
+      "dependsOn": [],
+      "npmDependencies": []
+    },
+    "utils/getScrollableParent": {
+      "kind": "lib",
+      "files": [
+        {
+          "path": "src/components/utils/getScrollableParent.ts",
+          "hash": "2779051c7a7f12ed1c00f91e306a95c73a021c6a3cc62ae4913eeaf19e5ec6d0"
+        }
+      ],
+      "dependsOn": [],
+      "npmDependencies": []
+    },
+    "utils/mergeNavigationActions": {
+      "kind": "lib",
+      "files": [
+        {
+          "path": "src/components/utils/mergeNavigationActions.ts",
+          "hash": "e79cafaa75162838ae5363e78d218ef1b7fee2933910a7a55e1f2c2cafb0bad8"
+        }
+      ],
+      "dependsOn": [
+        "types/ComponentProps"
+      ],
+      "npmDependencies": []
+    },
+    "utils/stopPropagation": {
+      "kind": "lib",
+      "files": [
+        {
+          "path": "src/components/utils/stopPropagation.ts",
+          "hash": "4f57785b2e6c1fcd1d074dc46d07e94ea6933d3609f1441dc5815b4c8a73eb15"
+        }
+      ],
+      "dependsOn": [],
+      "npmDependencies": []
+    },
+    "utils/supportsGamefaceFeature": {
+      "kind": "lib",
+      "files": [
+        {
+          "path": "src/components/utils/supportsGamefaceFeature.ts",
+          "hash": "d597e430e658316e67c557e83a1eabe1c0bb3510a213358ca1256798cbeef469"
+        }
+      ],
+      "dependsOn": [
+        "utils/gamefaceVersion"
+      ],
+      "npmDependencies": []
+    },
+    "utils/tokenComponents": {
+      "kind": "lib",
+      "files": [
+        {
+          "path": "src/components/utils/tokenComponents.tsx",
+          "hash": "074de0c4e3a599301038bdaf56aed1adf93add9deedf48271f704f0f64a08c6c"
+        }
+      ],
+      "dependsOn": [],
+      "npmDependencies": [
+        "@solid-primitives/jsx-tokenizer",
+        "solid-js"
+      ]
+    },
+    "utils/waitForFrames": {
+      "kind": "lib",
+      "files": [
+        {
+          "path": "src/components/utils/waitForFrames.ts",
+          "hash": "d3b396c734a99631c6cda3c3480ef0de0afa2a52617de95d882f4021ac0f5233"
+        }
+      ],
+      "dependsOn": [],
+      "npmDependencies": []
+    },
+    "TestRecipe": {
+      "name": "ChipMultiSelect",
+      "version": "1.0.0",
+      "description": "A multi-select component using chips",
+      "kind": "recipe",
+      "files": [
+        {
+          "path": "src/recipes/TestRecipe/ChipMultiSelect.module.scss",
+          "hash": "82a6b9c268d63d0af3809bdc526a4b31b4fcb625c451f55692c84e061e52daf0"
+        },
+        {
+          "path": "src/recipes/TestRecipe/ChipMultiSelect.tsx",
+          "hash": "4279215ec3832d66edca596bc9d3cd811b6eb7272c4e64b7654d0941ae5a6e2d"
+        },
+        {
+          "path": "src/recipes/TestRecipe/utils/countriesList.ts",
+          "hash": "99932dfe2980ffc9368686a2f8e80f9b56782c7a3541c17486ca111e35f6febe"
+        },
+        {
+          "path": "src/recipes/TestRecipe/utils/ImageMap.ts",
+          "hash": "4e27e902c76d93b7513a4426d68c0e52f69c7ae52087bf2e33492e97e2097e47"
+        }
+      ],
+      "dependsOn": [
+        "Basic/Dropdown",
+        "Layout/Flex",
+        "Media/BackgroundImage"
+      ],
+      "npmDependencies": [
+        "solid-js"
+      ]
+    }
+  }
+}
