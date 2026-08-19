@@ -10,6 +10,14 @@ import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.as
 The `Keybinds` component is an easy way to set up keyboard + mouse binding logic in your UI.
 It works together with the `Keybind` component, which represents a single action slot. `Keybinds` provides context, conflict handling, and programmatic control.
 
+## Installation
+
+:::note[Available in Gameface UI projects only]
+`Keybinds` comes with the boilerplate and cannot be added to an existing project with the CLI. It depends on a generated type file, an icon-generation script, and the gamepad glyph assets that only exist in the full template, so an installed copy would not build.
+
+To use it, [start from the boilerplate](/docs/getting-started/how-to-use#using-the-boilerplate). The CLI documentation explains this in [components that need a full Gameface project](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/existing-projects/#components-that-need-a-full-gameface-project).
+:::
+
 ## Usage
 
 Wrap all your `Keybind` items in a `Keybinds` component. Each `Keybind` needs an `action` and can optionally get an initial `value`.

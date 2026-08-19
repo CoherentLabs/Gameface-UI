@@ -11,6 +11,16 @@ You can also nest Tabs or generate them dynamically, and you can run custom logi
 
 **Note:** The `Tabs` component does not render an HTML element. 
 
+## Installation
+
+Every component ships with the boilerplate. If you are working in your own project, add `Tabs` with the [Gameface CLI](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/):
+
+```bash
+npx gameface-cli add Tabs
+```
+
+The CLI pulls in whatever `Tabs` depends on. To refresh an existing copy, [update it](/docs/getting-started/updating-components) instead.
+
 ## Usage 
 
 To use the tab system, wrap your tab links and tab content with the `Tabs` component. Assign a unique `location` string to each Tab and its corresponding `TabLink`. Optionally, set a default tab using the `default` prop.

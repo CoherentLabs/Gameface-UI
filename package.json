@@ -1,6 +1,6 @@
 {
   "name": "gameface-ui-template",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "",
   "scripts": {
     "start": "vite",
@@ -10,6 +10,7 @@
     "dev:host": "vite --host --mode test",
     "build:test": "npm run gen-icons&&vite build --mode test",
     "gen-icons": "node scripts/generate-icon-types.js",
+    "gen-registry": "node scripts/registry/generate-registry.mts",
     "preview": "vite preview --port 3000 --host",
     "test": "npm run build:test&&start-server-and-test preview http://localhost:3000/components-e2e/ run-test",
     "dev:test-view": "vite --mode test"

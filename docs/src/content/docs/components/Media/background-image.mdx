@@ -4,6 +4,16 @@ title: BackgroundImage
 
 The `BackgroundImage` component allows you to create a container with an image as its background. It supports images in `.png`, `.jpg`, or `.svg` formats that can be imported directly from your assets folder.
 
+## Installation
+
+Every component ships with the boilerplate. If you are working in your own project, add `BackgroundImage` with the [Gameface CLI](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/):
+
+```bash
+npx gameface-cli add BackgroundImage
+```
+
+The CLI pulls in whatever `BackgroundImage` depends on. To refresh an existing copy, [update it](/docs/getting-started/updating-components) instead.
+
 ## Usage
 
 The `BackgroundImage` component is used to wrap other UI elements, applying a background image behind them. To use the component, import it and set the `src` attribute to a valid URL of the image to be used as the background. If no other `options` are specified, the background will be rendered with its original dimensions without repeating. Note that the background size is different from the container size. To set the dimensions of the `BackgroundImage` container, use either the `style` or `class` attributes. To set the background size inside the container, use the `size` property within the `options` object, for example, `options={{ size: 'contain' }}`.
