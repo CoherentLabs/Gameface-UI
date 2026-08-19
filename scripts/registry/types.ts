@@ -1,8 +1,8 @@
 export interface Manifest {
     name: string,
     version?: string,
-    description?: string
-    kind: 'component' | 'lib' | 'recipe',
+    description?: string,
+    kind?: 'component' | 'lib' | 'recipe',
     'explicit-dependency'?: string[],
 }
 

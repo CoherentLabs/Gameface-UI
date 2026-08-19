@@ -8,10 +8,12 @@ const ROOT = path.join(import.meta.dirname, '..', '..');
 const COMPONENTS_PATH = path.join(ROOT, 'src', 'components');
 const RECIPE_PATH = path.join(ROOT, 'src', 'recipes');
 const GITIGNORE_PATH = path.join(ROOT, '.gitignore');
-const gitIgnoreContent = fs.readFileSync(GITIGNORE_PATH, 'utf-8')
-    .split(/\r?\n/)          // handle CRLF and LF
-    .map(l => l.trim())      // kill stray \r / whitespace
-    .filter(l => l && !l.startsWith('#'));
+const gitIgnoreContent = fs.existsSync(GITIGNORE_PATH)
+    ? fs.readFileSync(GITIGNORE_PATH, 'utf-8')
+        .split(/\r?\n/)          // handle CRLF and LF
+        .map(l => l.trim())      // kill stray \r / whitespace
+        .filter(l => l && !l.startsWith('#'))
+    : [];
 
 // Only these file types can carry import declarations worth scanning.
 const SCAN_EXT = new Set(['.ts', '.tsx', '.mts', '.cts', '.js', '.jsx', '.mjs', '.cjs']);
@@ -59,61 +61,66 @@ const populateFilesArray = (file: fs.Dirent<string>, files: { path: string; hash
 }
 
 const walk = (folderPath: string) => {
-    // COMPONENT: collect its files, emit one entry, then STOP.
-    if (hasManifest(folderPath)) {
-        const isRecipe = folderPath.startsWith(RECIPE_PATH);
-        const id = getComponentId(folderPath, isRecipe);
-        let manifest;
-
-        let files: { path: string; hash: string }[] = [];
-        for (const entry of fs.readdirSync(folderPath, { withFileTypes: true })) {
-            if (entry.name === 'manifest.json') {
-                manifest = JSON.parse(fs.readFileSync(path.join(folderPath, entry.name), 'utf-8')) as Manifest;
-                continue;
-            }
-
-            // Nested directories: like Keybinds/utils
-            if (entry.isDirectory()) {
-                fs.readdirSync(path.join(entry.parentPath, entry.name), { withFileTypes: true, recursive: true }).forEach((file) => {
-                    if (file.isDirectory()) return; // Skip directories, we only want files
-
-                    populateFilesArray(file, files);
-                })
-                continue
-            }
-
-            populateFilesArray(entry, files);
-        }
-
-        // Pull in explicitly-declared external files (e.g. Icon's gen-icons script).
-        // Delivered with the entry but flagged so the import scanner skips them.
-        for (const dep of (manifest?.['explicit-dependency'] ?? [])) {
-            const absDep = path.join(ROOT, dep);
-            if (fs.statSync(absDep).isDirectory()) {
-                fs.readdirSync(absDep, { withFileTypes: true, recursive: true }).forEach((file) => {
-                    if (file.isDirectory()) return;
-                    const rel = getRelativeFilePath(file);
-                    files.push({ path: rel, hash: hashFile(path.join(file.parentPath, file.name)) });
-                    EXTERNAL_FILES.add(rel);
-                });
-            } else {
-                const rel = dep.replace(/\\/g, '/');
-                files.push({ path: rel, hash: hashFile(absDep) });
-                EXTERNAL_FILES.add(rel);
-            }
-        }
-
-        REGISTRY.set(id, {
-            ...manifest,
-            kind: isRecipe ? 'recipe' : (manifest?.kind ?? 'component'),
-            category: !isRecipe && (manifest?.kind ?? 'component') === 'component' ? id.split('/')[0] : undefined,
-            files,
-        })
-
+    // If no manifest.json - it's either a lib or nested folder which may contain a component
+    if (!hasManifest(folderPath)) {
+        walkNested(folderPath);
         return;
     }
+    
+    // COMPONENT: collect its files, emit one entry, then STOP.
+    const isRecipe = folderPath.startsWith(RECIPE_PATH);
+    const id = getComponentId(folderPath, isRecipe);
+    let manifest;
 
-    // If no manifest.json - it's either a lib or nested folder which may contain a component
+    let files: { path: string; hash: string }[] = [];
+    for (const entry of fs.readdirSync(folderPath, { withFileTypes: true })) {
+        if (entry.name === 'manifest.json') {
+            manifest = JSON.parse(fs.readFileSync(path.join(folderPath, entry.name), 'utf-8')) as Manifest;
+            continue;
+        }
+
+        // Nested directories: like Keybinds/utils
+        if (entry.isDirectory()) {
+            fs.readdirSync(path.join(entry.parentPath, entry.name), { withFileTypes: true, recursive: true }).forEach((file) => {
+                if (file.isDirectory()) return; // Skip directories, we only want files
+
+                populateFilesArray(file, files);
+            })
+            continue
+        }
+
+        populateFilesArray(entry, files);
+    }
+
+    // Pull in explicitly-declared external files (e.g. Icon's gen-icons script).
+    // Delivered with the entry but flagged so the import scanner skips them.
+    for (const dep of (manifest?.['explicit-dependency'] ?? [])) {
+        const absDep = path.join(ROOT, dep);
+        if (fs.statSync(absDep).isDirectory()) {
+            fs.readdirSync(absDep, { withFileTypes: true, recursive: true }).forEach((file) => {
+                if (file.isDirectory()) return;
+                const rel = getRelativeFilePath(file);
+                files.push({ path: rel, hash: hashFile(path.join(file.parentPath, file.name)) });
+                EXTERNAL_FILES.add(rel);
+            });
+        } else {
+            const rel = dep.replace(/\\/g, '/');
+            files.push({ path: rel, hash: hashFile(absDep) });
+            EXTERNAL_FILES.add(rel);
+        }
+    }
+
+    REGISTRY.set(id, {
+        ...manifest,
+        kind: isRecipe ? 'recipe' : (manifest?.kind ?? 'component'),
+        category: !isRecipe && (manifest?.kind ?? 'component') === 'component' ? id.split('/')[0] : undefined,
+        files,
+    })
+
+    return;
+};
+
+const walkNested = (folderPath: string) => {
     for (const child of fs.readdirSync(folderPath, { withFileTypes: true })) {
         if (child.isDirectory()) {
             walk(path.join(folderPath, child.name));
@@ -124,18 +131,18 @@ const walk = (folderPath: string) => {
                     path.basename(child.name, path.extname(child.name)))
                 .replace(/\.d/, '')
                 .replace(/\\/g, '/');
-
+    
             const relativeFilePath = getRelativeFilePath(child);
             const hash = hashFile(path.join(child.parentPath, child.name));
             const files = [{ path: relativeFilePath, hash }];
-
+    
             REGISTRY.set(id, {
                 kind: 'lib',
                 files,
             })
         }
     }
-};
+}
 
 const REGISTRY = new Map<string, ComponentData>();
 const filePathToId = new Map<string, string>();
@@ -148,8 +155,10 @@ for (const rootDir of fs.readdirSync(COMPONENTS_PATH, { withFileTypes: true })) 
 }
 
 // Populate the REGISTRY by walking through the recipes directory
-for (const rootDir of fs.readdirSync(RECIPE_PATH, { withFileTypes: true })) {
-    walk(path.join(RECIPE_PATH, rootDir.name));
+if (fs.existsSync(RECIPE_PATH)) {
+    for (const rootDir of fs.readdirSync(RECIPE_PATH, { withFileTypes: true })) {
+        walk(path.join(RECIPE_PATH, rootDir.name));
+    }
 }
 
 // Populate the filePathToId map for quick lookup of component IDs based on file paths

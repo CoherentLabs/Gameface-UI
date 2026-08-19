@@ -13,13 +13,18 @@ function baseVersion(manifestPath: string): string | null {
   }
 }
 
-const manifestPath = (id: string, kind: string) => 
-  kind === 'lib'
-    ? null
-    :
-  kind === 'recipe' 
-    ? `src/recipes/${id}/manifest.json`
-    : `src/components/${id}/manifest.json`;
+const manifestPath = (id: string, kind: string) => {
+  switch (kind) {
+    case 'lib':
+      return null;
+    case 'recipe':
+      return `src/recipes/${id}/manifest.json`;
+    case 'component':
+      return `src/components/${id}/manifest.json`;
+    default:
+      return null;
+  }
+};
 
 function compareVersions(a: string, b: string): number {
   const partsA = a.split('.').map(Number);
@@ -58,14 +63,17 @@ for (const [id, data] of Object.entries<any>(entries)) {
   }
 }
 
-// must-bump = touched + all dependents
+// must-bump = touched + all dependents. The edited entry is carried along the walk so the
+// summary can name which change pulled each dependent in.
 const mustBump = new Set<string>();
-const stack = [...touched];
+const causedBy = new Map<string, string>();
+const stack = [...touched].map(id => ({ id, root: id }));
 while (stack.length) {
-  const id = stack.pop()!;
+  const { id, root } = stack.pop()!;
   if (mustBump.has(id)) continue;
   mustBump.add(id);
-  for (const d of dependents.get(id) ?? []) stack.push(d);
+  if (!touched.has(id)) causedBy.set(id, root);   // an entry edited in this PR has no "via"
+  for (const d of dependents.get(id) ?? []) stack.push({ id: d, root });
 }
 
 // Check whether the manifest has been bumped
@@ -76,7 +84,7 @@ for (const id of mustBump) {
   const data = entries[id];
   const manifest = manifestPath(id, data.kind);
   const oldVer = manifest ? baseVersion(manifest) : null;
-  const newVer = data.version as string;
+  const newVer = data.version ?? "1.0.0";
 
   if (oldVer === null) continue;                              // new entry, nothing to bump against
   verified++;
@@ -91,15 +99,27 @@ console.log('Edited entries:', [...touched]);
 if (violations.length) {
   for (const v of violations) {
     const manifest = manifestPath(v.id, entries[v.id].kind);   // points the annotation at the manifest
-    console.log(`::error file=${manifest},line=1,title=Version bump required::${v.id} changed (via dependency) but wasn't bumped - still ${v.newVer}, base is ${v.oldVer}`);
+    const cause = touched.has(v.id) ? 'was edited' : 'changed via a dependency';
+    // Both versions are equal in the usual case, so printing them both just repeats itself.
+    // They only differ when someone lowered the version, which is worth spelling out.
+    const state = compareVersions(v.newVer, v.oldVer) < 0
+      ? `its version went backwards (${v.oldVer} on ${base}, ${v.newVer} here)`
+      : `is still on ${v.newVer}`;
+    console.log(`::error file=${manifest},line=1,title=Version bump required::${v.id} ${cause} and ${state} - please bump it.`);
   }
 
   if (process.env.GITHUB_STEP_SUMMARY) {
-    const rows = violations.map(v => `| \`${v.id}\` | ${v.oldVer} | ${v.newVer} |`).join('\n');
+    const rows = violations.map(v => {
+      const cause = causedBy.get(v.id);
+      const why = touched.has(v.id) ? 'edited directly'
+        : cause ? `via \`${cause}\``
+        : 'a dependency changed';
+      return `| \`${v.id}\` | ${why} | ${v.newVer} |`;
+    }).join('\n');
     fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
       `## ❌ Version bumps required\n\n` +
       `These entries changed directly or through a dependency but weren't bumped:\n\n` +
-      `| Entry | base version | your PR |\n|---|---|---|\n${rows}\n`
+      `| Entry | Why | Version |\n|---|---|---|\n${rows}\n`
     );
   }
 
