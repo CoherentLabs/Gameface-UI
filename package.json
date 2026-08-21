@@ -1,6 +1,6 @@
 {
   "name": "gameface-ui-template",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "",
   "scripts": {
     "start": "vite",
@@ -19,13 +19,12 @@
   "devDependencies": {
     "@eslint/js": "^9.27.0",
     "concurrently": "^9.2.1",
-    "eslint": "^10.7.0",
-    "eslint-plugin-gameface": "^1.1.0",
+    "eslint": "^10.8.1",
+    "eslint-plugin-gameface": "^1.2.0",
     "gameface-e2e": "^2.3.0",
     "sass": "^1.89.2",
     "start-server-and-test": "^2.0.12",
     "typescript": "^5.6.3",
-    "typescript-eslint": "^8.32.1",
     "vite": "^5.4.10",
     "vite-plugin-eslint": "^1.8.1",
     "vite-plugin-solid": "^2.10.2",
