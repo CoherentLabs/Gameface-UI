@@ -2,6 +2,7 @@ const chokidar = require('chokidar');
 const glob = require( 'glob');
 const fs = require('fs');
 const path = require('path');
+const normalizeIconKey = require('../src/components/Media/Icon/normalizeIconKey.ts').default;
 
 const ICONS_DIR = 'src/assets/icons';
 const OUTPUT_FILE = 'src/components/Media/Icon/IconTypes.ts';
@@ -17,7 +18,7 @@ function generateIconTypes() {
         // Remove extension (a.png -> a)
         const cleanPath = relativePath.replace(/\.[^/.]+$/, "");
         // ['gamepad', 'xbox', 'a']
-        const parts = cleanPath.split('/');
+        const parts = cleanPath.split('/').map(part => normalizeIconKey(part, file));
         
         let current = structure;
         parts.forEach((part, index) => {

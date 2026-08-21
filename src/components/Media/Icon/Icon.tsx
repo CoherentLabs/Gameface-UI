@@ -5,6 +5,7 @@ import fallbackImg from './fallback.png?url';
 import baseComponent from "@components/BaseComponent/BaseComponent";
 import { ComponentProps, ExcludedEvents } from "@components/types/ComponentProps";
 import Events from "@components/types/BaseComponent";
+import normalizeIconKey from "./normalizeIconKey";
 
 export interface IconProps extends Omit<Events, ExcludedEvents> {
 	fill?: boolean
@@ -49,7 +50,7 @@ const buildIconTree = (): IconMap => {
 			.replace(/^.*\/assets\/icons\//, '')
 			.replace(/\.[^/.]+$/, "");
 
-		const keys = cleanPath.split('/');
+		const keys = cleanPath.split('/').map(key => normalizeIconKey(key, path));
 
 		let currentLevel = tree;
 		keys.forEach((key, index) => {
