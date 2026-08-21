@@ -13,6 +13,7 @@ import { bandCentre, createBandScale, createLinearScale } from '../core/scales';
 import { createPointEvent } from '../core/events';
 import { DEFAULT_PALETTE, resolveColor } from '../core/palette';
 import { formatChartNumber } from '../core/radius';
+import { warnOnMarkBudget } from '../core/warnOnce';
 import ChartRoot from '../parts/ChartRoot';
 import ChartLabels, { ChartLabelAnchor } from '../parts/ChartLabels';
 import { AxisTick, ChartAxisLabels, ChartGridLines } from '../parts/ChartAxes';
@@ -99,7 +100,7 @@ const BarChart: ParentComponent<BarProps> = (props) => {
 
         const { data, values } = frame();
         const categories = data.categories;
-        const visible = model.visibleIndices();
+        const visible = model.visibleIn(data);
         if (categories.length === 0) return null;
 
         const spans = computeSpans(data, values, visible, stacked());
@@ -228,6 +229,8 @@ const BarChart: ParentComponent<BarProps> = (props) => {
             label: categoryAxisToken()?.format ? categoryAxisToken()!.format!(category) : category,
         }));
 
+        warnOnMarkBudget('Chart.Bar', bars.length);
+
         return {
             margin, plotWidth, plotHeight, bars, categoryScale, valueScale,
             baseline, valueTicks, categoryTicks, categories, domain,
@@ -284,7 +287,7 @@ const BarChart: ParentComponent<BarProps> = (props) => {
             label: series.label ?? `Series ${seriesIndex + 1}`,
             color: resolveColor(palette(), seriesIndex, series),
             seriesIndex,
-            visible: model.isSeriesVisible(seriesIndex),
+            visible: model.isSeriesVisible(seriesIndex, data),
         }));
     });
 

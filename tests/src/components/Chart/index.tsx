@@ -162,6 +162,19 @@ const ChartTest = () => {
             label: 'Empty data',
             action: () => setData([]),
         },
+        {
+            // Thin neighbouring slices put their outside labels at almost the
+            // same angle, which is what the collision spread has to fix.
+            label: 'Many thin slices',
+            action: () => setPoints([
+                { type: 'strength', value: 60 },
+                { type: 'agility', value: 2 },
+                { type: 'stamina', value: 2 },
+                { type: 'intellect', value: 2 },
+                { type: 'spirit', value: 2 },
+                { type: 'luck', value: 2 },
+            ]),
+        },
     ];
 
     const reset = () => {
@@ -199,7 +212,7 @@ const ChartTest = () => {
                     interactive
                 >
                     <Chart.Pie.Slice class={selectors.slice} hoverOffset={6} padAngle={1} cornerRadius={4} />
-                    <Chart.Labels class={selectors.label} placement="outside" />
+                    <Chart.Labels class={selectors.label} placement="outside" leaderLines />
                     <Chart.Legend class={selectors.legend} position="bottom" />
                     <Chart.Tooltip class={selectors.tooltip} />
                 </Chart.Pie>
@@ -335,6 +348,21 @@ const ChartTest = () => {
                     <Chart.Tooltip class={selectors.lineTooltip} />
                 </Chart.Line>
                 <div class={`${styles.probe} ${styles['probe-line']} ${selectors.lineProbe}`} />
+            </div>
+
+            {/* Animation is set from mount, which is the only time the draw-on
+                reveal can start — a chart given its animation later has already
+                drawn itself. */}
+            <div class={styles.wrapper}>
+                <Chart.Line
+                    class={selectors.drawOnBase}
+                    data={multiSeries()}
+                    animation={{ duration: TEST_ANIMATION_MS }}
+                >
+                    <Chart.Line.Stroke class={selectors.drawOnStroke} />
+                    <Chart.YAxis />
+                    <Chart.XAxis />
+                </Chart.Line>
             </div>
 
             {/* A series that skips a category, to exercise gaps. */}

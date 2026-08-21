@@ -12,7 +12,7 @@ import { createLinearScale, niceDomain } from '../core/scales';
 import { createPointEvent } from '../core/events';
 import { DEFAULT_PALETTE, resolveColor } from '../core/palette';
 import { formatChartNumber } from '../core/radius';
-import { warnOnce } from '../core/warnOnce';
+import { warnOnce, warnOnMarkBudget } from '../core/warnOnce';
 import ChartRoot from '../parts/ChartRoot';
 import ChartLabels, { ChartLabelAnchor } from '../parts/ChartLabels';
 
@@ -101,7 +101,7 @@ const SpiderChart: ParentComponent<SpiderProps> = (props) => {
 
         const { data, values } = frame();
         const categories = data.categories;
-        const visible = model.visibleIndices();
+        const visible = model.visibleIn(data);
         if (categories.length < 3) {
             if (categories.length > 0) {
                 warnOnce('[Chart.Spider] A spider chart needs at least three categories to enclose an area.');
@@ -160,6 +160,9 @@ const SpiderChart: ParentComponent<SpiderProps> = (props) => {
 
         const spokes = angles.map(angle => ({ angle, ...project(angle, outerRadius) }));
 
+        // Each series is one shape plus a marker per vertex.
+        warnOnMarkBudget('Chart.Spider', series.length * (1 + categories.length));
+
         return { centre, outerRadius, angles, series, rings, spokes, categories, max };
     });
 
@@ -200,7 +203,7 @@ const SpiderChart: ParentComponent<SpiderProps> = (props) => {
             label: series.label ?? `Series ${seriesIndex + 1}`,
             color: resolveColor(palette(), seriesIndex, series),
             seriesIndex,
-            visible: model.isSeriesVisible(seriesIndex),
+            visible: model.isSeriesVisible(seriesIndex, data),
         }));
     });
 

@@ -180,6 +180,21 @@ Direct labels drawn as HTML over the chart.
 | `placement` | `'inside' \| 'outside'` | `'inside'` | Where the label sits relative to its slice. |
 | `show` | `'always' \| 'hover' \| 'never'` | `'always'` | When labels are visible. |
 | `format` | `(point: ChartPoint, series: ChartSeries) => string` | `undefined` | Builds the label text. Defaults to the point's `label`, then its `type`. |
+| `leaderLines` | `boolean` | `false` | Draws a connector from each slice to its label. Only applies to `placement="outside"`. |
+
+#### Outside labels and leader lines
+
+Thin neighbouring slices put their labels at almost the same angle, so outside labels are pushed
+apart vertically to stop the text stacking on itself. Each side of the circle is spread
+independently, so a label never migrates to the side its slice is not on.
+
+That spreading is exactly why `leaderLines` exists: once a label has been moved away from its own
+angle, which slice it belongs to stops being obvious. The connector runs out along the slice's
+radius, turns, and meets the label where it ended up.
+
+```tsx
+<Chart.Labels placement="outside" leaderLines />
+```
 
 ### `Chart.Legend`
 

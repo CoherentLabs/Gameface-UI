@@ -12,3 +12,23 @@ export const warnOnce = (message: string) => {
     seen.add(message);
     console.warn(message);
 };
+
+/**
+ * Element count past which a chart stops being cheap enough for a HUD.
+ *
+ * Every mark is an SVG path, and an animation rebuilds all of them on every
+ * frame — so this is the point where a chart starts competing with the game for
+ * frame time rather than decorating it.
+ */
+const MARK_BUDGET = 500;
+
+export const warnOnMarkBudget = (displayName: string, marks: number) => {
+    if (marks <= MARK_BUDGET) return;
+
+    // Deliberately no count in the message: warnOnce dedupes on the text, and a
+    // number that changes every frame would defeat that entirely.
+    warnOnce(
+        `[${displayName}] More than ${MARK_BUDGET} marks. Each one is an SVG path, and an animation ` +
+        'rebuilds all of them every frame. Consider aggregating the data, or dropping `animation`.',
+    );
+};

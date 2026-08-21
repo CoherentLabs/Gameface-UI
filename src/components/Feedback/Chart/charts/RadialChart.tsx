@@ -12,7 +12,7 @@ import { createRadialResolver, RadialSlice } from '../core/resolvers/radial';
 import { createPointEvent } from '../core/events';
 import { DEFAULT_PALETTE, resolveColor } from '../core/palette';
 import { formatChartNumber, resolveInnerRadius } from '../core/radius';
-import { warnOnce } from '../core/warnOnce';
+import { warnOnce, warnOnMarkBudget } from '../core/warnOnce';
 import ChartRoot from '../parts/ChartRoot';
 import ChartLabels, { ChartLabelAnchor } from '../parts/ChartLabels';
 
@@ -52,6 +52,58 @@ const DEG = Math.PI / 180;
 const OUTSIDE_LABEL_GAP = 10;
 /** Room kept for labels drawn outside the circle. */
 const OUTSIDE_LABEL_RESERVE = 52;
+/** Minimum vertical distance between two labels on the same side. */
+const LABEL_LINE_HEIGHT = 16;
+/** How far a leader line runs radially before turning towards its label. */
+const LEADER_ELBOW = 6;
+/** Breathing room between the end of a leader line and the text it points at. */
+const LEADER_TEXT_GAP = 3;
+
+/**
+ * Pushes overlapping outside labels apart vertically.
+ *
+ * Thin slices put their labels at nearly the same angle, so without this the
+ * text stacks on itself and becomes unreadable. Each side of the circle is
+ * spread independently — they never collide with each other — and only along y,
+ * so every label stays on the side its slice is actually on.
+ */
+const spreadOutsideLabels = (anchors: ChartLabelAnchor[], centreY: number): ChartLabelAnchor[] => {
+    const sides: ChartLabelAnchor[][] = [
+        anchors.filter(anchor => anchor.align === 'start'),
+        anchors.filter(anchor => anchor.align === 'end'),
+    ];
+
+    for (const side of sides) {
+        side.sort((a, b) => a.y - b.y);
+
+        // Walk down from the top, pushing any label that would overlap the one
+        // above it far enough down to clear.
+        for (let i = 1; i < side.length; i++) {
+            const gap = side[i].y - side[i - 1].y;
+            if (gap < LABEL_LINE_HEIGHT) side[i].y = side[i - 1].y + LABEL_LINE_HEIGHT;
+        }
+
+        // That can push the last few off the bottom, so walk back up and take
+        // the slack out of the top instead, keeping the run centred.
+        for (let i = side.length - 2; i >= 0; i--) {
+            const gap = side[i + 1].y - side[i].y;
+            if (gap < LABEL_LINE_HEIGHT) side[i].y = side[i + 1].y - LABEL_LINE_HEIGHT;
+        }
+
+        // A run longer than the chart is a lost cause; centring it at least
+        // keeps the overflow even top and bottom rather than all at one end.
+        if (side.length > 1) {
+            const span = side[side.length - 1].y - side[0].y;
+            const drift = (side[0].y + span / 2) - centreY;
+
+            if (Math.abs(drift) > 1) {
+                for (const anchor of side) anchor.y -= drift;
+            }
+        }
+    }
+
+    return anchors;
+};
 
 /**
  * The shared pie/donut implementation.
@@ -84,7 +136,7 @@ export const createRadialChart = (config: RadialChartConfig): ParentComponent<Ra
             warnOnce(`[${config.displayName}] Only the first series is rendered. Give each slice its own point, or use one chart per series.`);
         }
 
-        return model.visibleIndices()[0];
+        return model.visibleIn(frame().data)[0];
     });
 
     const geometry = createMemo(() => {
@@ -98,7 +150,7 @@ export const createRadialChart = (config: RadialChartConfig): ParentComponent<Ra
 
         const visible: { pointIndex: number; value: number }[] = [];
         for (let c = 0; c < categories.length; c++) {
-            if (!model.isPointVisible(index, c)) continue;
+            if (!model.isPointVisible(index, c, data)) continue;
 
             const value = values[offset + c] ?? 0;
             if (value < 0) {
@@ -151,6 +203,8 @@ export const createRadialChart = (config: RadialChartConfig): ParentComponent<Ra
             ),
         }));
 
+        warnOnMarkBudget(config.displayName, arcs.length);
+
         return { centre, outerRadius, innerRadius, arcs, seriesIndex: index, categories, total };
     });
 
@@ -200,7 +254,7 @@ export const createRadialChart = (config: RadialChartConfig): ParentComponent<Ra
                 color: resolveColor(palette(), pointIndex, series, point),
                 seriesIndex: index,
                 pointIndex,
-                visible: model.isPointVisible(index, pointIndex),
+                visible: model.isPointVisible(index, pointIndex, data),
             };
         });
     });
@@ -214,7 +268,7 @@ export const createRadialChart = (config: RadialChartConfig): ParentComponent<Ra
         const { data } = frame();
         const series = data.series[current.seriesIndex];
 
-        return current.arcs.reduce<ChartLabelAnchor[]>((acc, entry) => {
+        const anchors = current.arcs.reduce<ChartLabelAnchor[]>((acc, entry) => {
             if (token.show === 'hover' && hovered?.pointIndex !== entry.pointIndex) return acc;
 
             const category = current.categories[entry.pointIndex];
@@ -236,6 +290,45 @@ export const createRadialChart = (config: RadialChartConfig): ParentComponent<Ra
                 pointIndex: entry.pointIndex,
             });
 
+            return acc;
+        }, []);
+
+        return placement() === 'outside' ? spreadOutsideLabels(anchors, current.centre.y) : anchors;
+    });
+
+    /**
+     * Connectors from each slice to its label.
+     *
+     * Only worth drawing once labels have been de-overlapped: a label that has
+     * been pushed away from its own angle is exactly the one whose owner is no
+     * longer obvious. Points are relative to the centre, since they render
+     * inside the translated group with the slices.
+     */
+    const leaderLines = createMemo(() => {
+        const current = geometry();
+        if (!current || placement() !== 'outside' || !labelsToken()?.leaderLines) return [];
+
+        const byPoint = new Map(current.arcs.map(entry => [entry.pointIndex, entry.midAngle]));
+
+        return labelAnchors().reduce<{ key: string; points: string }[]>((acc, anchor) => {
+            const midAngle = byPoint.get(anchor.pointIndex);
+            if (midAngle === undefined) return acc;
+
+            const sin = Math.sin(midAngle);
+            const cos = Math.cos(midAngle);
+
+            // Out along the radius first, then across to the label — the elbow
+            // is what lets the line survive the label being moved vertically.
+            const elbowRadius = current.outerRadius + LEADER_ELBOW;
+            const side = anchor.align === 'start' ? 1 : -1;
+
+            const points = [
+                `${sin * current.outerRadius},${-cos * current.outerRadius}`,
+                `${sin * elbowRadius},${-cos * elbowRadius}`,
+                `${anchor.x - current.centre.x - side * LEADER_TEXT_GAP},${anchor.y - current.centre.y}`,
+            ].join(' ');
+
+            acc.push({ key: anchor.key, points });
             return acc;
         }, []);
     });
@@ -367,6 +460,12 @@ export const createRadialChart = (config: RadialChartConfig): ParentComponent<Ra
                                 />
                             );
                         }}</Index>
+
+                        {/* Drawn after the slices so a connector is never
+                            buried under the mark it points away from. */}
+                        <Index each={leaderLines()}>{(leader) => (
+                            <polyline points={leader().points} class={styles['leader-line']} />
+                        )}</Index>
                     </g>
                 </Show>
             </svg>

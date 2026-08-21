@@ -61,12 +61,21 @@ export const normalise = (data: ChartSeries[]): NormalisedData => {
 
 export interface ChartDataModel {
     normalised: Accessor<NormalisedData>;
-    isSeriesVisible: (seriesIndex: number) => boolean;
-    isPointVisible: (seriesIndex: number, pointIndex: number) => boolean;
+    /**
+     * Visibility lookups take the grid they are asked about.
+     *
+     * While a series or category is animating out, the rendered grid is a
+     * superset of the current data — it still holds the departing entries. A
+     * lookup against the target grid would miss them, and they would vanish
+     * instead of shrinking away.
+     */
+    isSeriesVisible: (seriesIndex: number, data?: NormalisedData) => boolean;
+    isPointVisible: (seriesIndex: number, pointIndex: number, data?: NormalisedData) => boolean;
     toggleSeries: (seriesIndex: number) => void;
     togglePoint: (seriesIndex: number, pointIndex: number) => void;
     /** Indices into the original `data` array, so colours stay bound to the series and not to its rank. */
     visibleIndices: Accessor<number[]>;
+    visibleIn: (data: NormalisedData) => number[];
 }
 
 /**
@@ -82,8 +91,8 @@ export const useChartData = (
     const normalised = createMemo(() => normalise(data()));
     const [hidden, setHidden] = createSignal<Set<string>>(new Set());
 
-    const keyOf = (seriesIndex: number, pointIndex?: number) => {
-        const { seriesKeys, categories } = normalised();
+    const keyOf = (seriesIndex: number, pointIndex?: number, data?: NormalisedData) => {
+        const { seriesKeys, categories } = data ?? normalised();
         const series = seriesKeys[seriesIndex];
         if (series === undefined) return undefined;
 
@@ -103,10 +112,16 @@ export const useChartData = (
         return !wasVisible;
     };
 
-    const isSeriesVisible = (seriesIndex: number) => !hidden().has(keyOf(seriesIndex)!);
+    const isSeriesVisible = (seriesIndex: number, data?: NormalisedData) =>
+        !hidden().has(keyOf(seriesIndex, undefined, data)!);
 
-    const isPointVisible = (seriesIndex: number, pointIndex: number) =>
-        isSeriesVisible(seriesIndex) && !hidden().has(keyOf(seriesIndex, pointIndex)!);
+    const isPointVisible = (seriesIndex: number, pointIndex: number, data?: NormalisedData) =>
+        isSeriesVisible(seriesIndex, data) && !hidden().has(keyOf(seriesIndex, pointIndex, data)!);
+
+    const visibleIn = (data: NormalisedData) => data.seriesKeys.reduce<number[]>((acc, key, index) => {
+        if (!hidden().has(key)) acc.push(index);
+        return acc;
+    }, []);
 
     const toggleSeries = (seriesIndex: number) => {
         const visible = toggle(keyOf(seriesIndex));
@@ -117,15 +132,7 @@ export const useChartData = (
         toggle(keyOf(seriesIndex, pointIndex));
     };
 
-    const visibleIndices = createMemo(() => {
-        const keys = normalised().seriesKeys;
-        const hiddenKeys = hidden();
+    const visibleIndices = createMemo(() => visibleIn(normalised()));
 
-        return keys.reduce<number[]>((acc, key, index) => {
-            if (!hiddenKeys.has(key)) acc.push(index);
-            return acc;
-        }, []);
-    });
-
-    return { normalised, isSeriesVisible, isPointVisible, toggleSeries, togglePoint, visibleIndices };
+    return { normalised, isSeriesVisible, isPointVisible, toggleSeries, togglePoint, visibleIndices, visibleIn };
 };

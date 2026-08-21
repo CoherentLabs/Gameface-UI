@@ -129,6 +129,61 @@ describe('Chart.Pie', function () {
         assert.equal(await animationState(), 'idle', 'No tween should run without the prop');
     });
 
+    it('Should keep a removed slice alive while it animates out', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-3`); // enable animation
+        await gf.click(`.${selectors.scenarioBtn}.scenario-2`); // drop two slices
+
+        // Without an exit animation the two removed slices would vanish on the
+        // spot. They should still be here, shrinking towards nothing.
+        assert.equal(await count(`.${selectors.slice}`), 4, 'Departing slices should still be drawn');
+
+        await gf.sleep(3500);
+        assert.equal(await count(`.${selectors.slice}`), 2, 'And be gone once the tween settles');
+    });
+
+    it('Should spread overlapping outside labels apart', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-6`); // one big slice, five thin ones
+
+        const labels = await gf.getAll(`.${selectors.label}`);
+        const rows = [];
+
+        for (const label of labels) {
+            const style = await label.getAttribute('style');
+            const top = Number(/top:\s*([\d.]+)px/.exec(style)?.[1]);
+            rows.push({ top, left: style.includes('-100%') });
+        }
+
+        // Five slivers sit at almost the same angle, so their labels would
+        // otherwise stack on top of each other and be unreadable.
+        const side = rows.filter(row => row.left).map(row => row.top).sort((a, b) => a - b);
+        assert.ok(side.length >= 2, 'Expected several labels on one side');
+
+        for (let i = 1; i < side.length; i++) {
+            const gap = side[i] - side[i - 1];
+            assert.ok(gap >= 15.9, `Labels should not overlap, found a ${gap}px gap`);
+        }
+    });
+
+    it('Should connect spread labels back to their slices', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-6`);
+
+        const connectors = await gf.getAll(`.${selectors.base} polyline`);
+        const labels = await gf.getAll(`.${selectors.label}`);
+
+        // A label that has been pushed away from its own angle is exactly the
+        // one whose owner is no longer obvious, so every label gets a leader.
+        assert.equal(connectors.length, labels.length, 'One connector per label');
+
+        // Radial stub, elbow, then across to the label.
+        const points = await connectors[0].getAttribute('points');
+        assert.equal(points.trim().split(/\s+/).length, 3, `Expected a three-point elbow: ${points}`);
+    });
+
+    it('Should draw no connectors when leaderLines is off', async () => {
+        // The second pie declares no Labels slot at all.
+        assert.equal(await count(`.${selectors.overlayBase} polyline`), 0);
+    });
+
     it('Should show a tooltip on hover', async () => {
         // Hovering a <path> directly is impossible: getBoundingClientRect
         // returns zeros for SVG children in Gameface, so the driver has no

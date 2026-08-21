@@ -73,6 +73,14 @@ $chartSurfaceRing: #1a1a19;
     stroke-width: 0;
 }
 
+// Connects an outside label back to its slice. Dimmer than the label text: it
+// is a pointer, not information in its own right.
+.leader-line {
+    fill: none;
+    stroke: $chartMuted;
+    stroke-width: 1;
+}
+
 .is-hovered {
     // Deliberately opacity rather than a colour shift: the series colour is the
     // identity channel and must not change on hover.

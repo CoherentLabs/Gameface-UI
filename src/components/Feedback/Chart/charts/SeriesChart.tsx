@@ -14,6 +14,9 @@ import { bandCentre, createBandScale, createLinearScale } from '../core/scales';
 import { createPointEvent } from '../core/events';
 import { DEFAULT_PALETTE, resolveColor } from '../core/palette';
 import { formatChartNumber } from '../core/radius';
+import { warnOnMarkBudget } from '../core/warnOnce';
+import { measurePathLength } from '../core/pathLength';
+import { useDrawOn } from '../core/useDrawOn';
 import ChartRoot from '../parts/ChartRoot';
 import ChartLabels, { ChartLabelAnchor } from '../parts/ChartLabels';
 import { AxisTick, ChartAxisLabels, ChartGridLines } from '../parts/ChartAxes';
@@ -118,7 +121,7 @@ export const createSeriesChart = (config: SeriesChartConfig): ParentComponent<Se
 
         const { data, values } = frame();
         const categories = data.categories;
-        const visible = model.visibleIndices();
+        const visible = model.visibleIn(data);
         if (categories.length === 0) return null;
 
         const spans = computeSpans(data, values, visible, stacked());
@@ -198,6 +201,9 @@ export const createSeriesChart = (config: SeriesChartConfig): ParentComponent<Se
             label: xAxisToken()?.format ? xAxisToken()!.format!(category) : category,
         }));
 
+        // A stroke and an optional fill per series, plus a marker per vertex.
+        warnOnMarkBudget(config.displayName, series.length * (2 + categories.length));
+
         return {
             margin, plotWidth, plotHeight, series, baseline,
             valueTicks, categoryTicks, categories, xScale, yScale,
@@ -251,7 +257,7 @@ export const createSeriesChart = (config: SeriesChartConfig): ParentComponent<Se
             label: series.label ?? `Series ${seriesIndex + 1}`,
             color: resolveColor(palette(), seriesIndex, series),
             seriesIndex,
-            visible: model.isSeriesVisible(seriesIndex),
+            visible: model.isSeriesVisible(seriesIndex, data),
         }));
     });
 
@@ -298,6 +304,28 @@ export const createSeriesChart = (config: SeriesChartConfig): ParentComponent<Se
     });
 
     const strokeWidth = () => strokeToken()?.width ?? DEFAULT_STROKE_WIDTH;
+
+    // The reveal runs once, when the chart first has geometry to draw.
+    const reveal = useDrawOn(() => !!geometry(), () => props.animation);
+
+    /**
+     * Dash attributes that hide the not-yet-revealed part of a line.
+     *
+     * Set as SVG attributes rather than CSS: the CSS properties require
+     * explicit px units in Gameface, the attributes do not. Once the reveal
+     * finishes they are dropped entirely, so a dash pattern the consumer asked
+     * for is never fought over.
+     */
+    const revealProps = (path: string) => {
+        if (reveal() >= 1) return { 'stroke-dasharray': strokeToken()?.dash };
+
+        const length = measurePathLength(path);
+
+        return {
+            'stroke-dasharray': `${length}`,
+            'stroke-dashoffset': `${length * (1 - reveal())}`,
+        };
+    };
 
     return (
         <ChartRoot
@@ -350,9 +378,9 @@ export const createSeriesChart = (config: SeriesChartConfig): ParentComponent<Se
                                     fill="none"
                                     stroke={series().color}
                                     stroke-width={strokeWidth()}
-                                    stroke-dasharray={strokeToken()?.dash}
                                     class={[styles['series-stroke'], strokeToken()?.class].filter(Boolean).join(' ')}
                                     style={strokeToken()?.style}
+                                    {...revealProps(series().stroke)}
                                 />
 
                                 <Index each={series().vertices}>{(vertex) => (

@@ -43,6 +43,8 @@
   "lineLegend": "chart-line-legend",
   "lineTooltip": "chart-line-tooltip",
   "lineProbe": "chart-line-probe",
+  "drawOnBase": "chart-draw-on-base",
+  "drawOnStroke": "chart-draw-on-stroke",
   "gapBase": "chart-gap-base",
   "gapStroke": "chart-gap-stroke",
   "areaBase": "chart-area-base",

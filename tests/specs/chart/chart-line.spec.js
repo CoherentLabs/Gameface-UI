@@ -22,6 +22,16 @@ const paths = async (selector) => {
     return result;
 };
 
+/** Polls until the getter returns something truthy; each attempt is a round trip. */
+const waitFor = async (get, attempts = 12) => {
+    for (let i = 0; i < attempts; i++) {
+        const value = await get();
+        if (value) return value;
+    }
+
+    return null;
+};
+
 describe('Chart.Line', function () {
     this.beforeAll(async () => {
         await navigateToPage('.chart-line-link');
@@ -75,6 +85,27 @@ describe('Chart.Line', function () {
         const tooltip = await gf.get(`.${selectors.lineTooltip}`);
         const style = await tooltip.getAttribute('style');
         assert.ok(style.includes('left: 112px'), `Tooltip should snap to the vertex: ${style}`);
+    });
+
+    it('Should reveal the line on mount when animated', async () => {
+        // Gameface implements neither getTotalLength nor getPointAtLength, so
+        // the dash length is derived from the path we generated. A fresh mount
+        // is the only time the reveal can start.
+        await navigateToPage('.chart-line-link');
+
+        const dash = await waitFor(() => gf.getAttribute(`.${selectors.drawOnStroke}`, 'stroke-dasharray'));
+        assert.ok(dash, 'A revealing line should carry a dash pattern');
+
+        // 341.2 for this data: the two segments measure 157.91 and 183.29.
+        assert.ok(Math.abs(Number(dash) - 341.2) < 1, `Unexpected path length: ${dash}`);
+
+        const offset = await gf.getAttribute(`.${selectors.drawOnStroke}`, 'stroke-dashoffset');
+        assert.ok(Number(offset) > 0, 'Part of the line should still be hidden');
+
+        await gf.sleep(3500);
+
+        const settled = await gf.getAttribute(`.${selectors.drawOnStroke}`, 'stroke-dasharray');
+        assert.ok(!settled, 'The dash pattern is dropped once the reveal finishes');
     });
 
     it('Should remove a line when its series is hidden', async () => {
