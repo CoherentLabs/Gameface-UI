@@ -95,8 +95,10 @@ To add a new icon to the component:
 It's possible that you don't see the new icon in Gameface immediately after adding it. If that happens, clear the cache (by pressing `ctrl + F5` in the Player) or restart the development server.
 :::
 
-:::caution[File names]
-You must use valid JavaScript naming convention for folder and file names (e.g., no spaces, dashes, or special characters). Example: `ui/hud/myIcon.png`, `userProfile.png`.
+:::note[File names]
+File and folder names are converted to camelCase, so separators and special characters are fine: `ui/hud icons/round-star.png` becomes `<Icon.ui.hudIcons.roundStar />`. `-`, `_`, spaces and other punctuation may appear anywhere in the name and are collapsed away.
+
+Ignoring any leading separators, a name must start with an English letter (a-z) - `2x.png` and `---.png` fail `npm run gen-icons` with an error explaining how to rename them. Non-ASCII characters are stripped, so `über.png` becomes `ber`, and a name made only of them (`日本.png`) fails.
 :::
 
 ### Handling Missing Icons (Fallback)

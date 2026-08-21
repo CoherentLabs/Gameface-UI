@@ -4,7 +4,11 @@ title: Changelog
 
 import { Badge } from '@astrojs/starlight/components'
 
-## 3.2.0 :badge[Latest]{variant="note"}
+## 3.2.1 :badge[Latest]{variant="note"}
+
+- <Badge text="Fix" variant="danger" size="small" /> [Icon](/components/media/icon#adding-new-icons): Icon and folder names are no longer restricted to valid JavaScript identifiers. Separators such as `-`, `_` and spaces are now converted to camelCase, so `hud icons/round-star.svg` becomes `<Icon.hudIcons.roundStar />`. Names that cannot produce a usable key - ones with no letters or digits at all, or ones starting with a digit - now fail the icon generation with a descriptive error instead of emitting invalid TypeScript.
+
+## 3.2.0
 
 - <Badge text="New" variant="tip" size="small" /> Components are now versioned individually, independent of the library version. A fix to `Slider` bumps `Slider` and nothing else, so you can pick up an improvement to one component without pulling in unrelated changes across your UI. See [Updating components](/docs/getting-started/updating-components) for how to update everything at once, or one component at a time.
 
