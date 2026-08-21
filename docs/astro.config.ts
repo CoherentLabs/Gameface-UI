@@ -115,7 +115,7 @@ export default defineConfig({
       customCss: ['./src/styles/custom.css'],
       plugins: [
         ...coherentTheme({
-          documentationSearchTag: "Gameface UI"
+          documentation: "Gameface UI"
         }),
         starlightSidebarTopics(sidebarTopics, {
           exclude: ['/'],
