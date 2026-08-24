@@ -1,10 +1,10 @@
 import { Component, createEffect, createSignal, For, on, Show } from "solid-js";
 import { countries } from "./utils/countriesList";
-import styles from "./ChipMultiSelect.module.scss";
 import Dropdown, { DropdownRef } from "@components/Basic/Dropdown/Dropdown";
 import Flex from "@components/Layout/Flex/Flex";
 import BackgroundImage from "@components/Media/BackgroundImage/BackgroundImage";
 import FLAG_SRC from "./utils/imageMap";
+import styles from "./ChipMultiSelect.module.scss";
 
 interface DropdownProps {
     value: string[],

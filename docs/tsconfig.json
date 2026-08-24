@@ -5,6 +5,7 @@
     "paths": {
       "@components/*": ["../src/components/*"],
       "@custom-components/*": ["../src/custom-components/*"],
+      "@recipes/*": ["../src/recipes/*"],
       "@assets/*": ["../src/assets/*"],
       "@docs-components/*": ["./src/components/*"],
     }

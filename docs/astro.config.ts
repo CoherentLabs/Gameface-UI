@@ -87,6 +87,7 @@ export default defineConfig({
       alias: {
         '@components': path.resolve(__dirname, '../src/components'),
         '@custom-components': path.resolve(__dirname, '../src/custom-components'),
+        '@recipes': path.resolve(__dirname, '../src/recipes'),
         '@assets': path.resolve(__dirname, '../src/assets'),
         '@docs-components': path.resolve(__dirname, './src/components'),
         'coherent-gameface-interaction-manager': resolveDocsDep('coherent-gameface-interaction-manager'),

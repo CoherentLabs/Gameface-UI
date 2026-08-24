@@ -11,10 +11,7 @@ recipe:
     - form
   thumbnail: ./thumb.png
 ---
-
-import previewVideo from './preview.webm';
-
-<video src={previewVideo} autoplay loop muted></video>
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 ## Overview
 
@@ -23,6 +20,41 @@ A multi-select built on top of the [Dropdown component](/components/basic/dropdo
 - **Multi-select** via the Dropdown's `multiple` prop
 - **Removable chips** for every selection, with a one-click remove
 - **Per-option visuals** (here, country flags) driven by a shortcode map
+
+## How to download
+
+```bash
+npx gameface-cli add ChipMultiSelect
+```
+
+The CLI pulls in whatever `ChipMultiSelect` depends on. To refresh an existing copy, [update it](/docs/getting-started/updating-components) instead.
+
+## Usage
+
+The component is driven by two-way binding. Provide a `value` signal array and the setter on the `onChange` callback to receive updates:
+
+<CodePreviewGFUI height={600} envCss={`[class*="dropdown-options"] [class*="content-wrapper"] { max-height: 15rem; }`}>
+```tsx
+import { createSignal } from 'solid-js';
+import ChipMultiSelect from '@recipes/ChipMultiSelect/ChipMultiSelect';
+
+const App = () => {
+  const [selectedCountries, setSelectedCountries] = createSignal<string[]>(['br', 'jp']);
+
+  return (
+    <div style={{width: '15rem'}}>
+      <ChipMultiSelect value={selectedCountries()} onChange={setSelectedCountries} />
+    </div>
+  )
+}
+```
+</CodePreviewGFUI>
+
+`selectedCountries()` is the single source of truth: the dropdown renders it as chips, and every selection - from the options panel or from a chip's remove button - comes back through `onChange`. That is the same wiring the [Filterable Data Table](/recipes/filterable-data-table/) uses, where the array lives in the filter draft store instead of a signal:
+
+```tsx
+<ChipMultiSelect value={draft.nationality} onChange={setNationalityFilter} />
+```
 
 ## How it works
 
@@ -37,22 +69,6 @@ State lives outside the component — you pass `value` in and get changes back t
 const [selected, setSelected] = createSignal<string[]>([]);
 
 <ChipMultiSelect value={selected()} onChange={setSelected} />
-```
-
-## How to download
-
-## Usage
-
-The component is driven by two-way binding. Provide a `value` signal array and the setter on the `onChange` callback to receive updates:
-
-```tsx
-const [selectedCountries, setSelectedCountries] = createSignal<string[]>([]);
-```
-
-```tsx
-<div style={{width: '20vmax'}}>
-    <ChipMultiSelect value={selectedCountries()} onChange={setSelectedCountries} />
-</div>
 ```
 
 ## Wiring up real images

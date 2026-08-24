@@ -11,8 +11,7 @@ recipe:
     - progress
   thumbnail: ./thumb.png
 ---
-
-![Segmented Progress Bar Preview with states](./preview.png)
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 ## Overview
 
@@ -22,6 +21,50 @@ It is split into discrete **pills** instead of one continuous fill. The notches 
 - **Pill segments** from one gradient overlay
 - **Color states** (red / amber / green) driven by the value
 - **Configurable** segment count, gap width, and colors
+
+## How to download
+
+```bash
+npx gameface-cli add SegmentedProgressBar
+```
+
+The CLI pulls in whatever `SegmentedProgressBar` depends on. To refresh an existing copy, [update it](/docs/getting-started/updating-components) instead.
+
+## Usage
+
+Drop it anywhere and pass a `value` from `0` to `100`:
+
+<CodePreviewGFUI>
+```tsx
+import { createSignal } from 'solid-js';
+import { onMount } from 'solid-js'; // @hide
+import SegmentedProgressBar from '@recipes/SegmentedProgressBar/SegmentedProgressBar';
+import Flex from '@components/Layout/Flex/Flex';
+
+const App = () => {
+  const [health, setHealth] = createSignal(10);
+
+  // Drives the preview so the bar animates through every colour state.
+  const simulateProgress = (to: number) => {
+    let interval = setInterval(() => setHealth(prev => {
+      if (prev >= to) {
+        return 0;
+      }
+      return prev + 1;
+    }), 100);
+  };
+  onMount(() => simulateProgress(100));
+
+  return (
+    <Flex style={{width: '20rem', height: '5rem', padding: '1rem'}} direction="row" gap="1rem" align-items="center">
+      <SegmentedProgressBar value={health()} />
+      <div>{`${health()}%`}</div>
+    </Flex>
+  )
+}
+```
+</CodePreviewGFUI>
+
 
 ## How it works
 
@@ -35,25 +78,6 @@ Because the notches sit on top, you never have to render individual segments - y
 :::note[Full pill rounding]
 The value rounds **down** to whole pills, so a value of `65` lights 6 pills, and the 7th waits until `70`.
 :::
-
-## How to download
-
-## Usage
-
-Drop it anywhere and pass a `value` from `0` to `100`:
-
-```tsx
-<SegmentedProgressBar value={health()} />
-```
-
-Or wrap it in a [Flex](/components/layout/flex) to add a label:
-
-```tsx
-<Flex style={{width: '20vmax', height: '5vmax', padding: '1rem'}} direction="row" gap="1rem" align-items="center">
-    <SegmentedProgressBar value={health()} />
-    <div>{`${health()}%`}</div>
-</Flex>
-```
 
 ## Customizing
 

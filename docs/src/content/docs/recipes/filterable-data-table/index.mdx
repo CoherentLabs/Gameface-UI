@@ -12,6 +12,7 @@ recipe:
     - pagination
   thumbnail: ./thumb.png
 ---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
 
 ## Overview
 
@@ -24,6 +25,28 @@ A self-contained roster table demonstrating how several of the library's compone
 
 The state is fully self-contained - there's no `value`/`onChange` to wire up. You drop it in, and it manages search, filters, sort, and the current page itself.
 
+## How to download
+
+```bash
+npx gameface-cli add FilterableDataTable
+```
+
+The CLI pulls in whatever `FilterableDataTable` depends on. To refresh an existing copy, [update it](/docs/getting-started/updating-components) instead.
+
+## Usage
+
+No props - just render it:
+
+<CodePreviewGFUI envCss={`[class*="dropdown-options"] [class*="content-wrapper"] { max-height: 15rem; }`}>
+```tsx
+import FilterableDataTable from '@recipes/FilterableDataTable/FilterableDataTable';
+
+<FilterableDataTable />
+```
+</CodePreviewGFUI>
+
+The core functionality (searching, sorting, filtering, paginating a list) isn't tied to player data specifically - you can adapt this recipe to any dataset. Your data doesn't need to match the `player` shape in `types.ts`; swap in your own type and your own array in `utils/mockPlayers.ts` (or wherever you source data from), and `store/playersStore.ts` picks it up since it seeds the store straight from that module. Expect to rewire the pieces that assume player-specific fields to your own properties - `columns.tsx` (what each column shows and sorts by), `utils/filters.ts` (which fields are filterable), and `Filter.tsx` (the filter controls themselves).
+
 ## How it works
 
 The table is composed from a handful of pieces, each responsible for one concern:
@@ -32,18 +55,6 @@ The table is composed from a handful of pieces, each responsible for one concern
 2. **`store/playersStore.ts`** holds the player list in a Solid store, seeded from the bundled mock dataset in `utils/mockPlayers.ts`. It also derives `countries()` (the distinct nationality list, for the filter dropdown) and `numericStats()` (min/max per numeric stat, so the sliders' bounds always match the actual data) with `createMemo`.
 3. **`Filter.tsx`** is a self-contained draft/apply flow: it keeps its own `draft` store, and only pushes changes up (via `setAppliedFilters`) when you hit **Apply**, so adjusting several sliders doesn't refilter the table on every drag.
 4. **`FilterableDataTable.tsx`** ties it together - it combines the search text and the applied filters into one `filteredPlayers` memo, slices out the current page, and resets to page 1 whenever the search or filters change.
-
-## Usage
-
-No props - just render it:
-
-```tsx
-import FilterableDataTable from './FilterableDataTable';
-
-<FilterableDataTable />
-```
-
-The core functionality (searching, sorting, filtering, paginating a list) isn't tied to player data specifically - you can adapt this recipe to any dataset. Your data doesn't need to match the `player` shape in `types.ts`; swap in your own type and your own array in `utils/mockPlayers.ts` (or wherever you source data from), and `store/playersStore.ts` picks it up since it seeds the store straight from that module. Expect to rewire the pieces that assume player-specific fields to your own properties - `columns.tsx` (what each column shows and sorts by), `utils/filters.ts` (which fields are filterable), and `Filter.tsx` (the filter controls themselves).
 
 ## Wiring up real images
 
