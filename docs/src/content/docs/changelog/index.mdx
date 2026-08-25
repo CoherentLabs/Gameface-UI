@@ -4,7 +4,11 @@ title: Changelog
 
 import { Badge } from '@astrojs/starlight/components'
 
-## 3.2.1 :badge[Latest]{variant="note"}
+## 3.3.0 :badge[Latest]{variant="note"}
+
+- <Badge text="New" variant="tip" size="small" /> Added the `@recipes` path alias, so a recipe can be imported as `@recipes/SegmentedProgressBar/SegmentedProgressBar` instead of a relative path. Browse the available recipes in [Community Recipes](/recipes/).
+  
+## 3.2.1
 
 - <Badge text="Fix" variant="danger" size="small" /> [Icon](/components/media/icon#adding-new-icons): Icon and folder names are no longer restricted to valid JavaScript identifiers. Separators such as `-`, `_` and spaces are now converted to camelCase, so `hud icons/round-star.svg` becomes `<Icon.hudIcons.roundStar />`. Names that cannot produce a usable key - ones with no letters or digits at all, or ones starting with a digit - now fail the icon generation with a descriptive error instead of emitting invalid TypeScript.
 

@@ -63,6 +63,7 @@ const sidebarTopics = [
 
 import { gfuiDemoPlugin } from './src/components/CodePreviewGFUI/plugins/vite-plugin-gfui-demo';
 import { remarkGfuiDemo } from './src/components/CodePreviewGFUI/plugins/remark-gfui-demo';
+import { gfuiLibrarySvgUrlPlugin } from './src/components/CodePreviewGFUI/plugins/vite-plugin-gfui-svg-url';
 
 /** @type {import('@astrojs/starlight/expressive-code').StarlightExpressiveCodeOptions} */
 export default defineConfig({
@@ -71,6 +72,7 @@ export default defineConfig({
   },
   vite: {
     plugins: [
+      gfuiLibrarySvgUrlPlugin(path.resolve(__dirname, '../src')),
       gfuiDemoPlugin(),
       solidSvg({
         defaultAsComponent: false,
@@ -80,6 +82,8 @@ export default defineConfig({
     build: {
       cssCodeSplit: true,
       minify: false,
+      // To match the gf ui's behavior.
+      assetsInlineLimit: 0,
     },
     resolve: {
       preserveSymlinks: true,
@@ -87,6 +91,7 @@ export default defineConfig({
       alias: {
         '@components': path.resolve(__dirname, '../src/components'),
         '@custom-components': path.resolve(__dirname, '../src/custom-components'),
+        '@recipes': path.resolve(__dirname, '../src/recipes'),
         '@assets': path.resolve(__dirname, '../src/assets'),
         '@docs-components': path.resolve(__dirname, './src/components'),
         'coherent-gameface-interaction-manager': resolveDocsDep('coherent-gameface-interaction-manager'),

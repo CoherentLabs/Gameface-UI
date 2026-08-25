@@ -14,6 +14,9 @@ interface PreviewIslandProps {
     // One or more component CSS strings (from `@components/.../X.module.scss?inline`).
     css?: string | string[];
     code?: string; // for future use: show source code alongside the demo
+    // Environment CSS: injected into the iframe but NOT shown in the code panel.
+    // For papering over browser-vs-Gameface layout differences, not for demo styling.
+    envCss?: string;
     // Optional fixed height; otherwise auto-fit via ResizeObserver.
     height?: number;
     hash?: string; // the demo hash to load the correct module from the plugin
@@ -89,6 +92,13 @@ export default function PreviewIsland(props: PreviewIslandProps) {
             const customStyle = doc.createElement('style');
             customStyle.textContent = customCss;
             doc.head.appendChild(customStyle);
+        }
+
+        // Environment CSS - see PreviewIslandProps.envCss. Injected last so it wins.
+        if (props.envCss) {
+            const envStyle = doc.createElement('style');
+            envStyle.textContent = props.envCss;
+            doc.head.appendChild(envStyle);
         }
 
         const absolute = new URL(js, window.location.origin).href;

@@ -1,0 +1,6 @@
+{
+    "name": "ChipMultiSelect",
+    "version": "1.0.0",
+    "description": "A multi-select dropdown that shows each selection as a removable chip below the trigger",
+    "kind": "recipe"
+}

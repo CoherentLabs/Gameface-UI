@@ -1,0 +1,30 @@
+@use './variables' as *;
+
+@mixin glow-border(
+    $color: $accent,
+    $glow: $accent-glow,
+    $width: 0.15rem,
+    $blur: 1rem,
+    $spread: 0.25rem
+) {
+    border: $width solid $color;
+    box-shadow: inset 0 0 $blur $spread $glow, 0 0 $blur $spread $glow;
+}
+
+// Soft, pronounced glow for hover / active emphasis on interactive surfaces.
+// Bakes the "big glow" geometry; pass a color pair to switch hue
+// (defaults to accent; pass $interactive, $interactive-glow for hover).
+@mixin glow-emphasis($color: $accent, $glow: $accent-glow) {
+    @include glow-border($color, $glow, $blur: 1.5rem, $spread: 0.25rem);
+}
+
+@mixin interactive-component($border-width: 0.15rem, $duration: 0.1s) {
+    background-color: $interactive-surface;
+    border-radius: $component-radius;
+    border: $border-width solid $interactive-glow;
+    transition: border $duration ease-in-out, box-shadow $duration ease-in-out;
+
+    &:hover {
+        @include glow-emphasis($interactive, $interactive-glow);
+    }
+}

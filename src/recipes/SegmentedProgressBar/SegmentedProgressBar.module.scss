@@ -1,0 +1,52 @@
+@use 'sass:math';
+// ── Layouut ──
+$segments: 10; // number of pills
+$gap: 1.5%; // notch width (as % of bar)
+$overshoot: 0.5%; // tiny extra so the last pill clips flush at the edge instead of landing on the seam
+$period: math.div(100% + $gap + $overshoot, $segments); // width of one pill + gap
+$pill: $period - $gap;     // visible pill width
+
+// ── Colors ──
+$background: #0C1522; // empty track
+$background-overlay: #192C3E; // overlay for empty track
+
+// ── States ──
+$error: #E05C72;
+$warning: #E8A84A;
+$success: #59F46B;
+
+.bar {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    border: none;
+    border-radius: 0.2rem;
+    background-color: $background; // empty track
+
+    &-fill {
+        // subtle top gloss 
+        background-image: linear-gradient(to bottom, rgba(#fff, 0.35), rgba(#fff, 0) 45%);
+    }
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+            to right,
+            transparent 0,
+            transparent $pill,
+            $background-overlay $pill,
+            $background-overlay $period
+        );
+    }
+}
+
+// FILL STATES
+.success { background-color: $success; }
+.warning { background-color: $warning; }
+.error { background-color: $error; }

@@ -1,0 +1,6 @@
+{
+    "name": "FilterableDataTable",
+    "version": "1.0.0",
+    "description": " A sortable, searchable data table with a collapsible advanced-filter panel and pagination",
+    "kind": "recipe"
+}

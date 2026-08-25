@@ -7,19 +7,22 @@ import PreviewIsland from './PreviewIsland.tsx';
 
 interface Props {
     css?: string | string[];
+    // Injected into the preview iframe but never shown in the code panel, so
+    // browser-vs-Gameface layout workarounds don't leak into what readers copy.
+    envCss?: string;
     height?: number;
     // Raw source string for the displayed code panel (see note below).
     code?: string;
     hash?: string;
 }
-const { css, height: rawHeight, code, hash } = Astro.props;
+const { css, envCss, height: rawHeight, code, hash } = Astro.props;
 // Coerce to number so `height="400"` (string attr) works the same as `height={400}`.
 const height = rawHeight != null ? Number(rawHeight) : undefined;
 ---
 
 <div class="gfui-preview">
     <div class="gfui-preview__stage">
-        <PreviewIsland height={height} css={css} code={code} hash={hash} client:load />
+        <PreviewIsland height={height} css={css} envCss={envCss} code={code} hash={hash} client:load />
     </div>
     <div class="gfui-preview__code">
         <Tabs>

@@ -1,0 +1,51 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.pagination {
+    font-size: 1em;
+}
+
+.pagination-control {
+    $border-width: 0.05rem;
+    @include interactive-component($border-width);
+    color: $interactive;
+    text-transform: uppercase;
+
+    svg {
+        width: 1.5em;
+        height: 1.5em;
+    }
+
+    path {
+        stroke: $interactive;
+    }
+
+    &:hover {
+        background-color: $interactive-surface;
+        @include glow-border($interactive, $interactive-glow, $border-width)
+    }
+
+    &-disabled {
+        opacity: 0.25;
+        pointer-events: none;
+    }
+}
+
+.page-item {
+    background-color: $bg-overlay;
+    color: $text-secondary;
+    font-size: 0.85em;
+    margin-right: 0.5em;
+    width: 1.35em;
+    height: 1.35em;
+
+    &:hover {
+        background-color: $interactive-glow;
+    }
+
+    &-selected,
+    &-selected:hover {
+        background-color: $interactive-muted;
+        color: $text-color;
+    }
+}
