@@ -33,6 +33,7 @@ export default defineConfig(({ mode }) => {
     base: './',
     build: {
       assetsInlineLimit: 0,
+      cssMinify: false,
       outDir: resolve(__dirname, 'dist'),
       emptyOutDir: true,
       target: 'esnext',
