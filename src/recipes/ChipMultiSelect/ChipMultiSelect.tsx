@@ -66,7 +66,7 @@ const ChipMultiSelect: Component<DropdownProps> = (props) => {
                             <Flex
                                 justify-content="center"
                                 align-items="center"
-                                class={styles['dropdown-option-content-image']}
+                                class={styles['chip-image']}
                                 style={{ 'background-color': 'gray', 'color': 'white', 'text-align': 'center' }}
                                 >{value}</Flex>
 

@@ -101,7 +101,7 @@ const Filter: Component<FilterProps> = (props) => {
                 </Flex>
 
                 <div class={styles['filter-row']}>
-                    <div class={styles['table-nav-filter-panel-row-heading']}>Nationality</div>
+                    <div class={styles['filter-row-heading']}>Nationality</div>
                     <Dropdown value={draft.nationality} onChange={setNationalityFilter} />
                 </div>
 

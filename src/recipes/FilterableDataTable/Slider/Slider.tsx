@@ -18,7 +18,7 @@ const Slider: Component<SliderProps> = (props) => {
     return (
         <>
             <Flex direction="row" justify-content="start" gap="0.5rem" align-items="center" >
-                <div class={tableStyles['table-nav-filter-panel-row-heading']}>{props.label}</div>
+                <div class={tableStyles['filter-row-heading']}>{props.label}</div>
                 <div class={styles['slider-value']}>{props.value}</div>
             </Flex>
             <Flex direction='row' align-items="center" gap="0.5rem" class={styles['slider-row']}>

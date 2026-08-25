@@ -18,7 +18,7 @@ const TwoHandleSlider: Component<SliderProps> = (props) => {
     return (
         <>
             <Flex direction="row" justify-content="start" gap="0.5rem" align-items="center" >
-                <div class={tableStyles['table-nav-filter-panel-row-heading']}>{props.label}</div>
+                <div class={tableStyles['filter-row-heading']}>{props.label}</div>
                 <Flex justify-content="start" align-items="center" direction="row" gap="0.25rem">
                     <div class={styles['slider-value']}>{props.value.start}</div>
                     <div>-</div>
