@@ -1,5 +1,5 @@
 import Tabs from '@components/Layout/Tabs/Tabs';
-import styles from './Main.module.css';
+import styles from './ComponentsE2e.module.scss';
 import TabLink from '@components/Layout/TabLink/TabLink';
 import Flex from '@components/Layout/Flex/Flex';
 import { For } from 'solid-js';
