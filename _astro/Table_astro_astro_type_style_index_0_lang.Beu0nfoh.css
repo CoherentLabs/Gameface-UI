@@ -1,0 +1,10 @@
+.custom-sticky-table table {
+        overflow: unset;
+    }
+    .custom-sticky-table table thead {
+        position: sticky;
+        top: var(--sl-nav-height);
+        z-index: 10;
+        background-color: var(--sl-color-bg);
+        box-shadow: 0 2px 0 var(--sl-color-hairline);
+    }

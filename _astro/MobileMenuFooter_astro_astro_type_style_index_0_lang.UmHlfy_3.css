@@ -1,0 +1,1 @@
+@layer starlight.core{.social-icons:where(.astro-wu23bvmt){display:flex;margin-inline-end:auto;gap:1rem;align-items:center;padding-block:1rem}.social-icons:where(.astro-wu23bvmt):empty{display:none}.mobile-preferences:where(.astro-wu23bvmt){justify-content:space-between;flex-wrap:wrap;border-top:1px solid var(--sl-color-gray-6);column-gap:1rem;padding:0.5rem 0}}
