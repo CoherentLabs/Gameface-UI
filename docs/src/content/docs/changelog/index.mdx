@@ -20,7 +20,11 @@ import { Badge } from '@astrojs/starlight/components'
 
 - <Badge text="Feature" variant="success" size="small" /> The trailing slash is no longer required when opening a view. `http://localhost:3000/hud` works the same as `http://localhost:3000/hud/`, in development and in `vite preview`.
 
-## 3.2.1
+### Component fixes
+
+- <Badge text="Fix" variant="danger" size="small" /> [Icon](/components/media/icon#props): The `fill` prop had no effect - the class it applies was missing from the component's stylesheet, so an icon marked `fill` kept rendering at the default size instead of filling its container.
+
+- <Badge text="Fix" variant="danger" size="small" /> [Icon](/components/media/icon): The default size no longer squashes icons into a square. `height` is `auto` instead of a fixed `2.5rem`, so a non-square icon keeps its aspect ratio at the default `2.5rem` width.
 
 
 ## 3.3.0 :badge[Latest]{variant="note"}
