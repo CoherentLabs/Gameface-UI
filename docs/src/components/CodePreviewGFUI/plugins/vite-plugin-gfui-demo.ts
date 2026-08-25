@@ -24,6 +24,23 @@ function extractInlineCss(jsModuleCode: string): string {
 }
 
 /**
+ * CSS collected during buildStart still carries Vite's asset placeholders
+ * (`__VITE_ASSET__<referenceId>__`) for any url() it contains - e.g. the font
+ * files behind a recipe's @font-face rules. Vite rewrites those only in code it
+ * bundles itself, and this CSS is stashed aside, so resolve them by hand once
+ * generateBundle knows the emitted file names. An unknown id is left as-is.
+ */
+function resolveAssetUrls(ctx: any, css: string): string {
+    return css.replace(/__VITE_ASSET__([\w$]+)__(?:\$_(.*?)__)?/g, (match, referenceId) => {
+        try {
+            return '/' + ctx.getFileName(referenceId);
+        } catch {
+            return match;
+        }
+    });
+}
+
+/**
  * Walks the demo's import graph using the Rollup plugin context (`ctx`),
  * and for every *.module.scss it finds, loads its ?inline form and
  * concatenates the compiled CSS. Cascade order follows import order.
@@ -39,8 +56,10 @@ async function collectDemoCss(ctx: any, entryFile: string): Promise<string> {
         if (seen.has(resolvedId)) return;
         seen.add(resolvedId);
 
-        // Component module SCSS -> grab compiled CSS via ?inline.
-        if (/\.module\.scss$/.test(resolvedId)) {
+        // Any stylesheet the demo imports -> grab compiled CSS via ?inline.
+        // Covers *.module.scss plus plain .css, e.g. a recipe's @font-face file,
+        // which Vite injects in dev but which the build would otherwise drop.
+        if (/\.(css|s[ac]ss)$/.test(resolvedId)) {
             try {
                 const loaded = await ctx.load({ id: resolvedId + '?inline', resolveDependencies: false });
                 const cssText = extractInlineCss(loaded?.code ?? '');
@@ -119,7 +138,7 @@ export function gfuiDemoPlugin(): Plugin {
             for (const [hash, refId] of refIds) {
                 manifest[hash] = {
                     js: this.getFileName(refId),
-                    css: cssByHash.get(hash) ?? '',
+                    css: resolveAssetUrls(this, cssByHash.get(hash) ?? ''),
                 };
             }
             this.emitFile({
