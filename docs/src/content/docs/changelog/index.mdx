@@ -4,7 +4,30 @@ title: Changelog
 
 import { Badge } from '@astrojs/starlight/components'
 
-## 3.3.0 :badge[Latest]{variant="note"}
+## 4.0.0 :badge[Latest]{variant="note"}
+
+### ⚠️ Breaking Changes
+
+- <Badge text="Breaking Change" variant="danger" size="small" /> A view is now just a folder holding a component named after it - `src/views/hud/Hud.tsx`. The `index.html`, `index.tsx` and `index.css` files each view used to carry are gone; the HTML document and the code that renders the component into it are generated in development and in the production build alike. See [Creating a View](/docs/concepts/template#creating-a-view).
+
+  To migrate an existing view, delete its `index.html` and `index.tsx`, and rename `index.css` to `global.scss` (or `global.css`). Make sure the component file is named after its folder - `menu/Menu.tsx`, `chart-playground/ChartPlayground.tsx`; case and separators are ignored, but a folder with no matching component is no longer served or built.
+
+- <Badge text="Breaking Change" variant="danger" size="small" /> Global styles shared by every view now live in `src/views/global.scss`, which is applied before each view's own `global.scss` and before its module styles. The boilerplate uses it for the root font size and to make the body fill the viewport, so those rules no longer need repeating per view. See [Styling a View](/docs/concepts/template#styling-a-view).
+
+### Development server
+
+- <Badge text="New" variant="tip" size="small" /> Opening `http://localhost:3000` now lists every view in `src/views` with a link to it, instead of showing nothing. The page renders in the browser and inside `Player.exe`, so you can point the player at the root URL and switch views without restarting it.
+
+- <Badge text="Feature" variant="success" size="small" /> The trailing slash is no longer required when opening a view. `http://localhost:3000/hud` works the same as `http://localhost:3000/hud/`, in development and in `vite preview`.
+
+### Component fixes
+
+- <Badge text="Fix" variant="danger" size="small" /> [Icon](/components/media/icon#props): The `fill` prop had no effect - the class it applies was missing from the component's stylesheet, so an icon marked `fill` kept rendering at the default size instead of filling its container.
+
+- <Badge text="Fix" variant="danger" size="small" /> [Icon](/components/media/icon): The default size no longer squashes icons into a square. `height` is `auto` instead of a fixed `2.5rem`, so a non-square icon keeps its aspect ratio at the default `2.5rem` width.
+
+
+## 3.3.0
 
 - <Badge text="New" variant="tip" size="small" /> Added the `@recipes` path alias, so a recipe can be imported as `@recipes/SegmentedProgressBar/SegmentedProgressBar` instead of a relative path. Browse the available recipes in [Community Recipes](/recipes/).
   

@@ -1,15 +1,18 @@
-const chokidar = require('chokidar');
-const glob = require( 'glob');
-const fs = require('fs');
-const path = require('path');
-const normalizeIconKey = require('../src/components/Media/Icon/normalizeIconKey.ts').default;
+// ESM so this runs on any Node version. It used to `require` the TypeScript
+// source of normalizeIconKey, which only works from Node 22.18 onwards - before
+// that it fails with a bare "SyntaxError: Unexpected token ':'".
+import chokidar from 'chokidar';
+import { globSync } from 'glob';
+import fs from 'node:fs';
+import path from 'node:path';
+import normalizeIconKey from '../src/components/Media/Icon/normalizeIconKey.mjs';
 
 const ICONS_DIR = 'src/assets/icons';
 const OUTPUT_FILE = 'src/components/Media/Icon/IconTypes.ts';
 
 // Scans the folder and writes the TypeScript interface
 function generateIconTypes() {
-    const files = glob.globSync(`${ICONS_DIR}/**/*.{png,svg}`);
+    const files = globSync(`${ICONS_DIR}/**/*.{png,svg}`);
     const structure = {};
     
     files.forEach((file) => {

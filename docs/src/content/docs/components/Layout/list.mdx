@@ -254,7 +254,6 @@ To change all bullets of the `List` with a custom image, import the image and pa
 ```tsx
 import List from '@components/Layout/List/List';
 import QuestArrow from 'assets@/quest-arrow.svg';
-import 'index.css'
 
 const App = () => {
     return (
@@ -272,9 +271,11 @@ When using a custom image, it will be applied as a `background-image` to every b
 :::
 
 To apply additional styles to all bullets at once,
-use the `bullet-class` prop and define your styles in CSS:
+use the `bullet-class` prop and define your styles in the view's `global.scss`. The
+class has to be global - a `*.module.scss` would hash the name and `bullet-class`
+would no longer match it:
 
-```css title="index.css"
+```scss title="global.scss"
 .custom-bullet-icon {
     background-color: yellow;
 }

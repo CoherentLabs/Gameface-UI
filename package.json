@@ -1,6 +1,6 @@
 {
   "name": "gameface-ui-template",
-  "version": "3.3.0",
+  "version": "4.0.0",
   "description": "",
   "scripts": {
     "start": "vite",
@@ -9,7 +9,7 @@
     "run-test": "node ./scripts/test.js",
     "dev:host": "vite --host --mode test",
     "build:test": "npm run gen-icons&&vite build --mode test",
-    "gen-icons": "node scripts/generate-icon-types.js",
+    "gen-icons": "node scripts/generate-icon-types.mjs",
     "gen-registry": "node scripts/registry/generate-registry.mts",
     "preview": "vite preview --port 3000 --host",
     "test": "npm run build:test&&start-server-and-test preview http://localhost:3000/components-e2e/ run-test",
@@ -18,6 +18,7 @@
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^9.27.0",
+    "chokidar": "^4.0.3",
     "concurrently": "^9.2.1",
     "eslint": "^10.8.1",
     "eslint-plugin-gameface": "^1.2.0",

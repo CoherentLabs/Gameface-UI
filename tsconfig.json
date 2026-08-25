@@ -4,6 +4,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "node",
+    "allowImportingTsExtensions": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "jsx": "preserve",

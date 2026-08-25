@@ -1,19 +1,19 @@
 import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import solidSvg from 'vite-plugin-solid-svg';
-import { globSync } from 'glob';
-import path, { relative, extname, resolve } from 'node:path';
+import path, { resolve } from 'node:path';
 import solidStyleToCssPlugin from 'vite-solid-style-to-css';
 import solidGameface from 'vite-gameface';
 import eslint from 'vite-plugin-eslint';
+import gamefaceViews from './scripts/vite/views-plugin.mts';
 
 export default defineConfig(({ mode }) => {
   const root = mode === 'test' ? 'tests/src/views' : 'src/views';
-  const pathPattern = mode === 'test' ? 'tests/src/views/**/index.html' : 'src/views/**/index.html'
 
   return {
     root: root,
     plugins: [
+      gamefaceViews({ root: resolve(__dirname, root) }),
       eslint({
         include: ['src/**/*.ts', 'src/**/*.tsx'],
         emitWarning: true,
@@ -33,18 +33,13 @@ export default defineConfig(({ mode }) => {
     base: './',
     build: {
       assetsInlineLimit: 0,
+      cssMinify: false,
       outDir: resolve(__dirname, 'dist'),
       emptyOutDir: true,
       target: 'esnext',
       modulePreload: false,
       rollupOptions: {
-        input: Object.fromEntries(
-          globSync(pathPattern).map((file) =>
-            [
-              relative(root, file.slice(0, file.length - extname(file).length)),
-              resolve(__dirname, file)
-            ].map((file) => file.replace(/\\/g, '/')))
-        ),
+        // `input` is filled in by the gameface-views plugin, one entry per view.
         output: {
           format: 'es',
           entryFileNames: '[name].js',
