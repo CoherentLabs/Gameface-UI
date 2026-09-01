@@ -5,6 +5,7 @@ import BackgroundImage from "@components/Media/BackgroundImage/BackgroundImage";
 import Flex from "@components/Layout/Flex/Flex";
 import ConditionBar from "./ConditionBar/ConditionBar";
 import FLAG_SRC from "./utils/flagImages";
+import FLAG_POSITION from "./utils/flagSheet";
 
 // How the header cell for a column behaves:
 //  - 'sort'   → clickable HeaderColumnButton (asc/desc on the field)
@@ -64,15 +65,21 @@ export const ROSTER_COLUMNS: ColumnDef[] = [
         cell: (p) => (
             <>
                 {/* PLACEHOLDER */}
-                <Flex
+                {/* <Flex
                     justify-content="center"
                     align-items="center"
                     class={styles['column-image']}
                     style={{ 'background-color': 'gray', color: 'white' }}
-                >{p().nationality}</Flex>
+                >{p().nationality}</Flex> */}
+                {/* <img class={styles['column-image']} src={FLAG_SRC[p().nationality]} /> */}
 
                 {/* ORIGINAL */}
                 {/* <BackgroundImage class={styles['column-image']} src={FLAG_SRC[p().nationality]} /> */}
+
+                {/* SPRITESHEET */}
+                <div
+                    class={styles['column-sprite']}
+                    style={{ 'background-position': FLAG_POSITION[p().nationality] }} />
             </>
         ),
     },

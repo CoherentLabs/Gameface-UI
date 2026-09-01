@@ -1,6 +1,5 @@
 
-const MODULE_PATH = '@assets/icons/flags/*.svg';
-const flagModules = import.meta.glob(MODULE_PATH, { eager: true }) as Record<string, { default: string }>;
+const flagModules = import.meta.glob('@assets/icons/flags/*.svg', { eager: true }) as Record<string, { default: string }>;
 
 const FLAG_SRC: Record<string, string> = {};
 

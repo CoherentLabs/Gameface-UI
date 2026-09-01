@@ -1,5 +1,5 @@
 import './fonts.css';
-import { Component, createEffect, createMemo, createSignal, Index, on } from "solid-js";
+import { Component, createEffect, createMemo, createSignal, For, Index, on } from "solid-js";
 import { PaginationRef } from "@components/Basic/Pagination/Pagination";
 import Flex from '@components/Layout/Flex/Flex';
 import TableHeader from './TableHeader';
@@ -11,6 +11,8 @@ import Filter from "./Filter";
 import Pagination from "./Pagination/Pagination";
 import Search from "./Search/Search";
 import { DEFAULT_FILTERS } from "./utils/filters";
+import BackgroundImage from '@components/Media/BackgroundImage/BackgroundImage';
+import FLAG_SRC from './utils/flagImages';
 
 const PLAYERS_PER_PAGE = 8;
 const INITIAL_PAGE = 1;
@@ -50,6 +52,11 @@ const FilterableDataTable: Component = () => {
 
     return (
         <Flex direction='column' class={styles.table}>
+            {/* <div style={{display: 'none'}}>
+                <For each={Object.values(FLAG_SRC)}>{(country) => (
+                    <BackgroundImage class={styles['column-image']} src={country} />
+                )}</For>
+            </div> */}
             <Flex justify-content='space-between' align-items='center' class={styles.nav}>
                 <InlineTextBlock class={styles['nav-heading']}>
                     <span class={styles['nav-heading-highlight']}>Squad Roster</span>: Active UNIT List

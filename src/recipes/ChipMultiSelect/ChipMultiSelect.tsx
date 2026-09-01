@@ -5,6 +5,8 @@ import Flex from "@components/Layout/Flex/Flex";
 import BackgroundImage from "@components/Media/BackgroundImage/BackgroundImage";
 import FLAG_SRC from "./utils/imageMap";
 import styles from "./ChipMultiSelect.module.scss";
+import { Dynamic } from "solid-js/web";
+import { Icon } from "@components/Media/Icon/Icon";
 
 interface DropdownProps {
     value: string[],
@@ -41,17 +43,18 @@ const ChipMultiSelect: Component<DropdownProps> = (props) => {
                                 <div>{country.name}</div>
 
                                 {/* PLACEHOLDER */}
-                                <Flex
+                                {/* <Flex
                                     justify-content="center"
                                     align-items="center"
                                     class={styles['dropdown-option-content-image']}
                                     style={{ 'background-color': 'gray', 'color': 'white', 'text-align': 'center' }}
-                                    >{country.code}</Flex>
+                                    >{country.code}</Flex> */}
                                 
                                 {/* ORIGINAL */}
                                 {/* <BackgroundImage
                                     class={styles['dropdown-option-content-image']}
                                     src={FLAG_SRC[country.code]} /> */}
+                                <Dynamic component={Icon.flags[country.code as keyof typeof Icon.flags]} />
                             </div>
                         </Dropdown.Option>
                     )}</For>

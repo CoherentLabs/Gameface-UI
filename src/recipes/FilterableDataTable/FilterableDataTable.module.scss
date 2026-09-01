@@ -212,6 +212,16 @@ $condition-vertical-spacing: 1rem;
         border-radius: $component-radius;
     }
 
+    // Spritesheet variant: one shared texture, only background-position varies
+    // per cell. background-size makes the sheet exactly COLS x ROWS cells.
+    &-sprite {
+        width: 3em;
+        height: 2em;
+        border-radius: $component-radius;
+        background-image: url('../../assets/icons/flags-sheet.png');
+        background-size: 600% 400%;
+    }
+
     &-name {
         justify-content: flex-start;
         padding-left: 1em;

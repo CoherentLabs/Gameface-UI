@@ -41,17 +41,17 @@ const Dropdown: Component<DropdownProps> = (props) => {
                                 <div>{country.name}</div>
 
                                 {/* PLACEHOLDER */}
-                                <Flex
+                                {/* <Flex
                                     justify-content="center"
                                     align-items="center"
                                     class={styles['dropdown-option-content-image']}
                                     style={{ 'background-color': 'gray', 'color': 'white', 'text-align': 'center' }}
-                                    >{country.code}</Flex>
+                                    >{country.code}</Flex> */}
 
                                 {/* ORIGINAL */}
-                                {/* <BackgroundImage
+                                <BackgroundImage
                                     class={styles['dropdown-option-content-image']}
-                                    src={FLAG_SRC[country.code]} /> */}
+                                    src={FLAG_SRC[country.code]} />
                             </div>
                         </DropdownBase.Option>
                     )}</For>
@@ -63,17 +63,17 @@ const Dropdown: Component<DropdownProps> = (props) => {
                     <For each={props.value}>{(value) => (
                         <div class={styles.chip}>
                             {/* PLACEHOLDER */}
-                            <Flex
+                            {/* <Flex
                                 justify-content="center"
                                 align-items="center"
                                 class={styles['chip-image']}
                                 style={{ 'background-color': 'gray', 'color': 'white', 'text-align': 'center' }}
-                                >{value}</Flex>
+                                >{value}</Flex> */}
 
                             {/* ORIGINAL */}
-                            {/* <BackgroundImage
+                            <BackgroundImage
                                 class={styles['chip-image']}
-                                src={FLAG_SRC[value]} /> */}
+                                src={FLAG_SRC[value]} />
                             <div
                                 class={styles['chip-remove']}
                                 onClick={() => dropdownRef.deselectOption(value)}
