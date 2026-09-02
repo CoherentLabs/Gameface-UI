@@ -49,35 +49,44 @@ const atlasPosition = (i: number) => {
 const param = (name: string) => new RegExp(`[?&]${name}=([^&]+)`).exec(location.search)?.[1];
 
 const SpriteTest = () => {
-    const mode = param('mode') ?? 'png';
+    // The URL is the source of truth on load. The buttons then flip these in
+    // place rather than navigating, because **Cohtml does not navigate**:
+    // location.href, .assign(), .replace() and .search are all no-ops in the
+    // Player. To measure a cold load, point the Player at the URL directly
+    // (--url, or the MCP navigate tool) instead of clicking your way there.
+    const [mode, setMode] = createSignal(param('mode') ?? 'png');
+    const [nudge, setNudge] = createSignal(param('nudge') === '1');
     const perPage = Math.max(1, Number(param('n') ?? 200) || 200);
-    const nudge = param('nudge') === '1';
     const [page, setPage] = createSignal(0);
 
     // Stagger the animation so the cells do not all move in lockstep - otherwise
     // the damage region is one uniform block and the whole point is lost.
-    const nudgeStyle = (i: number) => (nudge ? { 'animation-delay': `-${(i % 20) * 5}ms` } : {});
+    const nudgeStyle = (i: number) => (nudge() ? { 'animation-delay': `-${(i % 20) * 5}ms` } : {});
 
-    const pooled = mode.endsWith('-pooled');
-    const src = mode.startsWith('svg') ? SVG_SRC : PNG_SRC;
-    const total = Math.min(perPage * PAGES, src.length);
+    const pooled = () => mode().endsWith('-pooled');
+    const src = () => (mode().startsWith('svg') ? SVG_SRC : PNG_SRC);
+    const total = () => Math.min(perPage * PAGES, src().length);
 
     // Churn modes render only the current page, so paging destroys and recreates.
     const pageIndices = () => {
         const start = page() * perPage;
-        return Array.from({ length: perPage }, (_, k) => start + k).filter((i) => i < total);
+        return Array.from({ length: perPage }, (_, k) => start + k).filter((i) => i < total());
     };
     // Pooled modes render every page once; paging only toggles a class.
-    const allIndices = Array.from({ length: total }, (_, i) => i);
+    const allIndices = () => Array.from({ length: total() }, (_, i) => i);
 
-    const go = (next: string) => { location.href = `${location.pathname}?mode=${next}&n=${perPage}${nudge ? '&nudge=1' : ''}`; };
-    const toggleNudge = () => { location.href = `${location.pathname}?mode=${mode}&n=${perPage}${nudge ? '' : '&nudge=1'}`; };
+    // The URL that reproduces the current state from a cold load - copy this
+    // when you want a clean measurement rather than an in-page switch.
+    const currentUrl = () => `${location.pathname}?mode=${mode()}&n=${perPage}${nudge() ? '&nudge=1' : ''}`;
 
     return (
         <div class={styles.page}>
             <div class={styles.bar}>
                 <For each={['png', 'atlas', 'svg', 'svg-pooled', 'png-pooled']}>{(m) => (
-                    <div class={`${styles.btn} ${mode === m ? styles['btn-active'] : ''}`} onClick={() => go(m)}>{m}</div>
+                    <div
+                        class={`${styles.btn} ${mode() === m ? styles['btn-active'] : ''}`}
+                        onClick={() => setMode(m)}
+                    >{m}</div>
                 )}</For>
 
                 <For each={Array.from({ length: PAGES }, (_, i) => i)}>{(i) => (
@@ -88,43 +97,41 @@ const SpriteTest = () => {
                 )}</For>
 
                 <div
-                    class={`${styles.btn} ${nudge ? styles['btn-active'] : ''}`}
-                    onClick={toggleNudge}
+                    class={`${styles.btn} ${nudge() ? styles['btn-active'] : ''}`}
+                    onClick={() => setNudge((v) => !v)}
                 >nudge</div>
 
-                <div class={styles.label}>
-                    {`${mode} · ${perPage}/page · ${total} total${pooled ? ' · all mounted' : ''}${nudge ? ' · repainting' : ''}`}
-                </div>
+                <div class={styles.label}>{currentUrl()}</div>
             </div>
 
             <div class={styles.grid}>
-                <Show when={pooled} fallback={
-                    <Show when={mode === 'atlas'} fallback={
+                <Show when={pooled()} fallback={
+                    <Show when={mode() === 'atlas'} fallback={
                         <For each={pageIndices()}>{(i) => (
                             <div
                                 class={styles.cell}
-                                classList={{ [styles.nudge]: nudge }}
-                                style={{ 'background-image': `url(${src[i]})`, ...nudgeStyle(i) }} />
+                                classList={{ [styles.nudge]: nudge() }}
+                                style={{ 'background-image': `url(${src()[i]})`, ...nudgeStyle(i) }} />
                         )}</For>
                     }>
                         <For each={pageIndices()}>{(i) => (
                             <div
                                 class={styles['cell-atlas']}
-                                classList={{ [styles.nudge]: nudge }}
+                                classList={{ [styles.nudge]: nudge() }}
                                 style={{ 'background-position': atlasPosition(i), ...nudgeStyle(i) }} />
                         )}</For>
                     </Show>
                 }>
                     {/* Pooled: every element stays mounted for the life of the page.
                         Only the class flips, so nothing is ever re-rasterised. */}
-                    <For each={allIndices}>{(i) => (
+                    <For each={allIndices()}>{(i) => (
                         <div
                             class={styles.cell}
                             classList={{
                                 [styles.hidden]: Math.floor(i / perPage) !== page(),
-                                [styles.nudge]: nudge,
+                                [styles.nudge]: nudge(),
                             }}
-                            style={{ 'background-image': `url(${src[i]})`, ...nudgeStyle(i) }} />
+                            style={{ 'background-image': `url(${src()[i]})`, ...nudgeStyle(i) }} />
                     )}</For>
                 </Show>
             </div>
