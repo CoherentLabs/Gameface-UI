@@ -1,0 +1,12 @@
+.trackers {
+    position: fixed;
+    pointer-events: none;
+
+    &-item {
+        pointer-events: auto;
+    }
+}
+
+.hidden {
+    display: none;
+}

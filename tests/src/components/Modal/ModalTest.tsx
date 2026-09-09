@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
 import selectors from "../../../shared/modal-selectors.json";
 import Modal, { ModalRef } from "@components/Feedback/Modal/Modal";
@@ -35,7 +34,7 @@ const ModalTest = () => {
     onCleanup(() => document.removeEventListener('reset', reset))
 
     return (
-        <Tab location='modal'>
+        <>
             <For each={scenarios}>
                 {(sc, i) => (
                     <button class={`${selectors.scenarioBtn} scenario-${i()}`} onClick={sc.action} >
@@ -46,9 +45,9 @@ const ModalTest = () => {
 
             <div class={selectors.assertionElement}>{assertionString()}</div>
 
-            <Modal 
-                style={reactiveStyle()} 
-                class={`${selectors.modal} ${reactiveClass()}`} 
+            <Modal
+                style={reactiveStyle()}
+                class={`${selectors.modal} ${reactiveClass()}`}
                 onClose={() => setAssertionString("close")}
                 onOpen={() => setAssertionString("open")}
                 ref={modalRef}>
@@ -73,11 +72,12 @@ const ModalTest = () => {
                             <Modal.Close class={selectors.rejectButton}>
                                 <Button size='small' textFit={false}>Reject</Button>
                             </Modal.Close>
+                            <Button class={selectors.closeWithRef} click={() => modalRef.close()} size='small' textFit={false}>Close with ref</Button>
                         </Flex>
                     </Bottom>
                 </Modal.Window>
             </Modal>
-        </Tab>
+        </>
     )
 }
 

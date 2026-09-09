@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
 import Block from "@components/Layout/Block/Block";
 import './base.css';
@@ -27,7 +26,7 @@ const BaseTest = () => {
     onCleanup(() => document.removeEventListener('reset', reset)) 
 
     return (
-        <Tab location='base'>
+        <>
             <div class={selectors.assertionElement}>{text()}</div>
 
             <For each={scenarios}>
@@ -95,7 +94,7 @@ const BaseTest = () => {
                 class={selectors.attributes}>
                 Attributes
             </Block>
-        </Tab> 
+        </>
     )
 }
 

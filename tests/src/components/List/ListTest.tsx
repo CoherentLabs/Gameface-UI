@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createSignal, createMemo, onMount, onCleanup, For, Accessor } from "solid-js";
 import selectors from "../../../shared/list-selectors.json";
 import List from "@components/Layout/List/List";
@@ -82,7 +81,7 @@ const ListTest = () => {
     }
 
     return (
-        <Tab location="list">
+        <>
             <For each={scenarios}>
                 {(sc, i) => (
                     <button class={`${selectors.scenarioBtn} scenario-${i()}`} onClick={sc.action} >
@@ -92,7 +91,7 @@ const ListTest = () => {
             </For>
 
             {renderList(data)}
-        </Tab>
+        </>
     );
 };
 

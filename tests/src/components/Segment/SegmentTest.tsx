@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createSignal, onCleanup, onMount } from "solid-js";
 import Segment, { SegmentRef } from "@components/Basic/Segment/Segment";
 import './segment.css';
@@ -31,7 +30,7 @@ const SegmentTest = () => {
     }) 
 
     return (
-        <Tab location='segment'>
+        <>
             <div class={selectors.assertionElement}>{selected()}</div>
             <button onClick={() => setDisabled(true)} class={selectors.disableSegment}>Disable Segment</button>
             <button onClick={() => setDisabledBtn(true)} class={selectors.disableSegmentBtn}>Disable Segment button</button>
@@ -54,7 +53,7 @@ const SegmentTest = () => {
                 <Segment.Indicator></Segment.Indicator>
             </Segment>
 
-        </Tab>
+        </>
     )
 }
 

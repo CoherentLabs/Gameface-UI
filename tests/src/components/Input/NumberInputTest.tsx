@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
 import selectors from "../../../shared/input-selectors.json";
 import './input.css';
@@ -46,7 +45,7 @@ const NumberInputTest = () => {
     onCleanup(() => document.removeEventListener('reset', reset))
 
     return (
-        <Tab location='number-input'>
+        <>
             <div class={selectors.assertionElement}>{value()}</div>
 
             <For each={scenarios}>
@@ -85,7 +84,7 @@ const NumberInputTest = () => {
                         position="after"></NumberInput.DecreaseControl>
                 </NumberInput>
             </div>
-        </Tab>
+        </>
     )
 }
 

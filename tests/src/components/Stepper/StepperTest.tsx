@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import Stepper, { StepperRef } from "@components/Basic/Stepper/Stepper";
 import './stepper.css';
@@ -47,7 +46,7 @@ const StepperTest = () => {
     onCleanup(() => document.removeEventListener('reset', reset)) 
 
     return (
-        <Tab location='stepper'>
+        <>
             <div class={selectors.assertionElement}>{selected()}</div>
 
             <For each={scenarios}>
@@ -89,7 +88,7 @@ const StepperTest = () => {
                     </Stepper.Control>
                 </Show>
             </Stepper>
-        </Tab>
+        </>
     )
 }
 

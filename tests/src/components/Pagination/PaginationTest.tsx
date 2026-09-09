@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import selectors from "../../../shared/pagination-selectors.json";
 import Pagination, { PaginationRef } from "@components/Basic/Pagination/Pagination";
@@ -41,7 +40,7 @@ const PaginationTest = () => {
     onCleanup(() => document.removeEventListener('reset', reset)) 
 
     return (
-        <Tab location='pagination'>
+        <>
             <div class={selectors.assertionElement}>{index()}</div>
 
             <For each={scenarios}>
@@ -74,7 +73,7 @@ const PaginationTest = () => {
                     </Pagination.Control>
                 </Show>
             </Pagination>
-        </Tab>
+        </>
     )
 }
 

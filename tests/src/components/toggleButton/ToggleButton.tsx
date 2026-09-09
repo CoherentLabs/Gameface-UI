@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
 import ToggleButton, { ToggleButtonRef } from "@components/Basic/ToggleButton/ToggleButton";
 import './toggleButton.css';
@@ -31,7 +30,7 @@ const ToggleButtonTest = () => {
     onCleanup(() => document.removeEventListener('reset', resetToggle)) 
 
     return (
-        <Tab location='toggle'>
+        <>
             <div class={selectors.assertionElement}>{checked() ? 'true' : 'false'}</div>
 
             <For each={scenarios}>
@@ -62,8 +61,8 @@ const ToggleButtonTest = () => {
                         style-checked={{"border": '1px solid white'}} />
                 </ToggleButton.Control>
             </ToggleButton>
-            
-        </Tab>
+
+        </>
     )
 }
 

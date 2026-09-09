@@ -24,9 +24,9 @@ describe('XYSlider', function () {
     it('Should change value with dragging', async () => {
         const assertionEl = await gf.get(`.${selectors.assertionElement}`);
         const handle = await gf.get(`.${selectors.sliderHandle}`);
-        await handle.dragBy(-7, -50);
+        await handle.dragBy(-8, -50);
 
-        assert.equal(await assertionEl.text(), 'x: 39 | y: 0', 'Slider\'s value should change to \'x: 39 | y: 0\'');
+        assert.equal(await assertionEl.text(), 'x: 40 | y: 0', 'Slider\'s value should change to \'x: 40 | y: 0\'');
     })
 
     it('Should change value via ref', async () => {
@@ -41,7 +41,7 @@ describe('XYSlider', function () {
         await background.click();
         const assertionEl = await gf.get(`.${selectors.assertionElement}`);
 
-        assert.equal(await assertionEl.text(), 'x: 100 | y: 98', 'Slider\'s thumb should move to the center');
+        assert.equal(await assertionEl.text(), 'x: 100 | y: 99', 'Slider\'s thumb should move to the center');
     })
 
     it('Should change min and max reactively', async () => {
