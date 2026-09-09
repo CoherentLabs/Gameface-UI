@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
 import BackgroundImage from "@components/Media/BackgroundImage/BackgroundImage";
 import Weapon1 from "@assets/wheel/weapon1.png";
@@ -63,7 +62,7 @@ const RadialMenuTest = () => {
     onCleanup(() => document.removeEventListener('reset', reset))
 
     return (
-        <Tab location='radial-menu'>
+        <>
             <div class={selectors.assertionElement}>{selected()}</div>
 
             <Flex justify-content="start" align-items="center" wrap="wrap" style={{"max-width": '30vw'}}>
@@ -115,7 +114,7 @@ const RadialMenuTest = () => {
                     )}
                 </For>
             </RadialMenu>
-        </Tab>
+        </>
     )
 }
 

@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount} from "solid-js";
 import Slider, { SliderRef } from "@components/Basic/Slider/Slider";
 import './slider.css';
@@ -34,7 +33,7 @@ const SliderTest = () => {
     onCleanup(() => document.removeEventListener('reset', reset)) 
 
     return (
-        <Tab location='slider'>
+        <>
             <div class={selectors.assertionElement}>{value()}</div>
             <div class={selectors.changeEndElement}>{endValue()}</div>
 
@@ -67,7 +66,7 @@ const SliderTest = () => {
                     pol-style={reactiveStyle()} 
                     pol-class={`${selectors.sliderPol} ${reactiveClass()}`} />
             </Slider>
-        </Tab> 
+        </>
     )
 }
 

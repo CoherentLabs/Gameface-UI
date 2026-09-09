@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createSignal, createMemo, onMount, onCleanup, For } from "solid-js";
 import grandeImage from '@assets/icons/hud/grenade.png'
 import weaponImage from '@assets/icons/hud/weapon.png'
@@ -38,7 +37,7 @@ const MediaTest = () => {
     onCleanup(() => document.removeEventListener('reset', reset)) 
 
     return (
-        <Tab location='media'>
+        <>
             <div class={selectors.assertionElement}>{reactivity()}</div>
 
             <For each={scenarios}>
@@ -62,7 +61,7 @@ const MediaTest = () => {
               </div>
             </MaskImage>
             <Icon.gamepad.xbox.a style={reactiveStyle()} class={`${selectors.icon} ${reactiveClass()}`} />
-        </Tab> 
+        </>
     )
 }
 

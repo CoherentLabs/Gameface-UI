@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
 import selectors from "../../../shared/keybinds/keybinds-selectors.json";
 import Keybinds, { KeybindsRef } from "@components/Basic/Keybinds/Keybinds";
@@ -58,7 +57,7 @@ const KeybindsTest = () => {
     onCleanup(() => document.removeEventListener('reset', reset))
 
     return (
-        <Tab location='keybinds'>
+        <>
             <For each={scenarios}>
                 {(sc, i) => (
                     <button class={`${selectors.scenarioBtn} scenario-${i()}`} onClick={sc.action} >
@@ -132,7 +131,7 @@ const KeybindsTest = () => {
                     </Keybinds>
                 </Flex>
             </Navigation>
-        </Tab>
+        </>
     )
 }
 

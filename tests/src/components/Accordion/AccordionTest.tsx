@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import selectors from '../../../shared/accordion-selectors.json';
 import Accordion, { AccordionRef } from "@components/Basic/Accordion/Accordion";
@@ -48,7 +47,7 @@ const AccordionTest = () => {
     onCleanup(() => document.removeEventListener('reset', reset))
 
     return (
-        <Tab location='accordion'>
+        <>
             <div class={selectors.assertionElement}>{expanded()}</div>
 
             <For each={scenarios}>
@@ -89,7 +88,7 @@ const AccordionTest = () => {
                     ))}
                 </For>
             </Accordion>
-        </Tab>
+        </>
     )
 }
 

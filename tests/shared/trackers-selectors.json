@@ -1,0 +1,20 @@
+{
+  "trackersLayer": "test-trackers-layer",
+  "item1": "test-item-1",
+  "item2": "test-item-2",
+  "item3": "test-item-3",
+  "item4": "test-item-4",
+  "item5": "test-item-5",
+  "assertionElement": "assertion-element",
+  "toggleTrackersMounted": "toggle-trackers-mounted",
+  "toggleItem4": "toggle-item4",
+  "moveItem1": "move-item1",
+  "hideItem2": "hide-item2",
+  "showItem2": "show-item2",
+  "moveBatch": "move-batch",
+  "moveItem4": "move-item4",
+  "moveUnknownTrackers": "move-unknown-trackers",
+  "moveItem5": "move-item5",
+  "setScale5": "set-scale5",
+  "setRotate5": "set-rotate5"
+}

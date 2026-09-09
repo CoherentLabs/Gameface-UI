@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
 import selectors from "../../../shared/input-selectors.json";
 import TextInput from "@components/Basic/Input/TextInput/TextInput";
@@ -41,7 +40,7 @@ const TextInputTest = () => {
     onCleanup(() => document.removeEventListener('reset', reset))
 
     return (
-        <Tab location='text-input'>
+        <>
             <div class={selectors.assertionElement}>{value()}</div>
 
             <For each={scenarios}>
@@ -70,7 +69,7 @@ const TextInputTest = () => {
                     <TextInput.Placeholder class={`${selectors.inputPlaceholder} ${reactiveClass()}`} style={reactiveStyle()}>Placeholder</TextInput.Placeholder>
                 </TextInput>
             </div>
-        </Tab>
+        </>
     )
 }
 

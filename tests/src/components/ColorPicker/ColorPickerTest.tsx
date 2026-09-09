@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
 import selectors from "../../../shared/color-picker-selectors.json";
 import ColorPicker, { ColorPickerRef } from "@components/Complex/ColorPicker/ColorPicker";
@@ -29,7 +28,7 @@ const ColorPickerTest = () => {
     onCleanup(() => document.removeEventListener('reset', reset))
 
     return (
-        <Tab location='color-picker'>
+        <>
             <div class={selectors.assertionElement}>{value()}</div>
 
             <For each={scenarios}>
@@ -48,7 +47,7 @@ const ColorPickerTest = () => {
                 style={reactiveStyle()}
                 class={`${selectors.colorPicker} ${reactiveClass()}`}>
             </ColorPicker>
-        </Tab>
+        </>
     )
 }
 

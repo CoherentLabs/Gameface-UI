@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import selectors from "../../../shared/tutorial/tutorial-selectors.json";
 import events from '../../../shared/tutorial/tutorial-events.json';
@@ -77,7 +76,7 @@ const TutorialTest = () => {
 
 
     return (
-        <Tab location='tutorial'>
+        <>
             <div class={selectors.assertionElement}>{currentStep()}</div>
 
             <Flex justify-content="start" align-items="center" wrap="wrap" style={{"max-width": '30vw'}}>
@@ -125,7 +124,7 @@ const TutorialTest = () => {
                     </Tutorial.Step>
                 </div>
             </Tutorial>
-        </Tab>
+        </>
     )
 }
 

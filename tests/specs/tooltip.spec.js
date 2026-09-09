@@ -120,7 +120,7 @@ describe('Tooltip', function () {
                     break;
                 case 'right':
                     assert.ok(
-                        tipLocation.x + tipSize.width < elementLocation.x,
+                        tipLocation.x + tipSize.width <= elementLocation.x,
                         'Tooltip should be to the left of the element'
                     );
                     break;

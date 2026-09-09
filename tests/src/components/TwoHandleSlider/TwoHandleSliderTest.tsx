@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
 import './two-handle-slider.css';
 import selectors from "../../../shared/two-handle-slider-selectors.json";
@@ -44,7 +43,7 @@ const TwoHandleSliderTest = () => {
     onCleanup(() => document.removeEventListener('reset', reset))
 
     return (
-        <Tab location='two-handle-slider'>
+        <>
             <div class={selectors.assertionStartElement}>{start()}</div>
             <div class={selectors.assertionEndElement}>{end()}</div>
             <div class={selectors.changeEndStartElement}>{changeEndStart()}</div>
@@ -79,7 +78,7 @@ const TwoHandleSliderTest = () => {
                     pol-style={reactiveStyle()}
                     pol-class={`${selectors.sliderPol} ${reactiveClass()}`} />
             </TwoHandleSlider>
-        </Tab>
+        </>
     )
 }
 
