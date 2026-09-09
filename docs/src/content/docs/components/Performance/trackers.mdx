@@ -1,0 +1,234 @@
+---
+title: Trackers
+---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
+
+The `Trackers` component efficiently renders multiple elements at game-world positions—such as minimap blips, nameplates, and damage numbers—that update frequently. Rather than using SolidJS signals for updates, you call `updateTrackers` directly or emit events from the game engine, and `Trackers` immediately applies the new positions to the DOM in the most performant way.
+
+<video src="/video/trackers-intro.mp4" autoplay loop muted />
+
+## Installation
+
+Every component ships with the boilerplate. If you are working in your own project, add `Trackers` with the [Gameface CLI](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/):
+
+```bash
+npx gameface-cli add Trackers
+```
+
+The CLI pulls in whatever `Trackers` depends on. To refresh an existing copy, [update it](/docs/getting-started/updating-components) instead.
+
+## Usage
+
+Give `Trackers` an `id` - this is the channel other code will call `updateTrackers` on. Inside it, each `Trackers.Item` needs its own `id`, which is what you'll target when moving that specific item.
+
+<CodePreviewGFUI height={400}>
+```tsx
+import Trackers, { updateTrackers } from '@components/Performance/Trackers/Trackers';
+
+<>
+    <button onClick={() => updateTrackers('minimap', { id: 'blip-1', x: Math.random() * 180, y: Math.random() * 180 })} style={{ background: '#4fd6ff', color: '#000', padding: '0.5rem 1rem', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Click to change position</button>
+    <div style={{ position: 'relative', width: '200px', height: '200px', background: '#222' }}>
+        <Trackers id="minimap" style={{ position: 'absolute', inset: '0' }}>
+            <Trackers.Item
+                id="blip-1"
+                style={{ position: 'absolute', top: 0, left: 0, width: '12px', height: '12px', 'border-radius': '50%', background: '#4fd6ff' }}
+            />
+        </Trackers>
+    </div>
+</>
+```
+</CodePreviewGFUI>
+
+To test this sample click the button a few times - each click calls `updateTrackers('minimap', { id: 'blip-1', x, y })` and the blip jumps straight to the new spot.
+
+## API
+
+### Trackers Props
+
+| Prop Name | Type                 | Default     | Description                                                                                      |
+| --------- | -------------------- | ----------- | -------------------------------------------------------------------------------------------------- |
+| `id`      | `string`             | -           | The identifier name that addresses this `Trackers` instance. This is the first argument you pass to `updateTrackers` method. |
+| `style`   | `JSX.CSSProperties`  | `{}`        | Inline styles to apply directly to the component's root element.                                  |
+| `class`   | `string`             | `""`        | Additional CSS classes to apply to the component.                                                  |
+
+### Trackers.Item Props
+
+| Prop Name | Type               | Default     | Description                                                                                          |
+| --------- | ------------------ | ----------- | ------------------------------------------------------------------------------------------------------ |
+| `id`      | `string`            | -           | The item's own id. This is what you target with `updateTrackers` to move, hide, or show this specific item. |
+| `style`   | `JSX.CSSProperties` | `{}`        | Inline styles for the item.                 |
+| `class`   | `string`             | `""`       | CSS classes for the item.   |
+| `scale`   | `Accessor<number> \| number` | `undefined` | Property used to control the item's scale. Pass a signal getter or a number and the item scales whenever it changes.         |
+| `rotate`  | `Accessor<number> \| number` | `undefined` | Property used to control the item's rotation in degrees. Pass a signal getter or a number and the item rotates whenever it changes. |
+
+:::note
+`scale` and `rotate` are composed into the same transform `Trackers` already uses to position the item, so they work together with position updates rather than fighting over the `transform` property. For the same reason, don't set `transform` yourself in an item's `style` - `Trackers` owns it, and your value would just get overwritten on the next update.
+:::
+
+### `updateTrackers`
+
+This method can be used to update the position and visibility of `Trackers.Item` components within a specific `Trackers` instance directly from JavaScript.
+
+```ts
+updateTrackers(trackersId: string, updates: TrackersEventPayload | TrackersEventPayload[]): void
+```
+
+| Parameter    | Type                              | Description                                                                    |
+| ------------ | ---------------------------------- | -------------------------------------------------------------------------------- |
+| `trackersId` | `string`                          | The `id` of the `Trackers` component to update.                                |
+| `updates`    | `TrackersEventPayload \| TrackersEventPayload[]` | A single item update, or an array of them to update several items in one call. |
+
+Where `TrackersEventPayload` is:
+
+| Field  | Type      | Description                                                              |
+| ------ | --------- | -------------------------------------------------------------------------- |
+| `id`   | `string`  | The `id` of the `Trackers.Item` to update.                               |
+| `x`    | `number`  | New horizontal position, in pixels.                                       |
+| `y`    | `number`  | New vertical position, in pixels.                                         |
+| `hide` | `boolean` | Set to `true` to hide the item, `false` (or omit it) to show it.          |
+
+Calling `updateTrackers` for a `Trackers` id that isn't currently mounted, or a `Trackers.Item` id that doesn't exist, is safe - it's simply ignored (with a warning logged in development).
+
+## `Trackers.Item` behavior
+
+* Setting `class` or `style` on a `Trackers.Item`, should not overwrite the following properties otherwise it won't be positioned correctly at runtime:
+  * `position` - Internally `Trackers.Item` is positioned absolutely within its parent container.
+  * `transform` - The `Trackers.Item` uses this CSS property to control its position with `translate`. If you need to scale or rotate the item use the `scale` and `rotate` props. Do not set `transform` yourself in an item's `style` as it will be overwritten by the component.
+* `Trackers.Item` renders a `div` element in place, so it should be used directly as the wrapper around your item's content.
+
+### Good and bad practice
+
+```tsx
+// ✅ Good: Trackers.Item owns the transformation, while scale and rotate are composed safely.
+<Trackers.Item
+    id="player"
+    scale={1.25}
+    rotate={15}
+    style={{ width: '24px', height: '24px', background: '#4fd6ff' }}
+>
+    <span>Player</span>
+</Trackers.Item>
+
+// ❌ Bad: Setting transform yourself overwrites the position applied by Trackers component.
+<Trackers.Item
+    id="enemy"
+    style={{ transform: 'rotate(15deg)' }}
+/>
+```
+
+## Guide
+
+### Move item in the UI
+
+In some cases, positions of the items are updated from the UI using JavaScript. For that reason, you may need to call `updateTrackers` every frame to reflect the changes in the UI. Make sure to call it with multiple items batched together in a single array for efficiency if you have several items to update.
+
+```tsx
+import { onCleanup, onMount } from 'solid-js';
+import Trackers, { updateTrackers } from '@components/Performance/Trackers/Trackers';
+
+const App = () => {
+    let frame: number;
+
+    const tick = () => {
+        updateTrackers('minimap', [
+            { id: 'blip-1', x: Math.random() * 180, y: Math.random() * 180 },
+            { id: 'blip-2', x: Math.random() * 180, y: Math.random() * 180 },
+        ]);
+        frame = requestAnimationFrame(tick);
+    };
+
+    onMount(() => { frame = requestAnimationFrame(tick); });
+    onCleanup(() => cancelAnimationFrame(frame));
+
+    return (
+        <Trackers id="minimap" style={{ position: 'relative', width: '200px', height: '200px' }}>
+            <Trackers.Item id="blip-1" style={{ position: 'absolute', width: '10px', height: '10px', background: 'red' }} />
+            <Trackers.Item id="blip-2" style={{ position: 'absolute', width: '10px', height: '10px', background: 'lime' }} />
+        </Trackers>
+    );
+};
+
+export default App;
+```
+
+### Move item from the engine
+
+If you are using an engine and you want to control the position of a tracked item, you can emit events from the engine to the UI directly. The `Trackers` component internally listens for these events via `engine.on('trackers:<id>', ...)` and update the items accordingly. 
+
+:::note
+The event name must be `trackers:<id>`, where `<id>` is the `id` of the `Trackers` instance, and its argument should be a single update or an array of them - same shape as what you'd pass to `updateTrackers`.
+:::
+
+Here is an example:
+
+```c++
+struct TrackerUpdate
+{
+    const char* id;
+    float x;
+    float y;
+};
+
+class GameViewListener : public cohtml::IViewListener
+{
+public:
+    virtual void OnDOMBuilt() override
+    {
+        // Safe to trigger events now that the DOM is ready and JS handlers are active.
+        std::vector<TrackerUpdate> updates = {
+            { "blip-1", 120.f, 80.f },
+            { "blip-2", 140.f, 92.f },
+        };
+
+        m_View->TriggerEvent("trackers:minimap", updates);
+    }
+
+private:
+    cohtml::View* m_View;
+};
+```
+
+More on how to emit engine events can be found in the Gameface <Link target="_blank" href="https://docs.coherent-labs.com/cpp-gameface/integration/ui_scripting/javascript_native/#c-triggering-javascript">documentation</Link>.
+
+### Hide and show an item
+
+Set `hide: true` to hide an item, and `hide: false` (or just leave it out) to bring it back.
+
+```tsx
+// Hide it
+updateTrackers('minimap', { id: 'blip-1', hide: true });
+
+// Show it again
+updateTrackers('minimap', { id: 'blip-1', hide: false });
+```
+
+### Scale or rotate a tracked item
+
+`scale` and `rotate` take a signal getter, so the item reacts whenever you update the signal - no need to go through `updateTrackers` for these.
+
+```tsx
+import { createSignal } from 'solid-js';
+import Trackers from '@components/Performance/Trackers/Trackers';
+
+const App = () => {
+    const [scale, setScale] = createSignal(1);
+    const [rotate, setRotate] = createSignal(0);
+
+    return (
+        <>
+            <button onClick={() => setScale((s) => s + 0.2)}>Scale up</button>
+            <button onClick={() => setRotate((r) => r + 15)}>Rotate</button>
+            <Trackers id="minimap" style={{ position: 'relative', width: '200px', height: '200px' }}>
+                <Trackers.Item
+                    id="blip-1"
+                    scale={scale}
+                    rotate={rotate}
+                    style={{ width: '20px', height: '20px', background: '#4fd6ff' }}
+                />
+            </Trackers>
+        </>
+    );
+};
+
+export default App;
+```

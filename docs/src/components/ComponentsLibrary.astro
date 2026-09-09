@@ -14,6 +14,7 @@ const categories = [
   "Layout",
   "Media",
   "Utility",
+  "Performance",
 ] as const;
 
 const componentsByCategory = {
@@ -23,6 +24,7 @@ const componentsByCategory = {
   Layout: Object.keys(import.meta.glob("/src/assets/components/layout/*")),
   Media: Object.keys(import.meta.glob("/src/assets/components/media/*")),
   Utility: Object.keys(import.meta.glob("/src/assets/components/utility/*")),
+  Performance: Object.keys(import.meta.glob("/src/assets/components/performance/*")),
 } satisfies Record<(typeof categories)[number], string[]>;
 ---
 
