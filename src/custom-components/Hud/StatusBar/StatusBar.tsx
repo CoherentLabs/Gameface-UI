@@ -3,14 +3,14 @@ import Absolute from "@components/Layout/Absolute/Absolute";
 import Block from "@components/Layout/Block/Block";
 
 import { For } from "solid-js";
-import { Icon } from "@components/Media/Icon/Icon";
+import Image from '@components/Media/Image/Image';
 
 const userShieldPoints = Array.from({ length: 3 }, (_, i) => i == 2 ? 'gray' : 'white');
 
 const StatusBar = () => {
     return <Absolute top="80vh" left="30vh">
         <Flex align-items="center">
-            <Icon.hud.placeholder style={{ width: '7vh', height: '7vh' }} />
+            <Image.icons.hud.placeholder style={{ width: '7vh', height: '7vh' }} />
             <Block style={{ 'margin-left': '1vh' }}>
                 <Flex>
                     <For each={userShieldPoints}>

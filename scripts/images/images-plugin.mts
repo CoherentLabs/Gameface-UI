@@ -1,6 +1,8 @@
 import path from 'node:path';
 import type { Plugin } from 'vite';
 import { IMAGE_EXTENSIONS, scanImages, writeImageTypes } from './image-types.mjs';
+import { IRectangle, MaxRectsPacker, Rectangle } from 'maxrects-packer';
+import sharp from 'sharp';
 
 /**
  * Lets any module use `Image.icons.gamepad.xbox.a` for `assets/icons/gamepad/xbox/a.png`,
@@ -47,6 +49,22 @@ interface AstNode {
     end: number;
     [key: string]: any;
 }
+
+interface AtlasData {
+    name: string;
+    file: string;
+}
+
+interface AtlasRect extends IRectangle {
+    data: AtlasData;
+}
+
+interface AtlasSpriteData {
+    image: string;
+    position: string;
+    size: string;
+}
+
 
 /** Calls `visit` for every node in the tree, parents before their children. */
 function walk(node: AstNode, visit: (node: AstNode, parent: AstNode | null) => void, parent: AstNode | null = null) {
@@ -331,7 +349,18 @@ export default function gamefaceImages({ assets, types }: ImagesPluginOptions): 
             return { code: `${header.join(' ')} ${output}`, map: null };
         },
 
-        generateBundle(_, bundle) {
+        async generateBundle(_, bundle) {
+            // Init packer
+            const maxWidth = 2048;
+            const maxHeight = 2048;
+            const padding = 2;
+            const options = {
+                smart: true,   // Enable smart packing algorithm
+                pot: false,    // Enable potential-based packing algorithm
+                square: false,   // Enable square packing algorithm
+            };
+            const packer = new MaxRectsPacker<AtlasRect>(maxWidth, maxHeight, padding, options);
+
             for (const entry of Object.values(bundle)) {
                 if (entry.type !== 'chunk' || !entry.isEntry) continue;
 
@@ -360,10 +389,58 @@ export default function gamefaceImages({ assets, types }: ImagesPluginOptions): 
 
                 visit(entry.fileName);
 
-                console.log(`\n🖼️  ${entry.name} uses ${used.size} image(s)`);
-                used.forEach((source) => console.log(`   ${toPosix(path.relative(assetsDir, source))}`));
+                const atlasItems = await Promise.all(used.entries().map(async ([name, source]) => {
+                    const { width, height } = await sharp(source).metadata();
+                    return { width, height, x: 0, y: 0, data: { name: name.split('/').pop()!, file: source } };
+                }))
+                packer.reset();
+                packer.addArray(atlasItems);
 
-                // ask claudi what the fuk is happening here and try to plug in the atlas yourself
+                let sprites: Record<string, AtlasSpriteData> = {};
+                
+                for (const bin of packer.bins) {           // one pass per atlas PNG to write
+                    const parts = bin.rects.map((rect) => ({
+                        input: rect.data.file,             // the path we attached earlier
+                        left: rect.x,                      // where the packer decided it goes
+                        top: rect.y,
+                    }));
+                
+                    const buffer = await sharp({ 
+                        create: { 
+                            width: bin.width, 
+                            height: bin.height, 
+                            channels: 4,
+                            background: { r: 0, g: 0, b: 0, alpha: 0 } 
+                        }
+                    })
+                    .composite(parts)
+                    .png()
+                    .toBuffer();
+
+                    const ref = this.emitFile({
+                        type: 'asset',
+                        name: `atlas-${entry.name.replace(/\//g, '-')}-${packer.bins.indexOf(bin)}.png`,
+                        source: buffer,
+                    });
+
+                    const atlasFile = this.getFileName(ref);
+                    const atlasUrl = path.posix.relative(path.posix.dirname(entry.fileName), atlasFile); 
+                
+                    // and remember where each one landed, for the CSS later
+                    for (const rect of bin.rects) {
+                        const atlasW = bin.width;
+                        const atlasH = bin.height;
+                        const freeX = atlasW - rect.width, freeY = atlasH - rect.height;
+
+                        sprites[rect.data.name] = { 
+                            image: `url(${atlasUrl})`,
+                            size: `${atlasW / rect.width * 100}% ${atlasH / rect.height * 100}%`,
+                            position: `${freeX ? rect.x / freeX * 100 : 0}% ${freeY ? rect.y / freeY * 100 : 0}%`,
+                        };
+                    }
+
+                }
+                entry.code = `window.__GF_ATLAS__ = ${JSON.stringify(sprites)};\n` + entry.code;
             }
         },
     };

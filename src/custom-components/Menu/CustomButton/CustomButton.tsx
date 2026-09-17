@@ -1,7 +1,7 @@
 import Flex from "@components/Layout/Flex/Flex"
 import { useContext } from "solid-js";
 import { MenuContext } from "../../../views/menu/Menu";
-import { Icon } from "@components/Media/Icon/Icon";
+import Image from '@components/Media/Image/Image';
 import styles from './CustomButton.module.scss';
 
 interface CustomButtonProps {
@@ -14,8 +14,8 @@ const CustomButton = (props: CustomButtonProps) => {
     const menuContext = useContext(MenuContext)
 
     const IconComponent = props.variation === 'select' 
-        ? <Icon.gamepad.xbox.a class={styles['button-icon']} />
-        : <Icon.gamepad.xbox.b class={styles['button-icon']} />
+        ? <Image.icons.gamepad.xbox.a class={styles['button-icon']} />
+        : <Image.icons.gamepad.xbox.b class={styles['button-icon']} />
 
     const KeyComponent = <div class={styles['button-key']}>{props.variation === 'select' ? 'Enter' : 'ESC'}</div>
 
