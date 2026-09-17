@@ -17,7 +17,7 @@ import Weapon5 from "@assets/wheel/weapon5.png";
 import Weapon6 from "@assets/wheel/weapon6.png";
 import Center from "@assets/wheel/GameMessage_AchievmentIcon.png";
 import BackgroundImage from '@components/Media/BackgroundImage/BackgroundImage';
-import { Icon } from '@components/Media/Icon/Icon';
+import Image from '@components/Media/Image/Image';
 
 const wheelItems = [
     { id: "shotgun", img: Weapon1 },
@@ -108,7 +108,7 @@ const Hud = () => {
                 <Column4></Column4>
                 <Column4>
                     <Flex style={{ width: '100%', height: '100%' }} align-items="center" justify-content="center">
-                        <Icon.hud.crosshair style={{ width: '7vh', height: '7vh' }} />
+                        <Image.icons.hud.crosshair style={{ width: '7vh', height: '7vh' }} />
                     </Flex>
                 </Column4>
                 <Column4></Column4>

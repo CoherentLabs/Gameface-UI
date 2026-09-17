@@ -26,7 +26,7 @@ import CustomTooltip from '@custom-components/Menu/CustomTooltip/CustomTooltip';
 import { TutorialSteps } from './util/tutorialSteps';
 import Navigation, { NavigationRef } from '@components/Utility/Navigation/Navigation';
 import { ActionMap } from '@components/Utility/Navigation/types';
-import { Icon } from '@components/Media/Icon/Icon';
+import Image from '@components/Media/Image/Image';
 
 interface MenuContextValue {
     currentOption: Accessor<string>,
@@ -329,25 +329,25 @@ const Menu = () => {
                                                             <Match when={inputType() === "gamepad"}>
                                                                 <Flex align-items="center">
                                                                     <Block class={styles['button-glyph']}>
-                                                                        <Icon.gamepad.xbox.b />
+                                                                        <Image.icons.gamepad.xbox.b />
                                                                     </Block> 
                                                                     Back
                                                                 </Flex>
                                                                 <Flex align-items="center">
                                                                     <Block class={styles['button-glyph']}>
-                                                                        <Icon.gamepad.xbox.a />
+                                                                        <Image.icons.gamepad.xbox.a />
                                                                     </Block> 
                                                                     Select
                                                                 </Flex>
                                                                 <Flex align-items="center">
                                                                     <Block class={styles['button-glyph']}>
-                                                                        <Icon.gamepad.xbox.lb />
+                                                                        <Image.icons.gamepad.xbox.lb />
                                                                     </Block>
                                                                     Tab left
                                                                 </Flex>
                                                                 <Flex align-items="center">
                                                                     <Block class={styles['button-glyph']}>
-                                                                        <Icon.gamepad.xbox.rb />
+                                                                        <Image.icons.gamepad.xbox.rb />
                                                                     </Block>
                                                                     Tab right
                                                                 </Flex>

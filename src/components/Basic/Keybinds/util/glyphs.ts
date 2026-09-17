@@ -1,4 +1,4 @@
-import { Icon } from "@components/Media/Icon/Icon";
+import Image from '@components/Media/Image/Image';
 import { Component, JSX } from "solid-js";
 
 /**
@@ -7,46 +7,46 @@ import { Component, JSX } from "solid-js";
  */
 export const GLYPHS = {
     // Face Buttons
-    '0': Icon.gamepad.xbox.a,
-    '1': Icon.gamepad.xbox.b,
-    '2': Icon.gamepad.xbox.x,
-    '3': Icon.gamepad.xbox.y,
+    '0': Image.icons.gamepad.xbox.a,
+    '1': Image.icons.gamepad.xbox.b,
+    '2': Image.icons.gamepad.xbox.x,
+    '3': Image.icons.gamepad.xbox.y,
 
     // Shoulder Buttons (Bumpers)
-    '4': Icon.gamepad.xbox.lb,
-    '5': Icon.gamepad.xbox.rb,
+    '4': Image.icons.gamepad.xbox.lb,
+    '5': Image.icons.gamepad.xbox.rb,
 
     // Triggers
-    '6': Icon.gamepad.xbox.lt,
-    '7': Icon.gamepad.xbox.rt,
+    '6': Image.icons.gamepad.xbox.lt,
+    '7': Image.icons.gamepad.xbox.rt,
 
     // Navigation / Center Buttons
-    '8': Icon.gamepad.xbox.view,  // Often used as 'Back' or 'Select'
-    '9': Icon.gamepad.xbox.menu,  // Often used as 'Start'
+    '8': Image.icons.gamepad.xbox.view,  // Often used as 'Back' or 'Select'
+    '9': Image.icons.gamepad.xbox.menu,  // Often used as 'Start'
     
     // Stick Presses (L3 / R3)
-    '10': Icon.gamepad.xbox.leftStickPress,
-    '11': Icon.gamepad.xbox.rightStickPress,
+    '10': Image.icons.gamepad.xbox.leftStickPress,
+    '11': Image.icons.gamepad.xbox.rightStickPress,
 
     // D-Pad
-    '12': Icon.gamepad.xbox.dpadUp,
-    '13': Icon.gamepad.xbox.dpadDown,
-    '14': Icon.gamepad.xbox.dpadLeft,
-    '15': Icon.gamepad.xbox.dpadRight,
+    '12': Image.icons.gamepad.xbox.dpadUp,
+    '13': Image.icons.gamepad.xbox.dpadDown,
+    '14': Image.icons.gamepad.xbox.dpadLeft,
+    '15': Image.icons.gamepad.xbox.dpadRight,
 
     // Additional Button (Xbox Guide/Share)
-    '16': Icon.gamepad.xbox.share,
+    '16': Image.icons.gamepad.xbox.share,
 
-    'right.joystick': Icon.gamepad.xbox.rightStick,
-    'left.joystick': Icon.gamepad.xbox.leftStick,
-    'left.joystick.down': Icon.gamepad.xbox.leftStick,
-    'left.joystick.up': Icon.gamepad.xbox.leftStick,
-    'left.joystick.left': Icon.gamepad.xbox.leftStick,
-    'left.joystick.right': Icon.gamepad.xbox.leftStick,
-    'right.joystick.down': Icon.gamepad.xbox.rightStick,
-    'right.joystick.up': Icon.gamepad.xbox.rightStick,
-    'right.joystick.left': Icon.gamepad.xbox.rightStick,
-    'right.joystick.right': Icon.gamepad.xbox.rightStick
+    'right.joystick': Image.icons.gamepad.xbox.rightStick,
+    'left.joystick': Image.icons.gamepad.xbox.leftStick,
+    'left.joystick.down': Image.icons.gamepad.xbox.leftStick,
+    'left.joystick.up': Image.icons.gamepad.xbox.leftStick,
+    'left.joystick.left': Image.icons.gamepad.xbox.leftStick,
+    'left.joystick.right': Image.icons.gamepad.xbox.leftStick,
+    'right.joystick.down': Image.icons.gamepad.xbox.rightStick,
+    'right.joystick.up': Image.icons.gamepad.xbox.rightStick,
+    'right.joystick.left': Image.icons.gamepad.xbox.rightStick,
+    'right.joystick.right': Image.icons.gamepad.xbox.rightStick
 };
 
 export type GamepadBindingCode = keyof typeof GLYPHS;

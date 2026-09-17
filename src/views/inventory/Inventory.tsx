@@ -4,7 +4,6 @@ import Row from "@components/Layout/Row/Row";
 import TabLink from "@components/Layout/TabLink/TabLink";
 import Tabs from "@components/Layout/Tabs/Tabs";
 import Tab from "@components/Layout/Tab/Tab";
-import { Icon } from "@components/Media/Icon/Icon";
 import Grid from "@components/Layout/Grid/Grid";
 import Progress from "@components/Feedback/Progress/Progress";
 import NumberInput from "@components/Basic/Input/NumberInput/NumberInput";
@@ -16,8 +15,22 @@ import styles from './Inventory.module.scss';
 import Relative from "@components/Layout/Relative/Relative";
 import Absolute from "@components/Layout/Absolute/Absolute";
 import TwoHandleSlider from "@components/Basic/TwoHandleSlider/TwoHandleSlider";
+import Image from "@components/Media/Image/Image";
+import { Dynamic } from "solid-js/web";
+// SVGs are not exposed on `Image`, so these are imported the ordinary way. They
+// stay out of the atlas, which is what we want for vector art anyway.
+import bag from "@assets/icons/inventory/bag.svg";
+import boots from "@assets/icons/inventory/boots.svg";
+import breastPlate from "@assets/icons/inventory/breastPlate.svg";
+import helmet from "@assets/icons/inventory/helmet.svg";
+import pants from "@assets/icons/inventory/pants.svg";
+import shield from "@assets/icons/inventory/shield.svg";
+import sword from "@assets/icons/inventory/sword.svg";
 
 const Inventory = () => {
+	const keys = ['circle', 'square', 'triangle', 'cross'] as const;
+// keys[0] is 'circle', so Image.icons.gamepad.ps5[keys[0]] type-checks
+
 	return (
 		<Tabs default="inventory">
 			<Row style={{height: '100%'}}>
@@ -35,12 +48,12 @@ const Inventory = () => {
 
 							{/*  Equipped Items */}
 							<Flex direction="column" align-items="center" justify-content="space-between" gap="1.375rem" class={styles['equipped-items-wrapper']} >
-								<div class={styles['equipped-item']}><Icon.inventory.helmet fill /></div>
-								<div class={styles['equipped-item']}><Icon.inventory.breastPlate fill /></div>
-								<div class={styles['equipped-item']}><Icon.inventory.pants fill /></div>
-								<div class={`${styles['equipped-item']} ${styles['equipped-item-active']}`}><Icon.inventory.boots fill /></div>
-								<div class={`${styles['equipped-item']} ${styles['equipped-item-active']}`}><Icon.inventory.sword fill /></div>
-								<div class={styles['equipped-item']}><Icon.inventory.shield fill /></div>
+								<div class={styles['equipped-item']}><Image src={helmet} fill /></div>
+								<div class={styles['equipped-item']}><Image src={breastPlate} fill /></div>
+								<div class={styles['equipped-item']}><Image src={pants} fill /></div>
+								<div class={`${styles['equipped-item']} ${styles['equipped-item-active']}`}><Image src={boots} fill /></div>
+								<div class={`${styles['equipped-item']} ${styles['equipped-item-active']}`}><Image src={sword} fill /></div>
+								<div class={styles['equipped-item']}><Image src={shield} fill /></div>
 							</Flex>
 
 							{/* Grid Wrapper */}
@@ -67,12 +80,12 @@ const Inventory = () => {
 									gap='1rem' 
 									class={`${styles.grid}`} 
 									column-class={styles['grid-cell']}>
-									<Grid.Tile row={1} col={1}><Icon.inventory.bag fill /></Grid.Tile>
-									<Grid.Tile row={1} col={2}><Icon.inventory.bag fill /></Grid.Tile>
-									<Grid.Tile class={styles["grid-item-active"]} row={1} col={3}><Icon.inventory.sword fill /></Grid.Tile>
-									<Grid.Tile row={1} col={4}><Icon.inventory.bag fill /></Grid.Tile>
-									<Grid.Tile row={1} col={5}><Icon.inventory.bag fill /></Grid.Tile>
-									<Grid.Tile row={2} col={1}><Icon.inventory.bag fill /></Grid.Tile>
+									<Grid.Tile row={1} col={1}><Image src={bag} fill /></Grid.Tile>
+									<Grid.Tile row={1} col={2}><Image src={bag} fill /></Grid.Tile>
+									<Grid.Tile class={styles["grid-item-active"]} row={1} col={3}><Image src={sword} fill /></Grid.Tile>
+									<Grid.Tile row={1} col={4}><Image src={bag} fill /></Grid.Tile>
+									<Grid.Tile row={1} col={5}><Image src={bag} fill /></Grid.Tile>
+									<Grid.Tile row={2} col={1}><Image src={bag} fill /></Grid.Tile>
 								</Grid>
 							</Flex>
 
@@ -83,7 +96,7 @@ const Inventory = () => {
 							<h2 class={styles['item-inspector-label']}>Item Inspector</h2>
 
 							<div class={styles['item-image']}>
-								<Icon.inventory.sword fill />
+								<Image src={sword} fill />
 							</div>
 
 							<Flex direction="column" align-items="center" gap="0.5rem">
@@ -130,7 +143,10 @@ const Inventory = () => {
 					</Column.Four>
 				</Tab>
 				<Tab location="crafting">
-					<TwoHandleSlider />
+					<Image.wheel.weapon2 />
+					<Dynamic 
+						style={{width: '3.5rem', height: '3.5rem'}} 
+						component={Image.icons.gamepad.ps5[keys[0]]} />
 				</Tab>
 			</Row>
 		</Tabs >
