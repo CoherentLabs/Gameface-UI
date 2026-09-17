@@ -4,7 +4,8 @@
  *
  * Plain ESM JavaScript on purpose: `scripts/generate-icon-types.mjs` runs under
  * plain `node`, which cannot load TypeScript before Node 22.18. The types live
- * in `normalizeIconKey.d.ts` next to this file, so `Icon.tsx` still sees them.
+ * in `normalizeIconKey.d.ts` (extensionless imports) and `normalizeIconKey.d.mts`
+ * (explicit `.mjs` imports) next to this file, so consumers still see them.
  *
  * @param {string} name The file or folder name to normalize.
  * @param {string} file The icon path, used only for error messages.

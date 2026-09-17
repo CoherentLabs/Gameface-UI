@@ -1,7 +1,8 @@
 import { ParentComponent } from "solid-js";
 import { ComponentProps } from "../../types/ComponentProps";
-import style from '../ImageBase/ImageBase.module.scss';
+import styles from './Image.module.scss';
 import baseComponent from "@components/BaseComponent/BaseComponent";
+import type { ImageTree } from "./ImageTypes";
 
 export interface ImageProps extends ComponentProps {
     src: string | ImageMetadata
@@ -9,12 +10,16 @@ export interface ImageProps extends ComponentProps {
 }
 
 const Image: ParentComponent<ImageProps> = (props) => {
-    props.componentClasses = () => props.fill ? style.fill : "";
+    props.componentClasses = () => props.fill ? `${styles.image} ${styles.fill}` : styles.image;
 
-    return <img src={props.src as string}
-        ref={props.ref as HTMLImageElement}
-        use:baseComponent={props}
-    />
-}
+    return (
+        <div 
+            style={{"background-image": `url(${props.src})`}}
+            ref={props.ref as HTMLDivElement}
+            use:baseComponent={props}>
+            {props.children}
+        </div>
+    )
+};
 
-export default Image;
+export default Image as typeof Image & ImageTree;
