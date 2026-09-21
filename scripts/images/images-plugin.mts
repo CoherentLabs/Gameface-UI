@@ -1,7 +1,8 @@
 import path from 'node:path';
-import type { Plugin } from 'vite';
+import { createFilter, type Plugin } from 'vite';
 import { IMAGE_EXTENSIONS, scanImages, writeImageTypes } from './image-types.mjs';
-import { IRectangle, MaxRectsPacker, Rectangle } from 'maxrects-packer';
+import { MaxRectsPacker } from 'maxrects-packer';
+import type { IRectangle } from 'maxrects-packer';
 import sharp from 'sharp';
 
 /**
@@ -32,6 +33,16 @@ const SCRIPT_FILE = /\.(?:[cm]?[jt]s|[jt]sx)$/;
 /** Import specifiers that point at the Image component, with or without an extension. */
 const IMAGE_COMPONENT = /(?:^|\/)Media\/Image\/Image(?:\.[jt]sx?)?$/;
 
+const BUILT_IN_OPTIONS: AtlasConfig = {
+    maxWidth: 2048,
+    maxHeight: 2048,
+    padding: 2,
+    maxSpriteSize: 2048,
+    pot: true, // Power of two
+    squareCells: false,
+    keepOriginals: false,
+}
+
 const toPosix = (value: string) => value.replace(/\\/g, '/');
 
 const cleanUrl = (url: string) => url.replace(/[?#].*$/, '');
@@ -53,6 +64,9 @@ interface AstNode {
 interface AtlasData {
     name: string;
     file: string;
+    /** The image's real size. The rect the packer places is a square around it. */
+    imageWidth: number;
+    imageHeight: number;
 }
 
 interface AtlasRect extends IRectangle {
@@ -145,23 +159,52 @@ function renderObject(tree: { [key: string]: any }): string {
     return `{ ${entries.join(', ')} }`;
 }
 
+const toPatterns = (value?: string | string[]) =>
+    value === undefined ? null
+        : [value].flat().map((p) => (/[*.]/.test(p) ? p : `${p.replace(/\/$/, '')}/**`));
+
+const derive = (pattern: string) => {
+    console.log(pattern)
+    const head = pattern.split(/[*?[]/)[0];        // text before the first glob char
+    return head.slice(0, head.lastIndexOf('/'))    // drop the trailing partial segment
+               .replace(/\//g, '-') || 'all';
+};
+
+interface AtlasConfig {
+    maxWidth: number;       // 2048
+    maxHeight: number;      // 2048
+    padding: number;        // 2
+    pot: boolean;           // false
+    squareCells: boolean;   // the contain/center behaviour
+    maxSpriteSize: number;  // bigger than this -> not atlassed
+    keepOriginals: boolean; // whether to keep original images in the bundle
+}
+
+interface AtlasGroup extends Partial<AtlasConfig> {
+    include: string | string[];
+    exclude?: string | string[];
+    name?: string;          // sheet file name; defaults to the group index
+}
+
 export interface ImagesPluginOptions {
     /** Folder whose images are exposed on `Image`, relative to the project root or absolute. */
     assets: string;
     /** File the `ImageTree` types are written to, relative to the project root or absolute. */
     types: string;
+    /** List of folders to include in the atlas. */
+    atlas?: (string | AtlasGroup)[];
+    atlasDefaults?: Partial<AtlasConfig>;
 }
 
-export default function gamefaceImages({ assets, types }: ImagesPluginOptions): Plugin {
+export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
+    const { assets, types, atlas, atlasDefaults } = options;
     const assetsDir = path.resolve(assets);
     const typesFile = path.resolve(types);
 
     /** `icons.gamepad.a` -> absolute path of `icons/gamepad/a.png`. */
     let images = new Map<string, string>();
 
-    const scan = () => {
-        images = scanImages(assetsDir);
-    };
+    const scan = () => images = scanImages(assetsDir);
 
     const writeTypes = () => writeImageTypes(images, typesFile);
 
@@ -193,6 +236,20 @@ export default function gamefaceImages({ assets, types }: ImagesPluginOptions): 
         return !relative.startsWith('..') && !path.isAbsolute(relative) && IMAGE_EXTENSIONS.includes(extension);
     };
 
+    const atlasGroups = atlas?.map((entry, index) => {
+        const { include, exclude, name, ...overrides } = 
+            typeof entry === 'string' 
+            ? { include: entry } as AtlasGroup 
+            : entry;
+
+        return {
+            name: name ?? derive(include instanceof Array ? include[0] : include),
+            match: createFilter(toPatterns(include), toPatterns(exclude), { resolve: assetsDir }),
+            config: { ...BUILT_IN_OPTIONS, ...atlasDefaults, ...overrides },
+        };
+    });
+
+    console.log(atlasGroups)
     return {
         name: 'gameface-images',
         // Runs after esbuild and Solid, so every module is plain JavaScript that
@@ -350,24 +407,24 @@ export default function gamefaceImages({ assets, types }: ImagesPluginOptions): 
         },
 
         async generateBundle(_, bundle) {
-            // Init packer
-            const maxWidth = 2048;
-            const maxHeight = 2048;
-            const padding = 2;
-            const options = {
-                smart: true,   // Enable smart packing algorithm
-                pot: false,    // Enable potential-based packing algorithm
-                square: false,   // Enable square packing algorithm
+            // Skip processing if there are no atlas groups defined.
+            if (!atlasGroups) return;
+
+            const toRemove = new Set<string>();
+            const sizes = new Map<string, { width: number; height: number }>();
+
+            const sizeOf = async (file: string) => {
+                let size = sizes.get(file);
+                if (!size) {
+                    const { width, height } = await sharp(file).metadata();
+                    sizes.set(file, size = { width, height });
+                }
+                return size;
             };
-            const packer = new MaxRectsPacker<AtlasRect>(maxWidth, maxHeight, padding, options);
 
             for (const entry of Object.values(bundle)) {
                 if (entry.type !== 'chunk' || !entry.isEntry) continue;
 
-                // Images this view can still show: those referenced by its own chunk
-                // and by every shared chunk it imports, after Rollup dropped the rest.
-                // Keyed by the emitted file name, which is what the component sees in
-                // `src`, and pointing at the file on disk, which is what a packer reads.
                 const used = new Map<string, string>();
                 const seen = new Set<string>();
 
@@ -389,58 +446,101 @@ export default function gamefaceImages({ assets, types }: ImagesPluginOptions): 
 
                 visit(entry.fileName);
 
-                const atlasItems = await Promise.all(used.entries().map(async ([name, source]) => {
-                    const { width, height } = await sharp(source).metadata();
-                    return { width, height, x: 0, y: 0, data: { name: name.split('/').pop()!, file: source } };
-                }))
-                packer.reset();
-                packer.addArray(atlasItems);
+                const sprites: Record<string, AtlasSpriteData> = {};
+                const byGroup = new Map<string, AtlasRect[]>();
 
-                let sprites: Record<string, AtlasSpriteData> = {};
+                for (const [fileName, source] of used.entries()) {
+                    const group = atlasGroups.find(g => g.match(source));
+                    if (!group) continue;
+
+                    const { maxSpriteSize, squareCells } = group.config;
+                    const {width, height} = await sizeOf(source);
+                    // Image dimensions exceed max sprite size -> exclude
+                    if (width > maxSpriteSize || height > maxSpriteSize) continue;
+                    
+                    // Each image gets a square cell, so stretching the cell into a square
+                    // element looks like `contain` + center instead of squashing the image.
+                    const side = Math.max(width, height);
+
+                    const rect = {
+                        width: squareCells ? side : width,
+                        height: squareCells ? side : height,
+                        x: 0, // will be set by the packer later
+                        y: 0, // will be set by the packer later
+                        data: { name: fileName.split('/').pop()!, file: source, imageWidth: width, imageHeight: height },
+                    };
+
+                    const items = byGroup.get(group.name) ?? [];
+                    items.push(rect); 
+                    byGroup.set(group.name, items);
+                    if (!group.config.keepOriginals) toRemove.add(fileName);
+                }
+
+                for (const group of atlasGroups) {
+                    const atlasItems = byGroup.get(group.name) ?? [];
+                    if (atlasItems.length === 0) continue;
+
+                    const { maxWidth, maxHeight, padding, pot, squareCells } = group.config;
+                    const packer = new MaxRectsPacker<AtlasRect>(maxWidth, maxHeight, padding, {pot});
+                    packer.addArray(atlasItems);
                 
-                for (const bin of packer.bins) {           // one pass per atlas PNG to write
-                    const parts = bin.rects.map((rect) => ({
-                        input: rect.data.file,             // the path we attached earlier
-                        left: rect.x,                      // where the packer decided it goes
-                        top: rect.y,
-                    }));
-                
-                    const buffer = await sharp({ 
-                        create: { 
-                            width: bin.width, 
-                            height: bin.height, 
-                            channels: 4,
-                            background: { r: 0, g: 0, b: 0, alpha: 0 } 
+                    for (const bin of packer.bins) {
+                        const parts = bin.rects.map((rect) => ({
+                            input: rect.data.file,
+                            // Centered inside its square cell if squareCells is true.
+                            left: squareCells ? rect.x + Math.floor((rect.width - rect.data.imageWidth) / 2) : rect.x,
+                            top: squareCells ? rect.y + Math.floor((rect.height - rect.data.imageHeight) / 2) : rect.y,
+                        }));
+                    
+                        const buffer = await sharp({ 
+                            create: { 
+                                width: bin.width, 
+                                height: bin.height, 
+                                channels: 4,
+                                background: { r: 0, g: 0, b: 0, alpha: 0 } 
+                            }
+                        })
+                        .composite(parts)
+                        .png()
+                        .toBuffer();
+
+                        const viewName = entry.name.split('/')[0];
+                        const binIndex = packer.bins.length > 1 ? packer.bins.indexOf(bin) : undefined;
+                        // atlas-{view}-{group}[-{bin}]-{hash}.png
+                        const atlasName = 
+                            `atlas-${viewName}-${group.name}${binIndex === undefined ?  '' : `-${binIndex}`}.png`;
+
+                        const ref = this.emitFile({
+                            type: 'asset',
+                            name: atlasName,
+                            source: buffer,
+                        });
+
+                        const atlasFile = this.getFileName(ref);
+                        const atlasUrl = path.posix.relative(path.posix.dirname(entry.fileName), atlasFile); 
+                    
+                        // and remember where each one landed, for the CSS later
+                        for (const rect of bin.rects) {
+                            const atlasW = bin.width;
+                            const atlasH = bin.height;
+                            const freeX = atlasW - rect.width, freeY = atlasH - rect.height;
+
+                            sprites[rect.data.name] = { 
+                                image: `url(${atlasUrl})`,
+                                size: `${atlasW / rect.width * 100}% ${atlasH / rect.height * 100}%`,
+                                position: `${freeX ? rect.x / freeX * 100 : 0}% ${freeY ? rect.y / freeY * 100 : 0}%`,
+                            };
                         }
-                    })
-                    .composite(parts)
-                    .png()
-                    .toBuffer();
 
-                    const ref = this.emitFile({
-                        type: 'asset',
-                        name: `atlas-${entry.name.replace(/\//g, '-')}-${packer.bins.indexOf(bin)}.png`,
-                        source: buffer,
-                    });
-
-                    const atlasFile = this.getFileName(ref);
-                    const atlasUrl = path.posix.relative(path.posix.dirname(entry.fileName), atlasFile); 
-                
-                    // and remember where each one landed, for the CSS later
-                    for (const rect of bin.rects) {
-                        const atlasW = bin.width;
-                        const atlasH = bin.height;
-                        const freeX = atlasW - rect.width, freeY = atlasH - rect.height;
-
-                        sprites[rect.data.name] = { 
-                            image: `url(${atlasUrl})`,
-                            size: `${atlasW / rect.width * 100}% ${atlasH / rect.height * 100}%`,
-                            position: `${freeX ? rect.x / freeX * 100 : 0}% ${freeY ? rect.y / freeY * 100 : 0}%`,
-                        };
                     }
 
                 }
                 entry.code = `window.__GF_ATLAS__ = ${JSON.stringify(sprites)};\n` + entry.code;
+            }
+            
+            // Remove all original images that have been added to atlases from the bundle.
+            for (const fileName of toRemove) {
+                delete bundle[fileName];
             }
         },
     };
