@@ -23,7 +23,6 @@ const Image: ParentComponent<ImageProps> = (props) => {
 
     return (
         <div 
-            style={{"background-image": `url(${props.src})`}}
             ref={props.ref as HTMLDivElement}
             use:baseComponent={props}>
             {props.children}

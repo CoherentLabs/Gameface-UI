@@ -67,7 +67,46 @@ interface AtlasData {
     /** The image's real size. The rect the packer places is a square around it. */
     imageWidth: number;
     imageHeight: number;
+    /** Size of the standalone file this sprite replaces, for the build report. */
+    bytes: number;
 }
+
+/** One sheet that was written, as the build report needs it. */
+interface SheetReport {
+    view: string;
+    group: string;
+    width: number;
+    height: number;
+    bytes: number;
+    /** Bytes of the standalone files this sheet replaces. */
+    originalBytes: number;
+    keptOriginals: boolean;
+    rects: AtlasRect[];
+}
+
+/** An image that was left alone, and why. */
+interface SkipReport {
+    view: string;
+    name: string;
+    reason: string;
+}
+
+const byteLength = (source: string | Uint8Array) =>
+    typeof source === 'string' ? Buffer.byteLength(source) : source.length;
+
+const kb = (bytes: number) => `${(bytes / 1024).toFixed(1)} KB`;
+
+const mb = (bytes: number) => `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+
+/**
+ * What a texture costs on the GPU once decoded: every pixel is RGBA8, so the
+ * transparent padding costs exactly as much as the sprites. An estimate - the
+ * engine may pick another format - but the right order of magnitude, and the
+ * reason `% used` matters more than the KB on disk.
+ */
+const vram = (width: number, height: number) => width * height * 4;
+
+const isPowerOfTwo = (value: number) => (value & (value - 1)) === 0;
 
 interface AtlasRect extends IRectangle {
     data: AtlasData;
@@ -164,11 +203,68 @@ const toPatterns = (value?: string | string[]) =>
         : [value].flat().map((p) => (/[*.]/.test(p) ? p : `${p.replace(/\/$/, '')}/**`));
 
 const derive = (pattern: string) => {
-    console.log(pattern)
     const head = pattern.split(/[*?[]/)[0];        // text before the first glob char
     return head.slice(0, head.lastIndexOf('/'))    // drop the trailing partial segment
                .replace(/\//g, '-') || 'all';
 };
+
+/**
+ * The build report: one line per sheet, then what was left alone and why.
+ * `verbose` adds every sprite's place on its sheet, for when one renders wrong.
+ */
+function renderReport(sheets: SheetReport[], skipped: SkipReport[], verbose: boolean) {
+    const files = sheets.reduce((total, sheet) => total + sheet.rects.length, 0);
+    const before = sheets.reduce((total, sheet) => total + sheet.originalBytes, 0);
+    const after = sheets.reduce((total, sheet) => total + sheet.bytes, 0);
+
+    const gpuBefore = sheets.reduce((total, sheet) => total +
+        sheet.rects.reduce((sum, rect) => sum + vram(rect.data.imageWidth, rect.data.imageHeight), 0), 0);
+    const gpuAfter = sheets.reduce((total, sheet) => total + vram(sheet.width, sheet.height), 0);
+
+    const lines = [
+        `${sheets.length} sheet(s), ${files} sprite(s)  ·  ${files} files ${kb(before)} -> ` +
+        `${sheets.length} files ${kb(after)}  ·  GPU ${mb(gpuBefore)} -> ${mb(gpuAfter)}`,
+        `(...) = texture memory, RGBA8 estimate - transparent padding costs the same as a sprite`,
+    ];
+
+    const views = [...new Set([...sheets, ...skipped].map((item) => item.view))];
+
+    for (const view of views) {
+        lines.push('', view);
+
+        for (const sheet of sheets.filter((s) => s.view === view)) {
+            const covered = sheet.rects.reduce((total, rect) => total + rect.width * rect.height, 0);
+            const used = Math.round(covered / (sheet.width * sheet.height) * 100);
+
+            const gpu = sheet.rects.reduce((total, rect) =>
+                total + vram(rect.data.imageWidth, rect.data.imageHeight), 0);
+
+            lines.push(
+                `  ${sheet.group.padEnd(16)} ${`${sheet.width}x${sheet.height}`.padEnd(12)}` +
+                `${`${kb(sheet.bytes)} (${mb(vram(sheet.width, sheet.height))})`.padStart(20)}   ` +
+                `${String(sheet.rects.length).padStart(3)} ` +
+                `${sheet.rects.length === 1 ? 'sprite ' : 'sprites'}   ` +
+                `${String(used).padStart(3)}% used   was ${kb(sheet.originalBytes)} (${mb(gpu)})` +
+                (sheet.keptOriginals ? '   (originals kept)' : ''),
+            );
+
+            if (!verbose) continue;
+
+            for (const rect of sheet.rects) {
+                lines.push(
+                    `      ${rect.data.name.padEnd(34)} ${`${rect.data.imageWidth}x${rect.data.imageHeight}`.padEnd(12)}` +
+                    `at ${rect.x},${rect.y}`,
+                );
+            }
+        }
+
+        for (const skip of skipped.filter((s) => s.view === view)) {
+            lines.push(`  skipped  ${skip.name.padEnd(34)} ${skip.reason}`);
+        }
+    }
+
+    return lines.join('\n');
+}
 
 interface AtlasConfig {
     maxWidth: number;       // 2048
@@ -194,15 +290,21 @@ export interface ImagesPluginOptions {
     /** List of folders to include in the atlas. */
     atlas?: (string | AtlasGroup)[];
     atlasDefaults?: Partial<AtlasConfig>;
+    /** Adds every sprite's place on its sheet to the build report. */
+    verbose?: boolean;
 }
 
 export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
-    const { assets, types, atlas, atlasDefaults } = options;
+    const { assets, types, atlas, atlasDefaults, verbose = false } = options;
     const assetsDir = path.resolve(assets);
     const typesFile = path.resolve(types);
 
     /** `icons.gamepad.a` -> absolute path of `icons/gamepad/a.png`. */
     let images = new Map<string, string>();
+
+    /** Images that pass through the Image component pipeline recorded for later atlassing */
+    // Map<imageAbsPath, Set<moduleId>
+    const pipelineImages = new Map<string, Set<string>>();
 
     const scan = () => images = scanImages(assetsDir);
 
@@ -243,13 +345,14 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
             : entry;
 
         return {
-            name: name ?? derive(include instanceof Array ? include[0] : include),
+            // Derived from the normalized pattern, so a bare `icons/hud` is already
+            // `icons/hud/**` and keeps its last segment.
+            name: name ?? derive(toPatterns(include)![0]),
             match: createFilter(toPatterns(include), toPatterns(exclude), { resolve: assetsDir }),
             config: { ...BUILT_IN_OPTIONS, ...atlasDefaults, ...overrides },
         };
     });
 
-    console.log(atlasGroups)
     return {
         name: 'gameface-images',
         // Runs after esbuild and Solid, so every module is plain JavaScript that
@@ -313,6 +416,12 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                     name = `__imageSrc${importNames.size}`;
                     imports.push(`import ${name} from '${importSpecifier(importerDir, imageFile)}';`);
                     importNames.set(imageFile, name);
+
+                    if (pipelineImages.has(imageFile)) {
+                        pipelineImages.get(imageFile)!.add(id);
+                    } else {
+                        pipelineImages.set(imageFile, new Set([id]));
+                    }
                 }
 
                 return name;
@@ -413,6 +522,26 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
             const toRemove = new Set<string>();
             const sizes = new Map<string, { width: number; height: number }>();
 
+            const sheets: SheetReport[] = [];
+            const skipped: SkipReport[] = [];
+            /** Groups that claimed at least one image somewhere - the rest are probably typos. */
+            const matched = new Set<string>();
+
+            // Config that cannot do what it says, reported once rather than per view.
+            for (const group of atlasGroups) {
+                const { pot, maxWidth, maxHeight } = group.config;
+                if (!pot) continue;
+
+                for (const [label, max] of [['maxWidth', maxWidth], ['maxHeight', maxHeight]] as const) {
+                    if (isPowerOfTwo(max)) continue;
+                    const ceiling = 2 ** Math.floor(Math.log2(max));
+                    this.warn(
+                        `atlas "${group.name}": pot is on and ${label} is ${max}, which is not a power of two - ` +
+                        `sheets are capped at ${ceiling}, not ${max}.`,
+                    );
+                }
+            }
+
             const sizeOf = async (file: string) => {
                 let size = sizes.get(file);
                 if (!size) {
@@ -427,11 +556,14 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
 
                 const used = new Map<string, string>();
                 const seen = new Set<string>();
+                const moduleIds = new Set<string>();
 
                 const visit = (fileName: string) => {
                     const chunk = bundle[fileName];
                     if (seen.has(fileName) || chunk?.type !== 'chunk') return;
                     seen.add(fileName);
+
+                    chunk.moduleIds.forEach((id) => moduleIds.add(id));
 
                     for (const asset of chunk.viteMetadata?.importedAssets ?? []) {
                         const original = (bundle[asset] as { originalFileNames?: string[] })?.originalFileNames?.[0];
@@ -449,15 +581,37 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                 const sprites: Record<string, AtlasSpriteData> = {};
                 const byGroup = new Map<string, AtlasRect[]>();
 
+                const viewName = entry.name.split('/')[0];
+
                 for (const [fileName, source] of used.entries()) {
+                    const name = path.basename(source);
                     const group = atlasGroups.find(g => g.match(source));
-                    if (!group) continue;
+                    if (!group) {
+                        skipped.push({ view: viewName, name, reason: 'matched no group' });
+                        continue;
+                    }
+
+                    const registeredBy = pipelineImages.get(source);
+                    
+                    if (!registeredBy || ![...registeredBy].some((id) => moduleIds.has(id))) {
+                        skipped.push({ view: viewName, name, reason: `not used through Image ("${group.name}")` });
+                        continue;
+                    }
+                    
+                    matched.add(group.name);
 
                     const { maxSpriteSize, squareCells } = group.config;
                     const {width, height} = await sizeOf(source);
                     // Image dimensions exceed max sprite size -> exclude
-                    if (width > maxSpriteSize || height > maxSpriteSize) continue;
-                    
+                    if (width > maxSpriteSize || height > maxSpriteSize) {
+                        skipped.push({
+                            view: viewName,
+                            name,
+                            reason: `${width}x${height} > maxSpriteSize ${maxSpriteSize} ("${group.name}")`,
+                        });
+                        continue;
+                    }
+
                     // Each image gets a square cell, so stretching the cell into a square
                     // element looks like `contain` + center instead of squashing the image.
                     const side = Math.max(width, height);
@@ -467,7 +621,13 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                         height: squareCells ? side : height,
                         x: 0, // will be set by the packer later
                         y: 0, // will be set by the packer later
-                        data: { name: fileName.split('/').pop()!, file: source, imageWidth: width, imageHeight: height },
+                        data: {
+                            name: fileName.split('/').pop()!,
+                            file: source,
+                            imageWidth: width,
+                            imageHeight: height,
+                            bytes: byteLength((bundle[fileName] as { source: string | Uint8Array }).source),
+                        },
                     };
 
                     const items = byGroup.get(group.name) ?? [];
@@ -504,7 +664,6 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                         .png()
                         .toBuffer();
 
-                        const viewName = entry.name.split('/')[0];
                         const binIndex = packer.bins.length > 1 ? packer.bins.indexOf(bin) : undefined;
                         // atlas-{view}-{group}[-{bin}]-{hash}.png
                         const atlasName = 
@@ -532,6 +691,16 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                             };
                         }
 
+                        sheets.push({
+                            view: viewName,
+                            group: group.name + (binIndex === undefined ? '' : `-${binIndex}`),
+                            width: bin.width,
+                            height: bin.height,
+                            bytes: buffer.length,
+                            originalBytes: bin.rects.reduce((total, rect) => total + rect.data.bytes, 0),
+                            keptOriginals: group.config.keepOriginals,
+                            rects: bin.rects,
+                        });
                     }
 
                 }
@@ -542,6 +711,13 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
             for (const fileName of toRemove) {
                 delete bundle[fileName];
             }
+
+            for (const group of atlasGroups) {
+                if (matched.has(group.name)) continue;
+                this.warn(`atlas "${group.name}" matched no image in any view - check its include/exclude patterns.`);
+            }
+
+            if (sheets.length) this.info(`\n${renderReport(sheets, skipped, verbose)}\n`);
         },
     };
 }
