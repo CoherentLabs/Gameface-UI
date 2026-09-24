@@ -108,6 +108,16 @@ const vram = (width: number, height: number) => width * height * 4;
 
 const isPowerOfTwo = (value: number) => (value & (value - 1)) === 0;
 
+/** View names come from folder names, so they read better capitalised in a report. */
+const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
+
+/** Adds `value` to the set kept under `key`, starting one if there is none yet. */
+function addTo(map: Map<string, Set<string>>, key: string, value: string) {
+    const set = map.get(key);
+    if (set) set.add(value);
+    else map.set(key, new Set([value]));
+}
+
 interface AtlasRect extends IRectangle {
     data: AtlasData;
 }
@@ -230,7 +240,7 @@ function renderReport(sheets: SheetReport[], skipped: SkipReport[], verbose: boo
     const views = [...new Set([...sheets, ...skipped].map((item) => item.view))];
 
     for (const view of views) {
-        lines.push('', view);
+        lines.push('', capitalize(view));
 
         for (const sheet of sheets.filter((s) => s.view === view)) {
             const covered = sheet.rects.reduce((total, rect) => total + rect.width * rect.height, 0);
@@ -519,7 +529,17 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
             // Skip processing if there are no atlas groups defined.
             if (!atlasGroups) return;
 
-            const toRemove = new Set<string>();
+            // An image lives in one shared bundle but is decided per view, so both
+            // sides have to be collected before anything can be deleted:
+            // dropping a file one view still points at would break that view.
+
+            /** dist name -> views that atlassed it and allow the original to go. */
+            const atlassedIn = new Map<string, Set<string>>();
+            /** dist name -> views that still need the standalone file. */
+            const notAtlassedIn = new Map<string, Set<string>>();
+            /** dist name -> path on disk. Build-wide, so messages still work after the view loop. */
+            const imageSources = new Map<string, string>();
+
             const sizes = new Map<string, { width: number; height: number }>();
 
             const sheets: SheetReport[] = [];
@@ -554,7 +574,8 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
             for (const entry of Object.values(bundle)) {
                 if (entry.type !== 'chunk' || !entry.isEntry) continue;
 
-                const used = new Map<string, string>();
+                /** dist names of every image this view can reach. Paths live in `imageSources`. */
+                const viewImages = new Set<string>();
                 const seen = new Set<string>();
                 const moduleIds = new Set<string>();
 
@@ -570,7 +591,10 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                         if (!original) continue;
 
                         const source = path.resolve(root, original);
-                        if (isImageInAssets(source)) used.set(asset, source);
+                        if (!isImageInAssets(source)) continue;
+
+                        viewImages.add(asset);
+                        imageSources.set(asset, source);
                     }
 
                     chunk.imports.forEach(visit);
@@ -583,18 +607,22 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
 
                 const viewName = entry.name.split('/')[0];
 
-                for (const [fileName, source] of used.entries()) {
+                for (const fileName of viewImages) {
+                    const source = imageSources.get(fileName)!;
                     const name = path.basename(source);
                     const group = atlasGroups.find(g => g.match(source));
+    
                     if (!group) {
                         skipped.push({ view: viewName, name, reason: 'matched no group' });
+                        addTo(notAtlassedIn, fileName, viewName);
                         continue;
                     }
 
                     const registeredBy = pipelineImages.get(source);
-                    
+
                     if (!registeredBy || ![...registeredBy].some((id) => moduleIds.has(id))) {
                         skipped.push({ view: viewName, name, reason: `not used through Image ("${group.name}")` });
+                        addTo(notAtlassedIn, fileName, viewName);
                         continue;
                     }
                     
@@ -602,6 +630,7 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
 
                     const { maxSpriteSize, squareCells } = group.config;
                     const {width, height} = await sizeOf(source);
+                    
                     // Image dimensions exceed max sprite size -> exclude
                     if (width > maxSpriteSize || height > maxSpriteSize) {
                         skipped.push({
@@ -609,6 +638,7 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                             name,
                             reason: `${width}x${height} > maxSpriteSize ${maxSpriteSize} ("${group.name}")`,
                         });
+                        addTo(notAtlassedIn, fileName, viewName);
                         continue;
                     }
 
@@ -633,7 +663,7 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                     const items = byGroup.get(group.name) ?? [];
                     items.push(rect); 
                     byGroup.set(group.name, items);
-                    if (!group.config.keepOriginals) toRemove.add(fileName);
+                    if (!group.config.keepOriginals) addTo(atlassedIn, fileName, viewName);
                 }
 
                 for (const group of atlasGroups) {
@@ -707,9 +737,23 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                 entry.code = `window.__GF_ATLAS__ = ${JSON.stringify(sprites)};\n` + entry.code;
             }
             
-            // Remove all original images that have been added to atlases from the bundle.
-            for (const fileName of toRemove) {
-                delete bundle[fileName];
+            // An atlassed original can only go once *every* view that reaches it
+            // atlassed it. One view using it outside `Image` keeps the file alive for
+            // all of them - the sprite still works, the raw image just ships as well.
+            for (const [fileName, atlasViews] of atlassedIn) {
+                const loose = notAtlassedIn.get(fileName);
+                if (!loose) {
+                    delete bundle[fileName];
+                    continue;
+                }
+
+                const name = path.relative(assetsDir, imageSources.get(fileName) ?? fileName);
+                const list = (views: Set<string>) => [...views].map((view) => `"${capitalize(view)}"`).join(', ');
+
+                this.warn(
+                    `${toPosix(name)} is atlassed in ${list(atlasViews)} but used outside Image in ` +
+                    `${list(loose)} - shipping both. Use Image there, or exclude it from the atlas.`,
+                );
             }
 
             for (const group of atlasGroups) {
