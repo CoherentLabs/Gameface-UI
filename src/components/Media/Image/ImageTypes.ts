@@ -2,10 +2,10 @@
 // Regenerate with `npm run gen-images`, or let the dev server do it.
 
 import type { ParentComponent } from 'solid-js';
-import type { ImageProps } from '@components/Media/Image/Image';
+import type { ImageComponentProps } from '../shared/types';
 
 /** `src` is filled in by the images plugin from the path written after `Image.`. */
-type ImageLeaf = ParentComponent<Omit<ImageProps, 'src'>>;
+type ImageLeaf = ParentComponent<Omit<ImageComponentProps, 'src'>>;
 
 export interface ImageTree {
     icons: {
@@ -62,6 +62,7 @@ export interface ImageTree {
                 x: ImageLeaf;
                 y: ImageLeaf;
             };
+            weapon: ImageLeaf;
             xbox: {
                 a: ImageLeaf;
                 b: ImageLeaf;

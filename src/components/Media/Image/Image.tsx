@@ -1,18 +1,25 @@
 import { ParentComponent } from "solid-js";
-import { ComponentProps } from "../../types/ComponentProps";
-import styles from './Image.module.scss';
 import baseComponent from "@components/BaseComponent/BaseComponent";
 import type { ImageTree } from "./ImageTypes";
+import { ImageComponentProps } from "../shared/types";
+import useImageOptions from "../shared/useImageOptions";
+import styles from './Image.module.scss';
+import sharedStyles from '../shared/shared.module.scss';
 
-export interface ImageProps extends ComponentProps {
-    src: string | ImageMetadata
-    fill?: boolean
-}
+const Image: ParentComponent<ImageComponentProps> = (props) => {
+    const bgOptions = props.options ? useImageOptions('background', props) : null;
 
-const Image: ParentComponent<ImageProps> = (props) => {
-    props.componentClasses = () => props.fill ? `${styles.image} ${styles.fill}` : styles.image;
+    // With options this is a background image, so it takes that base instead of
+    // Image's own - no dimensions and no contain/center, exactly as BackgroundImage behaved
+    props.componentClasses = () => [
+        bgOptions ? sharedStyles['background-image'] : styles.image,
+        props.fill && sharedStyles.fill,
+        bgOptions?.().cls,
+    ].filter(Boolean).join(' ');
 
     props.componentStyles = () => {
+        if (bgOptions) return bgOptions().s;
+
         const src = String(props.src);
         const sprite = (window as any).__GF_ATLAS__?.[src.split('/').pop()!];
 
