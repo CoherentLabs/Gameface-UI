@@ -1,7 +1,6 @@
 import { Accessor, JSX } from "solid-js";
 import { player, sortType } from "./types";
 import styles from './FilterableDataTable.module.scss';
-import BackgroundImage from "@components/Media/BackgroundImage/BackgroundImage";
 import Flex from "@components/Layout/Flex/Flex";
 import ConditionBar from "./ConditionBar/ConditionBar";
 import FLAG_SRC from "./utils/flagImages";
@@ -44,7 +43,7 @@ export const ROSTER_COLUMNS: ColumnDef[] = [
                 >{getInitials(p().name)}</Flex>
 
                 {/* ORIGINAL */}
-                {/* <BackgroundImage fill options={{ position: "center", size: 'cover' }} src={p().image} /> */}
+                {/* <Image fill options={{ position: "center", size: 'cover' }} src={p().image} /> */}
             </>
         ),
     },
@@ -72,7 +71,7 @@ export const ROSTER_COLUMNS: ColumnDef[] = [
                 >{p().nationality}</Flex>
 
                 {/* ORIGINAL */}
-                {/* <BackgroundImage class={styles['column-image']} src={FLAG_SRC[p().nationality]} /> */}
+                {/* <Image class={styles['column-image']} src={FLAG_SRC[p().nationality]} /> */}
             </>
         ),
     },

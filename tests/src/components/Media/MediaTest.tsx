@@ -2,12 +2,10 @@ import { createSignal, createMemo, onMount, onCleanup, For } from "solid-js";
 import grandeImage from '@assets/icons/hud/grenade.png'
 import weaponImage from '@assets/icons/hud/weapon.png'
 import Image from "@components/Media/Image/Image";
-import BackgroundImage from "@components/Media/BackgroundImage/BackgroundImage";
 import MaskImage from "@components/Media/MaskImage/MaskImage";
 import LiveView from "@components/Media/LiveView/LiveView";
 import './media.css';
 import selectors from "../../../shared/media-selectors.json";
-import { Icon } from "@components/Media/Icon/Icon";
 
 const MediaTest = () => {
     const [reactivity, setReactivity] = createSignal(false);
@@ -50,7 +48,7 @@ const MediaTest = () => {
 
             <Image click={() => setReactivity(true)} src={src()} style={reactiveStyle()} class={`${selectors.image} ${reactiveClass()}`} fill={fill()} />
             <LiveView click={() => setReactivity(true)} src={src()} style={reactiveStyle()} class={`${selectors.liveView} ${reactiveClass()}`} fill={fill()} />
-            <BackgroundImage click={() => setReactivity(true)} options={options()} src={src()} style={reactiveStyle()} class={`${selectors.backgroundImage} ${reactiveClass()}`} />
+            <Image click={() => setReactivity(true)} options={options()} src={src()} style={reactiveStyle()} class={`${selectors.backgroundImage} ${reactiveClass()}`} />
             <MaskImage click={() => setReactivity(true)} src={src()} options={options()}  style={reactiveStyle()} class={`${selectors.maskImage} ${reactiveClass()}`} >
               <div>
                 Masked content
@@ -60,8 +58,8 @@ const MediaTest = () => {
                 Masked content
               </div>
             </MaskImage>
-            <Icon.gamepad.xbox.a style={reactiveStyle()} class={`${selectors.icon} ${reactiveClass()}`} />
-        </>
+            <Image.icons.gamepad.xbox.a style={reactiveStyle()} class={`${selectors.icon} ${reactiveClass()}`} />
+        </Tab> 
     )
 }
 

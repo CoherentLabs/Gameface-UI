@@ -1,7 +1,6 @@
 import DropdownBase, { DropdownRef } from "@components/Basic/Dropdown/Dropdown";
 import { Component, createEffect, createSignal, For, on, Show } from "solid-js";
 import { countries } from "../store/playersStore";
-import BackgroundImage from "@components/Media/BackgroundImage/BackgroundImage";
 import Flex from "@components/Layout/Flex/Flex";
 import styles from "./Dropdown.module.scss";
 import FLAG_SRC from "../utils/flagImages";
@@ -49,7 +48,7 @@ const Dropdown: Component<DropdownProps> = (props) => {
                                     >{country.code}</Flex>
 
                                 {/* ORIGINAL */}
-                                {/* <BackgroundImage
+                                {/* <Image
                                     class={styles['dropdown-option-content-image']}
                                     src={FLAG_SRC[country.code]} /> */}
                             </div>
@@ -71,7 +70,7 @@ const Dropdown: Component<DropdownProps> = (props) => {
                                 >{value}</Flex>
 
                             {/* ORIGINAL */}
-                            {/* <BackgroundImage
+                            {/* <Image
                                 class={styles['chip-image']}
                                 src={FLAG_SRC[value]} /> */}
                             <div

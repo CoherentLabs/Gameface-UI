@@ -1,5 +1,5 @@
 import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
-import BackgroundImage from "@components/Media/BackgroundImage/BackgroundImage";
+import Image from "@components/Media/Image/Image";
 import Weapon1 from "@assets/wheel/weapon1.png";
 import Weapon2 from "@assets/wheel/weapon2.png";
 import Weapon3 from "@assets/wheel/weapon3.png";
@@ -86,7 +86,7 @@ const RadialMenuTest = () => {
                 <RadialMenu.Content 
                     style={reactiveStyle()}
                     class={`${selectors.menuContent} ${reactiveClass()}`}>
-                    <BackgroundImage class="center-image" src={Center} options={{size: 'contain', position: "center" }} />
+                    <Image class="center-image" src={Center} options={{size: 'contain', position: "center" }} />
                 </RadialMenu.Content>
                 <RadialMenu.Indicator class={`${selectors.menuIndicator} ${reactiveClass()}`} style={reactiveStyle()}>
                     <RadialMenu.Indicator.Icon class={`${selectors.menuIcon} ${reactiveClass()}`} style={reactiveStyle()} >
@@ -108,7 +108,7 @@ const RadialMenuTest = () => {
                             style-selected={{"background-color": 'rgba(0, 0, 0, 0.1)'}}
                             style={reactiveStyle()}>
                             <div class="item-wrapper">
-                                <BackgroundImage fill src={item.img} options={{size: 'contain', position: "center" }} />
+                                <Image fill src={item.img} options={{size: 'contain', position: "center" }} />
                             </div>
                         </RadialMenu.Item>
                     )}
