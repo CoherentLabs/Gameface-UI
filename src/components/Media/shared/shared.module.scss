@@ -1,9 +1,17 @@
-div.fill {
+.image {
+    width: 3.5rem;
+    height: 3.5rem;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.fill {
     width: 100%;
     height: 100%;
 }
 
-div.background-image {
+.background-image {
     background-repeat: no-repeat;
 
     &-size {
@@ -85,7 +93,7 @@ div.background-image {
     }
 }
 
-div.mask-image {
+.mask-image {
     mask-repeat: no-repeat;
 
     &-size {
