@@ -153,6 +153,30 @@ function propsOfComponentCall(node: AstNode, parent: AstNode | null) {
     return props?.type === 'ObjectExpression' ? (props as AstNode) : null;
 }
 
+/**
+ * The name a prop is written under, or null when it cannot be read.
+ * Solid compiles even a plain `class={...}` to a computed *literal* key, so
+ * `computed` on its own says nothing - only a computed key that is an expression
+ * is genuinely unknown.
+ */
+function propName(property: AstNode) {
+    if (property.computed) return property.key.type === 'Literal' ? String(property.key.value) : null;
+    return property.key.type === 'Identifier' ? property.key.name : String(property.key.value);
+}
+
+/**
+ * Whether this call site might be passing `options`. Anything unreadable counts
+ * as a yes: an image that loses its sprite still renders, one that keeps a sprite
+ * while `options` overwrite the background position shows a slice of the sheet.
+ */
+function mayHaveOptions(props: AstNode) {
+    return props.properties.some((property: AstNode) => {
+        if (property.type === 'SpreadElement') return true;   // {...rest} could carry options
+        const name = propName(property);
+        return name === null || name === 'options';
+    });
+}
+
 /** Local name of `import Image from '.../Media/Image/Image'`, or null when the module does not import it. */
 function findImageImport(program: AstNode) {
     for (const statement of program.body) {
@@ -315,6 +339,15 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
     /** Images that pass through the Image component pipeline recorded for later atlassing */
     // Map<imageAbsPath, Set<moduleId>
     const pipelineImages = new Map<string, Set<string>>();
+
+    /**
+     * Images rendered with `options` somewhere. `options` set `background-size` and
+     * `background-position`, which is exactly what a sprite needs them for, so those
+     * images cannot be atlassed. A veto rather than an omission: another call site
+     * without options would otherwise put the same image back into `pipelineImages`.
+     */
+    // Map<imageAbsPath, Set<moduleId>>
+    const optionsImages = new Map<string, Set<string>>();
 
     const scan = () => images = scanImages(assetsDir);
 
@@ -487,6 +520,10 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                 // Rendered right here, so the component stays `Image` and `src` joins
                 // the props Solid already wrote. No wrapper and no merging at runtime.
                 if (props) {
+                    // Recorded alongside the normal import - `generateBundle` checks this
+                    // first, so one call site with options keeps the image out of the sheet.
+                    if (mayHaveOptions(props)) addTo(optionsImages, target.file!, id);
+
                     replacements.push({ start: chain.start, end, text: local });
                     replacements.push({ start: props.start + 1, end: props.start + 1, text: ` src: ${importImage(target.file!)},` });
                     return;
@@ -618,10 +655,20 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                         continue;
                     }
 
+                    // Checked before the pipeline test, so one call site passing `options`
+                    // keeps the image out of the sheet even when another renders it plainly.
+                    const withOptions = optionsImages.get(source);
+
+                    if (withOptions && [...withOptions].some((id) => moduleIds.has(id))) {
+                        skipped.push({ view: viewName, name, reason: `used with options ("${group.name}")` });
+                        addTo(notAtlassedIn, fileName, viewName);
+                        continue;
+                    }
+
                     const registeredBy = pipelineImages.get(source);
 
                     if (!registeredBy || ![...registeredBy].some((id) => moduleIds.has(id))) {
-                        skipped.push({ view: viewName, name, reason: `not used through Image ("${group.name}")` });
+                        skipped.push({ view: viewName, name, reason: `imported directly, not written as Image.* ("${group.name}")` });
                         addTo(notAtlassedIn, fileName, viewName);
                         continue;
                     }
