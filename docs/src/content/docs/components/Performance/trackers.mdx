@@ -28,10 +28,10 @@ import Trackers, { updateTrackers } from '@components/Performance/Trackers/Track
 <>
     <button onClick={() => updateTrackers('minimap', { id: 'blip-1', x: Math.random() * 180, y: Math.random() * 180 })} style={{ background: '#4fd6ff', color: '#000', padding: '0.5rem 1rem', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Click to change position</button>
     <div style={{ position: 'relative', width: '200px', height: '200px', background: '#222' }}>
-        <Trackers id="minimap" style={{ position: 'absolute', inset: '0' }}>
+        <Trackers id="minimap">
             <Trackers.Item
                 id="blip-1"
-                style={{ position: 'absolute', top: 0, left: 0, width: '12px', height: '12px', 'border-radius': '50%', background: '#4fd6ff' }}
+                style={{ width: '12px', height: '12px', 'border-radius': '50%', background: '#4fd6ff' }}
             />
         </Trackers>
     </div>
@@ -121,6 +121,7 @@ Calling `updateTrackers` for a `Trackers` id that isn't currently mounted, or a 
 ### Move item in the UI
 
 In some cases, positions of the items are updated from the UI using JavaScript. For that reason, you may need to call `updateTrackers` every frame to reflect the changes in the UI. Make sure to call it with multiple items batched together in a single array for efficiency if you have several items to update.
+<CodePreviewGFUI height={400}>
 
 ```tsx
 import { onCleanup, onMount } from 'solid-js';
@@ -141,15 +142,18 @@ const App = () => {
     onCleanup(() => cancelAnimationFrame(frame));
 
     return (
-        <Trackers id="minimap" style={{ position: 'relative', width: '200px', height: '200px' }}>
-            <Trackers.Item id="blip-1" style={{ position: 'absolute', width: '10px', height: '10px', background: 'red' }} />
-            <Trackers.Item id="blip-2" style={{ position: 'absolute', width: '10px', height: '10px', background: 'lime' }} />
+        <Trackers id="minimap" style={{ width: '200px', height: '200px' }}>
+            <Trackers.Item id="blip-1" style={{ width: '10px', height: '10px', background: 'red' }} />
+            <Trackers.Item id="blip-2" style={{ width: '10px', height: '10px', background: 'lime' }} />
         </Trackers>
     );
 };
 
-export default App;
+<>
+  <App />
+</>
 ```
+</CodePreviewGFUI>
 
 ### Move item from the engine
 
@@ -206,6 +210,7 @@ updateTrackers('minimap', { id: 'blip-1', hide: false });
 
 `scale` and `rotate` take a signal getter, so the item reacts whenever you update the signal - no need to go through `updateTrackers` for these.
 
+<CodePreviewGFUI height={400}>
 ```tsx
 import { createSignal } from 'solid-js';
 import Trackers from '@components/Performance/Trackers/Trackers';
@@ -218,7 +223,7 @@ const App = () => {
         <>
             <button onClick={() => setScale((s) => s + 0.2)}>Scale up</button>
             <button onClick={() => setRotate((r) => r + 15)}>Rotate</button>
-            <Trackers id="minimap" style={{ position: 'relative', width: '200px', height: '200px' }}>
+            <Trackers id="minimap" style={{ width: '200px', height: '200px' }}>
                 <Trackers.Item
                     id="blip-1"
                     scale={scale}
@@ -230,5 +235,8 @@ const App = () => {
     );
 };
 
-export default App;
+<>
+  <App />
+</>
 ```
+</CodePreviewGFUI>

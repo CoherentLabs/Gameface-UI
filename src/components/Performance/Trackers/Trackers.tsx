@@ -4,10 +4,7 @@ import { createTokenComponent, useTokens } from '@components/utils/tokenComponen
 import baseComponent from "@components/BaseComponent/BaseComponent";
 import styles from './Trackers.module.scss';
 import { GAMEFACE_VERSION, verIsAtLeast } from '@components/utils/gamefaceVersion';
-
-function hasEngine(): boolean {
-    return typeof window.engine !== 'undefined' && typeof window.engine.on === 'function';
-}
+import hasEngine from '@components/utils/hasEngine';
 
 if (!hasEngine() && !verIsAtLeast(3, 1, 2) && import.meta.env.DEV) {
     // If you are using updateTrackers instead of engine events, this warning can be ignored.
@@ -67,17 +64,11 @@ function dispatch(trackersId: string, payload: TrackersEventPayload | TrackersEv
     const entry = registry.get(trackersId);
 
     if (!entry) {
-        console.warn(`[Trackers] No <Trackers id="${trackersId}"> is currently mounted - update ignored.`);
+        if (import.meta.env.DEV) console.warn(`[Trackers] No <Trackers id="${trackersId}"> is currently mounted - update ignored.`);
         return;
     }
 
-    if (hasEngine()) {
-        window.engine!.trigger(entry.event, payload);
-    } else {
-        // no engine bridge on this page
-        // then call the handler directly so the component still works during development.
-        entry.handleEvent(payload);
-    }
+    entry.handleEvent(payload);
 }
 
 // Solid-side wrappers whose entire body is a dispatch onto the engine
@@ -264,8 +255,10 @@ const Trackers: ParentComponent<TrackersProps> = (props) => {
     const event = eventNameFor(props.id);
 
     onMount(() => {
-        if (registry.has(props.id)) {
-            console.warn(`[Trackers] Another <Trackers id="${props.id}"> is already mounted - the earlier instance will stop receiving updates.`);
+        const previous = registry.get(props.id);
+        if (previous) {
+            if (import.meta.env.DEV) console.warn(`[Trackers] Another <Trackers id="${props.id}"> is already mounted - the earlier instance will stop receiving updates.`);
+            if (hasEngine()) window.engine!.off(event, previous.handleEvent);
         }
 
         registry.set(props.id, { event, handleEvent });

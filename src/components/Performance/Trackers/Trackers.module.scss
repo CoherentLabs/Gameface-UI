@@ -1,9 +1,10 @@
 .trackers {
-    position: fixed;
+    position: absolute;
     pointer-events: none;
 
     &-item {
         pointer-events: auto;
+        position: relative;
     }
 }
 
