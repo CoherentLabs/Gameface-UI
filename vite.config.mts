@@ -6,7 +6,7 @@ import solidStyleToCssPlugin from 'vite-solid-style-to-css';
 import solidGameface from 'vite-gameface';
 import eslint from 'vite-plugin-eslint';
 import gamefaceViews from './scripts/vite/views-plugin.mts';
-import gamefaceImages from './scripts/images/images-plugin.mts';
+import gamefaceImages from './scripts/vite/images-plugin.mts';
 
 export default defineConfig(({ mode }) => {
   const root = mode === 'test' ? 'tests/src/views' : 'src/views';

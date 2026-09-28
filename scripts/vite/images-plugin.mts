@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { createFilter, type Plugin } from 'vite';
-import { IMAGE_EXTENSIONS, scanImages, writeImageTypes } from './image-types.mjs';
+import { IMAGE_EXTENSIONS, scanImages, writeImageTypes } from '../images/image-types.mjs';
 import { MaxRectsPacker } from 'maxrects-packer';
 import type { IRectangle } from 'maxrects-packer';
 import sharp from 'sharp';
@@ -22,16 +22,47 @@ import sharp from 'sharp';
  * A chain that reads a folder with `[key]` pulls in the whole folder, since the
  * build cannot know which key the code will pick.
  *
- * The folder scan comes from `image-types.mjs` next to this file, which also writes the
+ * The folder scan comes from `image-types.mjs` in `scripts/images`, which also writes the
  * `Image.<folder>.<image>` types, so the editor and the rewrite always agree on
  * which keys exist. The plugin keeps those types fresh while Vite runs;
  * `npm run gen-images` writes them without it.
  */
 
-const SCRIPT_FILE = /\.(?:[cm]?[jt]s|[jt]sx)$/;
+// -----------------------------------------------------------------------------
+// Options
+// -----------------------------------------------------------------------------
 
-/** Import specifiers that point at the Image component, with or without an extension. */
-const IMAGE_COMPONENT = /(?:^|\/)Media\/Image\/Image(?:\.[jt]sx?)?$/;
+export interface ImagesPluginOptions {
+    /** Folder whose images are exposed on `Image`, relative to the project root or absolute. */
+    assets: string;
+    /** File the `ImageTree` types are written to, relative to the project root or absolute. */
+    types: string;
+    /** List of folders to include in the atlas. */
+    atlas?: (string | AtlasGroup)[];
+    atlasDefaults?: Partial<AtlasConfig>;
+    /** Adds every sprite's place on its sheet to the build report. */
+    verbose?: boolean;
+}
+
+interface AtlasGroup extends Partial<AtlasConfig> {
+    include: string | string[];
+    exclude?: string | string[];
+    name?: string;          // sheet file name; defaults to the group index
+}
+
+interface AtlasConfig {
+    maxWidth: PotSize;       // 2048
+    maxHeight: PotSize;      // 2048
+    padding: number;        // 2
+    pot: boolean;           // false
+    squareCells: boolean;   // the contain/center behaviour
+    maxSpriteSize: PotSize;  // bigger than this -> not atlassed
+    keepOriginals: boolean; // whether to keep original images in the bundle
+}
+
+const POT_VALUES = [16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192] as const;
+type PotValue = (typeof POT_VALUES)[number];
+type PotSize = PotValue | (number & {});
 
 const BUILT_IN_OPTIONS: AtlasConfig = {
     maxWidth: 2048,
@@ -43,15 +74,31 @@ const BUILT_IN_OPTIONS: AtlasConfig = {
     keepOriginals: false,
 }
 
+// -----------------------------------------------------------------------------
+// Shared helpers
+// -----------------------------------------------------------------------------
+
 const toPosix = (value: string) => value.replace(/\\/g, '/');
 
 const cleanUrl = (url: string) => url.replace(/[?#].*$/, '');
 
-/** Import specifier for `file`, written relative to the folder of the importing module. */
-function importSpecifier(importerDir: string, file: string) {
-    const relative = toPosix(path.relative(importerDir, file));
-    return relative.startsWith('.') ? relative : `./${relative}`;
+/** Adds `value` to the set kept under `key`, starting one if there is none yet. */
+function addTo(map: Map<string, Set<string>>, key: string, value: string) {
+    const set = map.get(key);
+    if (set) set.add(value);
+    else map.set(key, new Set([value]));
 }
+
+// -----------------------------------------------------------------------------
+// Image.* rewrite, used by `transform`
+// -----------------------------------------------------------------------------
+
+const SCRIPT_FILE = /\.(?:[cm]?[jt]s|[jt]sx)$/;
+
+/** Import specifiers that point at the Image component, with or without an extension. */
+const IMAGE_COMPONENT = /(?:^|\/)Media\/Image\/Image(?:\.[jt]sx?)?$/;
+
+const COMPONENT_PATH = "Media/Image/Image";
 
 /** The parts of the ESTree nodes from `this.parse` that this plugin reads. */
 interface AstNode {
@@ -61,73 +108,16 @@ interface AstNode {
     [key: string]: any;
 }
 
-interface AtlasData {
-    name: string;
-    file: string;
-    /** The image's real size. The rect the packer places is a square around it. */
-    imageWidth: number;
-    imageHeight: number;
-    /** Size of the standalone file this sprite replaces, for the build report. */
-    bytes: number;
+interface Chain {
+    /** Where the chain starts - the `Image` identifier. */
+    start: number;
+    /** Names written with a dot, up to the first `[key]`: `['icons', 'gamepad', 'ps5']`. */
+    names: string[];
+    /** Where each of those names ends in the code, so `ends[i]` closes `names[i]`. */
+    ends: number[];
+    /** Every member expression of the chain, outermost last. */
+    members: AstNode[];
 }
-
-/** One sheet that was written, as the build report needs it. */
-interface SheetReport {
-    view: string;
-    group: string;
-    width: number;
-    height: number;
-    bytes: number;
-    /** Bytes of the standalone files this sheet replaces. */
-    originalBytes: number;
-    keptOriginals: boolean;
-    rects: AtlasRect[];
-}
-
-/** An image that was left alone, and why. */
-interface SkipReport {
-    view: string;
-    name: string;
-    reason: string;
-}
-
-const byteLength = (source: string | Uint8Array) =>
-    typeof source === 'string' ? Buffer.byteLength(source) : source.length;
-
-const kb = (bytes: number) => `${(bytes / 1024).toFixed(1)} KB`;
-
-const mb = (bytes: number) => `${(bytes / 1024 / 1024).toFixed(1)} MB`;
-
-/**
- * What a texture costs on the GPU once decoded: every pixel is RGBA8, so the
- * transparent padding costs exactly as much as the sprites. An estimate - the
- * engine may pick another format - but the right order of magnitude, and the
- * reason `% used` matters more than the KB on disk.
- */
-const vram = (width: number, height: number) => width * height * 4;
-
-const isPowerOfTwo = (value: number) => (value & (value - 1)) === 0;
-
-/** View names come from folder names, so they read better capitalised in a report. */
-const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
-
-/** Adds `value` to the set kept under `key`, starting one if there is none yet. */
-function addTo(map: Map<string, Set<string>>, key: string, value: string) {
-    const set = map.get(key);
-    if (set) set.add(value);
-    else map.set(key, new Set([value]));
-}
-
-interface AtlasRect extends IRectangle {
-    data: AtlasData;
-}
-
-interface AtlasSpriteData {
-    image: string;
-    position: string;
-    size: string;
-}
-
 
 /** Calls `visit` for every node in the tree, parents before their children. */
 function walk(node: AstNode, visit: (node: AstNode, parent: AstNode | null) => void, parent: AstNode | null = null) {
@@ -138,6 +128,42 @@ function walk(node: AstNode, visit: (node: AstNode, parent: AstNode | null) => v
             if (child && typeof child.type === 'string') walk(child, visit, node);
         }
     }
+}
+
+/** Local name of `import Image from '.../Media/Image/Image'`, or null when the module does not import it. */
+function findImageImport(program: AstNode) {
+    for (const statement of program.body) {
+        if (statement.type !== 'ImportDeclaration' || !IMAGE_COMPONENT.test(statement.source.value)) continue;
+
+        const specifier = statement.specifiers.find((s: AstNode) => s.type === 'ImportDefaultSpecifier');
+        if (specifier) return specifier.local.name as string;
+    }
+
+    return null;
+}
+
+/** Reads `Image.icons.gamepad.ps5[key]` from its outermost member expression, or null if it does not start at `local`. */
+function readChain(node: AstNode, local: string): Chain | null {
+    const members: AstNode[] = [];
+    let current = node;
+
+    while (current.type === 'MemberExpression') {
+        members.unshift(current);
+        current = current.object;
+    }
+
+    if (current.type !== 'Identifier' || current.name !== local) return null;
+
+    const names: string[] = [];
+    const ends: number[] = [];
+
+    for (const member of members) {
+        if (member.computed || member.property.type !== 'Identifier') break;
+        names.push(member.property.name);
+        ends.push(member.end);
+    }
+
+    return names.length ? { start: current.start, names, ends, members } : null;
 }
 
 /**
@@ -177,59 +203,42 @@ function mayHaveOptions(props: AstNode) {
     });
 }
 
-/** Local name of `import Image from '.../Media/Image/Image'`, or null when the module does not import it. */
-function findImageImport(program: AstNode) {
-    for (const statement of program.body) {
-        if (statement.type !== 'ImportDeclaration' || !IMAGE_COMPONENT.test(statement.source.value)) continue;
-
-        const specifier = statement.specifiers.find((s: AstNode) => s.type === 'ImportDefaultSpecifier');
-        if (specifier) return specifier.local.name as string;
-    }
-
-    return null;
-}
-
-interface Chain {
-    /** Where the chain starts - the `Image` identifier. */
-    start: number;
-    /** Names written with a dot, up to the first `[key]`: `['icons', 'gamepad', 'ps5']`. */
-    names: string[];
-    /** Where each of those names ends in the code, so `ends[i]` closes `names[i]`. */
-    ends: number[];
-    /** Every member expression of the chain, outermost last. */
-    members: AstNode[];
-}
-
-/** Reads `Image.icons.gamepad.ps5[key]` from its outermost member expression, or null if it does not start at `local`. */
-function readChain(node: AstNode, local: string): Chain | null {
-    const members: AstNode[] = [];
-    let current = node;
-
-    while (current.type === 'MemberExpression') {
-        members.unshift(current);
-        current = current.object;
-    }
-
-    if (current.type !== 'Identifier' || current.name !== local) return null;
-
-    const names: string[] = [];
-    const ends: number[] = [];
-
-    for (const member of members) {
-        if (member.computed || member.property.type !== 'Identifier') break;
-        names.push(member.property.name);
-        ends.push(member.end);
-    }
-
-    return names.length ? { start: current.start, names, ends, members } : null;
-}
-
 /** `{ a: '__x', sub: { b: '__y' } }` -> the same object as JavaScript source. */
 function renderObject(tree: { [key: string]: any }): string {
     const entries = Object.entries(tree).map(([key, value]) =>
         `${key}: ${typeof value === 'string' ? value : renderObject(value)}`);
 
     return `{ ${entries.join(', ')} }`;
+}
+
+/** Import specifier for `file`, written relative to the folder of the importing module. */
+function importSpecifier(importerDir: string, file: string) {
+    const relative = toPosix(path.relative(importerDir, file));
+    return relative.startsWith('.') ? relative : `./${relative}`;
+}
+
+// -----------------------------------------------------------------------------
+// Atlas, used by `generateBundle`
+// -----------------------------------------------------------------------------
+
+interface AtlasData {
+    name: string;
+    file: string;
+    /** The image's real size. The rect the packer places is a square around it. */
+    imageWidth: number;
+    imageHeight: number;
+    /** Size of the standalone file this sprite replaces, for the build report. */
+    bytes: number;
+}
+
+interface AtlasRect extends IRectangle {
+    data: AtlasData;
+}
+
+interface AtlasSpriteData {
+    image: string;
+    position: string;
+    size: string;
 }
 
 const toPatterns = (value?: string | string[]) =>
@@ -241,6 +250,50 @@ const derive = (pattern: string) => {
     return head.slice(0, head.lastIndexOf('/'))    // drop the trailing partial segment
                .replace(/\//g, '-') || 'all';
 };
+
+const isPowerOfTwo = (value: number) => (value & (value - 1)) === 0;
+
+// -----------------------------------------------------------------------------
+// Build report, printed at the end of `generateBundle`
+// -----------------------------------------------------------------------------
+
+/** One sheet that was written, as the build report needs it. */
+interface SheetReport {
+    view: string;
+    group: string;
+    width: number;
+    height: number;
+    bytes: number;
+    /** Bytes of the standalone files this sheet replaces. */
+    originalBytes: number;
+    keptOriginals: boolean;
+    rects: AtlasRect[];
+}
+
+/** An image that was left alone, and why. */
+interface SkipReport {
+    view: string;
+    name: string;
+    reason: string;
+}
+
+const byteLength = (source: string | Uint8Array) =>
+    typeof source === 'string' ? Buffer.byteLength(source) : source.length;
+
+const kb = (bytes: number) => `${(bytes / 1024).toFixed(1)} KB`;
+
+const mb = (bytes: number) => `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+
+/**
+ * What a texture costs on the GPU once decoded: every pixel is RGBA8, so the
+ * transparent padding costs exactly as much as the sprites. An estimate - the
+ * engine may pick another format - but the right order of magnitude, and the
+ * reason `% used` matters more than the KB on disk.
+ */
+const vram = (width: number, height: number) => width * height * 4;
+
+/** View names come from folder names, so they read better capitalised in a report. */
+const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
 
 /**
  * The build report: one line per sheet, then what was left alone and why.
@@ -300,38 +353,32 @@ function renderReport(sheets: SheetReport[], skipped: SkipReport[], verbose: boo
     return lines.join('\n');
 }
 
-interface AtlasConfig {
-    maxWidth: number;       // 2048
-    maxHeight: number;      // 2048
-    padding: number;        // 2
-    pot: boolean;           // false
-    squareCells: boolean;   // the contain/center behaviour
-    maxSpriteSize: number;  // bigger than this -> not atlassed
-    keepOriginals: boolean; // whether to keep original images in the bundle
-}
-
-interface AtlasGroup extends Partial<AtlasConfig> {
-    include: string | string[];
-    exclude?: string | string[];
-    name?: string;          // sheet file name; defaults to the group index
-}
-
-export interface ImagesPluginOptions {
-    /** Folder whose images are exposed on `Image`, relative to the project root or absolute. */
-    assets: string;
-    /** File the `ImageTree` types are written to, relative to the project root or absolute. */
-    types: string;
-    /** List of folders to include in the atlas. */
-    atlas?: (string | AtlasGroup)[];
-    atlasDefaults?: Partial<AtlasConfig>;
-    /** Adds every sprite's place on its sheet to the build report. */
-    verbose?: boolean;
-}
+// -----------------------------------------------------------------------------
+// Plugin
+// -----------------------------------------------------------------------------
 
 export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
     const { assets, types, atlas, atlasDefaults, verbose = false } = options;
     const assetsDir = path.resolve(assets);
     const typesFile = path.resolve(types);
+
+    const atlasGroups = atlas?.map((entry, index) => {
+        const { include, exclude, name, ...overrides } = 
+            typeof entry === 'string' 
+            ? { include: entry } as AtlasGroup 
+            : entry;
+
+        return {
+            // Derived from the normalized pattern, so a bare `icons/hud` is already
+            // `icons/hud/**` and keeps its last segment.
+            name: name ?? derive(toPatterns(include)![0]),
+            match: createFilter(toPatterns(include), toPatterns(exclude), { resolve: assetsDir }),
+            config: { ...BUILT_IN_OPTIONS, ...atlasDefaults, ...overrides },
+        };
+    });
+
+    // `originalFileNames` are written relative to the Vite root, not to the cwd.
+    let root = process.cwd();
 
     /** `icons.gamepad.a` -> absolute path of `icons/gamepad/a.png`. */
     let images = new Map<string, string>();
@@ -370,9 +417,6 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
         return isFolder(key) ? { key, file: null, length: names.length } : null;
     };
 
-    // `originalFileNames` are written relative to the Vite root, not to the cwd.
-    let root = process.cwd();
-
     const isImageInAssets = (moduleId: string) => {
         const file = cleanUrl(moduleId);
         const relative = path.relative(assetsDir, file);
@@ -380,21 +424,6 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
 
         return !relative.startsWith('..') && !path.isAbsolute(relative) && IMAGE_EXTENSIONS.includes(extension);
     };
-
-    const atlasGroups = atlas?.map((entry, index) => {
-        const { include, exclude, name, ...overrides } = 
-            typeof entry === 'string' 
-            ? { include: entry } as AtlasGroup 
-            : entry;
-
-        return {
-            // Derived from the normalized pattern, so a bare `icons/hud` is already
-            // `icons/hud/**` and keeps its last segment.
-            name: name ?? derive(toPatterns(include)![0]),
-            match: createFilter(toPatterns(include), toPatterns(exclude), { resolve: assetsDir }),
-            config: { ...BUILT_IN_OPTIONS, ...atlasDefaults, ...overrides },
-        };
-    });
 
     return {
         name: 'gameface-images',
@@ -434,7 +463,7 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
         transform(code, id) {
             const file = cleanUrl(id);
             if (id.startsWith('\0') || file.includes('/node_modules/') || !SCRIPT_FILE.test(file)) return null;
-            if (!code.includes('Media/Image/Image')) return null;
+            if (!code.includes(COMPONENT_PATH)) return null;
 
             const program = this.parse(code) as unknown as AstNode;
             const local = findImageImport(program);

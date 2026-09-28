@@ -140,7 +140,7 @@ Hud
   skipped  weapon2.png   768x271 > maxSpriteSize 512 ("glyphs")
 ```
 
-The important number is the GPU texture memory estimate, not the disk size. A 1024x1024 sheet is roughly 4 MB of RGBA8 memory even if it is mostly empty. In practice, you want fewer large sheets that are still efficient enough to justify the trade.
+The important number is the GPU texture memory estimate, not the disk size. A 1024x1024 sheet is roughly 4 MB of RGBA8 memory even if it is mostly empty. The trade is explicit: you are spending more GPU memory per sheet in exchange for far fewer textures to allocate, bind, and preload.
 
 ## Limitations
 
