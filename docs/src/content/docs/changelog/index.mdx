@@ -4,7 +4,43 @@ title: Changelog
 
 import { Badge } from '@astrojs/starlight/components'
 
-## 4.2.0 :badge[Latest]{variant="note"}
+## 5.0.0 :badge[Latest]{variant="note"}
+
+### ⚠️ Breaking Changes
+
+- <Badge text="Breaking Change" variant="danger" size="small" /> `Icon` and `BackgroundImage` have been removed. [Image](/components/media/image) replaces both.
+
+  Every image in `src/assets` is now available as a dot path on `Image`, the way `Icon` worked, except that the keys start at `src/assets` rather than `src/assets/icons`:
+
+  ```diff
+  - <Icon.gamepad.xbox.a />
+  + <Image.icons.gamepad.xbox.a />
+  ```
+
+  `Image` also accepts the `options` prop `BackgroundImage` had, with the same values and the same result, so those call sites only change name:
+
+  ```diff
+  - <BackgroundImage src={bg} options={{ size: 'contain' }} />
+  + <Image src={bg} options={{ size: 'contain' }} />
+  ```
+
+  Two behavioural differences to check while migrating. `Image` renders a `div` with a background rather than an `<img>`, so there is no load-error fallback, though a mistyped dot path is now a build error instead of a missing image at runtime. And a `BackgroundImage` that passed **no** `options` had no size of its own, where `Image` defaults to 3.5rem square. See [Migrating from Icon and BackgroundImage](/components/media/image#migrating-from-icon-and-backgroundimage).
+
+- <Badge text="Breaking Change" variant="danger" size="small" /> [MaskImage](/components/media/mask-image) no longer renders through the shared image base component, so it no longer accepts `onAction`, `anchor` or `refObject`. These were never documented. Everything in its documented API is unchanged.
+
+### Texture atlases
+
+- <Badge text="New" variant="tip" size="small" /> Images written as `Image.folder.name` can now be packed into **texture atlases** at build time, cutting the number of requests a view makes. Each view gets its own sheets, built only from the images that view can actually reach, and the component resolves sprites on its own, so no markup changes.
+
+  Atlassing is opt-in through the `atlas` option in `vite.config.mts`, is configured as groups of folders with per-group settings for sheet size, padding and more, and never runs during development. Every build prints a report of what was packed, what was skipped and why, and what it costs in texture memory. See [Images and texture atlases](/docs/concepts/images-and-atlases/).
+
+### Component changes
+
+- <Badge text="Feature" variant="success" size="small" /> [Image](/components/media/image#props): Added the `options` prop for controlling `size`, `position` and `repeat`, and support for children, so `Image` can wrap content the way `BackgroundImage` did.
+
+- <Badge text="Feature" variant="success" size="small" /> [Image](/components/media/image#by-path-recommended): Dot paths are type-checked. Your editor autocompletes every folder and file under `src/assets`, and a path that does not exist fails the build.
+
+## 4.2.0
 
 - <Badge text="New" variant="tip" size="small" /> Added the [Chart](/components/feedback/chart) component family for HUD data visualisation: [Pie](/components/feedback/chart-pie), [Donut](/components/feedback/chart-donut), [Bar](/components/feedback/chart-bar), [Line](/components/feedback/chart-line), [Area](/components/feedback/chart-area) and [Spider](/components/feedback/chart-spider). All of them share one data model, palette, animation system and set of slots.
 
