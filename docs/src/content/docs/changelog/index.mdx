@@ -8,37 +8,21 @@ import { Badge } from '@astrojs/starlight/components'
 
 ### ⚠️ Breaking Changes
 
-- <Badge text="Breaking Change" variant="danger" size="small" /> `Icon` and `BackgroundImage` have been removed. [Image](/components/media/image) replaces both.
-
-  Every image in `src/assets` is now available as a dot path on `Image`, the way `Icon` worked, except that the keys start at `src/assets` rather than `src/assets/icons`:
-
-  ```diff
-  - <Icon.gamepad.xbox.a />
-  + <Image.icons.gamepad.xbox.a />
-  ```
-
-  `Image` also accepts the `options` prop `BackgroundImage` had, with the same values and the same result, so those call sites only change name:
-
-  ```diff
-  - <BackgroundImage src={bg} options={{ size: 'contain' }} />
-  + <Image src={bg} options={{ size: 'contain' }} />
-  ```
-
-  Two behavioural differences to check while migrating. `Image` renders a `div` with a background rather than an `<img>`, so there is no load-error fallback, though a mistyped dot path is now a build error instead of a missing image at runtime. And a `BackgroundImage` that passed **no** `options` had no size of its own, where `Image` defaults to 3.5rem square. See [Migrating from Icon and BackgroundImage](/components/media/image#migrating-from-icon-and-backgroundimage).
-
-- <Badge text="Breaking Change" variant="danger" size="small" /> [MaskImage](/components/media/mask-image) no longer renders through the shared image base component, so it no longer accepts `onAction`, `anchor` or `refObject`. These were never documented. Everything in its documented API is unchanged.
+- <Badge text="Breaking Change" variant="danger" size="small" /> `Icon` and `BackgroundImage` were removed. Use [Image](/components/media/image) instead. See [Migrating from Icon and BackgroundImage](/components/media/image#migrating-from-icon-and-backgroundimage).
+- <Badge text="Breaking Change" variant="danger" size="small" /> `Image` dot paths start at `src/assets`, not `src/assets/icons`.
+- <Badge text="Breaking Change" variant="danger" size="small" /> `Image` renders a `div` background, so there is no load-error fallback. The default size is also `3.5rem` square unless you set dimensions.
+- <Badge text="Breaking Change" variant="danger" size="small" /> [MaskImage](/components/media/mask-image) no longer accepts the undocumented `onAction`, `anchor`, and `refObject` props.
 
 ### Texture atlases
 
-- <Badge text="New" variant="tip" size="small" /> Images written as `Image.folder.name` can now be packed into **texture atlases** at build time, cutting the number of requests a view makes. Each view gets its own sheets, built only from the images that view can actually reach, and the component resolves sprites on its own, so no markup changes.
-
-  Atlassing is opt-in through the `atlas` option in `vite.config.mts`, is configured as groups of folders with per-group settings for sheet size, padding and more, and never runs during development. Every build prints a report of what was packed, what was skipped and why, and what it costs in texture memory. See [Images and texture atlases](/docs/concepts/images-and-atlases/).
+- <Badge text="New" variant="tip" size="small" /> `Image.folder.name` can now be packed into texture atlases at build time.
+- <Badge text="New" variant="tip" size="small" /> The plugin groups images by view, builds sheet PNGs, and resolves them automatically at runtime.
+- <Badge text="New" variant="tip" size="small" /> Atlas behavior is configured in `vite.config.mts` and reported in the build output. See [Images and texture atlases](/docs/concepts/images-and-atlases/).
 
 ### Component changes
 
-- <Badge text="Feature" variant="success" size="small" /> [Image](/components/media/image#props): Added the `options` prop for controlling `size`, `position` and `repeat`, and support for children, so `Image` can wrap content the way `BackgroundImage` did.
-
-- <Badge text="Feature" variant="success" size="small" /> [Image](/components/media/image#by-path-recommended): Dot paths are type-checked. Your editor autocompletes every folder and file under `src/assets`, and a path that does not exist fails the build.
+- <Badge text="Feature" variant="success" size="small" /> [Image](/components/media/image#props): Added `options` for `size`, `position`, and `repeat`, plus child support.
+- <Badge text="Feature" variant="success" size="small" /> [Image](/components/media/image#by-path): Dot paths are type-checked and autocomplete is generated from `src/assets`.
 
 ## 4.2.0
 

@@ -4,23 +4,9 @@ title: Image
 
 import { Aside } from '@astrojs/starlight/components'
 
-The `Image` component renders an image asset as the background of a `div`. Any image in `src/assets` can be written as a dot path such as `Image.icons.hud.grenade`, with no import and full autocompletion, and the images it renders can be packed into texture atlases at build time.
+The `Image` component renders an image asset as the background of a `div`.
 
-## Installation
-
-:::note[Available in Gameface UI projects only]
-`Image` comes with the boilerplate and cannot be added to an existing project with the CLI. It depends on a generated type file and on the images plugin registered in `vite.config.mts`, both of which only exist in the full template. Without them the dot paths have nothing behind them at runtime, so an installed copy would not build.
-
-To use it, [start from the boilerplate](/docs/getting-started/how-to-use#using-the-boilerplate). The CLI documentation explains this in [components that need a full Gameface project](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/existing-projects/#components-that-need-a-full-gameface-project).
-:::
-
-## Usage
-
-There are two ways to give `Image` a source.
-
-### By path (recommended)
-
-Every image in `src/assets` is available as a property of `Image`, mirroring the folder structure. `src/assets/icons/hud/grenade.png` becomes:
+Use the dot-path form for assets in `src/assets`:
 
 ```jsx
 import Image from '@components/Media/Image/Image';
@@ -28,15 +14,32 @@ import Image from '@components/Media/Image/Image';
 const App = () => <Image.icons.hud.grenade />;
 ```
 
-No import for the asset, and the path is type-checked, so your editor autocompletes every folder and file, and a typo is a build error rather than a missing image at runtime.
+This gives you no import, auto-complete, and type checking. It is also the only form that can be packed into a texture atlas.
 
-<Aside type="tip">
-Only images written this way can be packed into a [texture atlas](/docs/concepts/images-and-atlases/). If you are rendering many small images, this is the form to use.
-</Aside>
+## Installation
+
+:::note[Available in Gameface UI projects only]
+`Image` depends on the generated types file and the images plugin in `vite.config.mts`, so it is only available in the full template.
+
+To use it, [start from the boilerplate](/docs/getting-started/how-to-use#using-the-boilerplate).
+:::
+
+## Usage
+
+### By path
+
+Every image under `src/assets` is exposed as a property of `Image`, matching the folder structure:
+
+```jsx
+<Image.icons.hud.grenade />
+<Image.icons.gamepad.xbox.a />
+```
+
+This is the recommended form for project assets and for any image that may be packed into an atlas.
 
 ### By `src`
 
-You can also import an asset yourself and pass it in. This is what you need for anything outside `src/assets`, for a path computed at runtime, and for SVGs:
+Use `src` for anything outside `src/assets`, for runtime paths, and for SVGs:
 
 ```jsx
 import Image from '@components/Media/Image/Image';
@@ -46,9 +49,7 @@ const App = () => <Image src={MyImage} style={{ width: '150px', height: '150px' 
 ```
 
 <Aside type="caution" title="SVGs have no dot path">
-The dot tree only contains raster images: `.png`, `.jpg`, `.jpeg` and `.webp`. `Image.icons.myShape` will not exist for `myShape.svg`, and the build fails if you write it.
-
-SVGs are excluded on purpose. They are normally imported as Solid components so they can be styled and animated, which a `background-image` cannot do, and being vectors they cannot be packed into a raster atlas. Import them directly instead, as described in [Using SVG](/docs/concepts/svg/). An SVG passed to `src` still works as a plain background.
+The dot tree only contains raster images: `.png`, `.jpg`, `.jpeg`, and `.webp`. Import SVGs directly instead; they are not atlas-compatible.
 </Aside>
 
 ## API
@@ -57,26 +58,26 @@ SVGs are excluded on purpose. They are normally imported as Solid components so 
 
 | Prop Name | Type | Default | Description |
 |---|---|---|---|
-| `style` | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the component's root element. |
-| `class` | `string` | `""` | Additional CSS classes to apply to the component. |
-| `ref` | `HTMLDivElement` | `undefined` | Retrieves the component's DOM element and assigns it to a variable. |
-| `src` | `string` | `undefined` | The image source. Not needed when using the dot path form. |
-| `fill` | `boolean` | `false` | Makes the component fill its container by setting its `width` and `height` to 100%. |
-| `options` | `{ repeat?: ImageRepeat; size?: ImageSize; position?: ImagePosition; }` | `undefined` | Controls how the image is drawn inside the component. See [below](#options-object-properties). |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to the root element. |
+| `class` | `string` | `""` | CSS class names. |
+| `ref` | `HTMLDivElement` | `undefined` | DOM element reference. |
+| `src` | `string` | `undefined` | Asset source. Not needed for dot-path images. |
+| `fill` | `boolean` | `false` | Sets width and height to 100% of the parent. |
+| `options` | `{ repeat?, size?, position? }` | `undefined` | Controls how the image is drawn. |
 
 ### `options` object properties
 
 | Prop Name | Accepted values | Default | Description |
 |---|---|---|---|
-| `repeat` | `'both' \| 'x' \| 'y'` | None | Whether the image repeats. By default it does not. `both` repeats on both axes, `x` and `y` on one. |
-| `size` | `'contain' \| 'cover'` or any valid [background-size](https://developer.mozilla.org/en-US/docs/Web/CSS/background-size) string | None | How the image is sized inside the component. |
-| `position` | Any combination of `top`, `center`, `bottom`, `left`, `right`, or any valid [background-position](https://developer.mozilla.org/en-US/docs/Web/CSS/background-position) string | None | Where the image sits inside the component. |
+| `repeat` | `'both' \| 'x' \| 'y'` | none | Repeat behavior. |
+| `size` | `'contain' \| 'cover'` or any valid background-size value | none | How the image is sized. |
+| `position` | `top`, `center`, `bottom`, `left`, `right`, or any valid background-position value | none | Where the image sits. |
 
-## Guide
+## Common patterns
 
 ### Default size
 
-Without `options`, `Image` is **3.5rem square** and draws the image `contain`ed and centred, which are sensible defaults for an icon. Override them with `style`, `class`, or `fill`. Note that `Image`'s own class and one of yours have the same CSS specificity, so if both set `width` the winner depends on stylesheet order. Use `style` when you need to be certain.
+Without `options`, `Image` is 3.5rem square and centres the image with `contain`:
 
 ```jsx
 <Image.icons.hud.grenade style={{ width: '2rem', height: '2rem' }} />
@@ -92,9 +93,9 @@ Without `options`, `Image` is **3.5rem square** and draws the image `contain`ed 
 </div>
 ```
 
-### Using it as a background
+### Background mode
 
-Passing `options` switches `Image` into background mode: it drops the 3.5rem default and the `contain`/centre defaults, so the component has **no size of its own** and the image is drawn at its natural size in the top-left, which is the behaviour the old `BackgroundImage` had. Give it dimensions through `style`, `class` or `fill`.
+When you pass `options`, `Image` behaves like a background image. It drops the default size and fills only the dimensions you give it:
 
 ```jsx
 <Image
@@ -106,15 +107,13 @@ Passing `options` switches `Image` into background mode: it drops the 3.5rem def
 </Image>
 ```
 
-`Image` accepts children, so it can wrap content the way `BackgroundImage` did.
-
 <Aside type="caution" title="Background mode disables atlassing">
-An image rendered with `options` is never packed into an atlas, because `options` set the same CSS properties a sprite needs. That is automatic and is reported at build time; you don't have to do anything.
+An image rendered with `options` is never packed into an atlas, because those CSS properties are exactly what the sprite needs.
 </Aside>
 
-### Choosing an image at runtime
+### Runtime lookup
 
-A dot path can end in a computed key, which is useful for things like gamepad glyphs:
+A dot path can end in a computed key:
 
 ```jsx
 const key = () => currentGamepad();
@@ -122,15 +121,7 @@ const key = () => currentGamepad();
 <Dynamic component={Image.icons.gamepad.ps5[key()]} />
 ```
 
-<Aside type="caution" title="A computed key costs the whole folder">
-A computed key pulls in **every image in that folder**, because the build cannot know which key will run.
-
-If the project uses [atlases](/docs/concepts/images-and-atlases/), all of those images are packed into the view's sheet as well, not just the ones that are ever shown. A large folder read this way can dominate a sheet and push the rest into a second one.
-
-Keep such folders small, or list the images explicitly in a map.
-</Aside>
-
-A plain map also works and only pulls in the images you name:
+This pulls in the whole folder, because the build cannot know which key will run. If the project uses [atlases](/docs/concepts/images-and-atlases/), that can bloat the sheet. Keep these folders small or use an explicit map.
 
 ```jsx
 const glyphs = {
@@ -143,15 +134,16 @@ const glyphs = {
 
 ## Atlases
 
-Images written as `Image.folder.name` can be packed into texture atlases at build time, cutting the number of requests a view makes. This is off unless the project configures it, requires no change to your markup, and never runs during development.
+Images written as `Image.folder.name` can be packed into texture atlases at build time. This reduces texture count and texture binds, and it lets the project preload a handful of sheet PNGs before a view opens.
 
-See [Images and texture atlases](/docs/concepts/images-and-atlases/) for the configuration, the build report, and the rules for which images qualify.
+See [Images and texture atlases](/docs/concepts/images-and-atlases/) for configuration and the build report.
 
 ## Limitations
 
-- **`Image` does not render inside `cohinline` or `InlineTextBlock`.** In inline context only `<img>` honours width and height, and `Image` is a `div` with a background. Use a plain `<img>` there. Such images are never atlassed, since they do not go through `Image`.
-- **SVGs are not exposed on `Image`.** Import them directly; see [Using SVG](/docs/concepts/svg/).
-- **A computed key costs a whole folder.** See above.
+- `Image` does not render inside `cohinline` or `InlineTextBlock`; use a plain `<img>` there.
+- `Image` is a `div` with a background, so it has no image error fallback.
+- SVGs are not exposed on `Image` and cannot be packed into a raster atlas.
+- Computed keys cost the whole folder.
 
 ## Migrating from `Icon` and `BackgroundImage`
 
@@ -169,4 +161,4 @@ Both are deprecated and `Image` covers them.
 + <Image src={bg} options={{ size: 'contain' }} />
 ```
 
-Identical output, since `options` puts `Image` in background mode. The one thing to check is any call site that relied on `BackgroundImage` having no default size *and* passed no `options`, because that now picks up the 3.5rem default.
+The main behavior change is that `Image` has a 3.5rem default size unless you provide dimensions yourself.

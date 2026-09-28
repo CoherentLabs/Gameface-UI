@@ -6,15 +6,15 @@ sidebar:
 
 import { Aside } from '@astrojs/starlight/components'
 
-The template includes an images plugin that does two things: it lets you write any image in `src/assets` as `Image.folder.name` instead of importing it, and it can pack the images a view actually uses into **texture atlases** at build time.
+The template includes an images plugin that does two things: it exposes files from `src/assets` as `Image.folder.name`, and it can pack the images a view actually uses into texture atlases during the build.
 
-Both are described from the authoring side on the [`Image` component page](/components/media/image/). This page is about configuring the build.
+This page covers the build side only. The authoring API is documented on the [`Image` component page](/components/media/image/).
 
 ## What the plugin does
 
-During the build, every `Image.icons.gamepad.xbox.a` in your source is rewritten into a real import of `src/assets/icons/gamepad/xbox/a.png`. Because they become real imports, the bundler can list exactly which images each view is able to reach, with nothing extra and nothing missing.
+During the build, `Image.icons.gamepad.xbox.a` is rewritten to the real asset file. That lets the bundler see exactly which images each view can reach.
 
-At the end of the build the plugin takes that per-view list, packs the images into one or more PNG sheets, and writes a lookup object into the view's entry file:
+When atlas generation is enabled, the plugin packs those images into one or more PNG sheets and writes a lookup object into the view entry file:
 
 ```js
 window.__GF_ATLAS__ = {
@@ -23,7 +23,17 @@ window.__GF_ATLAS__ = {
 };
 ```
 
-`Image` looks its own file name up in that object. A hit renders the sprite, a miss renders the file as normal. Nothing about your markup changes, and in development there is no atlas at all. Every image is a plain file, which is why what you see in `npm start` is always the un-packed version.
+`Image` looks up its filename in that object. If it finds a match, it renders the sprite; otherwise it falls back to the normal file. In development, there is no atlas at all, so every image is just a regular asset.
+
+## Why atlas images
+
+The benefit is not smaller file size. The win is fewer GPU textures and fewer texture switches:
+
+- **Fewer textures at load.** Thirty icons become one sheet, so the engine allocates one texture instead of thirty. Gameface's own profiling guidance names loading sprite frames as separate images as a common cause of texture thrashing, where textures are created and destroyed repeatedly.
+- **Fewer texture binds while drawing.** Elements sharing a sheet can be drawn together rather than each switching to its own texture.
+- **Something you can preload.** This is the part worth the effort. Warming a handful of sheets before a view opens is practical; doing the same for fifty individual files is not. Once the build is producing sheets you are happy with, they are ordinary PNGs in `dist/assets` that your integration can load up front, so opening the view costs no texture allocation at all.
+
+This is a tradeoff: a sheet may use more texture memory than the individual files, but it cuts texture churn and startup cost.
 
 ## Configuration
 
@@ -31,188 +41,110 @@ The plugin is registered in `vite.config.mts`:
 
 ```ts
 gamefaceImages({
-    assets: resolve(__dirname, 'src/assets'),
-    types: resolve(__dirname, 'src/components/Media/Image/ImageTypes.ts'),
-}),
+  assets: resolve(__dirname, 'src/assets'),
+  types: resolve(__dirname, 'src/components/Media/Image/ImageTypes.ts'),
+  atlas: ['icons/hud'],
+});
 ```
 
-| Option | Type | Description |
-|---|---|---|
-| `assets` | `string` | Folder whose images are exposed on `Image`. |
-| `types` | `string` | Where to write the generated types. |
-| `atlas` | `(string \| AtlasGroup)[]` | Which images to pack, as [groups](#groups). Omit it and nothing is packed. |
-| `atlasDefaults` | `AtlasConfig` | Baseline [settings](#settings) every group inherits. |
-| `verbose` | `boolean` | Adds every sprite's position on its sheet to the build report. |
+| Option | Description |
+|---|---|
+| `assets` | Folder whose images are exposed on `Image`. |
+| `types` | Where the generated types are written. |
+| `atlas` | Which images to pack, as groups. Omit it and nothing is packed. |
+| `atlasDefaults` | Base settings used by every group. |
+| `verbose` | Adds detailed sprite positions to the build report. |
 
-`types` points at a file the plugin rewrites on every build, and while the dev server is running. It contains one interface describing the shape of your `src/assets` folder, which is what makes `Image.icons.gamepad.xbox.a` autocomplete in your editor and fail to compile when you mistype it. You never edit it by hand, and `npm run gen-images` regenerates it without starting Vite.
+The generated types file is rewritten on every build and during dev. It describes the shape of your `src/assets` tree, which makes `Image.icons.gamepad.xbox.a` autocomplete and fail at compile time if you mistype it.
 
 <Aside type="note">
-Atlassing is **opt-in**. With no `atlas` option the plugin still provides the `Image.*` syntax and the types, and every image ships as its own file.
+Atlassing is opt-in. Without `atlas`, the plugin still provides the `Image.*` syntax and generated types, but every image ships as an individual file.
 </Aside>
 
-### Groups
+## Groups and matching
 
-Each entry in `atlas` describes one sheet. A plain string is shorthand for a folder:
+Each entry in `atlas` describes one sheet. A plain string is a folder shorthand:
 
 ```ts
-atlas: ['icons/hud']            // same as { include: 'icons/hud/**' }
+atlas: ['icons/hud']; // same as { include: 'icons/hud/**' }
 ```
 
-Use an object when a group needs its own settings:
+Use an object for custom rules:
 
 ```ts
 atlas: [
-    'icons/hud',
-    {
-        include: 'icons/gamepad/**',
-        exclude: 'icons/gamepad/ps5/**',
-        name: 'glyphs',
-        padding: 4,
-    },
-    '**',                        // catch-all, last
+  'icons/hud',
+  {
+    include: 'icons/gamepad/**',
+    exclude: 'icons/gamepad/ps5/**',
+    name: 'glyphs',
+    padding: 4,
+  },
+  '**', // catch-all for any remaining images
 ],
 atlasDefaults: { squareCells: true },
 ```
 
-| Field | Type | Description |
+Important rules:
+
+- patterns are relative to `assets`
+- first matching group wins
+- put specific groups first and catch-alls last
+- a group that matches nothing in any view logs a warning
+
+## Key settings
+
+| Setting | Default | Why it matters |
 |---|---|---|
-| `include` | `string \| string[]` | Patterns for the images in this group. |
-| `exclude` | `string \| string[]` | Patterns to leave out. |
-| `name` | `string` | The group's segment of the sheet file name. Defaults to a name derived from the first `include`. |
+| `maxWidth` / `maxHeight` | `2048` | Largest sheet size before a second sheet is created. |
+| `padding` | `2` | Adds transparent spacing to avoid bleeding at fractional scale. |
+| `pot` | `true` | Rounds sheet sizes up to the next power of two. |
+| `squareCells` | `false` | Reserves a square cell so sprites render like `contain` + `center`. |
+| `maxSpriteSize` | `2048` | Larger sprites are not packed. |
+| `keepOriginals` | `false` | Keeps the standalone file beside the atlas version. |
 
-Every `AtlasConfig` field below can also be set per group, overriding `atlasDefaults`.
+When `pot` is enabled, the packer rounds up first and only then checks the maximum. Use power-of-two values for the max dimensions.
 
-**Patterns are always relative to `assets`, including `exclude`.** To exclude the PS5 glyphs from a group that includes `icons/gamepad/`, write `exclude: 'icons/gamepad/ps5/'`, not `'ps5/'`. One rule for both keys.
+## Which images get packed
 
-**A bare folder means everything under it.** `'icons'`, `'icons/'` and `'icons/**'` are identical.
+An image is packed only if all of these are true:
 
-### First match wins
+- written as `Image.folder.name`
+- not given an `options` prop
+- matches a group and is not excluded
+- not larger than `maxSpriteSize`
 
-Patterns overlap, and an image can only live on one sheet, so the **first group in the array that matches takes it**. Order is meaningful, so put the specific groups first and the catch-all last:
-
-```ts
-atlas: ['icons/hud', 'icons']   // hud icons -> first sheet; everything else under icons/ -> second
-```
-
-Reverse those two and `icons` swallows everything, leaving `icons/hud` empty. A group that matches nothing in any view produces a build warning.
-
-### Settings
-
-| Setting | Default | Description |
-|---|---|---|
-| `maxWidth` / `maxHeight` | `2048` | Largest sheet the packer may produce. Overflow opens a second sheet. |
-| `padding` | `2` | Transparent gap between sprites. Raise it if you see neighbouring pixels bleeding in at fractional scales. |
-| `pot` | `true` | Round sheet dimensions up to a power of two. |
-| `squareCells` | `false` | Give each sprite a square cell and centre it inside, so it renders like `size: 'contain'` with `position: 'center'`. |
-| `maxSpriteSize` | `2048` | Images larger than this on either axis are never packed. |
-| `keepOriginals` | `false` | Also ship each image as its own file in the final build, alongside the sprite. |
-
-<Aside type="caution" title="pot rounds up, then rejects">
-With `pot: true` the packer rounds a sheet up to the next power of two and **then** discards it if the result exceeds your maximum. A maximum that isn't itself a power of two silently wastes the whole gap:
-
-- `maxWidth: 3000` gives a real ceiling of **2048**, because 4096 is rejected
-- `maxHeight: 1000` gives a real ceiling of **512**, because 1024 exceeds it
-
-With `pot` enabled, write powers of two as your maximums. The build warns when you don't.
-</Aside>
-
-#### `squareCells`
-
-Gameface does not support `object-fit`, `object-position` or `object-view-box`, so a sprite cannot be cropped or letterboxed at render time. `squareCells` solves it at pack time: the packer reserves a square cell (`max(width, height)`) and the image is composited in the middle of it, leaving the rest transparent. Stretching that square cell into a square element then produces the same result as `options={{ size: 'contain', position: 'center' }}`, which a sprite cannot use.
-
-It costs sheet space, so leave it off for a set of uniformly sized icons.
-
-#### `keepOriginals`
-
-Once an image has been packed, its standalone file is **removed from the final build**. Its URL survives in the JavaScript only as the key `Image` looks up, and is never fetched, so dropping the file roughly halves the image payload.
-
-Set `keepOriginals: true` on a group when something outside `Image` needs the real file in `dist`. The plugin also keeps a file automatically when any view still points at it, so you never end up with a broken reference, but you will get a build warning saying the pixels ship twice.
-
-## Which images are packed
-
-An image is packed only if **all** of these are true:
-
-| Requirement | Why |
-|---|---|
-| Written as `Image.folder.name` | Only those are rewritten and tracked. A plain `import` handed to `src` is invisible to the plugin. |
-| Never given the `options` prop in that view | The [`options` prop](/components/media/image/#options-object-properties) sets `background-size` and `background-position`, which is exactly what a sprite needs them for. |
-| Matches a group | And is not caught by that group's `exclude`. |
-| No larger than `maxSpriteSize` | On either axis. |
-
-None of these requirements produce an error. An image that does not meet all of them stays a standalone file and renders exactly as it would without any atlas configuration. The build report lists every such image under `skipped`, together with the reason, so an image you expected to be packed is easy to find.
+If any rule fails, the image stays a normal file. The build report lists it under `skipped` with the reason.
 
 <Aside type="caution" title="Two cases the plugin cannot detect">
-The `options` rule above is enforced automatically, but only where the plugin can read the props. It cannot in these two:
+The `options` rule is enforced only when the plugin can read the props. It cannot see values passed through runtime merges or dynamic access, such as:
 
 ```jsx
-// props are merged at runtime, so `options` inside `rest` is invisible
 <Image.icons.hud.weapon {...rest} />
-
-// no props at all at the point of rewrite
+// OR
 const glyphs = { a: Image.icons.gamepad.xbox.a };
 <Dynamic component={glyphs[key()]} />
 ```
 
-Both are still packed. If you pass `options` that way, set `keepOriginals: true` on the group so the standalone file survives.
+Those images still get packed. If you pass `options` that way, set `keepOriginals: true` on the group.
 </Aside>
 
-## Reading the build report
+## Read the build report
 
-Every build prints what it packed. The output below comes from this configuration:
-
-```ts
-atlas: [
-    'icons/hud',
-    { include: 'icons/gamepad/**', name: 'glyphs', maxSpriteSize: 512, keepOriginals: true },
-],
-```
-
-Two groups, so the Hud view gets at most two sheets. The second one caps sprites at 512px and keeps the standalone files, which is why one image is skipped and one sheet is marked `(originals kept)`:
+The report is the main troubleshooting tool. It tells you which sheets were created, how many sprites fit, and which images were skipped.
 
 ```
-5 sheet(s), 50 sprite(s)  ·  50 files 308.8 KB -> 5 files 237.5 KB  ·  GPU 6.7 MB -> 17.2 MB
-(...) = texture memory, RGBA8 estimate - transparent padding costs the same as a sprite
-
 Hud
-  icons-hud        1024x1024     78.3 KB (4.0 MB)     4 sprites    34% used   was 83.1 KB (1.3 MB)
-  glyphs           1024x512      47.9 KB (2.0 MB)     3 sprites    69% used   was 58.7 KB (0.6 MB)   (originals kept)
+  icons-hud        1024x1024     4 sprites    34% used
+  glyphs           1024x512      3 sprites    69% used
   skipped  weapon2.png   768x271 > maxSpriteSize 512 ("glyphs")
 ```
 
-**`% used`** is sprite pixels divided by sheet pixels. 70 to 90% is healthy. A low number means `pot` or your maximums are padding the sheet with empty space.
-
-**The figure in brackets is texture memory**, calculated as `width x height x 4`, an estimate for uncompressed RGBA8. It is the number to watch, and the one that surprises people: it does **not** shrink with `% used`. A 1024x1024 sheet costs 4 MB whether it is 34% or 95% full, because transparent padding is still pixels on the GPU.
-
-That is also why the disk figures look underwhelming. PNG already compresses each image well, so packing saves few bytes and can cost memory. The real win is request count and fewer texture binds, which is what matters in Gameface.
-
-If the GPU column grows more than you like, try these in order:
-
-1. Turn `pot` off for that group. It can only ever round a sheet up, so it never saves memory and often doubles it.
-2. Lower `maxWidth` and `maxHeight` to powers of two the sprites actually fit into.
-3. Turn `squareCells` off wherever the sprites are already a uniform size.
-
-### Sheet file names
-
-```
-atlas-{view}-{group}[-{bin}]-{hash}.png
-```
-
-`view` is the view folder, `group` is the group's `name` or a name derived from its first `include`, and `bin` appears only when a group needed more than one sheet.
-
-For a view in `src/views/hud` and the two groups above, the build writes:
-
-```
-dist/assets/atlas-hud-icons-hud-B6DxdZi6.png     first group, name derived from `icons/hud`
-dist/assets/atlas-hud-glyphs-DqHb78aG.png        second group, using its explicit `name`
-```
-
-If the glyphs had overflowed a single sheet, they would instead be `atlas-hud-glyphs-0-<hash>.png` and `atlas-hud-glyphs-1-<hash>.png`.
-
-The hash is Rollup's, and it can contain a `-` of its own (`D0x-qsq9`), so the last dash in a sheet name is not always the start of the hash. Do not parse these names; they are for reading.
+The important number is the GPU texture memory estimate, not the disk size. A 1024x1024 sheet is roughly 4 MB of RGBA8 memory even if it is mostly empty. In practice, you want fewer large sheets that are still efficient enough to justify the trade.
 
 ## Limitations
 
-- **`Image` does not render inside `cohinline` or `InlineTextBlock`.** In inline context only `<img>` honours width and height, and `Image` is a `div` with a background, so it collapses. Use a plain `<img>` there, which is never atlassed since it does not go through `Image`. The build does not detect this case, so nothing warns you.
-- **Images referenced from CSS cannot be atlassed.** A `background: url('@assets/x.png')` in a stylesheet has no way to read `window.__GF_ATLAS__`. Nothing stops the plugin packing that image, so set `keepOriginals: true` on its group.
-- **Dynamic access costs a whole folder.** `Image.icons.gamepad.ps5[key]` pulls in every image under `ps5`, because the build cannot know which key runs.
-- **Sprites are positioned as percentages**, so they scale with the element. At fractional scales a neighbouring sprite's edge pixels can bleed in; raise `padding` for that group.
+- `Image` does not work inside `cohinline` or `InlineTextBlock`; use a plain `<img>` there.
+- CSS background images cannot be looked up in the atlas.
+- `Image.icons.gamepad.ps5[key]` pulls in the whole folder.
+- sprites are positioned as percentages, so higher `padding` may be needed at fractional scales.
