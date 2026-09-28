@@ -48,7 +48,7 @@ describe('Modal', function () {
 
         assert.equal(await assertionEl.text(), 'open', "Element\'s text should have changed in the onOpen callback")
         
-        await gf.click(`.${selectors.scenarioBtn}.scenario-1`);
+        await gf.click(`.${selectors.closeWithRef}`);
         assert.equal(await assertionEl.text(), 'close', "Element\'s text should have changed in the onClose callback")
     });
 

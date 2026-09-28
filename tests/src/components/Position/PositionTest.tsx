@@ -1,10 +1,8 @@
 // src/playground/PositionTester.tsx
-import Tab from "@components/Layout/Tab/Tab";
 import { createSignal, createMemo, onMount, onCleanup, For, ParentComponent } from "solid-js";
 import selectors from "../../../shared/position-selectors.json";
 
 interface PositionTesterProps {
-  location: string;
   baseClass: string;
   Component: ParentComponent<any>;
 }
@@ -35,7 +33,7 @@ const PositionTest: ParentComponent<PositionTesterProps> = (props) => {
   onCleanup(() => document.removeEventListener("reset", reset));
 
   return (
-    <Tab location={props.location}>
+    <>
       <For each={scenarios}>
         {(sc, i) => (
           <button
@@ -56,7 +54,7 @@ const PositionTest: ParentComponent<PositionTesterProps> = (props) => {
       >
         {props.baseClass}
       </props.Component>
-    </Tab>
+    </>
   );
 };
 

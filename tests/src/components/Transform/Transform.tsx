@@ -1,5 +1,4 @@
 // src/playground/PositionTester.tsx
-import Tab from "@components/Layout/Tab/Tab";
 import Transform from "@components/Layout/Transform/Transform";
 import { createSignal, createMemo, onMount, onCleanup, For } from "solid-js";
 import './transform.css'
@@ -32,7 +31,7 @@ const TransformTest = () => {
   onCleanup(() => document.removeEventListener("reset", reset));
 
   return (
-    <Tab location="transform">
+    <>
       <For each={scenarios}>
         {(sc, i) => (
           <button
@@ -54,7 +53,7 @@ const TransformTest = () => {
       >
         Transform
       </Transform>
-    </Tab>
+    </>
   );
 };
 

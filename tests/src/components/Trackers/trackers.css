@@ -1,0 +1,17 @@
+.test-trackers-layer {
+    width: 300px;
+    height: 300px;
+}
+
+.test-item-1,
+.test-item-2,
+.test-item-3,
+.test-item-4,
+.test-item-5 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    background-color: #4fd6ff;
+}

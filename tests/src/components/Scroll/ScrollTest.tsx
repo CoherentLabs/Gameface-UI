@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import Scroll, { ScrollComponentRef } from "@components/Layout/Scroll/Scroll";
 import Block from "@components/Layout/Block/Block";
@@ -35,7 +34,7 @@ const ScrollTest = () => {
     onCleanup(() => document.removeEventListener('reset', reset)) 
 
     return (
-        <Tab location='scroll'>
+        <>
             <For each={scenarios}>
                 {(sc, i) => (
                     <button class={`${selectors.scenarioBtn} scenario-${i()}`} onClick={sc.action} >
@@ -69,7 +68,7 @@ const ScrollTest = () => {
                     <Scroll.Handle style={reactiveStyle()} class={`${selectors.handle} ${reactiveClass()}`} />
                 </Scroll.Bar>
             </Scroll>
-        </Tab> 
+        </>
     )
 }
 

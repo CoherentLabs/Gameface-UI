@@ -1,5 +1,4 @@
 import Checkbox, { CheckboxRef } from "@components/Basic/Checkbox/Checkbox";
-import Tab from "@components/Layout/Tab/Tab";
 import { createSignal, For, onCleanup, onMount } from "solid-js";
 import selectors from '../../../shared/checkbox-selectors.json';
 import './checkbox.css';
@@ -27,7 +26,7 @@ const CheckboxTest = () => {
     }) 
 
     return (
-        <Tab location='checkbox'>
+        <>
             <div style={{visibility: `${checked() === false ? 'hidden' : 'visible'}`}} class={selectors.assertionElement}>{checked() ? 'true' : 'false'}</div>
             <For each={scenarios}>
                 {(sc, i) => (
@@ -49,7 +48,7 @@ const CheckboxTest = () => {
                     <Checkbox.Indicator class={`${selectors.indicator}`} />
                 </Checkbox.Control>
             </Checkbox>
-        </Tab>
+        </>
     )
 }
 

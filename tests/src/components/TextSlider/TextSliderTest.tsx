@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
 import './text-slider.css';
 import selectors from "../../../shared/slider-selectors.json";
@@ -32,7 +31,7 @@ const TextSliderTest = () => {
     onCleanup(() => document.removeEventListener('reset', reset))
 
     return (
-        <Tab location='text-slider'>
+        <>
             <div class={selectors.assertionElement}>{value()}</div>
 
             <For each={scenarios}>
@@ -60,7 +59,7 @@ const TextSliderTest = () => {
                     text-style={reactiveStyle()}
                     text-class={`${selectors.sliderPolText} ${reactiveClass()}`} />
             </TextSlider>
-        </Tab>
+        </>
     )
 }
 

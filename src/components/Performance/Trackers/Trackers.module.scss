@@ -1,0 +1,13 @@
+.trackers {
+    position: absolute;
+    pointer-events: none;
+
+    &-item {
+        pointer-events: auto;
+        position: relative;
+    }
+}
+
+.hidden {
+    display: none;
+}

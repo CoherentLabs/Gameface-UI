@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
 import Radio, { RadioRef } from "@components/Basic/RadioGroup/Radio";
 import './radio.css';
@@ -36,7 +35,7 @@ const RadioTest = () => {
     onCleanup(() => document.removeEventListener('reset', resetRadio)) 
 
     return (
-        <Tab location='radio'>
+        <>
             <div class={selectors.assertionElement}>{selected()}</div>
 
             <For each={scenarios}>
@@ -75,8 +74,8 @@ const RadioTest = () => {
                         )}
                     </For>
             </Radio>
-            
-        </Tab>
+
+        </>
     )
 }
 

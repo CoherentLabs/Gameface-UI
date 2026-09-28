@@ -1,6 +1,5 @@
 import { onMount, onCleanup } from 'solid-js';
 import useToast from '@components/Feedback/Toast/toast';
-import Tab from '@components/Layout/Tab/Tab';
 import './ToastTest.css';
 
 import classes from '../../../shared/toast-selectors.json';
@@ -56,11 +55,7 @@ const ToasterTest = () => {
         document.removeEventListener('create-toast', setupToast as EventListener);
     });
 
-    return (
-        <Tab location="toaster">
-            <Toaster />
-        </Tab>
-    );
+    return <Toaster />;
 };
 
 export default ToasterTest;

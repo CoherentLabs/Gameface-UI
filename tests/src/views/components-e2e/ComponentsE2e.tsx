@@ -1,6 +1,7 @@
 import Tabs from '@components/Layout/Tabs/Tabs';
 import styles from './ComponentsE2e.module.scss';
 import TabLink from '@components/Layout/TabLink/TabLink';
+import Tab from '@components/Layout/Tab/Tab';
 import Flex from '@components/Layout/Flex/Flex';
 import { For } from 'solid-js';
 import CheckboxTest from '../../components/Checkbox/CheckboxTest';
@@ -36,6 +37,7 @@ import KeybindsTest from '../../components/Keybinds/KeybindsTest';
 import ProgressTest from '../../components/Progress';
 import RadialMenuTest from '../../components/RadialMenu/RadialMenuTest';
 import TutorialTest from '../../components/Tutorial/TutorialTest';
+import TrackersTest from '../../components/Trackers/TrackersTest';
 
 const Main = () => {
     const components = [
@@ -71,6 +73,9 @@ const Main = () => {
         "radial-menu",
         "tutorial",
 
+        // Performance components
+        "trackers",
+
         // Layout components
         "absolute",
         "relative",
@@ -96,38 +101,44 @@ const Main = () => {
                     </For>
                 </Flex>
 
-                <BaseTest />
-                <ButtonTest />
-                <CheckboxTest />
-                <SegmentTest />
-                <RadioTest />
-                <StepperTest />
-                <DropdownTest />
-                <PositionTest Component={Absolute} baseClass='absolute' location='absolute' />
-                <PositionTest Component={Relative} baseClass='relative' location='relative' />
-                <TransformTest />
-                <ScrollTest />
-                <MediaTest />
-                <SliderTest />
-                <TextSliderTest />
-                <TwoHandleSliderTest />
-                <XYSliderTest />
-                <ToggleButtonTest />
-                <ColorPickerTest />
-                <AccordionTest />
-                <TextInputTest />
-                <PasswordInputTest />
-                <NumberInputTest />
-                <PaginationTest />
-                <ModalTest />
-                <ListTest />
-                <CarouselTest />
-                <TooltipTest />
-                <ToasterTest />
-                <KeybindsTest />
+                <Tab location='base'><BaseTest /></Tab>
+                <Tab location='button'><ButtonTest /></Tab>
+                <Tab location='checkbox'><CheckboxTest /></Tab>
+                <Tab location='segment'><SegmentTest /></Tab>
+                <Tab location='radio'><RadioTest /></Tab>
+                <Tab location='stepper'><StepperTest /></Tab>
+                <Tab location='dropdown'><DropdownTest /></Tab>
+                <Tab location='absolute'><PositionTest Component={Absolute} baseClass='absolute' /></Tab>
+                <Tab location='relative'><PositionTest Component={Relative} baseClass='relative' /></Tab>
+                <Tab location='transform'><TransformTest /></Tab>
+                <Tab location='scroll'><ScrollTest /></Tab>
+                <Tab location='media'><MediaTest /></Tab>
+                <Tab location='slider'><SliderTest /></Tab>
+                <Tab location='text-slider'><TextSliderTest /></Tab>
+                <Tab location='two-handle-slider'><TwoHandleSliderTest /></Tab>
+                <Tab location='xy-slider'><XYSliderTest /></Tab>
+                <Tab location='toggle'><ToggleButtonTest /></Tab>
+                <Tab location='color-picker'><ColorPickerTest /></Tab>
+                <Tab location='accordion'><AccordionTest /></Tab>
+                <Tab location='text-input'><TextInputTest /></Tab>
+                <Tab location='password-input'><PasswordInputTest /></Tab>
+                <Tab location='number-input'><NumberInputTest /></Tab>
+                <Tab location='pagination'><PaginationTest /></Tab>
+                <Tab location='modal'><ModalTest /></Tab>
+                <Tab location='list'><ListTest /></Tab>
+                <Tab location='carousel'><CarouselTest /></Tab>
+                <Tab location='tooltip'><TooltipTest /></Tab>
+                <Tab location='toaster'><ToasterTest /></Tab>
+                <Tab location='keybinds'><KeybindsTest /></Tab>
+                {/* ProgressTest renders its own progress-bar/progress-circle <Tab>s
+                    internally - it shares one signal set across both locations, so
+                    it can't be hoisted 1:1 like the others. */}
                 <ProgressTest />
-                <RadialMenuTest />
-                <TutorialTest />
+                <Tab location='radial-menu'><RadialMenuTest /></Tab>
+                <Tab location='tutorial'><TutorialTest /></Tab>
+                <Tab location='trackers'>
+                    <TrackersTest />
+                </Tab>
             </Tabs>
         </div>
     );

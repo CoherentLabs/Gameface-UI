@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import Dropdown, { DropdownRef } from "@components/Basic/Dropdown/Dropdown";
 import selectors from '../../../shared/dropdown-selectors.json';
@@ -66,7 +65,7 @@ const DropdownTest = () => {
     })
 
     return (
-        <Tab location='dropdown'>
+        <>
             <div class={selectors.assertionElement}>{selected()}</div>
 
             <div class={selectors.multipleAssertionElement}>{multipleSelected().join(',')}</div>
@@ -156,7 +155,7 @@ const DropdownTest = () => {
                     </Dropdown>
                 </div>
             </Show>
-        </Tab>
+        </>
     )
 }
 
