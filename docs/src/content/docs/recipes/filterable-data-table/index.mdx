@@ -60,7 +60,7 @@ The table is composed from a handful of pieces, each responsible for one concern
 
 This table renders **placeholders** in every spot that would otherwise need an image asset, so the recipe stays asset-free. There are three spots, each with the original code commented out right next to the placeholder:
 
-- **Player photo** - the leftmost column, in `columns.tsx`. The placeholder is a gray box with the player's initials; the original renders `<BackgroundImage src={p().image} />`.
+- **Player photo** - the leftmost column, in `columns.tsx`. The placeholder is a gray box with the player's initials; the original renders `<Image src={p().image} />`.
 - **Nationality flag (table column)** - also in `columns.tsx`, shows the raw country code instead of a flag image.
 - **Nationality flag (filter dropdown)** - in `Dropdown/Dropdown.tsx`, in both the option list and the selected chips.
 
@@ -70,7 +70,7 @@ The two flag spots are both backed by `utils/flagImages.ts`, which globs an asse
 const flagModules = import.meta.glob('@assets/icons/flags/*.svg', { eager: true });
 ```
 
-Drop flag SVGs into `@assets/icons/flags/`, named by the country code used in the mock data (`ar.svg`, `br.svg`, `jp.svg`, ...), and swap the placeholder for the commented-out `BackgroundImage` in all three spots.
+Drop flag SVGs into `@assets/icons/flags/`, named by the country code used in the mock data (`ar.svg`, `br.svg`, `jp.svg`, ...), and swap the placeholder for the commented-out `Image` in all three spots.
 
 Player photos aren't glob-mapped the same way - each mock player's `image` field is just a bare identifier (e.g. `'fr-one'`) rather than a real path, since photos are more numerous and varied than flags. Wire up a similar glob map keyed by that identifier if you want real portraits.
 
