@@ -5,6 +5,7 @@ import eventBus from "@components/Utility/EventBus";
 import { waitForFrames } from "@components/utils/waitForFrames";
 import { DEFAULT_ACTION_NAMES } from "@components/Utility/Navigation/defaults";
 import { DefaultActions } from "@components/Utility/Navigation/types";
+import { setStyleProperty } from "../../renderer/gameface-dom";
 
 const baseEventsSet = new Set([
     "abort", "animationend", "blur", "click", "dblclick", "durationchange", "ended", "finish",
@@ -27,29 +28,20 @@ function handleClasses(el: Element, props: ComponentProps) {
 
 type StyleObject = Record<string, string | number | null | undefined>;
 
-function reconcileStyles(elStyle: CSSStyleDeclaration, next: any, prev: any) {
+// Delegates to gameface-dom.ts's setStyleProperty rather than writing
+// el.style directly - props.style is typed to accept NumericCSSProperty
+// ({ value, unit }) and TransformStyle, not just plain CSS strings/numbers,
+// and only setStyleProperty (with its per-element CSSTOM cache) understands
+// those shapes. Writing them through el.style/CSSStyleDeclaration directly
+// would stringify them to "[object Object]".
+function reconcileStyles(el: HTMLElement, next: any, prev: any) {
     for (const key in prev) {
-        if (next[key] == null) {
-            if (key.indexOf("-") > -1) {
-                elStyle.removeProperty(key);
-            } else {
-                // @ts-ignore
-                elStyle[key] = "";
-            }
-        }
+        if (next[key] == null) setStyleProperty(el, key, null);
     }
 
     for (const key in next) {
         const value = next[key];
-
-        if (prev[key] !== value) {
-            if (key.indexOf("-") > -1) {
-                elStyle.setProperty(key, String(value));
-            } else {
-                // @ts-ignore
-                elStyle[key] = value;
-            }
-        }
+        if (prev[key] !== value) setStyleProperty(el, key, value);
     }
 }
 
@@ -92,7 +84,7 @@ function handleStyles(el: HTMLElement, props: ComponentProps) {
             ...(extStyles as StyleObject || {})
         };
 
-        reconcileStyles(styles, nextStyles, prevStyles);
+        reconcileStyles(el, nextStyles, prevStyles);
 
         prevStyles = nextStyles;
     });

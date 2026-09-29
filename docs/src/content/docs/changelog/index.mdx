@@ -4,7 +4,17 @@ title: Changelog
 
 import { Badge } from '@astrojs/starlight/components'
 
-## 4.1.0 :badge[Latest]{variant="note"}
+## 4.2.0 :badge[Latest]{variant="note"}
+
+### Styling
+
+- <Badge text="New" variant="tip" size="small" /> Added the [Style TOM plugin](/docs/concepts/plugins#style-tom-plugin): a `style={{...}}` value driven by a signal (e.g. `` `${x()}px` ``) is now automatically rewritten at build time into the shape Gameface's CSS Typed Object Model understands, so updating it at runtime skips the string parsing a plain `element.style` write would otherwise require on every change. `transform` strings (`translate()`, `scale()`, `rotate()`, `skew()`, `skewX()`, `skewY()`) get the same treatment. No changes needed to existing components - this only affects the small set of properties [Gameface documents as CSSTOM-eligible](/docs/concepts/plugins#supported-properties); everything else keeps working exactly as before.
+
+  :::note
+  This requires a one-time change to your project's `vite.config.mts` to pick up - see [Style TOM plugin](/docs/concepts/plugins#style-tom-plugin) for the exact setup. It isn't applied automatically, since `update`/`add` never rewrite config files.
+  :::
+
+## 4.1.0
 
 - <Badge text="New" variant="tip" size="small" /> Added [Trackers](/components/performance/trackers) component for rendering many per-entity UI markers - nameplates, minimap blips, damage numbers - that update position every frame without going through Solid's reactivity. Each tracked entity gets one DOM node, built once; later updates just move, hide, or show it.
 
