@@ -62,7 +62,6 @@ export interface ImageTree {
                 x: ImageLeaf;
                 y: ImageLeaf;
             };
-            weapon: ImageLeaf;
             xbox: {
                 a: ImageLeaf;
                 b: ImageLeaf;

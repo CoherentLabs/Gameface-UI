@@ -1,8 +1,8 @@
 import path from 'node:path';
-import { createFilter, type Plugin } from 'vite';
+import { createFilter, type Plugin, type Rollup } from 'vite';
 import { IMAGE_EXTENSIONS, scanImages, writeImageTypes } from '../images/image-types.mjs';
 import { MaxRectsPacker } from 'maxrects-packer';
-import type { IRectangle } from 'maxrects-packer';
+import type { Bin, IRectangle } from 'maxrects-packer';
 import sharp from 'sharp';
 
 /**
@@ -262,6 +262,51 @@ interface AtlasSpriteData {
     size: string;
 }
 
+/** An atlas group with its patterns compiled and its config filled in from the defaults. */
+interface ReadyGroup {
+    name: string;
+    match: (id: string) => boolean;
+    config: AtlasConfig;
+}
+
+interface ViewImage {
+    /** Path on disk. */
+    source: string;
+    /** Size of the standalone file, for the report. */
+    bytes: number;
+}
+
+interface ViewData {
+    /** The view's folder name, taken from its entry chunk. */
+    name: string;
+    /** dist name -> the image behind it. */
+    images: Map<string, ViewImage>;
+    /** Every module in the view's chunks, to tell which call sites the view contains. */
+    moduleIds: Set<string>;
+}
+
+/**
+ * What every view writes into and the cleanup after the view loop reads.
+ *
+ * An image lives in one shared bundle but is decided per view, so every view's
+ * verdict has to be collected before anything can be deleted: dropping a file
+ * one view still points at would break that view.
+ */
+interface BuildState {
+    /** dist name -> views that atlassed it and allow the original to go. */
+    atlassedIn: Map<string, Set<string>>;
+    /** dist name -> views that still need the standalone file. */
+    notAtlassedIn: Map<string, Set<string>>;
+    /** dist name -> path on disk. Build-wide, so messages still work after the view loop. */
+    imageSources: Map<string, string>;
+    /** Path on disk -> image size, so an image several views reach is measured once. */
+    sizes: Map<string, { width: number; height: number }>;
+    /** Groups that claimed at least one image somewhere - the rest are probably typos. */
+    matched: Set<string>;
+    skipped: SkipReport[];
+    sheets: SheetReport[];
+}
+
 const toPatterns = (value?: string | string[]) =>
     value === undefined ? null
         : [value].flat().map((p) => (/[*.]/.test(p) ? p : `${p.replace(/\/$/, '')}/**`));
@@ -273,6 +318,86 @@ const derive = (pattern: string) => {
 };
 
 const isPowerOfTwo = (value: number) => (value & (value - 1)) === 0;
+
+/** Warns about groups whose sheet size cannot be honoured with `pot` on, once per build. */
+function warnNonPotDimensions(atlasGroups: ReadyGroup[], warn: (message: string) => void) {
+    for (const group of atlasGroups) {
+        const { pot, maxWidth, maxHeight } = group.config;
+        if (!pot) continue;
+
+        for (const [label, max] of [['maxWidth', maxWidth], ['maxHeight', maxHeight]] as const) {
+            if (isPowerOfTwo(max)) continue;
+            const ceiling = 2 ** Math.floor(Math.log2(max));
+            warn(
+                `atlas "${group.name}": pot is on and ${label} is ${max}, which is not a power of two - ` +
+                `sheets are capped at ${ceiling}, not ${max}.`,
+            );
+        }
+    }
+}
+
+/** Empty build-wide state, one per build. */
+function createBuildState(): BuildState {
+    return {
+        atlassedIn: new Map<string, Set<string>>(),
+        notAtlassedIn: new Map<string, Set<string>>(),
+        imageSources: new Map<string, string>(),
+        sizes: new Map<string, { width: number; height: number }>(),
+        matched: new Set<string>(),
+        skipped: [],
+        sheets: [],
+    };
+}
+
+/** The image's size in pixels, read once and then served from `sizes`. */
+async function sizeOf(file: string, sizes: Map<string, { width: number; height: number }>) {
+    let size = sizes.get(file);
+    if (!size) {
+        const { width, height } = await sharp(file).metadata();
+        sizes.set(file, size = { width, height });
+    }
+    return size;
+}
+
+/**
+ * The PNG for one packed bin: a transparent sheet with every sprite drawn at its
+ * place. With `squareCells`, each image is centered inside its square cell.
+ */
+function composeSheet(bin: Bin<AtlasRect>, squareCells: boolean) {
+    const parts = bin.rects.map((rect) => ({
+        input: rect.data.file,
+        left: squareCells ? rect.x + Math.floor((rect.width - rect.data.imageWidth) / 2) : rect.x,
+        top: squareCells ? rect.y + Math.floor((rect.height - rect.data.imageHeight) / 2) : rect.y,
+    }));
+
+    return sharp({
+        create: {
+            width: bin.width,
+            height: bin.height,
+            channels: 4,
+            background: { r: 0, g: 0, b: 0, alpha: 0 },
+        },
+    })
+        .composite(parts)
+        .png()
+        .toBuffer();
+}
+
+/**
+ * The CSS that shows `rect` out of `sheet`, in percentages so the sprite scales
+ * with the element it is drawn into. A percentage position is measured against
+ * the room the sheet has to move, which is the sheet minus the sprite.
+ */
+function spriteStyle(rect: AtlasRect, sheet: { width: number; height: number }, url: string): AtlasSpriteData {
+    const freeX = sheet.width - rect.width;
+    const freeY = sheet.height - rect.height;
+
+    return {
+        image: `url(${url})`,
+        size: `${sheet.width / rect.width * 100}% ${sheet.height / rect.height * 100}%`,
+        position: `${freeX ? rect.x / freeX * 100 : 0}% ${freeY ? rect.y / freeY * 100 : 0}%`,
+    };
+}
 
 // -----------------------------------------------------------------------------
 // Build report, printed at the end of `generateBundle`
@@ -446,6 +571,194 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
         return !relative.startsWith('..') && !path.isAbsolute(relative) && IMAGE_EXTENSIONS.includes(extension);
     };
 
+    /** Every image from the assets folder that a view can reach, found by walking its chunk imports. */
+    function collectViewImages(bundle: Rollup.OutputBundle, entry: Rollup.OutputChunk): ViewData {
+        const viewImages = new Map<string, ViewImage>();
+        const seen = new Set<string>();
+        const moduleIds = new Set<string>();
+
+        const visit = (fileName: string) => {
+            const chunk = bundle[fileName];
+            if (seen.has(fileName) || chunk?.type !== 'chunk') return;
+            seen.add(fileName);
+
+            chunk.moduleIds.forEach((id) => moduleIds.add(id));
+
+            for (const asset of chunk.viteMetadata?.importedAssets ?? []) {
+                const output = bundle[asset];
+                if (output?.type !== 'asset' || !output.originalFileNames[0]) continue;
+
+                const source = path.resolve(root, output.originalFileNames[0]);
+                if (!isImageInAssets(source)) continue;
+
+                viewImages.set(asset, { source, bytes: byteLength(output.source) });
+            }
+
+            chunk.imports.forEach(visit);
+        };
+
+        visit(entry.fileName);
+
+        return {
+            images: viewImages,
+            moduleIds,
+            name: entry.name.split('/')[0],
+        };
+    }
+
+    /**
+     * The view's images that go on a sheet, as packer rects per group name. Every
+     * image left out is recorded in `state` with the reason why.
+     */
+    async function groupViewImages(view: ViewData, state: BuildState) {
+        const byGroup = new Map<string, AtlasRect[]>();
+
+        for (const [fileName, { source, bytes }] of view.images) {
+            const name = path.basename(source);
+
+            /** Keeps this image as a standalone file in this view, with the reason for the report. */
+            const skip = (reason: string) => {
+                state.skipped.push({ view: view.name, name, reason });
+                addTo(state.notAtlassedIn, fileName, view.name);
+            };
+
+            const group = atlasGroups!.find(g => g.match(source));
+
+            if (!group) {
+                skip('matched no group');
+                continue;
+            }
+
+            // Checked before the pipeline test, so one call site passing `options`
+            // keeps the image out of the sheet even when another renders it plainly.
+            const withOptions = optionsImages.get(source);
+
+            if (withOptions && [...withOptions].some((id) => view.moduleIds.has(id))) {
+                skip(`used with options ("${group.name}")`);
+                continue;
+            }
+
+            const registeredBy = pipelineImages.get(source);
+
+            if (!registeredBy || ![...registeredBy].some((id) => view.moduleIds.has(id))) {
+                skip(`imported directly, not written as Image.* ("${group.name}")`);
+                continue;
+            }
+
+            state.matched.add(group.name);
+
+            const { maxSpriteSize, squareCells } = group.config;
+            const { width, height } = await sizeOf(source, state.sizes);
+
+            if (width > maxSpriteSize || height > maxSpriteSize) {
+                skip(`${width}x${height} > maxSpriteSize ${maxSpriteSize} ("${group.name}")`);
+                continue;
+            }
+
+            // Each image gets a square cell, so stretching the cell into a square
+            // element looks like `contain` + center instead of squashing the image.
+            const side = Math.max(width, height);
+
+            const rect = {
+                width: squareCells ? side : width,
+                height: squareCells ? side : height,
+                x: 0, // will be set by the packer later
+                y: 0, // will be set by the packer later
+                data: {
+                    name: fileName.split('/').pop()!,
+                    file: source,
+                    imageWidth: width,
+                    imageHeight: height,
+                    bytes,
+                },
+            };
+
+            const items = byGroup.get(group.name) ?? [];
+            items.push(rect); 
+            byGroup.set(group.name, items);
+            if (!group.config.keepOriginals) addTo(state.atlassedIn, fileName, view.name);
+        }
+
+        return byGroup;
+    }
+
+    /**
+     * Packs each group's rects into sheets and emits them as PNGs. Returns the
+     * sprite table the view's entry is given: dist name -> the CSS that shows it.
+     */
+    async function emitSheets(
+        context: Rollup.PluginContext,
+        entry: Rollup.OutputChunk,
+        view: ViewData,
+        byGroup: Map<string, AtlasRect[]>,
+        state: BuildState,
+    ) {
+        const sprites: Record<string, AtlasSpriteData> = {};
+
+        for (const group of atlasGroups!) {
+            const atlasItems = byGroup.get(group.name) ?? [];
+            if (atlasItems.length === 0) continue;
+
+            const { maxWidth, maxHeight, padding, pot, squareCells } = group.config;
+            const packer = new MaxRectsPacker<AtlasRect>(maxWidth, maxHeight, padding, { pot });
+            packer.addArray(atlasItems);
+
+            for (const [index, bin] of packer.bins.entries()) {
+                // The group name, with the bin index only when the group needed more than one sheet.
+                const sheetName = packer.bins.length > 1 ? `${group.name}-${index}` : group.name;
+                const buffer = await composeSheet(bin, squareCells);
+
+                // Rollup adds the hash: atlas-{view}-{sheet}-{hash}.png
+                const ref = context.emitFile({
+                    type: 'asset',
+                    name: `atlas-${view.name}-${sheetName}.png`,
+                    source: buffer,
+                });
+
+                const atlasUrl = path.posix.relative(path.posix.dirname(entry.fileName), context.getFileName(ref));
+
+                for (const rect of bin.rects) {
+                    sprites[rect.data.name] = spriteStyle(rect, bin, atlasUrl);
+                }
+
+                state.sheets.push({
+                    view: view.name,
+                    group: sheetName,
+                    width: bin.width,
+                    height: bin.height,
+                    bytes: buffer.length,
+                    originalBytes: bin.rects.reduce((total, rect) => total + rect.data.bytes, 0),
+                    keptOriginals: group.config.keepOriginals,
+                    rects: bin.rects,
+                });
+            }
+        }
+
+        return sprites;
+    }
+
+    /**
+     * Deletes each atlassed original that no view still needs as a standalone
+     * file, and warns about the ones that have to ship next to their sprite.
+     */
+    function dropAtlassedOriginals(bundle: Rollup.OutputBundle, state: BuildState, warn: (message: string) => void) {
+        for (const [fileName, atlasViews] of state.atlassedIn) {
+            const loose = state.notAtlassedIn.get(fileName);
+            if (!loose) {
+                delete bundle[fileName];
+                continue;
+            }
+
+            const name = path.relative(assetsDir, state.imageSources.get(fileName) ?? fileName);
+            const list = (views: Set<string>) => [...views].map((view) => `"${capitalize(view)}"`).join(', ');
+
+            warn(
+                `${toPosix(name)} is atlassed in ${list(atlasViews)} but used outside Image in ` +
+                `${list(loose)} - shipping both. Use Image there, or exclude it from the atlas.`,
+            );
+        }
+    }
+
     return {
         name: 'gameface-images',
         // Runs after esbuild and Solid, so every module is plain JavaScript that
@@ -612,249 +925,33 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
             // Skip processing if there are no atlas groups defined.
             if (!atlasGroups) return;
 
-            // An image lives in one shared bundle but is decided per view, so both
-            // sides have to be collected before anything can be deleted:
-            // dropping a file one view still points at would break that view.
-
-            /** dist name -> views that atlassed it and allow the original to go. */
-            const atlassedIn = new Map<string, Set<string>>();
-            /** dist name -> views that still need the standalone file. */
-            const notAtlassedIn = new Map<string, Set<string>>();
-            /** dist name -> path on disk. Build-wide, so messages still work after the view loop. */
-            const imageSources = new Map<string, string>();
-
-            const sizes = new Map<string, { width: number; height: number }>();
-
-            const sheets: SheetReport[] = [];
-            const skipped: SkipReport[] = [];
-            /** Groups that claimed at least one image somewhere - the rest are probably typos. */
-            const matched = new Set<string>();
-
             // Config that cannot do what it says, reported once rather than per view.
-            for (const group of atlasGroups) {
-                const { pot, maxWidth, maxHeight } = group.config;
-                if (!pot) continue;
-
-                for (const [label, max] of [['maxWidth', maxWidth], ['maxHeight', maxHeight]] as const) {
-                    if (isPowerOfTwo(max)) continue;
-                    const ceiling = 2 ** Math.floor(Math.log2(max));
-                    this.warn(
-                        `atlas "${group.name}": pot is on and ${label} is ${max}, which is not a power of two - ` +
-                        `sheets are capped at ${ceiling}, not ${max}.`,
-                    );
-                }
-            }
-
-            const sizeOf = async (file: string) => {
-                let size = sizes.get(file);
-                if (!size) {
-                    const { width, height } = await sharp(file).metadata();
-                    sizes.set(file, size = { width, height });
-                }
-                return size;
-            };
+            warnNonPotDimensions(atlasGroups, (message) => this.warn(message));
+            const state = createBuildState();
 
             for (const entry of Object.values(bundle)) {
                 if (entry.type !== 'chunk' || !entry.isEntry) continue;
 
-                /** dist names of every image this view can reach. Paths live in `imageSources`. */
-                const viewImages = new Set<string>();
-                const seen = new Set<string>();
-                const moduleIds = new Set<string>();
+                const view = collectViewImages(bundle, entry);
+                view.images.forEach(({ source }, fileName) => state.imageSources.set(fileName, source));
 
-                const visit = (fileName: string) => {
-                    const chunk = bundle[fileName];
-                    if (seen.has(fileName) || chunk?.type !== 'chunk') return;
-                    seen.add(fileName);
+                const byGroup = await groupViewImages(view, state);
+                const sprites = await emitSheets(this, entry, view, byGroup, state);
 
-                    chunk.moduleIds.forEach((id) => moduleIds.add(id));
-
-                    for (const asset of chunk.viteMetadata?.importedAssets ?? []) {
-                        const original = (bundle[asset] as { originalFileNames?: string[] })?.originalFileNames?.[0];
-                        if (!original) continue;
-
-                        const source = path.resolve(root, original);
-                        if (!isImageInAssets(source)) continue;
-
-                        viewImages.add(asset);
-                        imageSources.set(asset, source);
-                    }
-
-                    chunk.imports.forEach(visit);
-                };
-
-                visit(entry.fileName);
-
-                const sprites: Record<string, AtlasSpriteData> = {};
-                const byGroup = new Map<string, AtlasRect[]>();
-
-                const viewName = entry.name.split('/')[0];
-
-                for (const fileName of viewImages) {
-                    const source = imageSources.get(fileName)!;
-                    const name = path.basename(source);
-                    const group = atlasGroups.find(g => g.match(source));
-    
-                    if (!group) {
-                        skipped.push({ view: viewName, name, reason: 'matched no group' });
-                        addTo(notAtlassedIn, fileName, viewName);
-                        continue;
-                    }
-
-                    // Checked before the pipeline test, so one call site passing `options`
-                    // keeps the image out of the sheet even when another renders it plainly.
-                    const withOptions = optionsImages.get(source);
-
-                    if (withOptions && [...withOptions].some((id) => moduleIds.has(id))) {
-                        skipped.push({ view: viewName, name, reason: `used with options ("${group.name}")` });
-                        addTo(notAtlassedIn, fileName, viewName);
-                        continue;
-                    }
-
-                    const registeredBy = pipelineImages.get(source);
-
-                    if (!registeredBy || ![...registeredBy].some((id) => moduleIds.has(id))) {
-                        skipped.push({ view: viewName, name, reason: `imported directly, not written as Image.* ("${group.name}")` });
-                        addTo(notAtlassedIn, fileName, viewName);
-                        continue;
-                    }
-                    
-                    matched.add(group.name);
-
-                    const { maxSpriteSize, squareCells } = group.config;
-                    const {width, height} = await sizeOf(source);
-                    
-                    // Image dimensions exceed max sprite size -> exclude
-                    if (width > maxSpriteSize || height > maxSpriteSize) {
-                        skipped.push({
-                            view: viewName,
-                            name,
-                            reason: `${width}x${height} > maxSpriteSize ${maxSpriteSize} ("${group.name}")`,
-                        });
-                        addTo(notAtlassedIn, fileName, viewName);
-                        continue;
-                    }
-
-                    // Each image gets a square cell, so stretching the cell into a square
-                    // element looks like `contain` + center instead of squashing the image.
-                    const side = Math.max(width, height);
-
-                    const rect = {
-                        width: squareCells ? side : width,
-                        height: squareCells ? side : height,
-                        x: 0, // will be set by the packer later
-                        y: 0, // will be set by the packer later
-                        data: {
-                            name: fileName.split('/').pop()!,
-                            file: source,
-                            imageWidth: width,
-                            imageHeight: height,
-                            bytes: byteLength((bundle[fileName] as { source: string | Uint8Array }).source),
-                        },
-                    };
-
-                    const items = byGroup.get(group.name) ?? [];
-                    items.push(rect); 
-                    byGroup.set(group.name, items);
-                    if (!group.config.keepOriginals) addTo(atlassedIn, fileName, viewName);
-                }
-
-                for (const group of atlasGroups) {
-                    const atlasItems = byGroup.get(group.name) ?? [];
-                    if (atlasItems.length === 0) continue;
-
-                    const { maxWidth, maxHeight, padding, pot, squareCells } = group.config;
-                    const packer = new MaxRectsPacker<AtlasRect>(maxWidth, maxHeight, padding, {pot});
-                    packer.addArray(atlasItems);
-                
-                    for (const bin of packer.bins) {
-                        const parts = bin.rects.map((rect) => ({
-                            input: rect.data.file,
-                            // Centered inside its square cell if squareCells is true.
-                            left: squareCells ? rect.x + Math.floor((rect.width - rect.data.imageWidth) / 2) : rect.x,
-                            top: squareCells ? rect.y + Math.floor((rect.height - rect.data.imageHeight) / 2) : rect.y,
-                        }));
-                    
-                        const buffer = await sharp({ 
-                            create: { 
-                                width: bin.width, 
-                                height: bin.height, 
-                                channels: 4,
-                                background: { r: 0, g: 0, b: 0, alpha: 0 } 
-                            }
-                        })
-                        .composite(parts)
-                        .png()
-                        .toBuffer();
-
-                        const binIndex = packer.bins.length > 1 ? packer.bins.indexOf(bin) : undefined;
-                        // atlas-{view}-{group}[-{bin}]-{hash}.png
-                        const atlasName = 
-                            `atlas-${viewName}-${group.name}${binIndex === undefined ?  '' : `-${binIndex}`}.png`;
-
-                        const ref = this.emitFile({
-                            type: 'asset',
-                            name: atlasName,
-                            source: buffer,
-                        });
-
-                        const atlasFile = this.getFileName(ref);
-                        const atlasUrl = path.posix.relative(path.posix.dirname(entry.fileName), atlasFile); 
-                    
-                        // and remember where each one landed, for the CSS later
-                        for (const rect of bin.rects) {
-                            const atlasW = bin.width;
-                            const atlasH = bin.height;
-                            const freeX = atlasW - rect.width, freeY = atlasH - rect.height;
-
-                            sprites[rect.data.name] = { 
-                                image: `url(${atlasUrl})`,
-                                size: `${atlasW / rect.width * 100}% ${atlasH / rect.height * 100}%`,
-                                position: `${freeX ? rect.x / freeX * 100 : 0}% ${freeY ? rect.y / freeY * 100 : 0}%`,
-                            };
-                        }
-
-                        sheets.push({
-                            view: viewName,
-                            group: group.name + (binIndex === undefined ? '' : `-${binIndex}`),
-                            width: bin.width,
-                            height: bin.height,
-                            bytes: buffer.length,
-                            originalBytes: bin.rects.reduce((total, rect) => total + rect.data.bytes, 0),
-                            keptOriginals: group.config.keepOriginals,
-                            rects: bin.rects,
-                        });
-                    }
-
-                }
                 entry.code = `window.__GF_ATLAS__ = ${JSON.stringify(sprites)};\n` + entry.code;
             }
-            
+
             // An atlassed original can only go once *every* view that reaches it
             // atlassed it. One view using it outside `Image` keeps the file alive for
             // all of them - the sprite still works, the raw image just ships as well.
-            for (const [fileName, atlasViews] of atlassedIn) {
-                const loose = notAtlassedIn.get(fileName);
-                if (!loose) {
-                    delete bundle[fileName];
-                    continue;
-                }
-
-                const name = path.relative(assetsDir, imageSources.get(fileName) ?? fileName);
-                const list = (views: Set<string>) => [...views].map((view) => `"${capitalize(view)}"`).join(', ');
-
-                this.warn(
-                    `${toPosix(name)} is atlassed in ${list(atlasViews)} but used outside Image in ` +
-                    `${list(loose)} - shipping both. Use Image there, or exclude it from the atlas.`,
-                );
-            }
+            dropAtlassedOriginals(bundle, state, (message) => this.warn(message));
 
             for (const group of atlasGroups) {
-                if (matched.has(group.name)) continue;
+                if (state.matched.has(group.name)) continue;
                 this.warn(`atlas "${group.name}" matched no image in any view - check its include/exclude patterns.`);
             }
 
-            if (sheets.length) this.info(`\n${renderReport(sheets, skipped, verbose)}\n`);
+            if (state.sheets.length) this.info(`\n${renderReport(state.sheets, state.skipped, verbose)}\n`);
         },
     };
 }
