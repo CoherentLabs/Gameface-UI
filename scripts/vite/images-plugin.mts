@@ -119,6 +119,13 @@ interface Chain {
     members: AstNode[];
 }
 
+/** Swap `code` from `start` to `end` for `text`. With `start === end` it is a plain insert. */
+interface Replacement {
+    start: number;
+    end: number;
+    text: string;
+}
+
 /** Calls `visit` for every node in the tree, parents before their children. */
 function walk(node: AstNode, visit: (node: AstNode, parent: AstNode | null) => void, parent: AstNode | null = null) {
     visit(node, parent);
@@ -209,6 +216,20 @@ function renderObject(tree: { [key: string]: any }): string {
         `${key}: ${typeof value === 'string' ? value : renderObject(value)}`);
 
     return `{ ${entries.join(', ')} }`;
+}
+
+/**
+ * `code` with every replacement applied. Positions all point into the original
+ * `code`, so they are applied back to front: editing the end first leaves the
+ * positions of everything before it untouched.
+ */
+function applyReplacements(code: string, replacements: Replacement[]) {
+    let output = code;
+    for (const { start, end, text } of [...replacements].sort((a, b) => b.start - a.start)) {
+        output = output.slice(0, start) + text + output.slice(end);
+    }
+
+    return output;
 }
 
 /** Import specifier for `file`, written relative to the folder of the importing module. */
@@ -472,7 +493,7 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
             const importerDir = path.dirname(file);
             const imports: string[] = [];
             const declarations: string[] = [];
-            const replacements: { start: number; end: number; text: string }[] = [];
+            const replacements: Replacement[] = [];
 
             /** Absolute image path -> name of its import in this module. */
             const importNames = new Map<string, string>();
@@ -571,11 +592,7 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
 
             if (replacements.length === 0) return null;
 
-            // Back to front, so the positions of the replacements still to come stay valid.
-            let output = code;
-            for (const { start, end, text } of replacements.sort((a, b) => b.start - a.start)) {
-                output = output.slice(0, start) + text + output.slice(end);
-            }
+            const output = applyReplacements(code, replacements);
 
             const header = [
                 ...imports,
