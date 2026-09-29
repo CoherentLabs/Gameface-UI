@@ -6,6 +6,7 @@ import solidStyleToCssPlugin from 'vite-solid-style-to-css';
 import solidGameface from 'vite-gameface';
 import eslint from 'vite-plugin-eslint';
 import gamefaceViews from './scripts/vite/views-plugin.mts';
+import styleTomPlugin from './scripts/babel/style-tom-plugin.mts';
 
 export default defineConfig(({ mode }) => {
   const root = mode === 'test' ? 'tests/src/views' : 'src/views';
@@ -20,7 +21,14 @@ export default defineConfig(({ mode }) => {
         emitError: false,
       }),
       solidStyleToCssPlugin(),
-      solidPlugin(),
+      solidPlugin({
+        babel: {
+          plugins: [styleTomPlugin]
+        },
+        solid: {
+          moduleName: path.resolve(__dirname, './src/renderer/gameface-dom.ts')
+        }
+      }),
       solidSvg({
         defaultAsComponent: false,
         svgo: { enabled: false }

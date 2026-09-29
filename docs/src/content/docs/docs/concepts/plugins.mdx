@@ -8,10 +8,11 @@ To enhance the development experience with GamefaceUI, we have included addition
 
 ## Plugins
 
-The template currently integrates two custom plugins:
+The template currently integrates three custom plugins:
 
 1. **`vite-gameface`**: Ensures the UI is built in an optimized manner, free of errors or warnings when running in Gameface.
 2. **`vite-solid-style-to-css`**: Converts styles from the `style` property into CSS classes for improved performance.
+3. **Style TOM plugin**: Rewrites *dynamic* numeric style values - the ones the plugin above explicitly leaves inline - into Gameface's faster CSS Typed Object Model representation.
 
 ## Vite Gameface Plugin
 
@@ -166,3 +167,160 @@ This will be transformed into:
 ```
 
 The generated class will always be appended at the end of the `class` attribute.
+
+## Style TOM Plugin
+
+The `vite-solid-style-to-css` plugin above only optimizes *static* styles - any
+property driven by a signal is explicitly left inline (see "Dynamic `style`
+Properties" above). The Style TOM plugin picks up exactly that case: at build
+time, it rewrites eligible dynamic numeric `style` values into the shape
+Gameface's CSS Typed Object Model (CSSTOM) runtime understands, so updating
+them at runtime skips the string parsing a plain `element.style` write would
+otherwise require on every change.
+
+Unlike the other two plugins, it's registered as a Babel plugin through
+`vite-plugin-solid`, alongside a custom `moduleName` that swaps in the
+CSSTOM-aware style runtime:
+
+```js
+import styleTomPlugin from './scripts/babel/style-tom-plugin.mts';
+
+export default defineConfig({
+  plugins: [
+    solidPlugin({
+      babel: {
+        plugins: [styleTomPlugin]
+      },
+      solid: {
+        moduleName: path.resolve(__dirname, './src/renderer/gameface-dom.ts')
+      }
+    }),
+    ...
+  ],
+  ...
+});
+```
+
+### Key Features
+
+* Automatically rewrites numeric `style={{...}}` values that include a unit
+  (`` `${x()}px` ``, `x() + 'vh'`, ...) into the typed shape CSSTOM
+  understands.
+* Understands `transform` too, recognizing `translate()`, `scale()`,
+  `rotate()`, `skew()`, `skewX()`, `skewY()` in any combination.
+* Follows a local variable or memo used only as a style value, so the
+  rewrite still applies through one level of indirection.
+* No configuration - detection is automatic and conservative. Anything
+  ambiguous is left as a plain style rather than guessed.
+
+### Example
+
+```jsx
+const Component = () => {
+    const [x] = createSignal(10);
+    return <div style={{ left: `${x()}px` }} />;
+};
+```
+
+is rewritten to:
+
+```jsx
+const Component = () => {
+    const [x] = createSignal(10);
+    return <div style={{ left: { value: x(), unit: 'px' } }} />;
+};
+```
+
+which the CSSTOM-aware runtime applies through `attributeStyleMap` instead of
+`element.style.setProperty`.
+
+### Supported properties
+
+Only properties Gameface documents as CSSTOM-eligible are rewritten -
+everything else (colors, `display`, shorthand properties like `margin`,
+`padding`, `border`, `background`, `font`, `flex`, `transition`,
+`animation`, `outline`, and custom properties) is left as an ordinary style,
+unaffected by this plugin:
+
+* **Position**: `top`, `left`, `right`, `bottom`
+* **Size**: `width`, `height`, `min-width`, `min-height`, `max-width`, `max-height`
+* **Margin**: `margin-top`, `margin-right`, `margin-bottom`, `margin-left`
+* **Padding**: `padding-top`, `padding-right`, `padding-bottom`, `padding-left`
+* **Border width**: `border-top-width`, `border-right-width`, `border-bottom-width`, `border-left-width`
+* **Flex**: `flex-basis`, `flex-grow`, `flex-shrink`
+* **Text**: `font-size`, `letter-spacing`, `line-height`, `text-decoration-thickness`, `text-stroke-width`, `text-underline-offset`
+* **Other**: `opacity`, `z-index`
+
+### Writing the shape by hand
+
+When a numeric value doesn't come from a literal expression the plugin can
+see (e.g. it's read off `props`), you can opt in yourself - there's no
+helper function for this, just write the `NumericCSSProperty` shape (the
+same `{ value, unit }` object the plugin would have generated) directly:
+
+```jsx
+<div style={{ width: { value: props.width, unit: 'vh' } }} />
+```
+
+### Known Behavior
+
+#### No unit means no rewrite
+
+A dynamic value with no unit at all is left exactly as written rather than
+guessing one:
+
+```jsx
+style={{ left: `${x()}` }}   // stays a plain string - not rewritten to "px"
+```
+
+#### `transform` component order is fixed at runtime
+
+Whatever functions appear in a `transform` string, they are always *applied*
+in this order: `translate` → `scale` → `rotate` → `skewX` → `skewY`,
+regardless of the order they were written in. This matters for things like a
+compass tick or clock hand, where a rotation must visually happen *before* a
+translation. If a transform's result depends on a different order, leave it
+as a plain string instead of relying on the rewrite - a plain string is
+always applied in the exact order it was written.
+
+#### Values the plugin can't see into
+
+Only the *shape* around a value matters here, not where the value comes
+from. A template literal or `+`-concatenation written directly in the JSX is
+eligible no matter what's inside the `${...}` - a signal call, a prop, a
+ref, anything:
+
+```jsx
+// Rewritten just fine - `props.x` sits inside a template literal the
+// plugin already recognizes. It doesn't matter that it's a prop instead of
+// a signal call.
+const Component = (props) => <div style={{ left: `${props.x}px` }} />;
+```
+
+What genuinely isn't visible is a value that skips that shape entirely - a
+bare prop, ref, or function call used as the *whole* property value, with no
+template literal or concatenation around it:
+
+```jsx
+// Not rewritten - there's no template literal/concatenation for the plugin
+// to recognize here, just a bare expression sitting in the value position.
+const Component = (props) => <div style={{ left: props.left }} />;
+```
+
+If `props.left` is already a plain number, this needs no help - the runtime
+handles a bare number on its own regardless of what the plugin did. If it's
+a pre-built string and you want the CSSTOM path anyway, write the shape by
+hand instead, as shown above:
+
+```jsx
+const Component = (props) => <div style={{ left: { value: props.left, unit: 'px' } }} />;
+```
+
+A spread doesn't change any of this - it only makes whatever is *inside* the
+spread invisible, not the other properties written explicitly alongside it:
+
+```jsx
+// `left` here is still rewritten normally. Only `...props.styles` itself is
+// left alone, since the plugin has no way to inspect what's inside it.
+const Component = (props) => <div style={{ ...props.styles, left: `${props.x}px` }} />;
+```
