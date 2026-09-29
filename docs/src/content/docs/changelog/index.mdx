@@ -4,7 +4,19 @@ title: Changelog
 
 import { Badge } from '@astrojs/starlight/components'
 
-## 4.0.0 :badge[Latest]{variant="note"}
+## 4.1.0 :badge[Latest]{variant="note"}
+
+- <Badge text="New" variant="tip" size="small" /> Added [Trackers](/components/performance/trackers) component for rendering many per-entity UI markers - nameplates, minimap blips, damage numbers - that update position every frame without going through Solid's reactivity. Each tracked entity gets one DOM node, built once; later updates just move, hide, or show it.
+
+- <Badge text="Feature" variant="success" size="small" /> Added [Trackers.Item](/components/performance/trackers#trackersitem-props) slot for defining an individual tracked entity inside a `Trackers` container.
+
+- <Badge text="Feature" variant="success" size="small" /> Added [`updateTrackers`](/components/performance/trackers#updatetrackers) method for moving, hiding, or showing tracked items directly from JavaScript - pass a single update or a batch of them in one call.
+
+- <Badge text="Feature" variant="success" size="small" /> [Trackers.Item](/components/performance/trackers#trackersitem-props): added `scale` and `rotate` props, composed into the same transform `Trackers` already uses for positioning.
+
+- <Badge text="Feature" variant="success" size="small" /> Tracked items can also be moved directly from the engine, by triggering a `trackers:<id>` event - see [Move item from the engine](/components/performance/trackers#move-item-from-the-engine).
+
+## 4.0.0
 
 ### ⚠️ Breaking Changes
 
