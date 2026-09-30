@@ -37,27 +37,57 @@ export interface ImagesPluginOptions {
     assets: string;
     /** File the `ImageTree` types are written to, relative to the project root or absolute. */
     types: string;
-    /** List of folders to include in the atlas. */
+    /**
+     * Groups of images to pack into sprite sheets, per view. A string is a folder
+     * or glob under `assets`, and a bare folder means everything under it. An
+     * object adds its own name, excludes and settings. Each image goes to the
+     * first group that matches it. Leave it out to build no atlas.
+     */
     atlas?: (string | AtlasGroup)[];
+    /** Settings every group starts from. A group's own settings win over these. */
     atlasDefaults?: Partial<AtlasConfig>;
     /** Adds every sprite's place on its sheet to the build report. */
     verbose?: boolean;
 }
 
 interface AtlasGroup extends Partial<AtlasConfig> {
+    /** Folders or globs under `assets` that this group claims. A bare folder means everything under it. */
     include: string | string[];
+    /** Folders or globs to leave out, also written relative to `assets`. */
     exclude?: string | string[];
-    name?: string;          // sheet file name; defaults to the group index
+    /**
+     * Name used in sheet file names and the build report. Defaults to the folder
+     * part of the first `include`, so `icons/hud` becomes `icons-hud`. Set it
+     * when that reads badly, for example with several includes.
+     */
+    name?: string;
 }
 
 interface AtlasConfig {
-    maxWidth: PotSize;       // 2048
-    maxHeight: PotSize;      // 2048
-    padding: number;        // 2
-    pot: boolean;           // false
-    squareCells: boolean;   // the contain/center behaviour
-    maxSpriteSize: PotSize;  // bigger than this -> not atlassed
-    keepOriginals: boolean; // whether to keep original images in the bundle
+    /** Widest a sheet may grow, in pixels. @default 2048 */
+    maxWidth: PotSize;
+    /** Tallest a sheet may grow, in pixels. @default 2048 */
+    maxHeight: PotSize;
+    /** Transparent gap between sprites, in pixels. @default 2 */
+    padding: number;
+    /**
+     * Rounds every sheet up to a power-of-two size. Keep `maxWidth` and
+     * `maxHeight` powers of two with it on, or the real ceiling drops to the
+     * power of two below them. @default true
+     */
+    pot: boolean;
+    /**
+     * Packs every image into a square cell, centered, so a sprite stretched into
+     * a square element looks like `contain` instead of squashed. @default false
+     */
+    squareCells: boolean;
+    /** Images wider or taller than this stay standalone files. @default 2048 */
+    maxSpriteSize: PotSize;
+    /**
+     * Keeps shipping the original files next to the sheet. The way out for images
+     * referenced from CSS, which cannot use a sprite. @default false
+     */
+    keepOriginals: boolean;
 }
 
 const POT_VALUES = [16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192] as const;
@@ -72,7 +102,7 @@ const BUILT_IN_OPTIONS: AtlasConfig = {
     pot: true, // Power of two
     squareCells: false,
     keepOriginals: false,
-}
+};
 
 // -----------------------------------------------------------------------------
 // Shared helpers
@@ -243,7 +273,11 @@ function importSpecifier(importerDir: string, file: string) {
 // -----------------------------------------------------------------------------
 
 interface AtlasData {
-    name: string;
+    /**
+     * The original's hashed file name, the key of its entry in `window.__GF_ATLAS__`.
+     * Has to match what the Image component looks up: the last segment of its `src`.
+     */
+    spriteKey: string;
     file: string;
     /** The image's real size. The rect the packer places is a square around it. */
     imageWidth: number;
@@ -301,20 +335,29 @@ interface BuildState {
     imageSources: Map<string, string>;
     /** Path on disk -> image size, so an image several views reach is measured once. */
     sizes: Map<string, { width: number; height: number }>;
-    /** Groups that claimed at least one image somewhere - the rest are probably typos. */
+    /**
+     * Groups whose patterns claimed at least one image somewhere, even one that was
+     * then skipped - the report explains those. The rest are probably typos.
+     */
     matched: Set<string>;
     skipped: SkipReport[];
     sheets: SheetReport[];
 }
 
+/** Globs for `createFilter`. A bare folder means everything under it: `icons/hud` becomes `icons/hud/**`. */
 const toPatterns = (value?: string | string[]) =>
     value === undefined ? null
         : [value].flat().map((p) => (/[*.]/.test(p) ? p : `${p.replace(/\/$/, '')}/**`));
 
-const derive = (pattern: string) => {
-    const head = pattern.split(/[*?[]/)[0];        // text before the first glob char
-    return head.slice(0, head.lastIndexOf('/'))    // drop the trailing partial segment
-               .replace(/\//g, '-') || 'all';
+/**
+ * A group's name when it sets none: the folder part of its first pattern, so
+ * `icons/hud/**` becomes `icons-hud` and `**` becomes `all`. Anything outside
+ * `a-z0-9` turns into a dash, so a pattern cannot put odd characters in a file name.
+ */
+const defaultGroupName = (pattern: string) => {
+    const head = pattern.split(/[*?[]/)[0];           // text before the first glob char
+    const folder = head.slice(0, head.lastIndexOf('/')); // drop the trailing partial segment
+    return folder.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'all';
 };
 
 const isPowerOfTwo = (value: number) => (value & (value - 1)) === 0;
@@ -485,7 +528,7 @@ function renderReport(sheets: SheetReport[], skipped: SkipReport[], verbose: boo
 
             for (const rect of sheet.rects) {
                 lines.push(
-                    `      ${rect.data.name.padEnd(34)} ${`${rect.data.imageWidth}x${rect.data.imageHeight}`.padEnd(12)}` +
+                    `      ${rect.data.spriteKey.padEnd(34)} ${`${rect.data.imageWidth}x${rect.data.imageHeight}`.padEnd(12)}` +
                     `at ${rect.x},${rect.y}`,
                 );
             }
@@ -508,16 +551,24 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
     const assetsDir = path.resolve(assets);
     const typesFile = path.resolve(types);
 
-    const atlasGroups = atlas?.map((entry, index) => {
-        const { include, exclude, name, ...overrides } = 
-            typeof entry === 'string' 
-            ? { include: entry } as AtlasGroup 
-            : entry;
+    const takenNames = new Set<string>();
+
+    const atlasGroups = atlas?.map((entry, index): ReadyGroup => {
+        const { include, exclude, name, ...overrides } =
+            typeof entry === 'string' ? { include: entry } as AtlasGroup : entry;
+
+        // Derived from the normalized pattern, so a bare `icons/hud` is already
+        // `icons/hud/**` and keeps its last segment.
+        const baseName = name ?? defaultGroupName(toPatterns(include)![0]);
+
+        // Sheets are collected per group name, so two groups sharing one would be
+        // packed together twice. The later group gets its index appended.
+        let uniqueName = baseName;
+        for (let n = index; takenNames.has(uniqueName); n++) uniqueName = `${baseName}-${n}`;
+        takenNames.add(uniqueName);
 
         return {
-            // Derived from the normalized pattern, so a bare `icons/hud` is already
-            // `icons/hud/**` and keeps its last segment.
-            name: name ?? derive(toPatterns(include)![0]),
+            name: uniqueName,
             match: createFilter(toPatterns(include), toPatterns(exclude), { resolve: assetsDir }),
             config: { ...BUILT_IN_OPTIONS, ...atlasDefaults, ...overrides },
         };
@@ -529,18 +580,20 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
     /** `icons.gamepad.a` -> absolute path of `icons/gamepad/a.png`. */
     let images = new Map<string, string>();
 
-    /** Images that pass through the Image component pipeline recorded for later atlassing */
-    // Map<imageAbsPath, Set<moduleId>
-    const pipelineImages = new Map<string, Set<string>>();
+    /**
+     * Image path -> modules that render it through `Image.*`. Only these images can
+     * be atlassed, because the sprite lookup lives in the Image component.
+     */
+    const usedViaImage = new Map<string, Set<string>>();
 
     /**
-     * Images rendered with `options` somewhere. `options` set `background-size` and
-     * `background-position`, which is exactly what a sprite needs them for, so those
-     * images cannot be atlassed. A veto rather than an omission: another call site
-     * without options would otherwise put the same image back into `pipelineImages`.
+     * Image path -> modules that render it with `options`. `options` set
+     * `background-size` and `background-position`, which is exactly what a sprite
+     * needs them for, so those images cannot be atlassed. A veto rather than an
+     * omission: another call site without options would otherwise put the same
+     * image back into `usedViaImage`.
      */
-    // Map<imageAbsPath, Set<moduleId>>
-    const optionsImages = new Map<string, Set<string>>();
+    const usedWithOptions = new Map<string, Set<string>>();
 
     const scan = () => images = scanImages(assetsDir);
 
@@ -629,23 +682,25 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                 continue;
             }
 
-            // Checked before the pipeline test, so one call site passing `options`
+            // The patterns claimed an image, so they are not a typo, even if the
+            // checks below keep it off the sheet.
+            state.matched.add(group.name);
+
+            // Checked before `usedViaImage`, so one call site passing `options`
             // keeps the image out of the sheet even when another renders it plainly.
-            const withOptions = optionsImages.get(source);
+            const withOptions = usedWithOptions.get(source);
 
             if (withOptions && [...withOptions].some((id) => view.moduleIds.has(id))) {
                 skip(`used with options ("${group.name}")`);
                 continue;
             }
 
-            const registeredBy = pipelineImages.get(source);
+            const registeredBy = usedViaImage.get(source);
 
             if (!registeredBy || ![...registeredBy].some((id) => view.moduleIds.has(id))) {
                 skip(`imported directly, not written as Image.* ("${group.name}")`);
                 continue;
             }
-
-            state.matched.add(group.name);
 
             const { maxSpriteSize, squareCells } = group.config;
             const { width, height } = await sizeOf(source, state.sizes);
@@ -665,7 +720,7 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                 x: 0, // will be set by the packer later
                 y: 0, // will be set by the packer later
                 data: {
-                    name: fileName.split('/').pop()!,
+                    spriteKey: fileName.split('/').pop()!,
                     file: source,
                     imageWidth: width,
                     imageHeight: height,
@@ -718,7 +773,7 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                 const atlasUrl = path.posix.relative(path.posix.dirname(entry.fileName), context.getFileName(ref));
 
                 for (const rect of bin.rects) {
-                    sprites[rect.data.name] = spriteStyle(rect, bin, atlasUrl);
+                    sprites[rect.data.spriteKey] = spriteStyle(rect, bin, atlasUrl);
                 }
 
                 state.sheets.push({
@@ -822,19 +877,16 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                     name = `__imageSrc${importNames.size}`;
                     imports.push(`import ${name} from '${importSpecifier(importerDir, imageFile)}';`);
                     importNames.set(imageFile, name);
-
-                    if (pipelineImages.has(imageFile)) {
-                        pipelineImages.get(imageFile)!.add(id);
-                    } else {
-                        pipelineImages.set(imageFile, new Set([id]));
-                    }
+                    addTo(usedViaImage, imageFile, id);
                 }
 
                 return name;
             };
 
-            /** A component rendering `imageFile`, for the places that need a component rather than a call. */
+            /** Set once any chain needs `wrapImage`, so the header defines `__withSrc`. */
             let usesWrapper = false;
+
+            /** A component rendering `imageFile`, for the places that need a component rather than a call. */
             const wrapImage = (imageFile: string) => {
                 usesWrapper = true;
                 // Marked pure so Rollup can still drop it if the code that uses it is dropped.
@@ -885,7 +937,7 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                 if (props) {
                     // Recorded alongside the normal import - `generateBundle` checks this
                     // first, so one call site with options keeps the image out of the sheet.
-                    if (mayHaveOptions(props)) addTo(optionsImages, target.file!, id);
+                    if (mayHaveOptions(props)) addTo(usedWithOptions, target.file!, id);
 
                     replacements.push({ start: chain.start, end, text: local });
                     replacements.push({ start: props.start + 1, end: props.start + 1, text: ` src: ${importImage(target.file!)},` });
@@ -929,6 +981,7 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
             warnNonPotDimensions(atlasGroups, (message) => this.warn(message));
             const state = createBuildState();
 
+            // For every view
             for (const entry of Object.values(bundle)) {
                 if (entry.type !== 'chunk' || !entry.isEntry) continue;
 
