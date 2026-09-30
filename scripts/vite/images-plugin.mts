@@ -204,15 +204,24 @@ function readChain(node: AstNode, local: string): Chain | null {
 }
 
 /**
- * The props object of `createComponent(Image.a.b, { class: 'big' })` when `node`
- * is the component argument, so `src` can be written straight into it. Solid
- * imports `createComponent` under a prefixed name, hence the loose match.
+ * Whether `node` is the component argument of `createComponent(Image.a.b, props)`,
+ * which is what `<Image.a.b ... />` compiles to. Solid imports `createComponent`
+ * under a prefixed name, hence the loose match.
+ */
+function isComponentTagSite(node: AstNode, parent: AstNode | null) {
+    if (parent?.type !== 'CallExpression' || parent.arguments[0] !== node) return false;
+    return parent.callee.type === 'Identifier' && parent.callee.name.endsWith('createComponent');
+}
+
+/**
+ * The props object of a tag site, so `src` can be written straight into it. Null
+ * when the props are not an object literal: a spread compiles to a bare identifier
+ * or a `mergeProps(...)` call, neither of which can be written into.
  */
 function propsOfComponentCall(node: AstNode, parent: AstNode | null) {
-    if (parent?.type !== 'CallExpression' || parent.arguments[0] !== node) return null;
-    if (parent.callee.type !== 'Identifier' || !parent.callee.name.endsWith('createComponent')) return null;
+    if (!isComponentTagSite(node, parent)) return null;
 
-    const props = parent.arguments[1];
+    const props = parent!.arguments[1];
     return props?.type === 'ObjectExpression' ? (props as AstNode) : null;
 }
 
@@ -341,6 +350,8 @@ interface BuildState {
      */
     matched: Set<string>;
     skipped: SkipReport[];
+    /** Packed images that a spread tag site renders - reported, never vetoed. */
+    spread: SpreadReport[];
     sheets: SheetReport[];
 }
 
@@ -388,6 +399,7 @@ function createBuildState(): BuildState {
         sizes: new Map<string, { width: number; height: number }>(),
         matched: new Set<string>(),
         skipped: [],
+        spread: [],
         sheets: [],
     };
 }
@@ -466,6 +478,13 @@ interface SkipReport {
     reason: string;
 }
 
+/** An image that was packed although a tag site renders it with a spread. */
+interface SpreadReport {
+    view: string;
+    name: string;
+    group: string;
+}
+
 const byteLength = (source: string | Uint8Array) =>
     typeof source === 'string' ? Buffer.byteLength(source) : source.length;
 
@@ -488,7 +507,7 @@ const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slic
  * The build report: one line per sheet, then what was left alone and why.
  * `verbose` adds every sprite's place on its sheet, for when one renders wrong.
  */
-function renderReport(sheets: SheetReport[], skipped: SkipReport[], verbose: boolean) {
+function renderReport(sheets: SheetReport[], skipped: SkipReport[], spread: SpreadReport[], verbose: boolean) {
     const files = sheets.reduce((total, sheet) => total + sheet.rects.length, 0);
     const before = sheets.reduce((total, sheet) => total + sheet.originalBytes, 0);
     const after = sheets.reduce((total, sheet) => total + sheet.bytes, 0);
@@ -503,7 +522,7 @@ function renderReport(sheets: SheetReport[], skipped: SkipReport[], verbose: boo
         `(...) = texture memory, RGBA8 estimate - transparent padding costs the same as a sprite`,
     ];
 
-    const views = [...new Set([...sheets, ...skipped].map((item) => item.view))];
+    const views = [...new Set([...sheets, ...skipped, ...spread].map((item) => item.view))];
 
     for (const view of views) {
         lines.push('', capitalize(view));
@@ -536,6 +555,13 @@ function renderReport(sheets: SheetReport[], skipped: SkipReport[], verbose: boo
 
         for (const skip of skipped.filter((s) => s.view === view)) {
             lines.push(`  skipped  ${skip.name.padEnd(34)} ${skip.reason}`);
+        }
+
+        for (const item of spread.filter((s) => s.view === view)) {
+            lines.push(
+                `  spread   ${item.name.padEnd(34)} packed ("${item.group}"), but rendered with {...props} - ` +
+                `options passed that way break it (keepOriginals to be safe)`,
+            );
         }
     }
 
@@ -594,6 +620,14 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
      * image back into `usedViaImage`.
      */
     const usedWithOptions = new Map<string, Set<string>>();
+
+    /**
+     * Image path -> modules that render it as a tag whose props Solid did not build
+     * as an object literal, which is what `{...props}` compiles to. The props cannot
+     * be read, so `options` hiding in the spread go unnoticed and the image is packed
+     * anyway. Recorded only so the build report can point at it.
+     */
+    const usedWithSpread = new Map<string, Set<string>>();
 
     const scan = () => images = scanImages(assetsDir);
 
@@ -727,6 +761,15 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                     bytes,
                 },
             };
+
+            // Packed regardless - the props of a spread tag site cannot be read, so
+            // vetoing here would cost every such image its sprite. With `keepOriginals`
+            // the original still ships, so there is nothing to warn about.
+            const withSpread = usedWithSpread.get(source);
+
+            if (withSpread && !group.config.keepOriginals && [...withSpread].some((id) => view.moduleIds.has(id))) {
+                state.spread.push({ view: view.name, name, group: group.name });
+            }
 
             const items = byGroup.get(group.name) ?? [];
             items.push(rect); 
@@ -930,7 +973,8 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                 }
 
                 const end = chain.ends[target.length - 1];
-                const props = target.file && propsOfComponentCall(node, parent);
+                const isTagSite = !!target.file && isComponentTagSite(node, parent);
+                const props = isTagSite ? propsOfComponentCall(node, parent) : null;
 
                 // Rendered right here, so the component stays `Image` and `src` joins
                 // the props Solid already wrote. No wrapper and no merging at runtime.
@@ -943,6 +987,11 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                     replacements.push({ start: props.start + 1, end: props.start + 1, text: ` src: ${importImage(target.file!)},` });
                     return;
                 }
+
+                // A tag site all the same, but with props built from a spread. It takes
+                // the value path below; the report flags it, since `options` could be in
+                // there and nothing here can tell.
+                if (isTagSite) addTo(usedWithSpread, target.file!, id);
 
                 // Handed out as a value instead - a map entry, a `Dynamic`, a folder.
                 let name = valueNames.get(target.key);
@@ -1004,7 +1053,7 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                 this.warn(`atlas "${group.name}" matched no image in any view - check its include/exclude patterns.`);
             }
 
-            if (state.sheets.length) this.info(`\n${renderReport(state.sheets, state.skipped, verbose)}\n`);
+            if (state.sheets.length) this.info(`\n${renderReport(state.sheets, state.skipped, state.spread, verbose)}\n`);
         },
     };
 }
