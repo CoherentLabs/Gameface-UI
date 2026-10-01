@@ -1,9 +1,11 @@
+@use 'sass:math';
+
 .column {
     @for $i from 1 through 12 {
         &-#{$i} {
-            flex: 1 1 (100% / 12 * $i);
-            max-width: (100% / 12 * $i);
-            
+            flex: 1 1 math.percentage(math.div($i, 12));
+            max-width: math.percentage(math.div($i, 12));
+
         }
     }
 
