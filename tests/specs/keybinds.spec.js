@@ -304,8 +304,9 @@ describe('Keybinds', function () {
                 gf.GAMEPAD_BUTTONS.FACE_BUTTON_RIGHT,
             ]);
 
-            const src = await getIconSource(keybind);
-            assert.equal(src, 'b', 'Correct icon is displayed');
+            await gf.retryIfFails(async () => {
+                assert.equal(await getIconSource(keybind), 'b', 'Correct icon is displayed');
+            });
         })
 
         it('Should prevent execution of any actions while listening for input', async () => {
