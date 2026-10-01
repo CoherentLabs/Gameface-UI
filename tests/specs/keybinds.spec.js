@@ -264,9 +264,21 @@ describe('Keybinds', function () {
             await gf.click(`.${selectors.scenarioBtn}.scenario-12`)
         })
 
+        /**
+         * The asset a keybind's glyph points at, by name and without the build hash.
+         * Glyphs are `Image` components, so they are a div with a background rather
+         * than an `img` with a `src`.
+         */
         async function getIconSource (keybind) {
-            const image = await keybind.find('img');
-            return await image.getAttribute('src');
+            const glyph = await keybind.find('div');
+            const { 'background-image': background } = await glyph.styles();
+
+            // `<name>-<8 char hash>.<ext>`, and the hash itself may contain dashes,
+            // so the name is whatever is left once a fixed-width hash is taken off.
+            const match = /\/([^/]+)-[\w-]{8}\.\w+\)/.exec(background ?? '');
+            assert.ok(match, `Expected a glyph image, got "${background}"`);
+
+            return match[1];
         }
 
         it('Should render default gamepad glyphs', async () => {
@@ -277,7 +289,7 @@ describe('Keybinds', function () {
             for (const keybind of keybinds) {
                 const src = await getIconSource(keybind);
 
-                assert.equal(src.includes(`/${GAMEPAD_GLYPHS[idx].glyph}`), true, 'Correct icon is displayed');
+                assert.equal(src, GAMEPAD_GLYPHS[idx].glyph, 'Correct icon is displayed');
                 idx++;
             }
         });
@@ -293,7 +305,7 @@ describe('Keybinds', function () {
             ]);
 
             const src = await getIconSource(keybind);
-            assert.equal(src.includes(`/b`), true, 'Correct icon is displayed');
+            assert.equal(src, 'b', 'Correct icon is displayed');
         })
 
         it('Should prevent execution of any actions while listening for input', async () => {
