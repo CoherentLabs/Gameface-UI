@@ -14,11 +14,7 @@ import Checkbox from "@components/Basic/Checkbox/Checkbox";
 import styles from './Inventory.module.scss';
 import Relative from "@components/Layout/Relative/Relative";
 import Absolute from "@components/Layout/Absolute/Absolute";
-import TwoHandleSlider from "@components/Basic/TwoHandleSlider/TwoHandleSlider";
 import Image from "@components/Media/Image/Image";
-import { Dynamic } from "solid-js/web";
-// SVGs are not exposed on `Image`, so these are imported the ordinary way. They
-// stay out of the atlas, which is what we want for vector art anyway.
 import bag from "@assets/icons/inventory/bag.svg";
 import boots from "@assets/icons/inventory/boots.svg";
 import breastPlate from "@assets/icons/inventory/breastPlate.svg";
@@ -28,9 +24,6 @@ import shield from "@assets/icons/inventory/shield.svg";
 import sword from "@assets/icons/inventory/sword.svg";
 
 const Inventory = () => {
-	const keys = ['circle', 'square', 'triangle', 'cross'] as const;
-// keys[0] is 'circle', so Image.icons.gamepad.ps5[keys[0]] type-checks
-
 	return (
 		<Tabs default="inventory">
 			<Row style={{height: '100%'}}>
@@ -141,12 +134,6 @@ const Inventory = () => {
 							</ToggleButton>
 						</Flex>
 					</Column.Four>
-				</Tab>
-				<Tab location="crafting">
-					<Image.wheel.weapon2 />
-					<Dynamic 
-						style={{width: '3.5rem', height: '3.5rem'}} 
-						component={Image.icons.gamepad.ps5[keys[0]]} />
 				</Tab>
 			</Row>
 		</Tabs >
