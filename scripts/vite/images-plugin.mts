@@ -462,6 +462,8 @@ function spriteStyle(rect: AtlasRect, sheet: { width: number; height: number }, 
 interface SheetReport {
     view: string;
     group: string;
+    /** Where the sheet was written, relative to the cwd, so the terminal can link it. */
+    file: string;
     width: number;
     height: number;
     bytes: number;
@@ -541,6 +543,7 @@ function renderReport(sheets: SheetReport[], skipped: SkipReport[], spread: Spre
                 `${sheet.rects.length === 1 ? 'sprite ' : 'sprites'}   ` +
                 `${String(used).padStart(3)}% used   was ${kb(sheet.originalBytes)} (${mb(gpu)})` +
                 (sheet.keptOriginals ? '   (originals kept)' : ''),
+                `    ${sheet.file}`,
             );
 
             if (!verbose) continue;
@@ -603,6 +606,12 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
     // `originalFileNames` are written relative to the Vite root, not to the cwd.
     let root = process.cwd();
 
+    /** Vite's `build.assetsDir`, where the sheets are written next to every other asset. */
+    let assetsDirName = 'assets';
+
+    /** Absolute `build.outDir`, so the report can print where each sheet landed. */
+    let outDir = path.resolve('dist');
+
     /** `icons.gamepad.a` -> absolute path of `icons/gamepad/a.png`. */
     let images = new Map<string, string>();
 
@@ -658,7 +667,11 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
         return !relative.startsWith('..') && !path.isAbsolute(relative) && IMAGE_EXTENSIONS.includes(extension);
     };
 
-    /** Every image from the assets folder that a view can reach, found by walking its chunk imports. */
+    /**
+     * Every image from the assets folder that a view can reach, found by walking its chunk imports.
+     * Dynamic imports count too, so images behind a `lazy()` component are packed into the
+     * view's sheet - and, more importantly, keep their original alive if they are not.
+     */
     function collectViewImages(bundle: Rollup.OutputBundle, entry: Rollup.OutputChunk): ViewData {
         const viewImages = new Map<string, ViewImage>();
         const seen = new Set<string>();
@@ -681,7 +694,7 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                 viewImages.set(asset, { source, bytes: byteLength(output.source) });
             }
 
-            chunk.imports.forEach(visit);
+            [...chunk.imports, ...chunk.dynamicImports].forEach(visit);
         };
 
         visit(entry.fileName);
@@ -806,14 +819,15 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                 const sheetName = packer.bins.length > 1 ? `${group.name}-${index}` : group.name;
                 const buffer = await composeSheet(bin, squareCells);
 
-                // Rollup adds the hash: atlas-{view}-{sheet}-{hash}.png
-                const ref = context.emitFile({
-                    type: 'asset',
-                    name: `atlas-${view.name}-${sheetName}.png`,
-                    source: buffer,
-                });
+                // Emitted under `fileName` rather than `name`, so Rollup writes it exactly
+                // here and adds no hash: the integration registers sheets by path to preload
+                // them, and a hash that changes with the sheet's content would leave that
+                // registration pointing at nothing. `fileName` also skips the pattern that
+                // puts assets in `assetsDir`, so the folder is added here instead.
+                const sheetFile = path.posix.join(assetsDirName, `atlas-${view.name}-${sheetName}.png`);
+                context.emitFile({ type: 'asset', fileName: sheetFile, source: buffer });
 
-                const atlasUrl = path.posix.relative(path.posix.dirname(entry.fileName), context.getFileName(ref));
+                const atlasUrl = path.posix.relative(path.posix.dirname(entry.fileName), sheetFile);
 
                 for (const rect of bin.rects) {
                     sprites[rect.data.spriteKey] = spriteStyle(rect, bin, atlasUrl);
@@ -822,6 +836,7 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                 state.sheets.push({
                     view: view.name,
                     group: sheetName,
+                    file: toPosix(path.relative(process.cwd(), path.resolve(outDir, sheetFile))),
                     width: bin.width,
                     height: bin.height,
                     bytes: buffer.length,
@@ -865,6 +880,8 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
 
         configResolved(config) {
             root = config.root;
+            assetsDirName = config.build.assetsDir;
+            outDir = path.resolve(config.root, config.build.outDir);
         },
 
         buildStart() {
