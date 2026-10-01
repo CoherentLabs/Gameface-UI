@@ -3,8 +3,11 @@
   "scenarioBtn": "scenario-btn",
   "image": "image",
   "liveView": "live-view",
-  "backgroundImage": "background-image",
+  "imageOptions": "image-options",
   "maskImage": "mask-image",
-  "icon": "icon",
+  "imageDot": "image-dot",
+  "imageDotRef": "image-dot-ref",
+  "imageDynamic": "image-dynamic",
+  "imageCustomOptions": "image-custom-options",
   "reactive": "reactive"
 }

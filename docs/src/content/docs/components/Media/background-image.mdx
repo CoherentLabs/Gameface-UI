@@ -15,7 +15,7 @@ import { Aside } from '@astrojs/starlight/components'
 + <Image src={bg} options={{ size: 'contain' }} />
 ```
 
-The one thing to check is a call site that passed **no** `options`, because `Image` defaults to 3.5rem square where `BackgroundImage` had no size of its own. See the [`Image` docs](/components/media/image/#using-it-as-a-background).
+The one thing to check is a call site that passed **no** `options`, because `Image` defaults to 3.5rem square where `BackgroundImage` had no size of its own. See the [`Image` docs](/components/media/image/#background-mode).
 </Aside>
 
 The `BackgroundImage` component allows you to create a container with an image as its background. It supports images in `.png`, `.jpg`, or `.svg` formats that can be imported directly from your assets folder.
