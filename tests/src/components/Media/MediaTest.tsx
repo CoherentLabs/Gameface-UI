@@ -79,7 +79,7 @@ const MediaTest = () => {
 
             {/* Option values the stylesheet has no class for fall through to inline styles. */}
             <Image src={src()} options={{ size: '50px 50px', position: '10px 20px' }} class={selectors.imageCustomOptions} />
-        </Tab>
+        </>
     )
 }
 
