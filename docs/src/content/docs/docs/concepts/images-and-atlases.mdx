@@ -18,7 +18,7 @@ When atlas generation is enabled, the plugin packs those images into one or more
 
 ```js
 window.__GF_ATLAS__ = {
-  "a-DYLBUbVy.png": { image: "url(../assets/atlas-menu-icons-D0x.png)", size: "…", position: "…" },
+  "a-DYLBUbVy.png": { image: "url(../assets/atlas-menu-icons-gamepad.png)", size: "…", position: "…" },
   …
 };
 ```
@@ -31,7 +31,7 @@ The benefit is not smaller file size. The win is fewer GPU textures and fewer te
 
 - **Fewer textures at load.** Thirty icons become one sheet, so the engine allocates one texture instead of thirty. Loading sprite frames as separate images can cause texture thrashing: textures are created and destroyed repeatedly.
 - **Fewer texture binds while drawing.** Elements sharing a sheet can be drawn together rather than each switching to its own texture.
-- **Something you can preload.** This is the part worth the effort. Warming a handful of sheets before a view opens is practical; doing the same for fifty individual files is not. Once the build is producing sheets you are happy with, they are ordinary PNGs in `dist/assets` that your integration can load up front, so opening the view costs no texture allocation at all.
+- **Something you can preload.** This is the part worth the effort. Warming a handful of sheets before a view opens is practical; doing the same for fifty individual files is not. Once the build is producing sheets you are happy with, they are ordinary PNGs in `dist/assets` that your integration can load up front, so opening the view costs no texture allocation at all. Sheets are named `atlas-{view}-{group}.png` with no content hash, so the paths you register stay valid when the sheet's contents change.
 
 This is a tradeoff: a sheet may use more texture memory than the individual files, but it cuts texture churn and startup cost.
 
@@ -116,6 +116,8 @@ An image is packed only if all of these are true:
 
 If any rule fails, the image stays a normal file. The build report lists it under `skipped` with the reason.
 
+Images used only inside a `lazy()` component count as part of the view that loads it. They go on that view's sheet, so they load with the view rather than when the component first renders.
+
 <Aside type="caution" title="Two cases the plugin cannot detect">
 The `options` rule is enforced only when the plugin can read the props. It cannot see values passed through runtime merges or dynamic access, such as:
 
@@ -131,12 +133,14 @@ Those images still get packed. If you pass `options` that way, set `keepOriginal
 
 ## Read the build report
 
-The report is the main troubleshooting tool. It tells you which sheets were created, how many sprites fit, and which images were skipped.
+The report is the main troubleshooting tool. It tells you which sheets were created, where each one was written, how many sprites fit, and which images were skipped. The path under each sheet is relative to where you ran the build, so most terminals let you click it to open the sheet.
 
 ```
 Hud
   icons-hud        1024x1024     4 sprites    34% used
+    dist/assets/atlas-hud-icons-hud.png
   glyphs           1024x512      3 sprites    69% used
+    dist/assets/atlas-hud-glyphs.png
   skipped  weapon2.png   768x271 > maxSpriteSize 512 ("glyphs")
 ```
 
