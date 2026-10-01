@@ -29,7 +29,7 @@ window.__GF_ATLAS__ = {
 
 The benefit is not smaller file size. The win is fewer GPU textures and fewer texture switches:
 
-- **Fewer textures at load.** Thirty icons become one sheet, so the engine allocates one texture instead of thirty. Gameface's own profiling guidance names loading sprite frames as separate images as a common cause of texture thrashing, where textures are created and destroyed repeatedly.
+- **Fewer textures at load.** Thirty icons become one sheet, so the engine allocates one texture instead of thirty. Loading sprite frames as separate images can cause texture thrashing: textures are created and destroyed repeatedly.
 - **Fewer texture binds while drawing.** Elements sharing a sheet can be drawn together rather than each switching to its own texture.
 - **Something you can preload.** This is the part worth the effort. Warming a handful of sheets before a view opens is practical; doing the same for fifty individual files is not. Once the build is producing sheets you are happy with, they are ordinary PNGs in `dist/assets` that your integration can load up front, so opening the view costs no texture allocation at all.
 
