@@ -27,10 +27,9 @@ window.__GF_ATLAS__ = {
 
 ## Why atlas images
 
-The benefit is not smaller file size. The win is fewer GPU textures and fewer texture switches:
+The benefit is not smaller file size or faster drawing. A sprite costs about the same to draw as its own file. The win is in creating textures:
 
-- **Fewer textures at load.** Thirty icons become one sheet, so the engine allocates one texture instead of thirty. Loading sprite frames as separate images can cause texture thrashing: textures are created and destroyed repeatedly.
-- **Fewer texture binds while drawing.** Elements sharing a sheet can be drawn together rather than each switching to its own texture.
+- **Fewer textures at load.** Thirty icons become one sheet, so the engine creates one texture instead of thirty, and the sheet stays loaded while any of its sprites is visible.
 - **Something you can preload.** This is the part worth the effort. Warming a handful of sheets before a view opens is practical; doing the same for fifty individual files is not. Once the build is producing sheets you are happy with, they are ordinary PNGs in `dist/assets` that your integration can load up front, so opening the view costs no texture allocation at all. Sheets are named `atlas-{view}-{group}.png` with no content hash, so the paths you register stay valid when the sheet's contents change.
 
 This is a tradeoff: a sheet may use more texture memory than the individual files, but it cuts texture churn and startup cost.
@@ -128,7 +127,7 @@ const glyphs = { a: Image.icons.gamepad.xbox.a };
 <Dynamic component={glyphs[key()]} />
 ```
 
-Those images still get packed. If you pass `options` that way, set `keepOriginals: true` on the group.
+Those images still get packed. With `options`, `Image` draws the original file, which the build removed, so they render blank. If you pass `options` that way, set `keepOriginals: true` on the group.
 </Aside>
 
 ## Read the build report
@@ -148,7 +147,54 @@ The important number is the GPU texture memory estimate, not the disk size. A 10
 
 ## Limitations
 
-- `Image` does not work inside `cohinline` or `InlineTextBlock`; use a plain `<img>` there.
-- CSS background images cannot be looked up in the atlas.
-- `Image.icons.gamepad.ps5[key]` pulls in the whole folder.
-- sprites are positioned as percentages, so higher `padding` may be needed at fractional scales.
+### Computed keys pull in the whole folder
+
+The build cannot know which key will run, so `[key]` puts every image under that folder into the view, and onto its sheet. List the images you need in an explicit map instead:
+
+```jsx del={1} ins={3-7}
+<Dynamic component={Image.icons.gamepad.ps5[key()]} />  // every ps5 glyph
+
+const glyphs = {
+    cross: Image.icons.gamepad.ps5.cross,
+    circle: Image.icons.gamepad.ps5.circle,
+};
+<Dynamic component={glyphs[key()]} />                   // only these two
+```
+
+### CSS background images
+
+A stylesheet cannot look up sprite positions, so it needs the original file. If an image is packed and also referenced from CSS, its original is removed and the CSS reference breaks:
+
+```scss
+.panel {
+    background-image: url('@assets/icons/hud/weapon.png'); // breaks once weapon.png is atlassed
+}
+```
+
+Set `keepOriginals: true` on the group so the original ships next to the sheet:
+
+```ts
+atlas: [{ include: 'icons/hud', keepOriginals: true }],
+```
+
+### Inline text
+
+`Image` renders a `div` with a background, which `cohinline` and `InlineTextBlock` do not draw on child elements. Use a plain `<img>` there. It is not packed:
+
+```jsx
+import xboxA from '@assets/icons/gamepad/xbox/a.png';
+
+<InlineTextBlock>
+    Press <img src={xboxA} class="glyph" /> to jump
+</InlineTextBlock>
+```
+
+### Fractional scales
+
+Sprites are positioned as percentages, so at fractional scales a sprite's edge can pick up a sliver of its neighbour. Raise `padding` on the group if you see it, or for every group through `atlasDefaults`:
+
+```ts
+atlas: [{ include: 'icons/hud', padding: 4 }],
+// OR
+atlasDefaults: { padding: 4 },
+```
