@@ -84,10 +84,10 @@ To keep the recipe asset-free, options and chips render a **placeholder** — a 
 >{country.code}</Flex>
 ```
 
-To use real flags, swap that for the `BackgroundImage` block already sitting commented out next to it, in **both** places (the option and the chip):
+To use real flags, swap that for the `Image` block already sitting commented out next to it, in **both** places (the option and the chip):
 
 ```tsx
-<BackgroundImage
+<Image
     class={styles['dropdown-option-content-image']}
     src={FLAG_SRC[country.code]} />
 ```

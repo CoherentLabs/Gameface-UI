@@ -40,11 +40,11 @@ import Weapon6 from "@assets/wheel/weapon6.png";
 import Center from "@assets/wheel/GameMessage_AchievmentIcon.png";
 import { For } from 'solid-js';
 import RadialMenu from "@components/Complex/RadialMenu/RadialMenu";
-import BackgroundImage from "@components/Media/BackgroundImage/BackgroundImage";
+import Image from "@components/Media/Image/Image";
 
 <RadialMenu opened>
     <RadialMenu.Content  style={{width: '50%', height: '50%'}}>
-        <BackgroundImage style={{width: '80%', height: '80%'}} src={Center} options={{size: 'contain', position: "center" }} />
+        <Image style={{width: '80%', height: '80%'}} src={Center} options={{size: 'contain', position: "center" }} />
     </RadialMenu.Content>
     <For each={[
         { id: "shotgun", img: Weapon1 },
@@ -57,7 +57,7 @@ import BackgroundImage from "@components/Media/BackgroundImage/BackgroundImage";
         {(item) => (
             <RadialMenu.Item id={item.id}>
                 <div style={{ width: '5vmax', height: '5vmax' }}>
-                    <BackgroundImage fill src={item.img} options={{size: 'contain', position: "center" }} />
+                    <Image fill src={item.img} options={{size: 'contain', position: "center" }} />
                 </div>
             </RadialMenu.Item>
         )}
@@ -124,7 +124,7 @@ The `RadialMenu.Item` slot defines a single slice (menu option) within the radia
 <RadialMenu opened>
     <RadialMenu.Item offset="2vmax" style={{transition: 'transform 0.2s linear'}} style-selected={{ transform: 'scale(1.1)' }} >
         <div style={{ width: '5vmax', height: '5vmax' }}>
-            <BackgroundImage fill src={item.img} options={{size: 'contain', position: "center" }} />
+            <Image fill src={item.img} options={{size: 'contain', position: "center" }} />
         </div>
     </RadialMenu.Item>
     <RadialMenu.Item offset="2vmax" style={{transition: 'transform 0.2s linear'}} style-selected={{ transform: 'scale(1.1)' }} >
@@ -298,7 +298,7 @@ import Weapon6 from "@assets/wheel/weapon6.png";
 import Center from "@assets/wheel/GameMessage_AchievmentIcon.png";
 import { For } from 'solid-js';
 import RadialMenu from "@components/Complex/RadialMenu/RadialMenu";
-import BackgroundImage from "@components/Media/BackgroundImage/BackgroundImage";
+import Image from "@components/Media/Image/Image";
 
 const wheelItems = [
     { id: "shotgun", img: Weapon1 },
@@ -313,7 +313,7 @@ const App = () => {
     return (
         <RadialMenu opened>
             <RadialMenu.Content>
-                <BackgroundImage src={Center} options={{size: 'contain', position: "center" }} />
+                <Image src={Center} options={{size: 'contain', position: "center" }} />
             </RadialMenu.Content>
             <RadialMenu.Indicator />
             <RadialMenu.Selector style-selected={{ 'border-color': 'rgba(0, 0, 120, 0.5)' }} />
@@ -324,7 +324,7 @@ const App = () => {
                         style={{transition: 'transform 0.2s linear'}} 
                         style-selected={{ transform: 'scale(1.1)' }}>
                         <div style={{ width: '5vmax', height: '5vmax'  }}>
-                            <BackgroundImage fill src={item.img} options={{size: 'contain', position: "center" }} />
+                            <Image fill src={item.img} options={{size: 'contain', position: "center" }} />
                         </div>
                     </RadialMenu.Item>
                 )}
@@ -364,7 +364,7 @@ import Weapon6 from "@assets/wheel/weapon6.png";
 import Center from "@assets/wheel/GameMessage_AchievmentIcon.png";
 import { For } from 'solid-js';
 import RadialMenu from "@components/Complex/RadialMenu/RadialMenu";
-import BackgroundImage from "@components/Media/BackgroundImage/BackgroundImage";
+import Image from "@components/Media/Image/Image";
 
 const wheelItems = [
     { id: "shotgun", img: Weapon1 },
@@ -388,7 +388,7 @@ const App = () => {
                 {(item) => (
                     <RadialMenu.Item id={item.id} offset="0.75vmax" >
                         <div style={{ width: '3.5vmax', height: '3.5vmax'  }}>
-                            <BackgroundImage fill src={item.img} options={{size: 'contain', position: "center" }} />
+                            <Image fill src={item.img} options={{size: 'contain', position: "center" }} />
                         </div>
                     </RadialMenu.Item>
                 )}
@@ -431,7 +431,7 @@ import Weapon5 from "@assets/wheel/weapon5.png";
 import Weapon6 from "@assets/wheel/weapon6.png";
 import Center from "@assets/wheel/GameMessage_AchievmentIcon.png";
 import { For, onCleanup, onMount } from 'solid-js';
-import BackgroundImage from "@components/Media/BackgroundImage/BackgroundImage";
+import Image from "@components/Media/Image/Image";
 import RadialMenu, { RadialMenuRef } from "@components/Complex/RadialMenu/RadialMenu";
 
 const wheelItems = [
@@ -458,13 +458,13 @@ const App = () => {
     return (
 +       <RadialMenu ref={ref!} opened selected={2} >
             <RadialMenu.Content  style={{width: '50%', height: '50%'}}>
-                <BackgroundImage style={{width: '80%', height: '80%'}} src={Center} options={{size: 'contain', position: "center" }} />
+                <Image style={{width: '80%', height: '80%'}} src={Center} options={{size: 'contain', position: "center" }} />
             </RadialMenu.Content>
             <For each={wheelItems}>
                 {(item) => (
                     <RadialMenu.Item id={item.id} >
                         <div style={{ width: '5vmax', height: '5vmax',  }}>
-                            <BackgroundImage fill src={item.img} options={{size: 'contain', position: "center" }} />
+                            <Image fill src={item.img} options={{size: 'contain', position: "center" }} />
                         </div>
                     </RadialMenu.Item>
                 )}
@@ -498,7 +498,7 @@ import Weapon5 from "@assets/wheel/weapon5.png";
 import Weapon6 from "@assets/wheel/weapon6.png";
 import Center from "@assets/wheel/GameMessage_AchievmentIcon.png";
 import { For, onCleanup, onMount } from 'solid-js';
-import BackgroundImage from "@components/Media/BackgroundImage/BackgroundImage";
+import Image from "@components/Media/Image/Image";
 import RadialMenu, { RadialMenuRef } from "@components/Complex/RadialMenu/RadialMenu";
 
 const wheelItems = [
@@ -531,7 +531,7 @@ const App = () => {
                 {(item) => (
                     <RadialMenu.Item id={item.id} >
                         <div style={{ width: '5vmax', height: '5vmax',  }}>
-                            <BackgroundImage fill src={item.img} options={{size: 'contain', position: "center" }} />
+                            <Image fill src={item.img} options={{size: 'contain', position: "center" }} />
                         </div>
                     </RadialMenu.Item>
                 )}
@@ -568,7 +568,7 @@ import Weapon6 from "@assets/wheel/weapon6.png";
 import Center from "@assets/wheel/GameMessage_AchievmentIcon.png";
 import { For } from 'solid-js';
 import RadialMenu, {RadialMenuRef} from "@components/Complex/RadialMenu/RadialMenu";
-import BackgroundImage from "@components/Media/BackgroundImage/BackgroundImage";
+import Image from "@components/Media/Image/Image";
 
 const wheelItems = [
     { id: "shotgun", img: Weapon1 },
@@ -599,7 +599,7 @@ const App = () => {
                 {(item) => (
                     <RadialMenu.Item id={item.id} style={{transition: 'transform 0.2s linear'}} style-selected={{ transform: 'scale(1.1)' }}>
                         <div style={{ width: '5vmax', height: '5vmax'  }}>
-                            <BackgroundImage fill src={item.img} options={{size: 'contain', position: "center" }} />
+                            <Image fill src={item.img} options={{size: 'contain', position: "center" }} />
                         </div>
                     </RadialMenu.Item>
                 )}

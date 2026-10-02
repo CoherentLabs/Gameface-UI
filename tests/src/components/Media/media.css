@@ -1,5 +1,10 @@
-.background-image,
+.image-options,
 .mask-image {
+    width: 10vmax;
+    height: 10vmax;
+}
+
+.image-custom-options {
     width: 10vmax;
     height: 10vmax;
 }

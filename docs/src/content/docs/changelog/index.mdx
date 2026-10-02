@@ -4,7 +4,27 @@ title: Changelog
 
 import { Badge } from '@astrojs/starlight/components'
 
-## 4.1.0 :badge[Latest]{variant="note"}
+## 5.0.0 :badge[Latest]{variant="note"}
+
+### ⚠️ Breaking Changes
+
+- <Badge text="Breaking Change" variant="danger" size="small" /> `Icon` and `BackgroundImage` were removed. Use [Image](/components/media/image) instead. See [Migrating from Icon and BackgroundImage](/components/media/image#migrating-from-icon-and-backgroundimage).
+- <Badge text="Breaking Change" variant="danger" size="small" /> `Image` dot paths start at `src/assets`, not `src/assets/icons`.
+- <Badge text="Breaking Change" variant="danger" size="small" /> `Image` renders a `div` background, so there is no load-error fallback. The default size is also `3.5rem` square unless you set dimensions.
+- <Badge text="Breaking Change" variant="danger" size="small" /> [MaskImage](/components/media/mask-image) no longer accepts the undocumented `onAction`, `anchor`, and `refObject` props.
+
+### Texture atlases
+
+- <Badge text="New" variant="tip" size="small" /> `Image.folder.name` can now be packed into texture atlases at build time.
+- <Badge text="New" variant="tip" size="small" /> The plugin groups images by view, builds sheet PNGs, and resolves them automatically at runtime.
+- <Badge text="New" variant="tip" size="small" /> Atlas behavior is configured in `vite.config.mts` and reported in the build output. See [Images and texture atlases](/docs/concepts/images-and-atlases/).
+
+### Component changes
+
+- <Badge text="Feature" variant="success" size="small" /> [Image](/components/media/image#props): Added `options` for `size`, `position`, and `repeat`, plus child support.
+- <Badge text="Feature" variant="success" size="small" /> [Image](/components/media/image#by-path): Dot paths are type-checked and autocomplete is generated from `src/assets`.
+
+## 4.1.0
 
 - <Badge text="New" variant="tip" size="small" /> Added [Trackers](/components/performance/trackers) component for rendering many per-entity UI markers - nameplates, minimap blips, damage numbers - that update position every frame without going through Solid's reactivity. Each tracked entity gets one DOM node, built once; later updates just move, hide, or show it.
 
