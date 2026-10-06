@@ -13,20 +13,21 @@ import { bandCentre, createBandScale, createLinearScale } from '../core/scales';
 import { createPointEvent } from '../core/events';
 import { DEFAULT_PALETTE, resolveColor } from '../core/palette';
 import { formatChartNumber } from '../core/radius';
+import { ChartLength, resolveLength } from '../core/length';
 import { warnOnMarkBudget } from '../core/warnOnce';
 import ChartRoot from '../parts/ChartRoot';
 import ChartLabels, { ChartLabelAnchor } from '../parts/ChartLabels';
 import { AxisTick, ChartAxisLabels, ChartGridLines } from '../parts/ChartAxes';
 
 export interface BarFillTokenProps extends TokenBase {
-    /** Bar thickness as pixels or a share of its band, e.g. `'60%'`. */
-    width?: number | string;
-    /** Gap between bars within a group, in pixels. */
-    gap?: number;
+    /** Bar thickness as a length or a share of its band, e.g. `'60%'`. */
+    width?: ChartLength;
+    /** Gap between bars within a group. */
+    gap?: ChartLength;
     /** Gap between category groups, as a share of the band. Defaults to 0.2. */
     groupGap?: number;
-    /** Rounds the data end only, in pixels. Defaults to 4. */
-    cornerRadius?: number;
+    /** Rounds the data end only. Defaults to `'0.25rem'`. */
+    cornerRadius?: ChartLength;
 }
 
 export const Fill = createTokenComponent<BarFillTokenProps>();
@@ -43,7 +44,7 @@ export interface BarProps extends BaseChartProps {
 /** Room for axis labels, which are HTML sitting outside the plot. */
 const VALUE_AXIS_WIDTH = 40;
 const AXIS_HEIGHT = 20;
-const DEFAULT_CORNER_RADIUS = 4;
+const DEFAULT_CORNER_RADIUS = '0.25rem';
 const DEFAULT_GROUP_GAP = 0.2;
 /** Surface-coloured separation between stacked segments and adjacent bars. */
 const MARK_GAP = 2;
@@ -138,21 +139,10 @@ const BarChart: ParentComponent<BarProps> = (props) => {
         const seriesCount = stacked() ? 1 : Math.max(1, visible.length);
         const innerScale = createBandScale(seriesCount, [0, categoryScale.bandwidth]);
 
-        const requestedWidth = token?.width;
-        const thickness = (() => {
-            const natural = innerScale.bandwidth - (stacked() ? 0 : (token?.gap ?? 0));
-            if (requestedWidth === undefined) return Math.max(1, natural);
-            if (typeof requestedWidth === 'number') return Math.max(1, requestedWidth);
+        const natural = innerScale.bandwidth - (stacked() ? 0 : resolveLength(token?.gap, 0));
+        const thickness = Math.max(1, resolveLength(token?.width, natural, innerScale.bandwidth));
 
-            const share = parseFloat(requestedWidth);
-            if (!Number.isFinite(share)) return Math.max(1, natural);
-
-            return Math.max(1, requestedWidth.trim().endsWith('%')
-                ? (innerScale.bandwidth * share) / 100
-                : share);
-        })();
-
-        const cornerRadius = token?.cornerRadius ?? DEFAULT_CORNER_RADIUS;
+        const cornerRadius = resolveLength(token?.cornerRadius ?? DEFAULT_CORNER_RADIUS, 0);
 
         // Which segment caps each end of a stack, precomputed: doing this
         // inside the loop below would be quadratic on every animation frame.

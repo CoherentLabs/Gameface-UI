@@ -12,6 +12,7 @@ import { createRadialResolver, RadialSlice } from '../core/resolvers/radial';
 import { createPointEvent } from '../core/events';
 import { DEFAULT_PALETTE, resolveColor } from '../core/palette';
 import { formatChartNumber, resolveInnerRadius } from '../core/radius';
+import { ChartLength, resolveLength } from '../core/length';
 import { warnOnce, warnOnMarkBudget } from '../core/warnOnce';
 import ChartRoot from '../parts/ChartRoot';
 import ChartLabels, { ChartLabelAnchor } from '../parts/ChartLabels';
@@ -21,9 +22,9 @@ export type TokenComponent<T extends Record<string, any>> = ReturnType<typeof cr
 export interface SliceTokenProps extends TokenBase {
     /** Degrees of padding between slices. */
     padAngle?: number;
-    cornerRadius?: number;
-    /** Pixels the hovered slice pops out along its centroid. */
-    hoverOffset?: number;
+    cornerRadius?: ChartLength;
+    /** How far the hovered slice pops out along its centroid. */
+    hoverOffset?: ChartLength;
 }
 
 export interface HoleTokenProps extends TokenBase, ParentProps { }
@@ -33,8 +34,8 @@ export interface RadialChartProps extends BaseChartProps {
     startAngle?: number;
     /** Defaults to 360, a full circle. */
     endAngle?: number;
-    /** Pixels (`40`, `'40px'`) or a share of the outer radius (`'60%'`). */
-    innerRadius?: number | string;
+    /** A length (`40`, `'2rem'`) or a share of the outer radius (`'60%'`). */
+    innerRadius?: ChartLength;
 }
 
 /** Supplied by the concrete chart, never by the consumer. */
@@ -45,7 +46,7 @@ interface RadialChartConfig {
     sliceTokenizer: TokenComponent<SliceTokenProps>;
     holeTokenizer?: TokenComponent<HoleTokenProps>;
     /** Applied when the consumer gives no `innerRadius`. */
-    defaultInnerRadius?: number | string;
+    defaultInnerRadius?: ChartLength;
 }
 
 const DEG = Math.PI / 180;
@@ -185,7 +186,7 @@ export const createRadialChart = (config: RadialChartConfig): ParentComponent<Ra
         const generator = arc<{ startAngle: number; endAngle: number; padAngle: number }>()
             .innerRadius(innerRadius)
             .outerRadius(outerRadius)
-            .cornerRadius(token?.cornerRadius ?? 0);
+            .cornerRadius(resolveLength(token?.cornerRadius, 0));
 
         const arcs = layout(visible).map((entry) => ({
             pointIndex: entry.data.pointIndex,
@@ -370,7 +371,7 @@ export const createRadialChart = (config: RadialChartConfig): ParentComponent<Ra
     };
 
     const sliceTransform = (pointIndex: number, midAngle: number) => {
-        const offset = sliceToken()?.hoverOffset ?? 0;
+        const offset = resolveLength(sliceToken()?.hoverOffset, 0);
         const current = geometry();
         if (!offset || !current || !hover.isHovered(current.seriesIndex, pointIndex)) return undefined;
 

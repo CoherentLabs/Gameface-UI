@@ -14,6 +14,7 @@ import { bandCentre, createBandScale, createLinearScale } from '../core/scales';
 import { createPointEvent } from '../core/events';
 import { DEFAULT_PALETTE, resolveColor } from '../core/palette';
 import { formatChartNumber } from '../core/radius';
+import { ChartLength, resolveLength } from '../core/length';
 import { warnOnMarkBudget } from '../core/warnOnce';
 import { measurePathLength } from '../core/pathLength';
 import { useDrawOn } from '../core/useDrawOn';
@@ -36,7 +37,8 @@ const CURVES = {
 const resolveCurve = (curve?: CurveType) => CURVES[curve ?? 'linear'] ?? curveLinear;
 
 export interface StrokeTokenProps extends TokenBase {
-    width?: number;
+    /** Defaults to `'0.125rem'`. `0` hides the stroke. */
+    width?: ChartLength;
     curve?: CurveType;
     /** SVG dash pattern, e.g. `'6 4'`. */
     dash?: string;
@@ -49,7 +51,8 @@ export interface AreaFillTokenProps extends TokenBase {
 }
 
 export interface PointTokenProps extends TokenBase {
-    radius?: number;
+    /** Defaults to `'0.25rem'`. */
+    radius?: ChartLength;
     show?: 'always' | 'hover' | 'never';
 }
 
@@ -79,9 +82,9 @@ interface SeriesChartConfig {
 
 const VALUE_AXIS_WIDTH = 40;
 const AXIS_HEIGHT = 20;
-const DEFAULT_STROKE_WIDTH = 2;
-/** 8px across — the smallest marker that stays comfortably clickable. */
-const DEFAULT_POINT_RADIUS = 4;
+const DEFAULT_STROKE_WIDTH = '0.125rem';
+/** Half a rem across — the smallest marker that stays comfortably clickable. */
+const DEFAULT_POINT_RADIUS = '0.25rem';
 const DEFAULT_AREA_OPACITY = 0.25;
 
 /**
@@ -303,7 +306,8 @@ export const createSeriesChart = (config: SeriesChartConfig): ParentComponent<Se
         }, []));
     });
 
-    const strokeWidth = () => strokeToken()?.width ?? DEFAULT_STROKE_WIDTH;
+    const strokeWidth = () => resolveLength(strokeToken()?.width ?? DEFAULT_STROKE_WIDTH, 0);
+    const pointRadius = () => resolveLength(pointToken()?.radius ?? DEFAULT_POINT_RADIUS, 0);
 
     // The reveal runs once, when the chart first has geometry to draw.
     const reveal = useDrawOn(() => !!geometry(), () => props.animation);
@@ -388,7 +392,7 @@ export const createSeriesChart = (config: SeriesChartConfig): ParentComponent<Se
                                         <circle
                                             cx={vertex().x}
                                             cy={vertex().y}
-                                            r={pointToken()?.radius ?? DEFAULT_POINT_RADIUS}
+                                            r={pointRadius()}
                                             fill={series().color}
                                             class={[styles['series-point'], pointToken()?.class].filter(Boolean).join(' ')}
                                             style={pointToken()?.style}

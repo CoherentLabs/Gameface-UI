@@ -2,12 +2,13 @@ import { Component, createEffect, createSignal, JSX, on, Show } from 'solid-js';
 import styles from '../Chart.module.scss';
 import { ChartPointEvent } from '../types';
 import { TooltipTokenProps } from '../slots';
+import { resolveLength } from '../core/length';
 import { getSafePosition } from '@components/utils/getSafePosition';
 import { waitForFrames } from '@components/utils/waitForFrames';
 
 type Side = 'top' | 'bottom' | 'left' | 'right';
 
-const DEFAULT_OFFSET = 12;
+const DEFAULT_OFFSET = '0.75rem';
 
 interface ChartTooltipProps {
     token: TooltipTokenProps;
@@ -40,7 +41,7 @@ const ChartTooltip: Component<ChartTooltipProps> = (props) => {
 
     const positionStyles = (): JSX.CSSProperties => {
         const { x, y } = props.event.position;
-        const offset = props.token.offset ?? DEFAULT_OFFSET;
+        const offset = resolveLength(props.token.offset ?? DEFAULT_OFFSET, 0);
 
         switch (side()) {
             case 'bottom':

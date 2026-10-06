@@ -1,6 +1,7 @@
 import { JSX } from 'solid-js';
 import { createTokenComponent, TokenBase } from '@components/utils/tokenComponents';
 import { ChartPoint, ChartPointEvent, ChartSeries, LegendEntry } from './types';
+import { ChartLength } from './core/length';
 
 export interface LegendTokenProps extends TokenBase {
     position?: 'top' | 'bottom' | 'left' | 'right';
@@ -14,8 +15,8 @@ export interface TooltipTokenProps extends TokenBase {
     /** Replaces the tooltip markup. Called with the hovered point. */
     content?: (event: ChartPointEvent) => JSX.Element;
     position?: 'top' | 'bottom' | 'left' | 'right' | 'auto';
-    /** Pixels between the pointer and the tooltip. Defaults to 12. */
-    offset?: number;
+    /** Distance between the pointer and the tooltip. Defaults to `'0.75rem'`. */
+    offset?: ChartLength;
 }
 
 export interface LabelsTokenProps extends TokenBase {

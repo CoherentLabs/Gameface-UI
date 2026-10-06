@@ -12,6 +12,7 @@ import { createLinearScale, niceDomain } from '../core/scales';
 import { createPointEvent } from '../core/events';
 import { DEFAULT_PALETTE, resolveColor } from '../core/palette';
 import { formatChartNumber } from '../core/radius';
+import { ChartLength, resolveLength } from '../core/length';
 import { warnOnce, warnOnMarkBudget } from '../core/warnOnce';
 import ChartRoot from '../parts/ChartRoot';
 import ChartLabels, { ChartLabelAnchor } from '../parts/ChartLabels';
@@ -19,9 +20,10 @@ import ChartLabels, { ChartLabelAnchor } from '../parts/ChartLabels';
 export interface SpiderShapeTokenProps extends TokenBase {
     /** 0 to 1. Defaults to 0.25 so overlapping shapes stay readable. */
     fillOpacity?: number;
-    strokeWidth?: number;
-    /** 0 hides the vertex markers. */
-    pointRadius?: number;
+    /** Defaults to `'0.125rem'`. */
+    strokeWidth?: ChartLength;
+    /** Defaults to `'0.1875rem'`. `0` hides the vertex markers. */
+    pointRadius?: ChartLength;
 }
 
 export interface SpiderWebTokenProps extends TokenBase {
@@ -56,8 +58,8 @@ const DEG = Math.PI / 180;
 const TAU = Math.PI * 2;
 const DEFAULT_LEVELS = 4;
 const DEFAULT_FILL_OPACITY = 0.25;
-const DEFAULT_STROKE_WIDTH = 2;
-const DEFAULT_POINT_RADIUS = 3;
+const DEFAULT_STROKE_WIDTH = '0.125rem';
+const DEFAULT_POINT_RADIUS = '0.1875rem';
 const LABEL_GAP = 12;
 /** Room kept for the category labels around the perimeter. */
 const LABEL_RESERVE = 44;
@@ -275,7 +277,7 @@ const SpiderChart: ParentComponent<SpiderProps> = (props) => {
         return list.join(' ');
     };
 
-    const pointRadius = () => shapeToken()?.pointRadius ?? DEFAULT_POINT_RADIUS;
+    const pointRadius = () => resolveLength(shapeToken()?.pointRadius ?? DEFAULT_POINT_RADIUS, 0);
 
     return (
         <ChartRoot
@@ -340,7 +342,7 @@ const SpiderChart: ParentComponent<SpiderProps> = (props) => {
                                     d={series().d}
                                     fill={series().color}
                                     stroke={series().color}
-                                    stroke-width={shapeToken()?.strokeWidth ?? DEFAULT_STROKE_WIDTH}
+                                    stroke-width={resolveLength(shapeToken()?.strokeWidth ?? DEFAULT_STROKE_WIDTH, 0)}
                                     fill-opacity={shapeToken()?.fillOpacity ?? DEFAULT_FILL_OPACITY}
                                     class={shapeClasses(series().seriesIndex)}
                                     style={shapeToken()?.style}
