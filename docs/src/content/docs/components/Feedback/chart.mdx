@@ -1,0 +1,286 @@
+---
+title: Chart
+tableOfContents:
+  maxHeadingLevel: 4
+---
+
+`Chart` is a family of data-visualisation components. They share one data model, one palette, one animation system, and one set of slots, so the knowledge you build on one chart applies to the rest.
+
+| Component | Use it for |
+|---|---|
+| [`Chart.Pie`](/components/feedback/chart-pie/) | Parts of a whole with a small number of slices. |
+| [`Chart.Donut`](/components/feedback/chart-donut/) | Same as pie, with a total or hovered value in the middle. |
+| [`Chart.Bar`](/components/feedback/chart-bar/) | Comparing values across categories and series. |
+| [`Chart.Line`](/components/feedback/chart-line/) | A value traced across ordered categories. |
+| [`Chart.Area`](/components/feedback/chart-area/) | Same as line when filled magnitude or summed series matter. |
+| [`Chart.Spider`](/components/feedback/chart-spider/) | Several measures at once, where the overall shape is the point. |
+
+## The data model
+
+Every chart takes the same `data` array. Each item is a series, and each series holds data points.
+
+```ts
+interface ChartPoint {
+    type: string;      // category key; it is the identity used across data changes
+    value: number;
+    color?: string;    // overrides the series colour
+    label?: string;    // display text, defaults to `type`
+    meta?: Record<string, unknown>;   // forwarded to tooltips and callbacks
+}
+
+interface ChartSeries {
+    points: ChartPoint[];
+    id?: string;       // stable identity across data changes; defaults to the index
+    label?: string;
+    color?: string;
+    class?: string;
+    style?: JSX.CSSProperties;
+}
+```
+
+Pie, donut, and spider read one series. Bar, line, and area read as many as you give them.
+
+`data` is reactive: feed it from a signal and the chart follows every change.
+
+Two rules are worth knowing:
+
+- **Categories are the union of every series.** If one series declares a category that another omits, it counts as `0`, so series do not need to match exactly. A line chart can treat this differently with `connectNulls`.
+- **`type` is identity.** It is how a point is matched to its previous version when the data changes, which is what allows smooth animation instead of snapping.
+
+:::caution
+A chart fills its container, so the container must have a size. A chart inside an element with no height renders nothing. Size it through the chart's own `class` or `style`, or give its parent a height.
+:::
+
+## Colours
+
+Marks take their colour from a built-in eight-slot categorical palette, assigned by index:
+
+```
+point.color  ??  series.color  ??  palette[index % palette.length]
+```
+
+The palette is tuned for colourblind separation on both light and dark surfaces. Its order matters: neighbouring colours are the most distinct, because neighbouring marks are the ones people compare. To use your own colours, pass a `palette`:
+
+```tsx
+<Chart.Bar data={data()} palette={['#e5484d', '#30a46c', '#3987e5']} />
+```
+
+Hiding a series from the legend does not change the colours of the others.
+
+:::note
+After eight series the palette repeats and stops being a reliable identifier. The chart warns in development. Prefer fewer series, an "other" bucket, or several smaller charts.
+:::
+
+## Animation
+
+Animation is off by default. Pass an `animation` object and the chart tweens between data sets:
+
+```tsx
+<Chart.Bar data={data()} animation={{ duration: 300, easing: 'ease-out' }} />
+```
+
+| Field | Default | Effect |
+|---|---|---|
+| `duration` | `300` | Milliseconds. `0` snaps. |
+| `easing` | `'ease-out'` | `'linear'`, `'ease-in'`, `'ease-out'`, `'ease-in-out'`, or a custom `(t) => number`. |
+| `delay` | `0` | Milliseconds before the animation starts. |
+| `stagger` | `0` | Extra delay for each mark, for a cascading entrance. |
+| `onStart` / `onEnd` | — | Lifecycle callbacks. |
+
+What you get:
+
+- **Values interpolate, not pictures.** Geometry is rebuilt every frame, so every intermediate state is real geometry rather than a morph between two shapes.
+- **Marks enter from nothing.** A new slice grows in place instead of popping in.
+- **Marks leave gracefully.** A removed slice shrinks away instead of blinking out.
+- **Interrupting is safe.** Changing the data mid-animation continues from the current state without a snap-back.
+- **Lines reveal themselves.** A line or area given an animation on mount reveals from one end.
+
+With no `animation` prop, a mounted chart does zero per-frame work.
+
+## Interactivity
+
+Interactivity is also off by default. A chart with no `interactive` prop attaches no listeners and sets `pointer-events: none`, so input passes straight through to the game underneath.
+
+```tsx
+<Chart.Bar data={data()} interactive onPointClick={(e) => inspect(e.point.type)}>
+    <Chart.Tooltip content={(e) => <div>{e.series.label}: {e.point.value}</div>} />
+</Chart.Bar>
+```
+
+| Value | Behaviour |
+|---|---|
+| omitted / `false` | No listeners. |
+| `true` | Uses the correct hit model for the chart type. |
+| `"svg"` | Native SVG pointer events, one listener per mark. |
+| `"overlay"` | A single transparent overlay resolves the hovered mark mathematically. |
+
+`true` resolves to native SVG events for pie, donut, and bar, and to overlay mode for line, area, and spider:
+
+- A 2px line stroke is effectively impossible to target, so those charts resolve the nearest vertex and snap the tooltip to it, which makes the crosshair readable.
+- A spider series is a single closed path spanning every category, so native hit-testing can only answer "which series" and not "which point".
+
+:::caution
+Native SVG hit-testing requires Gameface 3.1.1 or newer. On older versions, use `interactive="overlay"`, which works everywhere. It is also the better choice for large data sets: native mode attaches listeners per mark, while the overlay attaches one listener total.
+:::
+
+## Lengths
+
+Props that set a size — such as a corner radius, a stroke width, or the donut hole — accept either a number or a CSS length string:
+
+| Value | Meaning |
+|---|---|
+| `4` or `'4px'` | Pixels. Fixed at every resolution. |
+| `'0.25rem'` | Relative to the root font size, so it scales with the rest of the UI. |
+| `'1vh'`, `'1vw'`, `'1vmin'`, `'1vmax'` | Relative to the viewport. |
+| `'60%'` | A share of something the chart measures. This is only valid where the prop says it is. |
+
+Most defaults are in `rem`, so unchanged charts scale with your UI. Prefer `rem` for your own values too, unless you want a fixed size at every resolution.
+
+## Shared props
+
+Every chart type takes these, alongside its own props.
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to the chart root. |
+| `class` | `string` | `""` | Additional CSS classes applied to the chart. |
+| `data` | `ChartSeries[]` | `[]` | The series to plot. Reactive. |
+| `palette` | `string[]` | built-in | Overrides the default categorical palette. |
+| `animation` | `ChartAnimation` | `undefined` | Enables tweening between data sets. Omit for no animation. |
+| `interactive` | `boolean \| 'svg' \| 'overlay'` | `false` | Enables hover, tooltip, and click behavior. See [Interactivity](#interactivity). |
+| `onPointHover` | `(event: ChartPointEvent \| null) => void` | `undefined` | Fires when the hovered point changes; `null` on leave. |
+| `onPointClick` | `(event: ChartPointEvent) => void` | `undefined` | Fires when a point is clicked. |
+| `onSeriesToggle` | `(seriesIndex: number, visible: boolean) => void` | `undefined` | Fires when an entry is toggled from the legend. |
+
+## Shared slots
+
+Charts are configured by their children rather than by a long prop list.
+
+| Slot | Available on | Purpose |
+|---|---|---|
+| `Chart.Legend` | all | Series or slices. Clicking an entry toggles it. |
+| `Chart.Tooltip` | all | Follows the hovered point. Requires `interactive`. |
+| `Chart.Labels` | all | Direct value labels on the marks. |
+| `Chart.XAxis` / `Chart.YAxis` | bar, line, area | Tick labels, formatting, and baseline. |
+| `Chart.Grid` | bar, line, area | Gridlines. |
+| `Chart.<Type>.*` | per chart | The marks themselves. See each chart's page. |
+
+Everything is opt-in. No `Chart.Grid`, no gridlines; no `Chart.Legend`, no legend.
+
+### Legend
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `class` | `string` | `""` | CSS classes applied to the legend container. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to the legend container. |
+| `position` | `'top' \| 'bottom' \| 'left' \| 'right'` | `'bottom'` | Which edge the legend sits on. |
+| `interactive` | `boolean` | `true` | Whether clicking an entry toggles it. |
+| `content` | `(entry: LegendEntry) => JSX.Element` | `undefined` | Replaces the markup of a single entry. |
+
+Pie and donut legends list slices; every other chart lists series. Hiding an entry does not change the colours of the others.
+
+```tsx
+<Chart.Legend content={(entry) => <MyEntry color={entry.color} label={entry.label} />} />
+```
+
+### Tooltip
+
+Only rendered while a point is hovered, so it requires `interactive`.
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `class` | `string` | `""` | CSS classes applied to the tooltip. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to the tooltip. |
+| `position` | `'top' \| 'bottom' \| 'left' \| 'right' \| 'auto'` | `'auto'` | Which side of the pointer the tooltip sits on. `auto` flips away from the viewport edge. |
+| `offset` | [`ChartLength`](#lengths) | `'0.75rem'` | Distance between the pointer and the tooltip. |
+| `content` | `(event: ChartPointEvent) => JSX.Element` | `undefined` | Replaces the tooltip markup. |
+
+### Labels
+
+Direct labels drawn as HTML over the chart.
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `class` | `string` | `""` | CSS classes applied to every label. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to every label. |
+| `show` | `'always' \| 'hover' \| 'never'` | `'always'` | When labels are visible. |
+| `format` | `(point: ChartPoint, series: ChartSeries) => string` | `undefined` | Builds the label text. Defaults to the point's `label` (then `type`) on a pie or donut slice and to its value elsewhere. |
+| `placement` | `'inside' \| 'outside' \| 'hole'` | `'inside'` | Pie and donut only. `'hole'` is donut only. |
+| `leaderLines` | `boolean` | `false` | Pie and donut only. Connects each slice to its outside label. |
+
+The label position depends on the chart: inside or outside each slice on a pie, centered in each bar, and just above each vertex on line, area, and spider charts.
+
+### XAxis and YAxis
+
+Which one is the value axis depends on the chart orientation: `YAxis` on a vertical chart and `XAxis` on a horizontal bar chart. Omit a slot to hide that axis entirely.
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `class` | `string` | `""` | CSS classes applied to every tick label on this axis. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to every tick label. |
+| `ticks` | `number` | `5` | A hint for how many ticks to aim for. Values are still chosen to be round. |
+| `format` | `(value: number \| string) => string` | `undefined` | Formats the tick label. |
+| `line` | `boolean` | `true` | Draws the zero baseline. |
+| `hide` | `boolean` | `false` | Hides the axis while keeping its space reserved. |
+
+### Grid
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `class` | `string` | `""` | CSS classes applied to every gridline. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to every gridline. |
+| `horizontal` | `boolean` | `true` | Lines across the value axis. |
+| `vertical` | `boolean` | `false` | Lines along the category axis. |
+| `ticks` | `number` | `5` | How many gridlines to aim for. |
+
+## Types
+
+`ChartPoint` and `ChartSeries` are described under [the data model](#the-data-model).
+
+```ts
+type ChartLength = number | string;   // see "Lengths" above
+
+interface ChartAnimation {
+    duration?: number;   // ms; default 300, 0 snaps
+    easing?: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | ((t: number) => number);
+    delay?: number;
+    stagger?: number;    // extra delay per mark
+    onStart?: () => void;
+    onEnd?: () => void;
+}
+
+interface ChartPointEvent {
+    point: ChartPoint;
+    series: ChartSeries;
+    seriesIndex: number;
+    pointIndex: number;
+    position: { x: number; y: number };   // within the chart, in pixels
+}
+
+interface LegendEntry {
+    label: string;
+    color: string;
+    seriesIndex: number;
+    pointIndex?: number;   // set when the entry is a single slice
+    visible: boolean;
+}
+```
+
+## Performance
+
+These charts are built to sit in a HUD that shares a frame with the game.
+
+| Concern | Guidance |
+|---|---|
+| Mark count | One SVG path per mark. Comfortable to roughly 200; the chart warns past 500. |
+| Animation | One signal write per frame regardless of mark count. Above roughly 200 animated marks, prefer no animation. |
+| Hit-testing | `"svg"` attaches three listeners per mark; `"overlay"` attaches one total. Above roughly 100 marks, prefer the overlay. |
+| Labels | One element per visible label. Above roughly 20 points, prefer `<Chart.Labels show="hover" />`. |
+| Idle | With neither animation nor interactivity, a chart costs nothing per frame. |
+
+## Accessibility
+
+- Show a legend whenever there are two or more series. Identity should never rely on colour alone.
+- With a handful of marks, direct labels (`Chart.Labels`) beat a legend because they place the name next to the thing.
+- Text uses text colours, never the series colour. A coloured mark next to a label carries the identity.
+- Avoid a second value axis. Two measures of different scales belong in two charts or should be indexed to a common base.

@@ -1,0 +1,143 @@
+---
+title: Chart Bar
+tableOfContents:
+  maxHeadingLevel: 4
+---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
+
+The `Chart.Bar` component compares values across categories and series. It supports axes, gridlines, legend, tooltips, and label slots.
+
+## Basic usage
+
+Each item in `data` is a series, and each point is one category. When multiple series share the same categories, the chart becomes grouped by default.
+
+<CodePreviewGFUI>
+```tsx
+import Chart from '@components/Feedback/Chart/Chart';
+import { createSignal } from 'solid-js';
+
+const App = () => {
+    const [stats] = createSignal([
+        {
+            label: 'Player',
+            points: [
+                { type: 'strength', value: 13 },
+                { type: 'agility', value: 9 },
+                { type: 'stamina', value: 16 },
+            ],
+        },
+        {
+            label: 'Enemy',
+            points: [
+                { type: 'strength', value: 7 },
+                { type: 'agility', value: 18 },
+                { type: 'stamina', value: 11 },
+            ],
+        },
+    ]);
+
+    return (
+        <Chart.Bar data={stats()}>
+            <Chart.YAxis />
+            <Chart.XAxis />
+            <Chart.Grid horizontal />
+            <Chart.Legend position="bottom" />
+        </Chart.Bar>
+    );
+};
+```
+</CodePreviewGFUI>
+
+:::caution
+The chart fills its container, so the container must have a defined size. Axis labels sit in the margin, so small containers have less room for bars.
+:::
+
+### Layout and orientation
+
+```tsx
+<Chart.Bar data={stats()} layout="stacked" />
+<Chart.Bar data={stats()} orientation="horizontal" />
+```
+
+| Prop | Values | Effect |
+|---|---|---|
+| `layout` | `'grouped'` (default) | Each series gets its own bar beside the others in the same category. |
+| | `'stacked'` | Series accumulate. Positive values stack upward from zero and negative values stack downward, so a mixed stack does not cancel itself into a misleading total. |
+| `orientation` | `'vertical'` (default) | Categories run along the bottom, values rise up the side. |
+| | `'horizontal'` | Categories run down the side, values extend along the bottom. This is useful when category labels are long. |
+
+Stacked segments keep a 2px gap in the surface color, which helps similar hues stay distinct where they meet. Only the outermost segment of a stack is rounded.
+
+### Baseline and negative values
+
+The value domain always includes zero, and bars grow from that baseline. A negative value simply grows in the opposite direction and is rounded at its far end.
+
+```tsx
+// domain becomes roughly [-10, 10]; the baseline sits mid-plot
+<Chart.Bar data={[{ label: 'Delta', points: [
+    { type: 'strength', value: 6 },
+    { type: 'agility', value: -9 },
+] }]} />
+```
+
+Use a fixed domain when you need a consistent scale across multiple charts:
+
+```tsx
+<Chart.Bar data={stats()} domain={[0, 100]} />
+```
+
+By default the computed domain is rounded outward so tick values stay readable. For example, a maximum of 18 typically becomes an axis ending at 20. Set `nice={false}` to keep the exact extent instead.
+
+:::note
+There is intentionally no secondary axis. If two measures use different scales, they should either live in separate charts or be normalized to a common base. A dual-axis chart can imply correlation by shifting one scale against the other.
+:::
+
+### Interactivity
+
+This behaves like the other chart types: interactivity is off by default, `interactive` turns it on, and `interactive="overlay"` swaps SVG hit testing for a single overlay that resolves the hovered bar mathematically.
+
+```tsx
+<Chart.Bar data={stats()} interactive onPointClick={(e) => inspect(e.series.label, e.point.type)}>
+    <Chart.Tooltip content={(e) => <div>{e.series.label}: {e.point.value}</div>} />
+</Chart.Bar>
+```
+
+## API
+
+### Props
+
+Takes the [shared chart props](/components/feedback/chart/#shared-props), plus:
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `layout` | `'grouped' \| 'stacked'` | `'grouped'` | Whether series sit side by side or accumulate. |
+| `orientation` | `'vertical' \| 'horizontal'` | `'vertical'` | Which axis the categories run along. |
+| `domain` | `[number, number]` | computed | Fixes the minimum and maximum of the value axis instead of deriving them from the data. |
+| `nice` | `boolean` | `true` | Rounds the computed domain outward to readable tick values. |
+
+See [Types](/components/feedback/chart/#types) for the shared data and event types.
+
+### Behaviour notes
+
+- **The legend lists series**, not categories. Clicking an entry hides that series, and the remaining series expand to fill the freed space.
+- **Missing categories** count as zero, so different series do not need to declare the same points.
+- **Bars are `<path>` elements**, not `<rect>`. Gameface prefers path-based animation because attribute animation on primitives is less reliable, and a path also allows rounding only one end.
+
+## Slots
+
+### `Chart.Bar.Fill`
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `class` | `string` | `""` | CSS classes applied to every bar. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to every bar. |
+| `width` | [`ChartLength`](/components/feedback/chart/#lengths) | band width | Bar thickness as a length or a share of its band (`'60%'`). |
+| `gap` | [`ChartLength`](/components/feedback/chart/#lengths) | `0` | Gap between bars within a group. |
+| `groupGap` | `number` | `0.2` | Gap between category groups as a share of the band. |
+| `cornerRadius` | [`ChartLength`](/components/feedback/chart/#lengths) | `'0.25rem'` | Rounds the data end. |
+
+### `Chart.XAxis`, `Chart.YAxis`, `Chart.Grid`, `Chart.Legend`, `Chart.Tooltip`, `Chart.Labels`
+
+Shared with other chart types. See [Shared slots](/components/feedback/chart/#shared-slots) for their props.
+
+`YAxis` is the value axis on a vertical chart, and `XAxis` is the value axis on a horizontal one. `Chart.Labels` centers a value inside each bar, and `format` receives that bar's point and series.

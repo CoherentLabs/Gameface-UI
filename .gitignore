@@ -2,6 +2,7 @@ node_modules
 dist
 .astro
 .env
+.specs
 # Generated at release and uploaded as a release asset, never committed
 registry.json
 

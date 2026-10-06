@@ -1,0 +1,95 @@
+---
+title: Chart Area
+tableOfContents:
+  maxHeadingLevel: 4
+---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
+
+The `Chart.Area` component fills the region of a [`Chart.Line`](/components/feedback/chart-line/) down to the baseline. All Line features — curves, gaps, hovering, axes, and legend — apply unchanged.
+
+## Basic Usage
+
+<CodePreviewGFUI>
+```tsx
+import Chart from '@components/Feedback/Chart/Chart';
+import { createSignal } from 'solid-js';
+
+const App = () => {
+    const [load] = createSignal([
+        {
+            label: 'Player',
+            points: [
+                { type: 'strength', value: 13 },
+                { type: 'agility', value: 9 },
+                { type: 'stamina', value: 16 },
+            ],
+        },
+    ]);
+
+    return (
+        <Chart.Area data={load()} interactive>
+            <Chart.YAxis />
+            <Chart.XAxis />
+            <Chart.Legend position="bottom" />
+        </Chart.Area>
+    );
+};
+```
+</CodePreviewGFUI>
+
+## Options
+
+### Overlapping vs. Stacked
+
+By default, series **overlap** with translucent fills (0.25 opacity) so overlapping areas remain visible. Each area keeps a full-strength outline for clarity.
+
+For stacked areas where series sit on top of each other:
+
+```tsx
+<Chart.Area data={load()} stacked />
+```
+
+:::note
+Use `stacked` only when values sum to a meaningful total. Stacked areas make individual series hard to compare since only the bottom sits on a baseline. Prefer overlapping areas or [line charts](/components/feedback/chart-line/) for comparison.
+:::
+
+### Remove Outline
+
+```tsx
+<Chart.Area data={load()}>
+    <Chart.Area.Stroke width={0} />
+</Chart.Area>
+```
+
+## API
+
+### Props
+
+Inherits all [`Chart.Line`](/components/feedback/chart-line/) props, plus:
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `stacked` | `boolean` | `false` | Stack series instead of overlapping. |
+
+### Slots
+
+#### `Chart.Area.Fill`
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `class` | `string` | `""` | CSS classes for filled regions. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles for filled regions. |
+| `opacity` | `number` | `0.25` | Fill opacity (increase when series don't overlap). |
+| `curve` | `CurveType` | inherits | Override chart's curve. |
+
+#### `Chart.Area.Stroke`
+
+Same props as [`Chart.Line.Stroke`](/components/feedback/chart-line/). Set `width={0}` to remove outline.
+
+#### `Chart.Area.Point`
+
+Same props as [`Chart.Line.Point`](/components/feedback/chart-line/).
+
+#### Shared Slots
+
+`Chart.XAxis`, `Chart.YAxis`, `Chart.Grid`, `Chart.Legend`, `Chart.Tooltip`, `Chart.Labels` — see [Shared slots](/components/feedback/chart/#shared-slots).

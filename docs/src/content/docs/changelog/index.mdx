@@ -4,7 +4,17 @@ title: Changelog
 
 import { Badge } from '@astrojs/starlight/components'
 
-## 4.1.0 :badge[Latest]{variant="note"}
+## 4.2.0 :badge[Latest]{variant="note"}
+
+- <Badge text="New" variant="tip" size="small" /> Added the [Chart](/components/feedback/chart) component family for HUD data visualisation: [Pie](/components/feedback/chart-pie), [Donut](/components/feedback/chart-donut), [Bar](/components/feedback/chart-bar), [Line](/components/feedback/chart-line), [Area](/components/feedback/chart-area) and [Spider](/components/feedback/chart-spider). All of them share one data model, palette, animation system and set of slots.
+
+- <Badge text="Feature" variant="success" size="small" /> Added the shared [Chart slots](/components/feedback/chart#shared-slots) - `Chart.Legend`, `Chart.Tooltip`, `Chart.Labels`, `Chart.XAxis`, `Chart.YAxis` and `Chart.Grid`. All are opt-in.
+
+- <Badge text="Feature" variant="success" size="small" /> Charts tween between data sets when given an [`animation`](/components/feedback/chart#animation) prop. Without one, a chart does no per-frame work.
+
+- <Badge text="Feature" variant="success" size="small" /> Hover, tooltip and click are opt-in through the [`interactive`](/components/feedback/chart#interactivity) prop, using native SVG hit-testing or a single overlay that resolves the hovered point mathematically.
+
+## 4.1.0
 
 - <Badge text="New" variant="tip" size="small" /> Added [Trackers](/components/performance/trackers) component for rendering many per-entity UI markers - nameplates, minimap blips, damage numbers - that update position every frame without going through Solid's reactivity. Each tracked entity gets one DOM node, built once; later updates just move, hide, or show it.
 

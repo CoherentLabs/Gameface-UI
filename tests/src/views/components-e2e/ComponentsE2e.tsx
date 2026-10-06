@@ -38,6 +38,7 @@ import ProgressTest from '../../components/Progress';
 import RadialMenuTest from '../../components/RadialMenu/RadialMenuTest';
 import TutorialTest from '../../components/Tutorial/TutorialTest';
 import TrackersTest from '../../components/Trackers/TrackersTest';
+import ChartTest from '../../components/Chart';
 
 const Main = () => {
     const components = [
@@ -66,6 +67,12 @@ const Main = () => {
         'toaster',
         "progress-bar",
         "progress-circle",
+        "chart-pie",
+        "chart-donut",
+        "chart-bar",
+        "chart-line",
+        "chart-area",
+        "chart-spider",
 
         // Complex components
         "color-picker",
@@ -139,6 +146,7 @@ const Main = () => {
                 <Tab location='trackers'>
                     <TrackersTest />
                 </Tab>
+                <ChartTest />
             </Tabs>
         </div>
     );

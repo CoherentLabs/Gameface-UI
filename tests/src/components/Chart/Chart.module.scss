@@ -1,0 +1,69 @@
+// The chart root fills its container, so the harness has to provide the box.
+// A module class rather than an inline style: the style-to-css plugin rewrites
+// inline styles on plain elements and the sizing does not survive.
+.wrapper {
+    position: relative;
+    width: 30rem;
+    height: 22rem;
+}
+
+// Hover targets for the e2e suite. getBoundingClientRect() returns zeros for
+// SVG child elements in Gameface, so the driver cannot aim at a slice directly.
+// These sit at a known point inside the first slice and are click-through, so
+// the event lands on whatever handles hit-testing underneath — a <path> in svg
+// mode, the hit overlay in overlay mode.
+.probe {
+    position: absolute;
+    width: 0.5rem;
+    height: 0.5rem;
+    pointer-events: none;
+}
+
+// Plot is 480x316 (a 36px legend sits below); centre (240,158).
+// This point is 60px right and 40px above it: radius 72, angle 56 degrees.
+.probe-pie {
+    left: 18.5rem;
+    top: 7.125rem;
+}
+
+// No legend here, so the plot is 480x352 and the centre is (240,176).
+.probe-overlay {
+    left: 18.5rem;
+    top: 8.25rem;
+}
+
+// Both donuts carry a bottom legend, so both plots are 480x316: centre
+// (240,158), outer radius 158, inner radius 94.8 at the default 60%.
+
+// Centre (344,88): radius 125, angle 56 degrees — inside the ring.
+.probe-donut-ring {
+    left: 21.25rem;
+    top: 5.25rem;
+}
+
+// Dead centre, inside the hole. Must resolve to nothing.
+.probe-donut-hole {
+    left: 14.75rem;
+    top: 9.625rem;
+}
+
+// Inside the first series' bar for the first category. Verified against the
+// rendered geometry rather than derived on paper.
+.probe-bar {
+    left: 4.9375rem;
+    top: 9.75rem;
+}
+
+// Near the first vertex of a line/area chart. Nearest-x hit-testing means this
+// only has to be closest to that vertex, not on top of the 2px stroke.
+.probe-line {
+    left: 4.9375rem;
+    top: 9.75rem;
+}
+
+// On the first spoke (straight up from the centre), nearer the outer series'
+// vertex than the inner one.
+.probe-spider {
+    left: 14.75rem;
+    top: 5.375rem;
+}

@@ -1,0 +1,123 @@
+---
+title: Chart Spider
+tableOfContents:
+  maxHeadingLevel: 4
+---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
+
+The `Chart.Spider` component plots several measures on separate axes radiating from a center and connects them into a shape. It is a good fit for stat comparisons, where the silhouette of a build matters more than the exact numbers.
+
+## Usage
+
+Each point becomes an axis, and each series becomes a shape. A spider needs at least three categories to enclose an area.
+
+<CodePreviewGFUI>
+```tsx
+import Chart from '@components/Feedback/Chart/Chart';
+import { createSignal } from 'solid-js';
+
+const App = () => {
+    const [stats] = createSignal([
+        {
+            label: 'Player',
+            points: [
+                { type: 'strength', value: 13 },
+                { type: 'agility', value: 9 },
+                { type: 'stamina', value: 16 },
+                { type: 'intellect', value: 6 },
+                { type: 'spirit', value: 11 },
+            ],
+        },
+    ]);
+
+    return (
+        <Chart.Spider data={stats()} interactive style={{ height: '20rem' }}>
+            <Chart.Spider.Web levels={4} style={{ stroke: '#8d8d8d' }} />
+            <Chart.Spider.Axis />
+            <Chart.Legend position="bottom" />
+        </Chart.Spider>
+    );
+};
+```
+</CodePreviewGFUI>
+
+The first category sits at 12 o'clock, and the rest run clockwise. Rotate the whole chart with `startAngle` in degrees.
+
+### Pinning the scale
+
+By default the outer ring is the largest value in the data, rounded outward to a readable number. That is usually not what you want for a stat display: a character with low values can still fill the entire web because the scale shrinks to fit them.
+
+`maxValue` pins the outer ring instead, so the shape has an absolute meaning:
+
+```tsx
+<Chart.Spider data={stats()} maxValue={100} />
+```
+
+With a fixed scale, low values make a small shape and high values nearly fill the web, which makes separate charts easier to compare.
+
+### The web and the axes
+
+Both are opt-in slots, just like [`Chart.Grid`](/components/feedback/chart/#grid) on a bar chart. Without `Chart.Spider.Web` there are no rings to read values against, and without `Chart.Spider.Axis` there are no spokes or category names.
+
+```tsx
+<Chart.Spider.Web levels={5} shape="circle" />
+```
+
+### Hovering
+
+Like line and area charts, a spider defaults to `overlay` hit-testing. A series here is a single closed path spanning every category, so native SVG hit-testing can only answer "which series" — never "which point." Instead, the nearest spoke picks the category, and the vertex nearest the pointer's distance from the center picks the series.
+
+## API
+
+### Props
+
+Takes the [shared chart props](/components/feedback/chart/#shared-props), plus:
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `maxValue` | `number` | data maximum | Pins the outer ring to a fixed value. |
+| `startAngle` | `number` | `0` | Degrees to rotate the first category away from 12 o'clock. |
+
+`interactive={true}` resolves to `'overlay'` here, and hover events fire for the nearest vertex. See [Types](/components/feedback/chart/#types) for the shared data and event types.
+
+### Behaviour notes
+
+- **Fewer than three categories renders nothing** and warns in development. Two axes cannot enclose a shape.
+- **Negative values are treated as zero.** A radius below the center has no meaning.
+- **Missing categories count as zero**, so the shape collapses toward the center on that axis.
+
+## Slots
+
+### `Chart.Spider.Shape`
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `class` | `string` | `""` | CSS classes applied to every shape. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to every shape. |
+| `fillOpacity` | `number` | `0.25` | Fill opacity. Keep it low when shapes overlap. |
+| `strokeWidth` | [`ChartLength`](/components/feedback/chart/#lengths) | `'0.125rem'` | Outline width. |
+| `pointRadius` | [`ChartLength`](/components/feedback/chart/#lengths) | `'0.1875rem'` | Vertex marker radius. `0` hides the markers. |
+
+### `Chart.Spider.Web`
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `class` | `string` | `""` | CSS classes applied to every ring. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to every ring. |
+| `levels` | `number` | `4` | Concentric rings drawn behind the data. |
+| `shape` | `'polygon' \| 'circle'` | `'polygon'` | Whether rings follow the axes or are true circles. |
+
+### `Chart.Spider.Axis`
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `class` | `string` | `""` | Applied to both the spokes and the category labels. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles applied to the spokes. |
+| `line` | `boolean` | `true` | Draws the spoke from the center to each category. |
+| `format` | `(category: string) => string` | `undefined` | Formats the category name. |
+
+Category labels are HTML placed just outside the outer ring and aligned by quadrant so they extend away from the web instead of over it.
+
+### `Chart.Legend`, `Chart.Tooltip`, `Chart.Labels`
+
+Shared with every chart type. See [Shared slots](/components/feedback/chart/#shared-slots) for their props. `Chart.Labels` places a value just above each vertex.

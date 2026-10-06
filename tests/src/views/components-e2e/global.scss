@@ -1,0 +1,11 @@
+// The chart tabs are taller than the viewport, so the page grows instead of
+// being pinned to it, and the background sits on the body to cover the overflow.
+body {
+    width: auto;
+    height: auto;
+    min-width: 100vw;
+    min-height: 100vh;
+    background-image: linear-gradient(to right, black, rgb(59, 59, 59), black);
+    background-size: cover;
+    background-repeat: no-repeat;
+}
