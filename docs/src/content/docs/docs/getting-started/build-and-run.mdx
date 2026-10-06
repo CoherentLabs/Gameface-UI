@@ -16,12 +16,18 @@ To run the project, open the specific view by loading the `index.html` in the co
 
 To start the project in development mode, run `npm run dev` from this folder. This will start a server on `localhost:${port}`, typically on port `3000`.
 
-To view a specific page during development, navigate to the following URL, for example: `http://localhost:3000/hud/` to load the hud view.
+Opening `http://localhost:3000` lists every view in `src/views` with a link to it, so you can pick one from there.
+
+To go straight to a view, navigate to `http://localhost:3000/${viewName}` - for example `http://localhost:3000/hud`. The trailing slash is optional.
 
 If you are using the `Player.bat` file to open the player and load the UI, you can specify the view url as an argument. For example, to load the hud view you can modify the last line of the `Player.bat` file to look like this:
 
 ```bat
-start "Player" /d "%wd%" "..\Player\Player.exe" --player "--url=http://localhost:3000/hud/"
+start "Player" /d "%wd%" "..\Player\Player.exe" --player "--url=http://localhost:3000/hud"
 ```
+
+:::tip
+Point the player at `http://localhost:3000` instead and you can switch between views from the list without restarting it.
+:::
 
 With the development server running, HOT module replacement will be enabled, so any changes you make will immediately be reflected.

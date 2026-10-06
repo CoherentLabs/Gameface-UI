@@ -1,0 +1,14 @@
+/**
+ * Applied to every view before its own styles. Add a `global.scss` next to a
+ * view's component to override or extend these rules for that view only.
+ */
+
+html {
+  font-size: 1vmax;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+}

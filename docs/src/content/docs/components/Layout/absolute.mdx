@@ -7,6 +7,16 @@ The `Absolute` component is a structural element designed to wrap content and po
 
 By default, the `Absolute` component positions its content relative to the closest `Relative` component parent. If no `Relative` component is present, it positions relative to the body.
 
+## Installation
+
+Every component ships with the boilerplate. If you are working in your own project, add `Absolute` with the [Gameface CLI](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/):
+
+```bash
+npx gameface-cli add Absolute
+```
+
+The CLI pulls in whatever `Absolute` depends on. To refresh an existing copy, [update it](/docs/getting-started/updating-components) instead.
+
 ## Usage 
 
 The primary use case for the `Absolute` component is to position nested content precisely within a document. The component lets you define offsets using the `top`, `left`, `right`, and `bottom` properties.

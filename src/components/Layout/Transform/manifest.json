@@ -1,0 +1,5 @@
+{
+  "name": "Transform",
+  "version": "1.0.0",
+  "description": "Applies CSS transforms to its children"
+}

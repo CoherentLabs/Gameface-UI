@@ -20,18 +20,14 @@ The boilerplate project is organized with the following structure:
     - ...
   - custom-components/
   - views
+    - global.scss
     - hud
-      - index.html
-      - index.css
-      - index.tsx
       - Hud.tsx
-      - Hud.module.css
+      - Hud.module.scss
     - menu
-      - index.html
-      - index.css
-      - index.tsx
+      - global.scss
       - Menu.tsx
-      - Menu.module.css
+      - Menu.module.scss
 - package.json
 - tsconfig.json
 - vite.config.mts
@@ -66,7 +62,9 @@ We recommend placing all custom components in this folder. This allows you to ea
 
 ## Views
 
-Gameface Views are standalone HTML5 pages paired with their respective JavaScript contexts. Each View represents a complete UI or a significant UI component. Since multiple Views can be instantiated, the `/src/views` directory is included in the boilerplate to help organize and manage them effectively. Each View resides in its own folder within `/src/views` and typically includes an `index.html`, `index.css`, and `index.tsx` file, which collectively define its structure, styling, and behavior. This setup allows developers to work on multiple Views efficiently.
+Gameface Views are standalone HTML5 pages paired with their respective JavaScript contexts. Each View represents a complete UI or a significant UI component. Since multiple Views can be instantiated, the `/src/views` directory is included in the boilerplate to help organize and manage them effectively.
+
+Each View resides in its own folder within `/src/views` and holds a component file named after that folder. The HTML document and the code that renders the component into it are generated for you.
 
 :::note
 For additional details about Views and how Gameface operates, refer to the following sections of the Gameface documentation:
@@ -80,22 +78,7 @@ For additional details about Views and how Gameface operates, refer to the follo
 
 ### Creating a View
 
-To create a new View, follow the structure of `src/views/hud` or `src/views/menu`. Begin by creating a new folder `src/views/${viewName}` and include the following files: `index.html`, `index.tsx`, `index.css`, and `${viewName}.tsx`.
-
-:::tip
-Although not **mandatory**, it is **recommended** to create a `${viewName}.tsx` file within the `/src/views/${viewName}` folder. This file defines the structure of the entry component rendered by the `index.tsx` file. For instance:
-
-```jsx title="/src/views/hud/index.tsx"
-import { render } from 'solid-js/web';
-import './index.css';
-import Hud from './Hud';
-
-const root = document.getElementById('root');
-
-render(() => <Hud />, root!);
-```
-
-The `Hud.tsx` file would then return a JSX element:
+Create a folder `src/views/${viewName}` and add a `${ViewName}.tsx` file to it that default exports the component. That is the whole requirement:
 
 ```jsx title="/src/views/hud/Hud.tsx"
 const Hud = () => {
@@ -105,5 +88,43 @@ const Hud = () => {
 export default Hud;
 ```
 
-Using a separate file like `${viewName}.tsx` promotes modularity and simplifies maintenance. It allows you to focus on the component's structure and logic independently, while the `index.tsx` file handles rendering and initialization. This approach is especially beneficial for complex Views with multiple components.
+The View is then served at `http://localhost:3000/hud` in development and built into `dist/hud`.
+
+The folder name and the component file name are matched loosely - case and separators are ignored - so `chart-playground/ChartPlayground.tsx` works as well as `hud/Hud.tsx`. Everything else the View needs (more components, helpers, assets) can live in the same folder.
+
+:::note
+A folder without a matching component file is not a View. It will not be served, and it will not be built.
 :::
+
+### Styling a View
+
+`${ViewName}.module.scss` is scoped to the component through [CSS modules](https://vitejs.dev/guide/features#css-modules), which is where most of a View's styles belong:
+
+```jsx title="/src/views/hud/Hud.tsx"
+import styles from './Hud.module.scss';
+
+const Hud = () => {
+  return <div class={styles.Hud}>Hello</div>;
+};
+
+export default Hud;
+```
+
+Rules that have to apply globally - `html` and `body`, `@font-face`, element selectors - go in a `global.scss` (or `global.css`) file. There are two levels, both optional:
+
+- **`/src/views/global.scss`** is applied to every View. The boilerplate uses it for the root font size and to make the body fill the viewport.
+- **`/src/views/${viewName}/global.scss`** is applied to that View only, and is loaded after the shared one so it can override it.
+
+Both are loaded before the View's own module styles.
+
+```scss title="/src/views/inventory/global.scss"
+@font-face {
+  font-family: 'Cinzel';
+  src: url('../../assets/fonts/Cinzel-Regular.ttf') format('truetype');
+}
+
+body {
+  background-color: black;
+  color: white;
+}
+```

@@ -1,10 +1,13 @@
 import Tab from "@components/Layout/Tab/Tab";
-import { createMemo, createSignal, For, onCleanup, onMount} from "solid-js";
+import { createMemo, createSignal, For, onCleanup, onMount, useContext } from "solid-js";
 import selectors from "../../../shared/progress-selectors.json";
 import Progress from "@components/Feedback/Progress/Progress";
+import { TabsContext } from "@components/Layout/Tabs/Tabs";
 
 const INITIAL_VALUE = 10;
 const ProgressTest = () => {
+    const tabs = useContext(TabsContext);
+
     const [value, setValue] = createSignal(INITIAL_VALUE);
     const [shape, setShape] = createSignal<'square' | 'round'>("square");
     const [test, setTest] = createSignal('red');
@@ -20,14 +23,15 @@ const ProgressTest = () => {
     };
 
     const scenarios = [
-        { label: "Load to 100%", action: () => {simulateProgress(100)}},
-        { label: "Load to 50%", action: () => {simulateProgress(50)}},
-        { label: "Load to 120%", action: () => {simulateProgress(120)}},
-        { label: "Change styles", action: () => {setTest('blue')}},
-        { label: "Set shape to round", action: () => {setShape('round')}},
+        { label: "Load to 100%", action: () => { simulateProgress(100) } },
+        { label: "Load to 50%", action: () => { simulateProgress(50) } },
+        { label: "Load to 120%", action: () => { simulateProgress(120) } },
+        { label: "Change styles", action: () => { setTest('blue') } },
+        { label: "Set shape to round", action: () => { setShape('round') } },
     ];
 
     const reset = () => {
+        if(tabs?.current() !=='progress-bar' && tabs?.current() !=='progress-circle') return;
         setTest('red');
         setValue(INITIAL_VALUE);
         setShape('square');
@@ -50,27 +54,27 @@ const ProgressTest = () => {
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
     onMount(() => document.addEventListener('reset', reset))
-    onCleanup(() => document.removeEventListener('reset', reset)) 
+    onCleanup(() => document.removeEventListener('reset', reset))
 
     return (
         <>
             <Tab location='progress-bar'>
                 <TestBoilerplate />
 
-                <Progress.Bar 
+                <Progress.Bar
                     progress={value()}
-                    style={reactiveStyle()} 
+                    style={reactiveStyle()}
                     class={`${selectors.base} ${reactiveClass()}`}>
                     <Progress.Bar.Fill class={`${selectors.fill} ${reactiveClass()}`} style={reactiveStyle()} />
                 </Progress.Bar>
-            </Tab> 
+            </Tab>
 
             <Tab location='progress-circle'>
                 <TestBoilerplate />
 
-                <Progress.Circle 
+                <Progress.Circle
                     progress={value()}
-                    style={reactiveStyle()} 
+                    style={reactiveStyle()}
                     class={`${selectors.base} ${reactiveClass()}`}>
                     <Progress.Circle.Fill class={`${selectors.fill} ${reactiveClass()}`} style={reactiveStyle()} shape={shape()} />
                     <Progress.Circle.Outline class={`${selectors.outline} ${reactiveClass()}`} style={reactiveStyle()} />
@@ -78,7 +82,7 @@ const ProgressTest = () => {
                         {`${value()}%`}
                     </Progress.Circle.Text>
                 </Progress.Circle>
-            </Tab> 
+            </Tab>
         </>
     )
 }

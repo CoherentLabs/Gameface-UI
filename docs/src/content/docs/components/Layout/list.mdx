@@ -9,6 +9,16 @@ Each item also exposes an inline Icon slot so you can override the bullet/icon f
 
 It's ideal for UI elements like settings menus, objectives, inventories, or any structured group of interactive or static content.
 
+## Installation
+
+Every component ships with the boilerplate. If you are working in your own project, add `List` with the [Gameface CLI](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/):
+
+```bash
+npx gameface-cli add List
+```
+
+The CLI pulls in whatever `List` depends on. To refresh an existing copy, [update it](/docs/getting-started/updating-components) instead.
+
 ## Usage
 
 To use `List`, wrap `List.Item` components inside the `List`. You can optionally specify the list type (unordered or ordered)
@@ -244,7 +254,6 @@ To change all bullets of the `List` with a custom image, import the image and pa
 ```tsx
 import List from '@components/Layout/List/List';
 import QuestArrow from 'assets@/quest-arrow.svg';
-import 'index.css'
 
 const App = () => {
     return (
@@ -262,9 +271,11 @@ When using a custom image, it will be applied as a `background-image` to every b
 :::
 
 To apply additional styles to all bullets at once,
-use the `bullet-class` prop and define your styles in CSS:
+use the `bullet-class` prop and define your styles in the view's `global.scss`. The
+class has to be global - a `*.module.scss` would hash the name and `bullet-class`
+would no longer match it:
 
-```css title="index.css"
+```scss title="global.scss"
 .custom-bullet-icon {
     background-color: yellow;
 }

@@ -1,0 +1,142 @@
+@use '../variables' as *;
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+// Selected nationalities, rendered as removable chips below the trigger
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.chip {
+    $icon-size: 1.25rem;
+
+    display: flex;
+    align-items: center;
+    padding: 0.15rem 0.25rem;
+    padding-right: $icon-size;
+    font-size: 0.85em;
+    background-color: $interactive-surface;
+    border: 0.1rem solid $interactive-glow;
+    border-radius: $component-radius;
+    color: $interactive;
+    position: relative;
+
+    &-image {
+        width: 1.5rem;
+        height: 1rem;
+        background-size: 100%;
+        background-position: center;
+    }
+
+    &-remove {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: $icon-size;
+        height: $icon-size;
+        position: absolute;
+        right: 0;
+        color: $interactive;
+        font-size: 0.9em;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity 0.1s ease-in-out;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+.dropdown {
+    color: $text-color;
+
+    // Trigger — quiet field, calmer than the nav search / filter button
+    &-trigger {
+        padding: 0.3rem 0.5rem;
+        background-color: $interactive-surface;
+        border: 0.1rem solid $interactive-muted;
+        border-radius: $component-radius;
+        color: $interactive;
+        text-transform: uppercase;
+        transition: border 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+
+        &:hover {
+            border-color: $interactive;
+        }
+    }
+
+    &-placeholder {
+        opacity: 1;
+    }
+
+    // Options panel — elevated surface with the interactive border
+    &-options {
+        margin-top: 0.5rem;
+        background-color: $bg-elevated;
+        border: 0.15rem solid $interactive-glow;
+        border-radius: $component-radius;
+        color: $text-color;
+        max-height: 15rem;
+    }
+
+    // Scrollbar track + handle
+    &-scrollbar {
+        background-color: $bg-overlay;
+    }
+
+    &-handle {
+        background-color: $interactive-muted;
+
+        &:hover,
+        &:active {
+            background-color: $interactive;
+        }
+    }
+
+    // Individual options
+    &-option {
+        border-radius: $component-radius;
+        padding: 0.5rem 1rem;
+
+        &-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            &-image {
+                border-radius: $component-radius;
+                background-size: 100%;
+                background-position: center;
+                width: 2.5rem;
+                height: 1.6rem;
+            }
+        }
+
+        &:hover,
+        &:focus {
+            background-color: $interactive-surface;
+            color: $interactive;
+        }
+
+        &-selected {
+            &,
+            &:hover,
+            &:focus {
+                background-color: $interactive-muted;
+                color: $text-color;
+            }
+        }
+    }
+
+    &-icon > svg {
+        fill: $interactive;
+    }
+}

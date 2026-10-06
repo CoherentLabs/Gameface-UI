@@ -1,0 +1,274 @@
+@use 'sass:math';
+@use './variables' as *;
+@use './mixins' as *;
+
+// Active sort-arrow: how far it sits past the label.
+$sort-arrow-size:   1em;
+$sort-arrow-offset: $sort-arrow-size;
+
+$condition-vertical-spacing: 1rem;
+
+.table {
+    // if container is defined
+    // width: 100%;
+    // height: 100%;
+    width: 60rem;
+    height: 37.5rem;
+    background-color: $bg-elevated;
+    padding: 0.5rem 1rem;
+    font-size: $root-font-3;
+    @include glow-border;
+    border-radius: $panel-radius;
+    font-family: Exo, sans-serif;
+}
+
+.nav {
+    width: 100%;
+    padding: 0.5rem 0;
+    gap: 1rem;
+    margin-bottom: 0.15rem;
+
+    &-heading {
+        font-size: 1.5em;
+        text-transform: uppercase;
+        letter-spacing: 1.75px;
+        color: $accent;
+        font-family: Orbitron;
+        font-weight: normal;
+        filter: drop-shadow(0 0 2px $accent);
+        margin: 0;
+
+        &-highlight {
+            font-weight: bold;
+        }
+    }
+}
+
+.filter {
+    position: relative;
+    font-size: 1.15em;
+    color: $interactive;
+    text-transform: uppercase;
+
+    &-trigger {
+        @include interactive-component;
+        cursor: pointer;
+        padding: 0 0.5rem;
+
+        &-icon {
+            width: 1.15em;
+            height: 1.15em;
+        }
+    }
+
+    &-panel {
+        position: absolute;
+        top: 105%;
+        z-index: 1;
+        right: 0;
+        background-color: $bg-elevated;
+        @include glow-border($width: 0.1rem, $blur: 0.5rem, $spread: 0.1rem);
+        border-radius: $panel-radius;
+        width: 18rem;
+        padding: 0.75rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        color: $text-color;
+        font-size: 0.85em;
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out;
+        visibility: hidden;
+
+        &-open {
+            visibility: visible;
+            opacity: 1;
+        }
+    }
+
+    &-row {
+        width: 100%;
+        font-size: 0.9em;
+        gap: 0.35rem;
+
+        &-heading {
+            color: $text-secondary;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    }
+}
+
+.panel-btn {
+    flex: 1;
+    margin-top: 0.35rem;
+    color: white;
+    background-color: $accent-muted;
+    border-radius: $component-radius;
+    text-transform: uppercase;
+    font-size: 1.15em;
+    text-align: center;
+    padding: 0.25rem 0.5rem;
+    letter-spacing: 0.15rem;
+    border: 0.1rem solid $accent-muted;
+    transition:
+        color 0.15s ease-in-out,
+        background-color 0.15s ease-in-out,
+        border 0.15s ease-in-out,
+        box-shadow 0.15s ease-in-out,
+        opacity 0.15s ease-in-out;
+
+    &:hover {
+        cursor: pointer;
+        @include glow-border($width: 0.1rem, $blur: 0.5rem, $spread: 0.15rem);
+    }
+
+    &-disabled {
+        opacity: 0.5;
+        color: $text-secondary;
+        pointer-events: none;
+        cursor: auto;
+    }
+
+    &-danger {
+        flex: 0 0 auto;
+        background-color: transparent;
+        color: $error;
+        border-color: $error;
+
+        &:hover {
+            background-color: $error;
+            color: $text-color;
+            @include glow-border($error, rgba($error, 0.25), $width: 0.1rem, $blur: 0.5rem, $spread: 0.15rem);
+        }
+    }
+}
+
+.header {
+    flex-wrap: nowrap;
+    color: $interactive;
+    font-size: 1em;
+    font-weight: 500;
+}
+
+.body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    font-size: 0.85em;
+    gap: 0.15em;
+}
+
+.footer {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0.5rem;
+    font-size: $root-font-3;
+
+    &-total {
+        position: absolute;
+        font-size: 1.25em;
+        right: 0.25rem;
+
+        &-highlight {
+            color: $interactive;
+        }
+    }
+}
+
+.row {
+    flex: 1;
+    flex-wrap: nowrap;
+    border: 0.15rem solid transparent;
+    background-color: $bg-overlay;
+    border-radius: $component-radius;
+    transition: border 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    overflow: hidden;
+    max-height: 3.5rem;
+
+    &:hover {
+        @include glow-emphasis($interactive, $interactive-glow);
+    }
+
+    &-active,
+    &-active:hover {
+        @include glow-emphasis;
+    }
+}
+
+.column {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+
+    &-image {
+        width: 3em;
+        height: 2em;
+        background-size: cover;
+        background-position: center;
+        border-radius: $component-radius;
+    }
+
+    &-name {
+        justify-content: flex-start;
+        padding-left: 1em;
+    }
+
+    &-position {
+        text-transform: uppercase;
+    }
+
+    &-condition {
+        width: 100%;
+        justify-content: space-around;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0 $condition-vertical-spacing;
+    }
+
+    &-btn {
+        position: relative;
+        cursor: pointer;
+
+        &::after {
+            content: "";
+            position: absolute;
+            top: .15em;
+            right: -$sort-arrow-offset;
+            width: $sort-arrow-size;
+            height: $sort-arrow-size;
+            background-image: url('./assets/arrow.svg');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            visibility: hidden;
+            transition: transform 0.1s ease-in-out;
+        }
+
+        &-active {
+            font-weight: bold;
+
+            &::after {
+                visibility: visible;
+            }
+        }
+
+        &-asc {
+            &::after {
+                transform: rotate(180deg);
+            }
+        }
+    }
+
+    &-pos-mark {
+        top: 50%;
+        right: 0;
+        transform: translate(115%, -50%);
+        font-size: 0.75em;
+        white-space: nowrap;
+        color: $interactive-muted;
+        text-transform: uppercase;
+    }
+}

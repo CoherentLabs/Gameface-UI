@@ -1,0 +1,5 @@
+{
+  "name": "Trackers",
+  "version": "1.0.0",
+  "description": "Trackers component for managing and updating tracker items like nameplates and minimap markers in the most performant way possible."
+}

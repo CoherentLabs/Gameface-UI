@@ -6,7 +6,7 @@ import TopBar from '@custom-components/Hud/TopBar/TopBar';
 import KillsList from '@custom-components/Hud/KillsList/KillsList';
 import StatusBar from '@custom-components/Hud/StatusBar/StatusBar';
 import Weapons from '@custom-components/Hud/Weapons/Weapons';
-import styles from './Hud.module.css';
+import styles from './Hud.module.scss';
 import RadialMenu, { RadialMenuRef } from '@components/Complex/RadialMenu/RadialMenu';
 import { For, onCleanup, onMount } from 'solid-js';
 import Weapon1 from "@assets/wheel/weapon1.png";

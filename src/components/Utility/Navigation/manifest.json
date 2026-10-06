@@ -1,0 +1,5 @@
+{
+  "name": "Navigation",
+  "version": "1.0.0",
+  "description": "Directional (gamepad/keyboard) focus navigation for UI areas"
+}

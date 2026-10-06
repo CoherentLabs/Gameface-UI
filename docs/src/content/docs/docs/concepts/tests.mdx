@@ -26,12 +26,10 @@ All tests are located under the `/tests` directory, which is organized as follow
     - ...
   - src
     - views
+      - global.scss
       - components-e2e
-        - index.tsx
-        - Main.tsx
-        - index.html
-        - index.css
-        - Main.module.css
+        - ComponentsE2e.tsx
+        - ComponentsE2e.module.scss
     - components
       - Accordion
         - AccordionTest.tsx
@@ -46,7 +44,7 @@ Here is a brief overview of the key directories:
 - **`/tests/shared`**: Contains shared selectors and utilities used across multiple tests.
 - **`/tests/specs`**: Contains individual test specifications, each typically corresponding to a specific component or feature.
 - **`/tests/src`**: Contains the source code for the components and views that are being tested. This includes both the component implementations and their corresponding test files.
-- **`/tests/src/views/components-e2e`**: Contains the main entry point for the e2e tests, including the HTML and CSS files that set up the test environment.
+- **`/tests/src/views/components-e2e`**: Contains the main entry point for the e2e tests. It is a view like any other, so it is just the `ComponentsE2e.tsx` component and its styles - the HTML document around it is generated.
 - **`/tests/gameface-e2e-config.js`**: The configuration file for the gameface-e2e testing framework, which sets up the environment and specifies how tests should be run.
 
 ## Running the tests
@@ -109,7 +107,7 @@ To add new tests to your Gameface UI project, follow these steps:
 2. **Write the test**: In the newly created file, write your test using the gameface-e2e framework. You can use existing tests as a reference for structure and syntax.
 3. **Add shared utilities**: If your test requires shared selectors or utilities, you can create or update files in the `/tests/shared` directory. This allows you to reuse code across multiple tests.
 4. **Update the component source**: If you are testing a new or modified component, ensure that the component's source code is located in the `/tests/src/components` directory. You can create a new directory for your component if it doesn't already exist.
-5. **Add the component to the test view**: To make your component visible in the test environment, add a new tab or section in `/tests/src/views/components-e2e/Main.tsx`. This ensures your component is properly rendered and testable during development.
+5. **Add the component to the test view**: To make your component visible in the test environment, add a new tab or section in `/tests/src/views/components-e2e/ComponentsE2e.tsx`. This ensures your component is properly rendered and testable during development.
 5. **Run the tests**: After adding your test, you can run the entire test suite to ensure everything works correctly. Refer to the section below on how to run the tests.
 
 ## Developing & Debugging the test view

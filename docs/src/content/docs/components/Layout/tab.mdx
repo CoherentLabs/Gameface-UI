@@ -4,6 +4,16 @@ title: Tab
 
 The `Tab` component conditionally renders its content based on the active tab state managed by the parent `Tabs` component. Each `Tab` is assigned a unique `location` prop, and only the `Tab` whose location matches the currently active tab will display its content. The `Tab` component shouldn't be used outside of the `Tabs` component.
 
+## Installation
+
+Every component ships with the boilerplate. If you are working in your own project, add `Tab` with the [Gameface CLI](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/):
+
+```bash
+npx gameface-cli add Tab
+```
+
+The CLI pulls in whatever `Tab` depends on. To refresh an existing copy, [update it](/docs/getting-started/updating-components) instead.
+
 ## Usage 
 
 To use the tab system, wrap your tab links and tab content with the `Tabs` component. Assign a unique `location` string to each Tab and its corresponding `TabLink`. Optionally, set a default tab using the `default` prop.

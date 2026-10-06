@@ -41,8 +41,7 @@ describe('TwoHandleSlider', function () {
         const slider = await gf.get(`.${selectors.slider}`);
         const handles = await slider.findAll(`.${selectors.sliderHandle}`);
         const startEl = await gf.get(`.${selectors.assertionStartElement}`);
-        await handles[0].dragBy(-30)
-
+        await handles[0].dragBy(-40);
         assert.equal(await startEl.text(), 0, 'Start handle should move to the minimum');
     })
 

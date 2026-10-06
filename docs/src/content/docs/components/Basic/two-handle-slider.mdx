@@ -4,6 +4,16 @@ title: TwoHandleSlider
 
 The `TwoHandleSlider` component lets users select a numeric **range** by dragging two handles along a track - a lower (`start`) handle and an upper (`end`) handle. It is useful for constraints such as picking a minimum and maximum age, price, or level.
 
+## Installation
+
+Every component ships with the boilerplate. If you are working in your own project, add `TwoHandleSlider` with the [Gameface CLI](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/):
+
+```bash
+npx gameface-cli add TwoHandleSlider
+```
+
+The CLI pulls in whatever `TwoHandleSlider` depends on. To refresh an existing copy, [update it](/docs/getting-started/updating-components) instead.
+
 ## Usage
 
 To use the `TwoHandleSlider` component, specify the minimum (`min`), maximum (`max`), initial range (`value`), and step size (`step`). The `value` is an object with a `start` and an `end` key.

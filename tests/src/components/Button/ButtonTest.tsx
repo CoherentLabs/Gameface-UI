@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
 import Button from "@components/Basic/Button/Button";
 import './button.css';
@@ -28,7 +27,7 @@ const ButtonTest = () => {
     onCleanup(() => document.removeEventListener('reset', reset)) 
 
     return (
-        <Tab location='button'>
+        <>
             <div class={selectors.assertionElement}>{test()}</div>
 
             <For each={scenarios}>
@@ -47,7 +46,7 @@ const ButtonTest = () => {
                 class={`${selectors.button} ${reactiveClass()}`}>
                     Button
             </Button>
-        </Tab> 
+        </>
     )
 }
 

@@ -22,15 +22,41 @@ This command runs an installation wizard that asks you to name your project, the
 
 ### Using the components only
 
-If you already have a SolidJS project set up, you can directly integrate the components. Simply create a new folder for the components and run the following command inside it:
+If you already have a SolidJS project set up, use the [Gameface CLI](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/) to add only the components you need. Run it from the root of your project:
 
 ```bash
-npx degit CoherentLabs/Gameface-UI/src/components
+npx gameface-cli add Dropdown
 ```
+
+The CLI creates the folders it needs, writes the component's files, pulls in everything that component depends on, installs any npm packages it requires, and records what it installed in your `package.json` under `gameface-ui-components`.
+
+Use `npx gameface-cli list` to see what is available, and `npx gameface-cli update` to bring installed components up to date.
 
 ## Creating a view
 
-To create a new view, follow the structure of `src/views/hud` or `src/views/menu`. Start by making a new folder `src/views/${viewName}`, and within it, include `index.html`, `index.tsx`, `index.css`, and `${viewName}.tsx` files.
+A view is a folder in `src/views` holding a component file named after it. Create `src/views/${viewName}/${ViewName}.tsx` and default export the component from it - that is the whole requirement:
+
+```
+src/views/
+  hud/
+    Hud.tsx           <- the page, default exported
+    Hud.module.scss   <- its scoped styles
+```
+
+The folder name and the component file name are matched loosely, so `chart-playground/ChartPlayground.tsx` works too. Everything else the view needs - more components, helpers, assets - can live in the same folder.
+
+The HTML document and the code that renders the component into it are generated for you, in development and in the production build alike. There is no `index.html`, `index.tsx` or `index.css` to write.
+
+### Styling a view
+
+`${ViewName}.module.scss` is scoped to the component through [CSS modules](https://vitejs.dev/guide/features#css-modules), which is where most styles belong.
+
+Rules that have to apply globally - `html` and `body`, `@font-face`, element selectors - go in a `global.scss` (or `global.css`) file:
+
+- `src/views/global.scss` is applied to every view. It sets the root font size and makes the body fill the viewport.
+- `src/views/${viewName}/global.scss` is applied to that view only, after the shared one, so it can override it.
+
+Both are optional, and both are loaded before the view's own module styles.
 
 ## Build & run the project in production
 
@@ -44,12 +70,12 @@ To run the project, open the specific view by loading the `index.html` in the co
 
 To start the project in development mode, run `npm run dev` from the folder you specified during installation. This will start a server on `localhost:${port}`, typically on port `3000`.
 
-To view a specific page during development, navigate to the following URL, for example: `http://localhost:3000/hud/` to load the hud view.
+Opening `http://localhost:3000` lists every view in `src/views` with a link to it, so you can pick one from there. To go straight to a view, navigate to `http://localhost:3000/${viewName}`, for example `http://localhost:3000/hud`. The trailing slash is optional.
 
 If you are using the `Player.bat` file to open the player and load the UI, you can specify the view url as an argument. For example, to load the hud view you can modify the last line of the `Player.bat` file to look like this:
 
 ```bat
-start "Player" /d "%wd%" "..\Player\Player.exe" --player "--url=http://localhost:3000/hud/"
+start "Player" /d "%wd%" "..\Player\Player.exe" --player "--url=http://localhost:3000/hud"
 ```
 
 With the development server running, HOT module replacement will be enabled, so any changes you make will immediately be reflected.

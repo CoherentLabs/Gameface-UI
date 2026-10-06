@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
 import XYSlider, { XYSliderRef } from "@components/Basic/XYSlider/XYSlider";
 import './xy-slider.css';
@@ -32,7 +31,7 @@ const XYSliderTest = () => {
     onCleanup(() => document.removeEventListener('reset', reset))
 
     return (
-        <Tab location='xy-slider'>
+        <>
             <div class={selectors.assertionElement}>{`x: ${value().x} | y: ${value().y}`}</div>
 
             <For each={scenarios}>
@@ -59,7 +58,7 @@ const XYSliderTest = () => {
                     <div style={reactiveStyleBG()} class={`${selectors.sliderBackground} ${reactiveClass()}`}></div>
                 </XYSlider.Background>
             </XYSlider>
-        </Tab>
+        </>
     )
 }
 

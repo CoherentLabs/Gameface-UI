@@ -8,6 +8,16 @@ The `State` component allows you to define multiple UI states, with only one bei
 * Simulating a router - Define different UI states that render based on the selected state. You can create UI elements to control the active state, and when the control changes, the `State` component updates the UI accordingly.
 * Creating different states for a component - For example, you can create different crosshairs for different weapons in a game. A pistol can have a smaller crosshair, while a bazooka can have a larger one.
 
+## Installation
+
+Every component ships with the boilerplate. If you are working in your own project, add `State` with the [Gameface CLI](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/):
+
+```bash
+npx gameface-cli add State
+```
+
+The CLI pulls in whatever `State` depends on. To refresh an existing copy, [update it](/docs/getting-started/updating-components) instead.
+
 ## Usage
 
 The `State` component must wrap different states as child elements using the `Match` component. You can set the default state when the UI loads using the `default` attribute of the `State` component.

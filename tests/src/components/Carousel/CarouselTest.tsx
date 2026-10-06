@@ -1,4 +1,3 @@
-import Tab from "@components/Layout/Tab/Tab";
 import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import './carousel.css';
 import selectors from "../../../shared/carousel-selectors.json";
@@ -59,7 +58,7 @@ const CarouselTest = () => {
     onCleanup(() => document.removeEventListener('reset', reset))
 
     return (
-        <Tab location='carousel'>
+        <>
             <div class={selectors.assertionElement}>{`Selected item/page: ${activePage()}`}</div>
 
             <For each={scenarios}>
@@ -103,7 +102,7 @@ const CarouselTest = () => {
                     <Carousel.Next class={selectors.carouselCustomNext}>Next Item</Carousel.Next>
                 </Show>
             </Carousel>
-        </Tab >
+        </>
     )
 }
 

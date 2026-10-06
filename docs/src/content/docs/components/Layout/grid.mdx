@@ -13,6 +13,16 @@ From Gameface UI version 2.1 onwards, you can access the `GridTile` component as
 The previous method of importing `GridTile` separately is still supported for backward compatibility.
 :::
 
+## Installation
+
+Every component ships with the boilerplate. If you are working in your own project, add `Grid` with the [Gameface CLI](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/):
+
+```bash
+npx gameface-cli add Grid
+```
+
+The CLI pulls in whatever `Grid` depends on. To refresh an existing copy, [update it](/docs/getting-started/updating-components) instead.
+
 ## Usage 
 
 The `Grid` component must be provided with number of rows and columns through the `rows` and `cols` props. You can dynamically add or remove items in specific cells using the provided methods.

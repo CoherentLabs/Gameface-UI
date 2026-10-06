@@ -7,5 +7,6 @@
   "acceptButton": "accept-button",
   "rejectButton": "reject-button",
   "assertionElement": "assertion-element",
-  "reactive": "reactive"
+  "reactive": "reactive",
+  "closeWithRef": "close-with-ref"
 }

@@ -12,8 +12,10 @@
     "@astrojs/solid-js": "^6.0.1",
     "@astrojs/starlight": "0.37.6",
     "@expressive-code/plugin-collapsible-sections": "^0.41.3",
+    "@solid-primitives/jsx-tokenizer": "^1.1.3",
     "astro": "5.17.1",
-    "coherent-docs-theme": "^1.0.0",
+    "coherent-docs-theme": "^1.0.16",
+    "coherent-gameface-interaction-manager": "^3.0.1",
     "gray-matter": "^4.0.3",
     "remark-mdx": "^3.1.0",
     "remark-parse": "^11.0.0",
@@ -23,9 +25,7 @@
     "starlight-links-validator": "^0.15.0",
     "starlight-sidebar-topics": "^0.6.2",
     "starlight-theme-rapide": "^0.4.0",
-    "unified": "^11.0.5",
-    "@solid-primitives/jsx-tokenizer": "^1.1.3",
-    "coherent-gameface-interaction-manager": "^3.0.1"
+    "unified": "^11.0.5"
   },
   "overrides": {
     "zod": "3.25.76",

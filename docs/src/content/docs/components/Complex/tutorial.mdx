@@ -9,6 +9,16 @@ import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.as
 The `Tutorial` component provides a declarative way to build guided walkthroughs directly inside your UI.
 Each `Tutorial.Step` wraps real elements, highlights them, and displays a tooltip with title and content, creating a structured onboarding or feature tour.
 
+## Installation
+
+Every component ships with the boilerplate. If you are working in your own project, add `Tutorial` with the [Gameface CLI](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/):
+
+```bash
+npx gameface-cli add Tutorial
+```
+
+The CLI pulls in whatever `Tutorial` depends on. To refresh an existing copy, [update it](/docs/getting-started/updating-components) instead.
+
 ## Usage
 
 To use the Tutorial component, wrap your existing UI with it and wrap every element you wish to be part of the tutorial with the `Tutorial.Step` component and provide it with an `order` prop.

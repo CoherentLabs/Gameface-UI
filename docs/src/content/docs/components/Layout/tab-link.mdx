@@ -4,6 +4,16 @@ title: TabLink
 
 The `TabLink` component acts as a clickable trigger that changes the active tab. By providing a `location` prop that corresponds to a Tab's `location`, clicking a `TabLink` updates the tab state in the `Tabs` context, thereby switching the displayed content. The `TabLink` component shouldn't be used outside of the `Tabs` component.
 
+## Installation
+
+Every component ships with the boilerplate. If you are working in your own project, add `TabLink` with the [Gameface CLI](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/):
+
+```bash
+npx gameface-cli add TabLink
+```
+
+The CLI pulls in whatever `TabLink` depends on. To refresh an existing copy, [update it](/docs/getting-started/updating-components) instead.
+
 ## Usage 
 
 To use the tab system, wrap your tab links and tab content with the `Tabs` component. Assign a unique `location` string to each Tab and its corresponding `TabLink`. Optionally, set a default tab using the `default` prop.

@@ -1,0 +1,22 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.search {
+    @include interactive-component;
+    transition: border 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    width: auto;
+    max-width: 50%;
+    margin-left: 2rem;
+    font-size: 1em;
+    
+    &-input {
+        line-height: 1;
+        color: $text-color;
+        font-size: 1em;
+    }
+
+    &-icon {
+        width: 1.25em;
+        height: 1.25em;
+    }
+}

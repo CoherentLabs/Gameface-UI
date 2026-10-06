@@ -46,8 +46,35 @@ You can then proceed with building and developing your UI.
 To use the components independently, you must have a SolidJS project set up with TypeScript, as GamefaceUI components are written in `.tsx` syntax.
 :::
 
-To integrate the components, create a new folder for them and run the following command inside it:
+Rather than downloading every component, use the [Gameface CLI](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/) to add only the ones you need. Run it from the root of your project:
 
 ```bash
-npx degit CoherentLabs/Gameface-UI/src/components
+npx gameface-cli add Dropdown
 ```
+
+The CLI does more than copy a file across. For each component you add, it will:
+
+* Create the folders it needs and write the component's files into them.
+* Pull in everything that component depends on (other components, shared utilities, base types) so it works the moment it lands.
+* Install any npm packages the component requires.
+* Record what it installed, and at which version, in your `package.json` under `gameface-ui-components`. That record is what makes [updating](/docs/getting-started/updating-components) possible later.
+
+To browse everything available, and see what you already have:
+
+```bash
+npx gameface-cli list
+```
+
+### Adding components to your own project
+
+If you are adding components to an existing SolidJS project rather than the boilerplate, the CLI installs them and then prints a short setup checklist covering:
+
+* the `@components` path alias, in both your `tsconfig` and your Vite config
+* the `@assets/scss/variables` import that the component stylesheets rely on
+* installing `sass`, which compiles those stylesheets
+
+These are one-time steps, and the CLI deliberately does not edit those files for you. Your build configuration stays yours. The CLI documentation covers [setting up an existing project](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/existing-projects/) in full.
+
+:::caution
+The `Icon` and `Keybinds` components depend on the boilerplate's asset pipeline, so they cannot be added to a plain SolidJS project.
+:::

@@ -6,22 +6,55 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write         # push the tag + create the release and upload its asset
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: "20.10.0"
+          node-version: "22"
 
       - name: Set up Git
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
 
-      - name: Tag current commit with version
+      # The changelog is a single page; each version is a heading whose anchor is the
+      # version with the dots stripped (3.1.0 -> #310).
+      - name: Resolve version
         run: |
           VERSION=$(jq -r .version package.json)
-          git tag -a v$VERSION -m "Changelog: https://gameface-ui.coherent-labs.com/changelog/$VERSION"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "CHANGELOG_URL=https://gameface-ui.coherent-labs.com/changelog/#${VERSION//./}" >> "$GITHUB_ENV"
+
+      # Runs before install/generate so a repeat release fails in seconds with a clear
+      # message, rather than as an opaque git push rejection at the tag step.
+      - name: Ensure version is not already released
+        run: |
+          if [ -n "$(git ls-remote --tags origin "refs/tags/v$VERSION")" ]; then
+            echo "::error::v$VERSION is already tagged on origin — that version has been released. Bump \"version\" in package.json and re-run."
+            exit 1
+          fi
+
+      - run: npm install --no-audit --no-fund
+
+      # registry.json is gitignored: built here, shipped as a release asset, never committed.
+      - name: Generate registry
+        run: npm run gen-registry
+
+      - name: Tag current commit with version
+        run: |
+          git tag -a v$VERSION -m "Changelog: $CHANGELOG_URL"
           git push origin "v$VERSION"
+
+      - name: Publish release with the registry attached
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "v$VERSION" registry.json \
+            --verify-tag \
+            --title "v$VERSION" \
+            --notes "Changelog: $CHANGELOG_URL"
