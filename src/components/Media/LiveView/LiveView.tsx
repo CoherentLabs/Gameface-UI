@@ -1,10 +1,16 @@
 import { ParentComponent } from "solid-js";
-import Image, { ImageProps } from "../Image/Image";
+import baseComponent from "@components/BaseComponent/BaseComponent";
+import type { ImageProps } from "../shared/types";
+import styles from '../shared/shared.module.scss';
 
-export interface LiveViewProps extends ImageProps { }
+const LiveView: ParentComponent<ImageProps> = (props) => {
+    props.componentClasses = () => props.fill ? styles.fill : "";
 
-const LiveView: ParentComponent<LiveViewProps> = (props) => {
-    return <Image {...props} />
+    return <img
+        ref={props.ref as HTMLImageElement}
+        src={props.src as string}
+        use:baseComponent={props}
+    />
 }
 
 export default LiveView;

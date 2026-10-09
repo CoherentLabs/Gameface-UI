@@ -214,7 +214,7 @@ Binding a value of `xbox.a` and `face-button-down` or even `0` will result in th
 ### Displayed glyphs
 
 When displaying the bound keys, the component will render the corresponding glyphs for the gamepad buttons. The default glyphs are based on the standard Xbox controller layout and are displayed by the 
-[Icon](/components/media/icon/) component.
+[Image](/components/media/image/) component.
 
 You can override the default glyphs by providing a custom `glyphOverrides` prop to the `Keybinds` component and providing your own components or elements for the desired buttons. 
 
@@ -226,10 +226,10 @@ const App = () => {
     
     const GLYPHS: GlyphOverrides = {
         
-        '0': Icon.gamepad.ps5.cross,
-        '1': Icon.gamepad.ps5.circle,
+        '0': Image.icons.gamepad.ps5.cross,
+        '1': Image.icons.gamepad.ps5.circle,
 
-        '2': <Icon.gamepad.ps5.square style={{width: '5vmax', height: '5vmax'}} />,
+        '2': <Image.icons.gamepad.ps5.square style={{width: '5vmax', height: '5vmax'}} />,
 
         '3': <img src={customGlyphIcon} />,
     }
@@ -270,15 +270,15 @@ For example, to keep the default xbox glyphs but change their size, you can do t
 
 ```tsx
 const GLYPHS: GlyphOverrides = {
-    '0': <Icon.gamepad.xbox.a class="gamepad-glyph" />,
-    '1': <Icon.gamepad.xbox.b class="gamepad-glyph" />,
-    '2': <Icon.gamepad.xbox.x class="gamepad-glyph" />,
-    '3': <Icon.gamepad.xbox.y class="gamepad-glyph" />,
+    '0': <Image.icons.gamepad.xbox.a class="gamepad-glyph" />,
+    '1': <Image.icons.gamepad.xbox.b class="gamepad-glyph" />,
+    '2': <Image.icons.gamepad.xbox.x class="gamepad-glyph" />,
+    '3': <Image.icons.gamepad.xbox.y class="gamepad-glyph" />,
 }
 ```
 
 :::tip
-We recommend using the [Icon](/components/media/icon/) component for rendering the glyphs.
+We recommend using the [Image](/components/media/image/) component for rendering the glyphs.
 :::
 
 ## Guide

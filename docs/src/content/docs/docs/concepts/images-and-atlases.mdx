@@ -1,0 +1,200 @@
+---
+title: Images and texture atlases
+sidebar:
+    order: 7
+---
+
+import { Aside } from '@astrojs/starlight/components'
+
+The template includes an images plugin that does two things: it exposes files from `src/assets` as `Image.folder.name`, and it can pack the images a view actually uses into texture atlases during the build.
+
+This page covers the build side only. The authoring API is documented on the [`Image` component page](/components/media/image/).
+
+## What the plugin does
+
+During the build, `Image.icons.gamepad.xbox.a` is rewritten to the real asset file. That lets the bundler see exactly which images each view can reach.
+
+When atlas generation is enabled, the plugin packs those images into one or more PNG sheets and writes a lookup object into the view entry file:
+
+```js
+window.__GF_ATLAS__ = {
+  "a-DYLBUbVy.png": { image: "url(../assets/atlas-menu-icons-gamepad.png)", size: "…", position: "…" },
+  …
+};
+```
+
+`Image` looks up its filename in that object. If it finds a match, it renders the sprite; otherwise it falls back to the normal file. In development, there is no atlas at all, so every image is just a regular asset.
+
+## Why atlas images
+
+The benefit is not smaller file size or faster drawing. A sprite costs about the same to draw as its own file. The win is in creating textures:
+
+- **Fewer textures at load.** Thirty icons become one sheet, so the engine creates one texture instead of thirty, and the sheet stays loaded while any of its sprites is visible.
+- **Something you can preload.** This is the part worth the effort. Warming a handful of sheets before a view opens is practical; doing the same for fifty individual files is not. Once the build is producing sheets you are happy with, they are ordinary PNGs in `dist/assets` that your integration can load up front, so opening the view costs no texture allocation at all. Sheets are named `atlas-{view}-{group}.png` with no content hash, so the paths you register stay valid when the sheet's contents change.
+
+This is a tradeoff: a sheet may use more texture memory than the individual files, but it cuts texture churn and startup cost.
+
+## Configuration
+
+The plugin is registered in `vite.config.mts`:
+
+```ts
+gamefaceImages({
+  assets: resolve(__dirname, 'src/assets'),
+  types: resolve(__dirname, 'src/components/Media/Image/ImageTypes.ts'),
+  atlas: ['icons/hud'],
+});
+```
+
+| Option | Default | Description |
+|---|---|---|
+| `assets` | required | Folder whose images are exposed on `Image`. |
+| `types` | required | Where the generated types are written. |
+| `atlas` | `undefined` | Which images to pack, as groups. Omit it and nothing is packed. |
+| `atlasDefaults` | see [Key settings](#key-settings) | Base settings used by every group. |
+The generated types file is rewritten on every build and during dev. It describes the shape of your `src/assets` tree, which makes `Image.icons.gamepad.xbox.a` autocomplete and fail at compile time if you mistype it.
+
+<Aside type="note">
+Atlassing is opt-in. Without `atlas`, the plugin still provides the `Image.*` syntax and generated types, but every image ships as an individual file.
+</Aside>
+
+## Groups and matching
+
+Each entry in `atlas` describes one sheet. A plain string is a folder shorthand:
+
+```ts
+atlas: ['icons/hud']; // same as { include: 'icons/hud/**' }
+```
+
+Use an object for custom rules:
+
+```ts
+atlas: [
+  'icons/hud',
+  {
+    include: 'icons/gamepad/**',
+    exclude: 'icons/gamepad/ps5/**',
+    name: 'glyphs',
+    padding: 4,
+  },
+  '**', // catch-all for any remaining images
+],
+atlasDefaults: { squareCells: true },
+```
+
+Important rules:
+
+- patterns are relative to `assets`
+- first matching group wins
+- put specific groups first and catch-alls last
+- a group that matches nothing in any view logs a warning
+
+## Key settings
+
+| Setting | Default | Why it matters |
+|---|---|---|
+| `maxWidth` / `maxHeight` | `2048` | Largest sheet size before a second sheet is created. |
+| `padding` | `2` | Adds transparent spacing to avoid bleeding at fractional scale. |
+| `pot` | `true` | Rounds sheet sizes up to the next power of two. |
+| `squareCells` | `false` | Reserves a square cell so sprites render like `contain` + `center`. |
+| `maxSpriteSize` | `2048` | Larger sprites are not packed. |
+| `keepOriginals` | `false` | Keeps the standalone file beside the atlas version. |
+
+When `pot` is enabled, the packer rounds up first and only then checks the maximum. Use power-of-two values for the max dimensions.
+
+## Which images get packed
+
+An image is packed only if all of these are true:
+
+- written as `Image.folder.name`
+- not given an `options` prop
+- matches a group and is not excluded
+- not larger than `maxSpriteSize`
+
+If any rule fails, the image stays a normal file. The build report lists it under `skipped` with the reason.
+
+Images used only inside a `lazy()` component count as part of the view that loads it. They go on that view's sheet, so they load with the view rather than when the component first renders.
+
+<Aside type="caution" title="Two cases the plugin cannot detect">
+The `options` rule is enforced only when the plugin can read the props. It cannot see values passed through runtime merges or dynamic access, such as:
+
+```jsx
+<Image.icons.hud.weapon {...rest} />
+// OR
+const glyphs = { a: Image.icons.gamepad.xbox.a };
+<Dynamic component={glyphs[key()]} />
+```
+
+Those images still get packed. With `options`, `Image` draws the original file, which the build removed, so they render blank. If you pass `options` that way, set `keepOriginals: true` on the group.
+</Aside>
+
+## Read the build report
+
+The report is the main troubleshooting tool. It tells you which sheets were created, where each one was written, how many sprites fit, and which images were skipped. The path under each sheet is relative to where you ran the build, so most terminals let you click it to open the sheet.
+
+The same report, with every sprite's position on its sheet, is written to `dist/atlas-report.txt`. Its path is printed at the end of the terminal report.
+
+```
+Hud
+  icons-hud        1024x1024     4 sprites    34% used
+    dist/assets/atlas-hud-icons-hud.png
+  glyphs           1024x512      3 sprites    69% used
+    dist/assets/atlas-hud-glyphs.png
+  skipped  weapon2.png   768x271 > maxSpriteSize 512 ("glyphs")
+```
+
+The important number is the GPU texture memory estimate, not the disk size. A 1024x1024 sheet is roughly 4 MB of RGBA8 memory even if it is mostly empty. The trade is explicit: you are spending more GPU memory per sheet in exchange for far fewer textures to allocate, bind, and preload.
+
+## Limitations
+
+### Computed keys pull in the whole folder
+
+The build cannot know which key will run, so `[key]` puts every image under that folder into the view, and onto its sheet. List the images you need in an explicit map instead:
+
+```jsx del={1} ins={3-7}
+<Dynamic component={Image.icons.gamepad.ps5[key()]} />  // every ps5 glyph
+
+const glyphs = {
+    cross: Image.icons.gamepad.ps5.cross,
+    circle: Image.icons.gamepad.ps5.circle,
+};
+<Dynamic component={glyphs[key()]} />                   // only these two
+```
+
+### CSS background images
+
+A stylesheet cannot look up sprite positions, so it needs the original file. If an image is packed and also referenced from CSS, its original is removed and the CSS reference breaks:
+
+```scss
+.panel {
+    background-image: url('@assets/icons/hud/weapon.png'); // breaks once weapon.png is atlassed
+}
+```
+
+Set `keepOriginals: true` on the group so the original ships next to the sheet:
+
+```ts
+atlas: [{ include: 'icons/hud', keepOriginals: true }],
+```
+
+### Inline text
+
+`Image` renders a `div` with a background, which `cohinline` and `InlineTextBlock` do not draw on child elements. Use a plain `<img>` there. It is not packed:
+
+```jsx
+import xboxA from '@assets/icons/gamepad/xbox/a.png';
+
+<InlineTextBlock>
+    Press <img src={xboxA} class="glyph" /> to jump
+</InlineTextBlock>
+```
+
+### Fractional scales
+
+Sprites are positioned as percentages, so at fractional scales a sprite's edge can pick up a sliver of its neighbour. Raise `padding` on the group if you see it, or for every group through `atlasDefaults`:
+
+```ts
+atlas: [{ include: 'icons/hud', padding: 4 }],
+// OR
+atlasDefaults: { padding: 4 },
+```

@@ -1,7 +1,22 @@
 ---
 title: Icon
+banner:
+  content: |
+    <strong>Deprecated in 5.0.0.</strong> Use <a href="/components/media/image/">Image</a> instead. It has the same dot-path syntax and can be packed into a texture atlas. See the <a href="/components/media/image/#icon">migration guide</a>.
 ---
 import { FileTree } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="caution" title="Replaced by Image">
+`Icon` has been removed from the boilerplate. `Image` offers the same dot-path syntax over the whole `src/assets` folder:
+
+```diff
+- <Icon.gamepad.xbox.a />
++ <Image.icons.gamepad.xbox.a />
+```
+
+`Icon` keys started at `src/assets/icons`, so an `icons.` segment appears at the front. Two behavioural differences: `Image` renders a `div` with a background rather than an `<img>`, so there is no load-error fallback, but a mistyped path is now a build error instead of a missing image at runtime. See the [migration guide](/components/media/image/#icon).
+</Aside>
 import { Steps } from '@astrojs/starlight/components';
 
 The `Icon` component provides a structured, auto-generated way to render your UI icons. Unlike standard images, 

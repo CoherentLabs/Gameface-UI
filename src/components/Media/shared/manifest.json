@@ -1,0 +1,6 @@
+{
+  "name": "ImageShared",
+  "kind": "lib",
+  "version": "1.0.0",
+  "description": "Shared base logic and styles for the image components"
+}

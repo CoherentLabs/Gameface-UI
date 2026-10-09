@@ -16,8 +16,7 @@ import Weapon4 from "@assets/wheel/weapon4.png";
 import Weapon5 from "@assets/wheel/weapon5.png";
 import Weapon6 from "@assets/wheel/weapon6.png";
 import Center from "@assets/wheel/GameMessage_AchievmentIcon.png";
-import BackgroundImage from '@components/Media/BackgroundImage/BackgroundImage';
-import { Icon } from '@components/Media/Icon/Icon';
+import Image from '@components/Media/Image/Image';
 
 const wheelItems = [
     { id: "shotgun", img: Weapon1 },
@@ -65,13 +64,13 @@ const Hud = () => {
         <div class={styles.Hud}>
             <RadialMenu ref={radialMenuRef}>
                 <RadialMenu.Content  style={{width: '50%', height: '50%'}}>
-                    <BackgroundImage style={{width: '80%', height: '80%'}} src={Center} options={{size: 'contain', position: "center" }} />
+                    <Image style={{width: '80%', height: '80%'}} src={Center} options={{size: 'contain', position: "center" }} />
                 </RadialMenu.Content>
                 <For each={wheelItems}>
                     {(item) => (
                         <RadialMenu.Item id={item.id}>
                             <div style={{ width: '5vmax', height: '5vmax' }}>
-                                <BackgroundImage fill src={item.img} options={{size: 'contain', position: "center" }} />
+                                <Image fill src={item.img} options={{size: 'contain', position: "center" }} />
                             </div>
                         </RadialMenu.Item>
                     )}
@@ -86,7 +85,7 @@ const Hud = () => {
                     {(item) => (
                         <RadialMenu.Item id={item.id} style-selected={{ transform: 'scale(1.1)' }} style={{transition: 'transform 0.2s linear'}}>
                             <div style={{ width: '3.5vmax', height: '3.5vmax' }}>
-                                <BackgroundImage fill src={item.img} options={{size: 'contain', position: "center" }} />
+                                <Image fill src={item.img} options={{size: 'contain', position: "center" }} />
                             </div>
                         </RadialMenu.Item>
                     )}
@@ -108,7 +107,7 @@ const Hud = () => {
                 <Column4></Column4>
                 <Column4>
                     <Flex style={{ width: '100%', height: '100%' }} align-items="center" justify-content="center">
-                        <Icon.hud.crosshair style={{ width: '7vh', height: '7vh' }} />
+                        <Image.icons.hud.crosshair style={{ width: '7vh', height: '7vh' }} />
                     </Flex>
                 </Column4>
                 <Column4></Column4>

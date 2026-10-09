@@ -2,7 +2,7 @@ import Block from "@components/Layout/Block/Block";
 import Flex from "@components/Layout/Flex/Flex";
 import styles from './TopBar.module.css';
 import { For } from "solid-js";
-import { Icon } from "@components/Media/Icon/Icon";
+import Image from '@components/Media/Image/Image';
 
 const badges = Array.from({ length: 5 }, (_, i) => i);
 
@@ -13,14 +13,14 @@ const TopBar = () => {
             <For each={badges}>
                 {() => {
                     return <Block class={styles.heroBadge}>
-                        <Icon.hud.placeholder class={styles.badgeImage} />
+                        <Image.icons.hud.placeholder class={styles.badgeImage} />
                     </Block>
                 }}
             </For>
             <For each={badges}>
                 {() => {
                     return <Block class={styles.enemyBadge}>
-                        <Icon.hud.placeholder class={styles.badgeImage} />
+                        <Image.icons.hud.placeholder class={styles.badgeImage} />
                     </Block>
                 }}
             </For>

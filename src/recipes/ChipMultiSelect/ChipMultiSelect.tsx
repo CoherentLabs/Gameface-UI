@@ -2,7 +2,6 @@ import { Component, createEffect, createSignal, For, on, Show } from "solid-js";
 import { countries } from "./utils/countriesList";
 import Dropdown, { DropdownRef } from "@components/Basic/Dropdown/Dropdown";
 import Flex from "@components/Layout/Flex/Flex";
-import BackgroundImage from "@components/Media/BackgroundImage/BackgroundImage";
 import FLAG_SRC from "./utils/imageMap";
 import styles from "./ChipMultiSelect.module.scss";
 
@@ -49,7 +48,7 @@ const ChipMultiSelect: Component<DropdownProps> = (props) => {
                                     >{country.code}</Flex>
                                 
                                 {/* ORIGINAL */}
-                                {/* <BackgroundImage
+                                {/* <Image
                                     class={styles['dropdown-option-content-image']}
                                     src={FLAG_SRC[country.code]} /> */}
                             </div>
@@ -71,7 +70,7 @@ const ChipMultiSelect: Component<DropdownProps> = (props) => {
                                 >{value}</Flex>
 
                             {/* ORIGINAL */}
-                            {/* <BackgroundImage
+                            {/* <Image
                                 class={styles['chip-image']}
                                 src={FLAG_SRC[value]} /> */}
                             <div

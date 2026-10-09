@@ -6,6 +6,7 @@ import solidStyleToCssPlugin from 'vite-solid-style-to-css';
 import solidGameface from 'vite-gameface';
 import eslint from 'vite-plugin-eslint';
 import gamefaceViews from './scripts/vite/views-plugin.mts';
+import gamefaceImages from './scripts/vite/images-plugin.mts';
 
 export default defineConfig(({ mode }) => {
   const root = mode === 'test' ? 'tests/src/views' : 'src/views';
@@ -20,6 +21,10 @@ export default defineConfig(({ mode }) => {
         emitError: false,
       }),
       solidStyleToCssPlugin(),
+      gamefaceImages({
+        assets: resolve(__dirname, 'src/assets'),
+        types: resolve(__dirname, 'src/components/Media/Image/ImageTypes.ts'),
+      }),
       solidPlugin(),
       solidSvg({
         defaultAsComponent: false,

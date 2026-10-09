@@ -4,7 +4,7 @@ import { createStore } from "solid-js/store";
 import { PlayerPosition, POSITIONS } from "./types";
 import styles from './FilterableDataTable.module.scss';
 import filterIcon from './assets/filter.svg';
-import BackgroundImage from "@components/Media/BackgroundImage/BackgroundImage";
+import Image from "@components/Media/Image/Image";
 import Toggle from "./Toggle/Toggle";
 import Dropdown from "./Dropdown/Dropdown";
 import Slider from "./Slider/Slider";
@@ -80,7 +80,7 @@ const Filter: Component<FilterProps> = (props) => {
 
             {/* Trigger */}
             <Flex class={styles['filter-trigger']} click={toggle} align-items="center" gap="0.5rem">
-                <BackgroundImage src={filterIcon} class={styles['filter-trigger-icon']} options={{ size: 'contain', position: 'center' }} />
+                <Image src={filterIcon} class={styles['filter-trigger-icon']} options={{ size: 'contain', position: 'center' }} />
                 <div>Filter</div>
             </Flex>
 

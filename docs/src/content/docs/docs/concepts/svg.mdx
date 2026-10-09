@@ -25,22 +25,18 @@ const MyComponent = () => {
 };
 ```
 
-This approach renders the SVG using an `<img>` tag when build, making it static and non-interactive.
+This approach renders the SVG within a `<div>` element with the `background-image` property set, making it static and non-interactive.
 
-### `<BackgroundImage>` component
-
-To use an SVG as a background for an element, the `BackgroundImage` component can be utilized in a similar manner:
+`Image` also accepts children, so the same component can serve as an SVG background for other content:
 
 ```jsx
-import BackgroundImage from '@components/Media/BackgroundImage/BackgroundImage';
+import Image from '@components/Media/Image/Image';
 import logo from '@assets/logo.svg';
 
 const MyComponent = () => {
-    return <BackgroundImage src={logo}>Other content here...</BackgroundImage>;
+    return <Image src={logo} options={{ size: 'contain' }}>Other content here...</Image>;
 };
 ```
-
-This method renders the SVG within a `<div>` element with the `background-image` property set, but it does not allow runtime interaction with the SVG.
 
 ### `<MaskImage>` component
 

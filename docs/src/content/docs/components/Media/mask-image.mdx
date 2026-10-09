@@ -185,12 +185,12 @@ By default, the `MaskImage` component applies the mask image without repeating i
 
 ```jsx
 import { JSX } from 'solid-js';
-import { ImageBaseOptions } from '@components/Media/ImageBase/ImageBase';
+import { ImageOptions } from '@components/Media/shared/types';
 import MaskImage from '@components/Media/MaskImage/MaskImage';
 import Mask from '@assets/mask.png';
 
 const App = () => {
-    const maskSize: ImageBaseOptions = { size: '100px 100px' };
+    const maskSize: ImageOptions = { size: '100px 100px' };
     const maskStyle: JSX.CSSProperties = { width: '150px', height: '150px' };
 
     return (
@@ -209,7 +209,7 @@ const App = () => {
 export default App;
 ```
 
-In this example, we reuse common options for all the `MaskImage` components by setting the `maskSize` variable. Note that it is preferred to set the type of `maskSize` to `ImageBaseOptions` to take advantage of autocompletion for available options when using VSCode with the TypeScript plugin.
+In this example, we reuse common options for all the `MaskImage` components by setting the `maskSize` variable. Note that it is preferred to set the type of `maskSize` to `ImageOptions` to take advantage of autocompletion for available options when using VSCode with the TypeScript plugin.
 
 ### Positioning the mask image
 
@@ -219,12 +219,12 @@ The following example demonstrates positioning the mask using the `top`, `left`,
 
 ```jsx
 import { JSX } from 'solid-js';
-import { ImageBaseOptions } from '@components/Media/ImageBase/ImageBase';
+import { ImageOptions } from '@components/Media/shared/types';
 import MaskImage from '@components/Media/MaskImage/MaskImage';
 import Mask from '@assets/mask.png';
 
 const App = () => {
-    const maskSize: ImageBaseOptions = { size: '100px 100px' };
+    const maskSize: ImageOptions = { size: '100px 100px' };
     const maskStyle: JSX.CSSProperties = { width: '150px', height: '150px' };
 
     return (
