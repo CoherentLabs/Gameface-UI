@@ -516,10 +516,12 @@ function renderReport(sheets: SheetReport[], skipped: SkipReport[], spread: Spre
         sheet.rects.reduce((sum, rect) => sum + vram(rect.data.imageWidth, rect.data.imageHeight), 0), 0);
     const gpuAfter = sheets.reduce((total, sheet) => total + vram(sheet.width, sheet.height), 0);
 
-    const lines = [
+    const lines = sheets.length ? [
         `${sheets.length} sheet(s), ${files} sprite(s)  ·  ${files} files ${kb(before)} -> ` +
         `${sheets.length} files ${kb(after)}  ·  GPU ${mb(gpuBefore)} -> ${mb(gpuAfter)}`,
         `(...) = texture memory, RGBA8 estimate - transparent padding costs the same as a sprite`,
+    ] : [
+        'No sheets built.',
     ];
 
     const views = [...new Set([...sheets, ...skipped, ...spread].map((item) => item.view))];
@@ -1071,7 +1073,8 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                 this.warn(`atlas "${group.name}" matched no image in any view - check its include/exclude patterns.`);
             }
 
-            if (state.sheets.length) {
+            // Also with no sheets, so a group whose every image was skipped still says why.
+            if (state.sheets.length || state.skipped.length || state.spread.length) {
                 // The file has every sprite's place; the terminal gets the summary and a link to it.
                 const reportFile = 'atlas-report.txt';
                 this.emitFile({
