@@ -52,8 +52,6 @@ gamefaceImages({
 | `types` | required | Where the generated types are written. |
 | `atlas` | `undefined` | Which images to pack, as groups. Omit it and nothing is packed. |
 | `atlasDefaults` | see [Key settings](#key-settings) | Base settings used by every group. |
-| `verbose` | `false` | Adds detailed sprite positions to the build report. |
-
 The generated types file is rewritten on every build and during dev. It describes the shape of your `src/assets` tree, which makes `Image.icons.gamepad.xbox.a` autocomplete and fail at compile time if you mistype it.
 
 <Aside type="note">
@@ -133,6 +131,8 @@ Those images still get packed. With `options`, `Image` draws the original file, 
 ## Read the build report
 
 The report is the main troubleshooting tool. It tells you which sheets were created, where each one was written, how many sprites fit, and which images were skipped. The path under each sheet is relative to where you ran the build, so most terminals let you click it to open the sheet.
+
+The same report, with every sprite's position on its sheet, is written to `dist/atlas-report.txt`. Its path is printed at the end of the terminal report.
 
 ```
 Hud

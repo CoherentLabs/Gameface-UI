@@ -46,8 +46,6 @@ export interface ImagesPluginOptions {
     atlas?: (string | AtlasGroup)[];
     /** Settings every group starts from. A group's own settings win over these. */
     atlasDefaults?: Partial<AtlasConfig>;
-    /** Adds every sprite's place on its sheet to the build report. */
-    verbose?: boolean;
 }
 
 interface AtlasGroup extends Partial<AtlasConfig> {
@@ -507,9 +505,9 @@ const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slic
 
 /**
  * The build report: one line per sheet, then what was left alone and why.
- * `verbose` adds every sprite's place on its sheet, for when one renders wrong.
+ * `withSprites` adds every sprite's place on its sheet, for when one renders wrong.
  */
-function renderReport(sheets: SheetReport[], skipped: SkipReport[], spread: SpreadReport[], verbose: boolean) {
+function renderReport(sheets: SheetReport[], skipped: SkipReport[], spread: SpreadReport[], withSprites: boolean) {
     const files = sheets.reduce((total, sheet) => total + sheet.rects.length, 0);
     const before = sheets.reduce((total, sheet) => total + sheet.originalBytes, 0);
     const after = sheets.reduce((total, sheet) => total + sheet.bytes, 0);
@@ -546,7 +544,7 @@ function renderReport(sheets: SheetReport[], skipped: SkipReport[], spread: Spre
                 `    ${sheet.file}`,
             );
 
-            if (!verbose) continue;
+            if (!withSprites) continue;
 
             for (const rect of sheet.rects) {
                 lines.push(
@@ -576,7 +574,7 @@ function renderReport(sheets: SheetReport[], skipped: SkipReport[], spread: Spre
 // -----------------------------------------------------------------------------
 
 export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
-    const { assets, types, atlas, atlasDefaults, verbose = false } = options;
+    const { assets, types, atlas, atlasDefaults } = options;
     const assetsDir = path.resolve(assets);
     const typesFile = path.resolve(types);
 
@@ -614,6 +612,9 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
 
     /** `icons.gamepad.a` -> absolute path of `icons/gamepad/a.png`. */
     let images = new Map<string, string>();
+
+    /** The short report, held until `closeBundle` so it prints after Vite's own build output. */
+    let terminalReport: string | null = null;
 
     /**
      * Image path -> modules that render it through `Image.*`. Only these images can
@@ -1070,7 +1071,27 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                 this.warn(`atlas "${group.name}" matched no image in any view - check its include/exclude patterns.`);
             }
 
-            if (state.sheets.length) this.info(`\n${renderReport(state.sheets, state.skipped, state.spread, verbose)}\n`);
+            if (state.sheets.length) {
+                // The file has every sprite's place; the terminal gets the summary and a link to it.
+                const reportFile = 'atlas-report.txt';
+                this.emitFile({
+                    type: 'asset',
+                    fileName: reportFile,
+                    source: renderReport(state.sheets, state.skipped, state.spread, true),
+                });
+
+                const reportPath = toPosix(path.relative(process.cwd(), path.resolve(outDir, reportFile)));
+                terminalReport = `${renderReport(state.sheets, state.skipped, state.spread, false)}\n\nFull report: ${reportPath}`;
+            }
+        },
+
+        // Runs after Vite has listed the written files and logged "built in", so the report is the last thing
+        // printed. Also runs on a failed build and when the dev server closes, hence the guard.
+        closeBundle() {
+            if (!terminalReport) return;
+
+            this.info(`\n${terminalReport}\n`);
+            terminalReport = null;
         },
     };
 }
