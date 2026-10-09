@@ -24,7 +24,7 @@ export const imagePosition = [
 export type ImagePositions = (typeof imagePosition)[number] | (string & {});
 
 /** An image with nothing but a source - what `LiveView` renders straight onto an `img`. */
-export interface ImageProps extends ComponentProps {
+export interface ImageProps extends Omit<ComponentProps, 'anchor' | 'onAction' | 'refObject'> {
     src: string | ImageMetadata
     fill?: boolean
 }

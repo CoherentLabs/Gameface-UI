@@ -2,7 +2,7 @@
 title: BackgroundImage
 banner:
   content: |
-    <strong>Deprecated.</strong> Use <a href="/components/media/image/">Image</a> with <code>options</code> instead. It renders identically and can be packed into a texture atlas.
+    <strong>Deprecated in 5.0.0.</strong> Use <a href="/components/media/image/">Image</a> with <code>options</code> instead. It renders identically and can be packed into a texture atlas. See the <a href="/components/media/image/#backgroundimage">migration guide</a>.
 ---
 
 import { Aside } from '@astrojs/starlight/components'
@@ -15,7 +15,7 @@ import { Aside } from '@astrojs/starlight/components'
 + <Image src={bg} options={{ size: 'contain' }} />
 ```
 
-The one thing to check is a call site that passed **no** `options`, because `Image` defaults to 3.5rem square where `BackgroundImage` had no size of its own. See the [`Image` docs](/components/media/image/#background-mode).
+The one thing to check is a call site that passed **no** `options`, because `Image` defaults to 3.5rem square where `BackgroundImage` had no size of its own. See the [`Image` docs](/components/media/image/#background-mode) and the [migration guide](/components/media/image/#backgroundimage).
 </Aside>
 
 The `BackgroundImage` component allows you to create a container with an image as its background. It supports images in `.png`, `.jpg`, or `.svg` formats that can be imported directly from your assets folder.

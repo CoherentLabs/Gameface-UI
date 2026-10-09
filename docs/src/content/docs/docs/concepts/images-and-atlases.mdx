@@ -46,13 +46,13 @@ gamefaceImages({
 });
 ```
 
-| Option | Description |
-|---|---|
-| `assets` | Folder whose images are exposed on `Image`. |
-| `types` | Where the generated types are written. |
-| `atlas` | Which images to pack, as groups. Omit it and nothing is packed. |
-| `atlasDefaults` | Base settings used by every group. |
-| `verbose` | Adds detailed sprite positions to the build report. |
+| Option | Default | Description |
+|---|---|---|
+| `assets` | required | Folder whose images are exposed on `Image`. |
+| `types` | required | Where the generated types are written. |
+| `atlas` | `undefined` | Which images to pack, as groups. Omit it and nothing is packed. |
+| `atlasDefaults` | see [Key settings](#key-settings) | Base settings used by every group. |
+| `verbose` | `false` | Adds detailed sprite positions to the build report. |
 
 The generated types file is rewritten on every build and during dev. It describes the shape of your `src/assets` tree, which makes `Image.icons.gamepad.xbox.a` autocomplete and fail at compile time if you mistype it.
 

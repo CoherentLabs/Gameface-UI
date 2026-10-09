@@ -52,6 +52,9 @@ export function scanImages(assetsDir) {
             .map((part) => normalizeImageKey(part, file))
             .join('.');
 
+        if (images.has(key)) {
+            throw new Error(`Duplicate image key "${key}" for file "${file}".`);
+        }
         images.set(key, path.join(root, file));
     }
 

@@ -136,7 +136,7 @@ const Inventory = () => {
 					</Column.Four>
 				</Tab>
 			</Row>
-		</Tabs >
+		</Tabs>
 	)
 };
 

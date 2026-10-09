@@ -9,7 +9,7 @@ import { Badge } from '@astrojs/starlight/components'
 ### ⚠️ Breaking Changes
 
 - <Badge text="Breaking Change" variant="danger" size="small" /> `Icon` and `BackgroundImage` were removed. Use [Image](/components/media/image) instead. See [Migrating from Icon and BackgroundImage](/components/media/image#migrating-from-icon-and-backgroundimage).
-- <Badge text="Breaking Change" variant="danger" size="small" /> `Image` dot paths start at `src/assets`, not `src/assets/icons`.
+- <Badge text="Breaking Change" variant="danger" size="small" /> Adding an icon is now done via `Image.icons.*` (previously `Icon.*`). Dot paths now start at `src/assets` instead of `src/assets/icons`, so existing paths gain an `icons.` prefix.
 - <Badge text="Breaking Change" variant="danger" size="small" /> `Image` renders a `div` background, so there is no load-error fallback. The default size is also `3.5rem` square unless you set dimensions.
 - <Badge text="Breaking Change" variant="danger" size="small" /> [MaskImage](/components/media/mask-image) no longer accepts the undocumented `onAction`, `anchor`, and `refObject` props.
 

@@ -14,7 +14,7 @@ import Image from '@components/Media/Image/Image';
 const App = () => <Image.icons.hud.grenade />;
 ```
 
-This gives you no import, auto-complete, and type checking. It is also the only form that can be packed into a texture atlas.
+With this approach, you don't need to manually import the image, but you still benefit from path auto-completion and type checking while using the dot-path syntax. It is also the only format that can be packed into a texture atlas.
 
 ## Installation
 
@@ -49,7 +49,13 @@ const App = () => <Image src={MyImage} style={{ width: '150px', height: '150px' 
 ```
 
 <Aside type="caution" title="SVGs have no dot path">
-The dot tree only contains raster images: `.png`, `.jpg`, `.jpeg`, and `.webp`. Import SVGs directly instead; they are not atlas-compatible.
+Dot paths are generated exclusively for raster images (`.png`, `.jpg`, `.jpeg`, `.webp`). SVGs are not atlas-compatible, so please import them directly and pass them through `src`:
+
+```jsx
+import MySvg from '@assets/my-svg.svg';
+
+<Image src={MySvg} />
+```
 </Aside>
 
 ## API
@@ -77,7 +83,7 @@ The dot tree only contains raster images: `.png`, `.jpg`, `.jpeg`, and `.webp`. 
 
 ### Default size
 
-Without `options`, `Image` is 3.5rem square and centres the image with `contain`:
+Without `options`, `Image` defaults to a 3.5rem square and centers the image with `contain`. You can set your own size in the following way:
 
 ```jsx
 <Image.icons.hud.grenade style={{ width: '2rem', height: '2rem' }} />
@@ -140,25 +146,29 @@ See [Images and texture atlases](/docs/concepts/images-and-atlases/) for configu
 
 ## Limitations
 
-- `Image` does not render inside `cohinline` or `InlineTextBlock`; use a plain `<img>` there.
+- `Image` can not be rendered inside a paragraph with `cohinline` enabled or `InlineTextBlock`; use a plain `<img>` there.
 - `Image` is a `div` with a background, so it has no image error fallback.
 - SVGs are not exposed on `Image` and cannot be packed into a raster atlas.
 - Computed keys cost the whole folder.
 
 ## Migrating from `Icon` and `BackgroundImage`
 
-Both are deprecated and `Image` covers them.
+Both were deprecated in 5.0.0 and `Image` covers them.
+
+### Icon
+
+`Icon` keys were relative to `src/assets/icons`; `Image` keys start at `src/assets`, so an `icons.` segment appears at the front. `Icon` rendered an `<img>` with a fallback image on load error. `Image` renders a `div`, so there is no error event and no fallback, but a mistyped path is now a build error instead.
 
 ```diff
 - <Icon.gamepad.xbox.a />
 + <Image.icons.gamepad.xbox.a />
 ```
 
-`Icon` keys were relative to `src/assets/icons`; `Image` keys start at `src/assets`, so an `icons.` segment appears at the front. `Icon` rendered an `<img>` with a fallback image on load error. `Image` renders a `div`, so there is no error event and no fallback, but a mistyped path is now a build error instead.
+### BackgroundImage
+
+The main behavior change is that `Image` has a 3.5rem default size unless you provide dimensions yourself.
 
 ```diff
 - <BackgroundImage src={bg} options={{ size: 'contain' }} />
 + <Image src={bg} options={{ size: 'contain' }} />
 ```
-
-The main behavior change is that `Image` has a 3.5rem default size unless you provide dimensions yourself.
