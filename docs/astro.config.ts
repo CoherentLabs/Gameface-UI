@@ -96,6 +96,8 @@ export default defineConfig({
         '@docs-components': path.resolve(__dirname, './src/components'),
         'coherent-gameface-interaction-manager': resolveDocsDep('coherent-gameface-interaction-manager'),
         '@solid-primitives/jsx-tokenizer': resolveDocsDep('@solid-primitives/jsx-tokenizer'),
+        'd3-array': resolveDocsDep('d3-array'),
+        'd3-shape': resolveDocsDep('d3-shape'),
       },
     },
     css: {
