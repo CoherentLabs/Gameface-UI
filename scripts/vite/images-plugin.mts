@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { createFilter, type Plugin, type Rollup } from 'vite';
 import { IMAGE_EXTENSIONS, scanImages, writeImageTypes } from '../images/image-types.mjs';
 import { MaxRectsPacker } from 'maxrects-packer';
@@ -460,7 +461,7 @@ function spriteStyle(rect: AtlasRect, sheet: { width: number; height: number }, 
 interface SheetReport {
     view: string;
     group: string;
-    /** Where the sheet was written, relative to the cwd, so the terminal can link it. */
+    /** Absolute path the sheet was written to; `renderReport` turns it into a link. */
     file: string;
     width: number;
     height: number;
@@ -519,13 +520,14 @@ const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slic
 /**
  * The build report: one line per sheet, then what was left alone and why.
  * `withSprites` adds every sprite's place on its sheet, for when one renders wrong.
+ * `link` writes a sheet's path the way the place showing the report can open it.
  */
 function renderReport(
     sheets: SheetReport[],
     skipped: SkipReport[],
     spread: SpreadReport[],
     duplicates: DuplicateReport[],
-    withSprites: boolean,
+    { withSprites, link }: { withSprites: boolean; link: (file: string) => string },
 ) {
     const files = sheets.reduce((total, sheet) => total + sheet.rects.length, 0);
     const before = sheets.reduce((total, sheet) => total + sheet.originalBytes, 0);
@@ -562,7 +564,7 @@ function renderReport(
                 `${sheet.rects.length === 1 ? 'sprite ' : 'sprites'}   ` +
                 `${String(used).padStart(3)}% used   was ${kb(sheet.originalBytes)} (${mb(gpu)})` +
                 (sheet.keptOriginals ? '   (originals kept)' : ''),
-                `    ${sheet.file}`,
+                `    ${link(sheet.file)}`,
             );
 
             if (!withSprites) continue;
@@ -871,7 +873,7 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                 state.sheets.push({
                     view: view.name,
                     group: sheetName,
-                    file: toPosix(path.relative(process.cwd(), path.resolve(outDir, sheetFile))),
+                    file: path.resolve(outDir, sheetFile),
                     width: bin.width,
                     height: bin.height,
                     bytes: buffer.length,
@@ -1143,11 +1145,22 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                 this.emitFile({
                     type: 'asset',
                     fileName: reportFile,
-                    source: renderReport(state.sheets, state.skipped, state.spread, duplicates, true),
+                    // Editors only link paths with a scheme, so the file gets `file://` URLs.
+                    source: renderReport(state.sheets, state.skipped, state.spread, duplicates, {
+                        withSprites: true,
+                        link: (file) => pathToFileURL(file).href,
+                    }),
                 });
 
-                const reportPath = toPosix(path.relative(process.cwd(), path.resolve(outDir, reportFile)));
-                terminalReport = `${renderReport(state.sheets, state.skipped, state.spread, duplicates, false)}\n\nFull report: ${reportPath}`;
+                // Terminals link paths relative to where the build ran.
+                const fromCwd = (file: string) => toPosix(path.relative(process.cwd(), file));
+                const reportPath = fromCwd(path.resolve(outDir, reportFile));
+                const summary = renderReport(state.sheets, state.skipped, state.spread, duplicates, {
+                    withSprites: false,
+                    link: fromCwd,
+                });
+
+                terminalReport = `${summary}\n\nFull report: ${reportPath}`;
             }
         },
 
