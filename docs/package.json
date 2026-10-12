@@ -16,6 +16,8 @@
     "astro": "5.17.1",
     "coherent-docs-theme": "^1.0.16",
     "coherent-gameface-interaction-manager": "^3.0.1",
+    "d3-array": "^3.2.4",
+    "d3-shape": "^3.2.0",
     "gray-matter": "^4.0.3",
     "remark-mdx": "^3.1.0",
     "remark-parse": "^11.0.0",
