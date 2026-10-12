@@ -485,6 +485,19 @@ interface SpreadReport {
     group: string;
 }
 
+/**
+ * Images with identical bytes, which Rollup ships as one file. Only the first
+ * source is checked for atlassing, so the others follow whatever it gets.
+ */
+interface DuplicateReport {
+    /** The one file written for all of them. */
+    name: string;
+    /** Relative to `assets`; the first is the one that was checked. */
+    sources: string[];
+    /** Packed and the original deleted, so the other sources only work as `Image.*` without `options`. */
+    dropped: boolean;
+}
+
 const byteLength = (source: string | Uint8Array) =>
     typeof source === 'string' ? Buffer.byteLength(source) : source.length;
 
@@ -507,7 +520,13 @@ const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slic
  * The build report: one line per sheet, then what was left alone and why.
  * `withSprites` adds every sprite's place on its sheet, for when one renders wrong.
  */
-function renderReport(sheets: SheetReport[], skipped: SkipReport[], spread: SpreadReport[], withSprites: boolean) {
+function renderReport(
+    sheets: SheetReport[],
+    skipped: SkipReport[],
+    spread: SpreadReport[],
+    duplicates: DuplicateReport[],
+    withSprites: boolean,
+) {
     const files = sheets.reduce((total, sheet) => total + sheet.rects.length, 0);
     const before = sheets.reduce((total, sheet) => total + sheet.originalBytes, 0);
     const after = sheets.reduce((total, sheet) => total + sheet.bytes, 0);
@@ -564,6 +583,19 @@ function renderReport(sheets: SheetReport[], skipped: SkipReport[], spread: Spre
             lines.push(
                 `  spread   ${item.name.padEnd(34)} packed ("${item.group}"), but rendered with {...props} - ` +
                 `options passed that way break it (keepOriginals to be safe)`,
+            );
+        }
+    }
+
+    // Build-wide, since Rollup merges identical files once for every view.
+    if (duplicates.length) {
+        lines.push('', 'Duplicates - identical files shipped once; only the first path was checked for atlassing');
+
+        for (const duplicate of duplicates) {
+            lines.push(
+                `  ${duplicate.name.padEnd(34)} checked: ${duplicate.sources[0]}   ` +
+                `not checked: ${duplicate.sources.slice(1).join(', ')}` +
+                (duplicate.dropped ? '   (packed, original removed - the others only work as Image.* without options)' : ''),
             );
         }
     }
@@ -854,6 +886,28 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
     }
 
     /**
+     * Assets Rollup merged because their bytes are identical. Like `collectViewImages`,
+     * only the first source decides whether it counts as one of our images.
+     */
+    function findDuplicates(bundle: Rollup.OutputBundle) {
+        const duplicates: { fileName: string; sources: string[] }[] = [];
+
+        for (const output of Object.values(bundle)) {
+            if (output.type !== 'asset' || output.originalFileNames.length < 2) continue;
+
+            const sources = output.originalFileNames.map((file) => path.resolve(root, file));
+            if (!isImageInAssets(sources[0])) continue;
+
+            duplicates.push({
+                fileName: output.fileName,
+                sources: sources.map((source) => toPosix(path.relative(assetsDir, source))),
+            });
+        }
+
+        return duplicates;
+    }
+
+    /**
      * Deletes each atlassed original that no view still needs as a standalone
      * file, and warns about the ones that have to ship next to their sprite.
      */
@@ -1063,10 +1117,19 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
                 entry.code = `window.__GF_ATLAS__ = ${JSON.stringify(sprites)};\n` + entry.code;
             }
 
+            // Found before the originals go, so `dropped` below can tell which ones went.
+            const merged = findDuplicates(bundle);
+
             // An atlassed original can only go once *every* view that reaches it
             // atlassed it. One view using it outside `Image` keeps the file alive for
             // all of them - the sprite still works, the raw image just ships as well.
             dropAtlassedOriginals(bundle, state, (message) => this.warn(message));
+
+            const duplicates = merged.map(({ fileName, sources }): DuplicateReport => ({
+                name: path.basename(fileName),
+                sources,
+                dropped: !(fileName in bundle),
+            }));
 
             for (const group of atlasGroups) {
                 if (state.matched.has(group.name)) continue;
@@ -1074,17 +1137,17 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
             }
 
             // Also with no sheets, so a group whose every image was skipped still says why.
-            if (state.sheets.length || state.skipped.length || state.spread.length) {
+            if (state.sheets.length || state.skipped.length || state.spread.length || duplicates.length) {
                 // The file has every sprite's place; the terminal gets the summary and a link to it.
                 const reportFile = 'atlas-report.txt';
                 this.emitFile({
                     type: 'asset',
                     fileName: reportFile,
-                    source: renderReport(state.sheets, state.skipped, state.spread, true),
+                    source: renderReport(state.sheets, state.skipped, state.spread, duplicates, true),
                 });
 
                 const reportPath = toPosix(path.relative(process.cwd(), path.resolve(outDir, reportFile)));
-                terminalReport = `${renderReport(state.sheets, state.skipped, state.spread, false)}\n\nFull report: ${reportPath}`;
+                terminalReport = `${renderReport(state.sheets, state.skipped, state.spread, duplicates, false)}\n\nFull report: ${reportPath}`;
             }
         },
 

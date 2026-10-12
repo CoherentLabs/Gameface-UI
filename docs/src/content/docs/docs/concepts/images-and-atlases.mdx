@@ -189,6 +189,12 @@ import xboxA from '@assets/icons/gamepad/xbox/a.png';
 </InlineTextBlock>
 ```
 
+### Duplicate images
+
+<Aside type="caution" title="Avoid duplicate images">
+Images with identical bytes ship as one file. Which copy is kept is undefined, and it may not be the one you set up for packing. **Keep one copy.** The build report lists any duplicates it finds.
+</Aside>
+
 ### Fractional scales
 
 Sprites are positioned as percentages, so at fractional scales a sprite's edge can pick up a sliver of its neighbour. Raise `padding` on the group if you see it, or for every group through `atlasDefaults`:
