@@ -19,26 +19,22 @@ export type TypedOMUnit =
   | 'vmax'
   | 'em'
   | 'rem'
-  | 'in'
   | 'pt'
   | 'deg'
   | 'ms'
   | 'number' // Used for unitless values, e.g., new CSSUnitValue(1, 'number')
   | 's';
 
-export type TypedOMLengthUnit = 'px' | 'em' | 'rem' | 'pt' | 'percent' | 'vw' | 'vh' | 'vmin' | 'vmax' | 'in';
+export type TypedOMLengthUnit = 'px' | 'em' | 'rem' | 'pt' | 'percent' | 'vw' | 'vh' | 'vmin' | 'vmax';
 
 export type NumericCSSProperty<UnitType extends TypedOMLengthUnit = TypedOMLengthUnit> = { value: Accessor<number> | number; unit: UnitType };
 
+// `functions`: the transform functions in written order, with the unit of
+// each argument in brackets - e.g. 'rotate(deg) translate(px,px) scale(number)'.
+// `values`: the numbers, in the same order.
 export type TransformStyle = {
-  translateX: NumericCSSProperty;
-  translateY: NumericCSSProperty;
-  scaleX: Accessor<number> | number;
-  scaleY: Accessor<number> | number;
-  rotate: Accessor<number> | number;
-  // Optional - most transforms don't skew. Degrees, defaults to 0 when absent.
-  skewX?: Accessor<number> | number;
-  skewY?: Accessor<number> | number;
+  functions: string;
+  values: (Accessor<number> | number)[];
 };
 
 declare module "solid-js" {

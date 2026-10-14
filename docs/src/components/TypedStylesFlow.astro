@@ -1,0 +1,107 @@
+---
+// Flow of a dynamic style through the Style TOM plugin (build time) and the
+// CSSTOM style runtime (in Gameface). Inline SVG so it follows the Starlight
+// theme colors in light and dark mode.
+---
+
+<figure class="flow">
+  <svg viewBox="0 0 640 262" role="img" aria-labelledby="tsf-title tsf-desc">
+    <title id="tsf-title">How a dynamic style reaches Gameface</title>
+    <desc id="tsf-desc">
+      {"At build time the Style TOM plugin rewrites `${x()}px` into { value: x(), unit: 'px' }. On every change, the style runtime applies supported properties through CSSTOM and everything else through element.style."}
+    </desc>
+
+    <defs>
+      <marker id="tsf-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" class="arrow-head" />
+      </marker>
+      <marker id="tsf-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" class="arrow-head accent" />
+      </marker>
+    </defs>
+
+    <rect x="220" y="1" width="200" height="40" rx="20" class="box" />
+    <text x="320" y="26" class="code" text-anchor="middle">{'`${x()}px`'}</text>
+
+    <line x1="320" y1="41" x2="320" y2="74" class="arrow" marker-end="url(#tsf-arrow)" />
+    <text x="334" y="62" class="label">Style TOM plugin, at build time</text>
+
+    <rect x="170" y="76" width="300" height="40" rx="20" class="box" />
+    <text x="320" y="101" class="code" text-anchor="middle">{"{ value: x(), unit: 'px' }"}</text>
+
+    <path d="M320,116 V142 M160,142 H480" class="arrow" />
+    <text x="334" y="133" class="label">Style runtime, on every change</text>
+    <line x1="160" y1="142" x2="160" y2="177" class="arrow accent" marker-end="url(#tsf-arrow-accent)" />
+    <line x1="480" y1="142" x2="480" y2="177" class="arrow" marker-end="url(#tsf-arrow)" />
+
+    <rect x="1" y="179" width="310" height="80" rx="8" class="box accent-box" />
+    <text x="17" y="203" class="title accent-text">Supported property: CSSTOM</text>
+    <text x="17" y="227" class="code">attributeStyleMap.set(…)</text>
+    <text x="17" y="248" class="small">Only the number changes, no parsing</text>
+
+    <rect x="329" y="179" width="310" height="80" rx="8" class="box" />
+    <text x="345" y="203" class="title">Anything else: normal path</text>
+    <text x="345" y="227" class="code">element.style.setProperty(…)</text>
+    <text x="345" y="248" class="small">Gameface parses the string</text>
+  </svg>
+</figure>
+
+<style>
+  .flow {
+    margin: 1.5rem 0;
+  }
+  svg {
+    width: 100%;
+    max-width: 40rem;
+    height: auto;
+    display: block;
+  }
+  .box {
+    fill: var(--sl-color-bg-inline-code);
+    stroke: var(--sl-color-gray-5);
+    stroke-width: 1;
+  }
+  .accent-box {
+    fill: var(--sl-color-accent-low);
+    stroke: var(--sl-color-accent);
+  }
+  .arrow {
+    fill: none;
+    stroke: var(--sl-color-gray-3);
+    stroke-width: 1.5;
+  }
+  .arrow.accent {
+    stroke: var(--sl-color-accent);
+  }
+  .arrow-head {
+    fill: var(--sl-color-gray-3);
+  }
+  .arrow-head.accent {
+    fill: var(--sl-color-accent);
+  }
+  text {
+    fill: var(--sl-color-white);
+    font-family: var(--sl-font, system-ui, sans-serif);
+  }
+  .title {
+    font-size: 14.5px;
+    font-weight: 600;
+  }
+  .accent-text {
+    fill: var(--sl-color-accent-high);
+  }
+  .label {
+    font-size: 13px;
+    fill: var(--sl-color-gray-2);
+  }
+  .small {
+    font-size: 13px;
+    fill: var(--sl-color-gray-2);
+  }
+  .code {
+    font-family: ui-monospace, 'Cascadia Code', Consolas, 'Courier New', monospace;
+    font-size: 14px;
+    font-variant-ligatures: none;
+    white-space: pre;
+  }
+</style>

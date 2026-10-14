@@ -1,5 +1,7 @@
-import type { TypedOMLengthUnit, TypedOMUnit } from '@components/types';
+import type { TypedOMUnit } from '@components/types';
 
+// scripts/babel/style-tom-plugin.mts keeps its own copy of these two lists,
+// so the plugin can load (and switch itself off) without this file.
 export const UNITLESS_PROPS = new Set([
   'opacity', 'z-index', 'flex-grow', 'flex-shrink', 'line-height'
 ]);
@@ -28,21 +30,6 @@ export function unitToCssSuffix(u: TypedOMUnit): string {
   if (u === 'number') return '';
   return u;
 }
-
-// Written-CSS-text suffix -> CSS Typed OM unit keyword. '%' is the only
-// irregular one; everything else is spelled the same both ways.
-export const CSS_SUFFIX_TO_UNIT: Record<string, TypedOMUnit> = {
-  '%': 'percent',
-  px: 'px', vw: 'vw', vh: 'vh', vmin: 'vmin', vmax: 'vmax',
-  em: 'em', rem: 'rem', in: 'in', pt: 'pt', deg: 'deg', ms: 'ms', s: 's'
-};
-
-// Length-only subset for translate()'s x/y (a NumericCSSProperty, typed to
-// TypedOMLengthUnit - 'deg'/'ms'/'s' aren't valid translate() units anyway).
-export const CSS_SUFFIX_TO_LENGTH_UNIT: Record<string, TypedOMLengthUnit> = {
-  '%': 'percent', px: 'px', vw: 'vw', vh: 'vh', vmin: 'vmin', vmax: 'vmax',
-  em: 'em', rem: 'rem', in: 'in', pt: 'pt'
-};
 
 // Default unit for a bare JS `number` on a given property - there's no
 // string to inspect for a suffix here (unlike the plugin's string-parsing

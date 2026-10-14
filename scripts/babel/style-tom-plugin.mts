@@ -1,4 +1,4 @@
-// Build-time companion to `src/renderer/gameface-dom.ts`: rewrites plain
+// Build-time companion to `src/components/BaseComponent/gameface-dom.ts`: rewrites plain
 // Solid style authoring into the `{ value, unit }` / `TransformStyle` shapes
 // that runtime already understands, so the CSS Typed OM fast path applies
 // without the author having to write `unit(...)` by hand. Registered via
@@ -15,9 +15,9 @@
 //    bakes fully-static style objects into the template's HTML string, and
 //    our nested {value,unit} shape isn't something Solid's own serializer
 //    understands, so rewriting a static value would break that path.
-//  - `transform`: same idea but for the translate()/scale()/rotate() shorthand
-//    grammar `applyTransform` already models - see parseTransformString in
-//    gameface-dom.ts for the runtime twin of this parser.
+//  - `transform`: translate()/scale()/rotate()/skewX()/skewY() calls become
+//    `{ functions, values }`, keeping written order and repeated calls - see
+//    parseTransformFunctions in gameface-dom.ts for the runtime side.
 //  - `style={identifier}` / `style={identifier()}`: follows the binding to
 //    a local `const x = () => ({...})` / `createMemo(() => ({...}))` and
 //    rewrites its returned object in place - but only when every reference
@@ -27,14 +27,159 @@
 //    multi-return functions, reassigned bindings) is left exactly as
 //    written - no partial/best-guess rewrites, since a wrong axis or a
 //    silently-dropped property is worse than missing the optimization.
-import type { PluginObj } from '@babel/core';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import type { PluginObj, PluginPass } from '@babel/core';
 import type { Binding, NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
-import {
-  CSS_SUFFIX_TO_LENGTH_UNIT,
-  CSS_SUFFIX_TO_UNIT,
-  canUseTOM,
-} from '../../src/renderer/tom-constants';
+import { beginFile, endFile, recordStyle, setDisabledReason } from './style-tom-report.mts';
+
+// --- Runtime check ---------------------------------------------------------
+// The rewritten values only work with the style runtime that ships inside
+// BaseComponent, and with BaseComponent using it. Before rewriting anything,
+// check that the matching runtime is there; if not, rewrite nothing (the
+// build is then exactly what it would be without this plugin) and warn once.
+
+// Must match STYLE_TOM_FORMAT in gameface-dom.ts.
+const STYLE_TOM_FORMAT = 2;
+// The plugin ships together with BaseComponent, so the runtime is always at
+// this spot relative to this file.
+const RUNTIME_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../src/components/BaseComponent');
+const RUNTIME_FILE = path.join(RUNTIME_DIR, 'gameface-dom.ts');
+const BASE_COMPONENT_FILE = path.join(RUNTIME_DIR, 'BaseComponent.tsx');
+const UPDATE_HINT = 'Run `gameface-cli update` to install the updated BaseComponent.';
+
+function findRuntimeProblem(): string | null {
+  if (!fs.existsSync(RUNTIME_FILE)) return `the style runtime (src/components/BaseComponent/gameface-dom.ts) is missing. ${UPDATE_HINT}`;
+
+  const format = /STYLE_TOM_FORMAT\s*=\s*(\d+)/.exec(fs.readFileSync(RUNTIME_FILE, 'utf8'))?.[1];
+  if (Number(format) !== STYLE_TOM_FORMAT) {
+    return `the style runtime is a different version (format ${format ?? 'unknown'}, this plugin needs ${STYLE_TOM_FORMAT}). ${UPDATE_HINT}`;
+  }
+
+  if (!fs.existsSync(BASE_COMPONENT_FILE) || !/from\s+['"]\.\/gameface-dom['"]/.test(fs.readFileSync(BASE_COMPONENT_FILE, 'utf8'))) {
+    return `BaseComponent doesn't use the style runtime, so styles passed to components would break. ${UPDATE_HINT}`;
+  }
+  return null;
+}
+
+// Only success is cached: after a failure every file checks again, so running
+// `gameface-cli update` while the dev server is up takes effect immediately.
+let runtimeReady = false;
+let lastWarning = '';
+
+function checkRuntime(): boolean {
+  if (runtimeReady) return true;
+  const problem = findRuntimeProblem();
+  setDisabledReason(problem);
+  if (!problem) return (runtimeReady = true);
+  if (problem !== lastWarning) {
+    lastWarning = problem;
+    console.warn(`[style-tom] Style TOM plugin disabled - ${problem}`);
+  }
+  return false;
+}
+
+// Solid's compiled code must import its style helpers from that same runtime
+// (vite.config.mts: solid.moduleName). Babel hides preset options from
+// plugins, so this is checked on Solid's output once the file is compiled.
+const STYLE_HELPERS = new Set(['style', 'setStyleProperty']);
+
+function checkModuleName(file: { ast: t.File; opts: { filename?: string | null } }): void {
+  for (const node of file.ast.program.body) {
+    if (!t.isImportDeclaration(node)) continue;
+    // Only imports Solid's compiler generated (named `_$style` etc.), not ones
+    // written by hand - BaseComponent itself imports from './gameface-dom'.
+    const importsStyle = node.specifiers.some((s) =>
+      t.isImportSpecifier(s) && s.local.name.startsWith('_$') &&
+      t.isIdentifier(s.imported) && STYLE_HELPERS.has(s.imported.name));
+    if (!importsStyle) continue;
+    const source = node.source.value.startsWith('.') && file.opts.filename
+      ? path.resolve(path.dirname(file.opts.filename), node.source.value)
+      : node.source.value;
+    if (samePath(source, RUNTIME_FILE)) continue;
+    throw new Error(
+      `[style-tom] ${file.opts.filename}: Solid imports its style helpers from "${node.source.value}", ` +
+      `so the styles this plugin rewrote won't work. Set the style runtime as Solid's moduleName in vite.config.mts:\n` +
+      `  solidPlugin({ solid: { moduleName: path.resolve(__dirname, './src/components/BaseComponent/gameface-dom.ts') } })`
+    );
+  }
+}
+
+// Vite may hand over the module with or without its .ts extension.
+function samePath(a: string, b: string): boolean {
+  if (!path.isAbsolute(a)) return false;
+  const norm = (p: string) => path.resolve(p).replace(/\\/g, '/').replace(/\.ts$/, '');
+  return process.platform === 'win32' ? norm(a).toLowerCase() === norm(b).toLowerCase() : norm(a) === norm(b);
+}
+
+type StyleTomPass = PluginPass & { enabled?: boolean };
+
+// --- Property data ---------------------------------------------------------
+// Same lists as src/components/BaseComponent/tom-constants.ts, copied so the
+// plugin loads even when that file is missing. If they ever drift apart it's
+// harmless: the runtime turns a { value, unit } on a property it doesn't
+// take through CSSTOM back into a plain string.
+const UNITLESS_PROPS = new Set(['opacity', 'z-index', 'flex-grow', 'flex-shrink', 'line-height']);
+
+// https://docs.coherent-labs.com/cpp-gameface/content_development/csstypedobjectmodel/#supported-subset
+const SUPPORTED_PROPS = new Set([
+  'border-bottom-width', 'border-left-width', 'border-right-width', 'border-top-width',
+  'bottom', 'top', 'left', 'right', 'width', 'height',
+  'flex-basis', 'flex-grow', 'flex-shrink',
+  'font-size', 'letter-spacing', 'line-height',
+  'margin-bottom', 'margin-left', 'margin-right', 'margin-top',
+  'max-height', 'max-width', 'min-height', 'min-width',
+  'opacity', 'z-index',
+  'padding-bottom', 'padding-left', 'padding-right', 'padding-top',
+  'text-decoration-thickness', 'text-stroke-width', 'text-underline-offset',
+]);
+
+function canUseTOM(key: string): boolean {
+  return SUPPORTED_PROPS.has(key);
+}
+
+// Written CSS suffix -> CSS Typed OM unit keyword. '%' is the only irregular one.
+// No 'in': Gameface applies CSSUnitValue(n, 'in') as n px, so `in` stays a string.
+const CSS_SUFFIX_TO_UNIT: Record<string, string> = {
+  '%': 'percent',
+  px: 'px', vw: 'vw', vh: 'vh', vmin: 'vmin', vmax: 'vmax',
+  em: 'em', rem: 'rem', pt: 'pt', deg: 'deg', ms: 'ms', s: 's',
+};
+
+// Length-only subset, for translate().
+const CSS_SUFFIX_TO_LENGTH_UNIT: Record<string, string> = {
+  '%': 'percent', px: 'px', vw: 'vw', vh: 'vh', vmin: 'vmin', vmax: 'vmax',
+  em: 'em', rem: 'rem', pt: 'pt',
+};
+
+const LENGTH_UNITS = 'px, %, vw, vh, vmin, vmax, em, rem, pt';
+
+const REASON = {
+  noUnit: 'No unit, so it stays a string. Add the unit, e.g. `${x()}px`.',
+  unitlessString: 'The number is turned into a string. Pass the number directly instead, e.g. `opacity: o()`.',
+  textAround: 'There is text around the value (e.g. `calc()`). Only a single value followed by its unit can be rewritten, e.g. `${x()}px`.',
+  multipleParts: 'More than one dynamic part. Combine them into one expression, e.g. `${a() + b()}px`.',
+  conditional: "The plugin doesn't look inside a condition (`? :`). Use the `{ value, unit }` shape in each branch, e.g. `on() ? { value: a(), unit: 'px' } : 'auto'`.",
+  bareValue: "The plugin can't see the unit of a plain expression. If it's a string like '10px', pass the number instead: `{ value: n, unit: 'px' }`.",
+  bareTransform: "The transform is built outside the style, so the plugin can't see inside it. Write the template literal directly in the style, or use `{ functions, values }`.",
+};
+
+function unsupportedUnitReason(suffix: string): string {
+  if (suffix === 'in') return `\`in\` is applied as \`px\` by Gameface's CSSTOM, so it stays a string. Supported: ${LENGTH_UNITS}.`;
+  return `\`${suffix}\` can't be applied through CSSTOM. Supported: ${LENGTH_UNITS}.`;
+}
+
+// Values that never need a report entry: static, or already in a typed shape.
+function isStaticOrShape(node: t.Node): boolean {
+  if (t.isStringLiteral(node) || t.isNumericLiteral(node) || t.isNullLiteral(node) || t.isObjectExpression(node)) return true;
+  if (t.isTemplateLiteral(node)) return node.expressions.length === 0;
+  if (t.isIdentifier(node)) return node.name === 'undefined';
+  if (t.isUnaryExpression(node)) return t.isNumericLiteral(node.argument);
+  if (t.isConditionalExpression(node)) return isStaticOrShape(node.consequent) && isStaticOrShape(node.alternate);
+  return false;
+}
 
 type Part = { text: string } | { expr: t.Expression };
 
@@ -105,12 +250,6 @@ function matchSingleValue(parts: Part[]): { expr: t.Expression; suffix: string }
   return { expr: exprParts[0].expr, suffix: suffix.toLowerCase() };
 }
 
-function isUnitObjectShape(node: t.Node): boolean {
-  if (!t.isObjectExpression(node)) return false;
-  const keys = node.properties.map((p) => (t.isObjectProperty(p) && t.isIdentifier(p.key) ? p.key.name : null));
-  return keys.includes('value') && keys.includes('unit');
-}
-
 // Per-property numeric value: `left: \`${x()}%\`` -> `left: { value: x(), unit: 'percent' }`.
 // A dynamic part with no unit suffix at all (`left: \`${x()}\``) is left
 // untouched rather than guessing a unit - it falls through to the plain
@@ -118,35 +257,61 @@ function isUnitObjectShape(node: t.Node): boolean {
 // existed, instead of silently assuming "px" was meant.
 function tryTransformNumericProperty(key: string, valuePath: NodePath): boolean {
   if (!canUseTOM(key)) return false;
-  if (isUnitObjectShape(valuePath.node)) return false; // already optimal
+  const node = valuePath.node;
+  if (isStaticOrShape(node)) return false; // static, or already optimal
 
-  const parts = toParts(valuePath.node);
-  if (!parts) return false;
+  const parts = toParts(node);
+  // `a() + b` with no text in it is arithmetic, not a string being built.
+  if (!parts || (t.isBinaryExpression(node) && !parts.some((p) => 'text' in p))) {
+    // A number on a unitless property already goes through CSSTOM at runtime.
+    if (t.isConditionalExpression(node)) recordStyle(valuePath, key, REASON.conditional);
+    else if (!UNITLESS_PROPS.has(key)) recordStyle(valuePath, key, REASON.bareValue);
+    return false;
+  }
 
   const match = matchSingleValue(parts);
-  if (!match) return false;
-  if (match.suffix === '') return false; // no unit info - don't guess
+  if (!match) {
+    const dynamicParts = parts.filter((p) => 'expr' in p).length;
+    recordStyle(valuePath, key, dynamicParts > 1 ? REASON.multipleParts : REASON.textAround);
+    return false;
+  }
+  if (match.suffix === '') { // no unit info - don't guess
+    recordStyle(valuePath, key, UNITLESS_PROPS.has(key) ? REASON.unitlessString : REASON.noUnit);
+    return false;
+  }
 
   const unit = CSS_SUFFIX_TO_UNIT[match.suffix];
-  if (!unit) return false;
+  if (!unit) {
+    recordStyle(valuePath, key, unsupportedUnitReason(match.suffix));
+    return false;
+  }
 
+  recordStyle(valuePath, key);
   valuePath.replaceWith(buildUnitObject(match.expr, unit));
   return true;
 }
 
-const TRANSFORM_FN_RE = /(translate|scale|rotate|skewX|skewY|skew)\(([^)]*)\)/g;
-const TRANSFORM_TOKEN_RE = /^(?:(-?\d+(?:\.\d+)?)|@@(\d+)@@)([a-z%]*)$/;
+const TRANSFORM_FUNCTION_RE = /(translate|scale|rotate|skewX|skewY)\(([^)]*)\)/g;
+const TRANSFORM_ARGUMENT_RE = /^(?:(-?\d+(?:\.\d+)?)|@@(\d+)@@)([a-z%]*)$/;
 
 // `transform: \`translate(-50%, -50%) scale(${s()}) rotate(${r()}deg)\`` ->
-// the structured TransformStyle object. Builds a "virtual string" with each
-// dynamic part replaced by a `@@N@@` sentinel, so the same regex-driven walk
-// the runtime parser uses on a real string can run here too, just resolving
-// each numeric token to either a literal or the original expression node.
+// `{ functions: 'translate(percent,percent) scale(number) rotate(deg)', values: [-50, -50, s(), r()] }`.
+// Builds a "virtual string" with each dynamic part replaced by a `@@N@@`
+// placeholder, so the string can be parsed with regexes; each argument then
+// resolves to either a number literal or the original expression.
 function tryTransformTransformProperty(valuePath: NodePath): boolean {
-  if (isUnitObjectShape(valuePath.node) || t.isObjectExpression(valuePath.node)) return false; // already structured
+  const node = valuePath.node;
+  if (isStaticOrShape(node)) return false; // static, or already structured
 
-  const parts = toParts(valuePath.node);
-  if (!parts) return false;
+  const parts = toParts(node);
+  if (!parts) {
+    recordStyle(valuePath, 'transform', t.isConditionalExpression(node) ? REASON.conditional : REASON.bareTransform);
+    return false;
+  }
+  const miss = (reason: string) => {
+    recordStyle(valuePath, 'transform', reason);
+    return false;
+  };
 
   const exprs: t.Expression[] = [];
   const text = parts
@@ -157,97 +322,78 @@ function tryTransformTransformProperty(valuePath: NodePath): boolean {
     })
     .join('');
 
-  const remainder = text.replace(TRANSFORM_FN_RE, '').trim();
-  if (remainder !== '') return false;
+  const remainder = text.replace(TRANSFORM_FUNCTION_RE, '').trim();
+  if (remainder !== '') {
+    const others = [...new Set([...remainder.matchAll(/([a-zA-Z][\w-]*)\s*\(/g)].map((m) => m[1]))];
+    if (others.includes('skew')) return miss("Gameface doesn't support `skew()`. Use `skewX()` and `skewY()`.");
+    if (others.length) {
+      return miss(`${others.map((n) => `\`${n}()\``).join(', ')} can't be rewritten. Supported: \`translate()\`, \`scale()\`, \`rotate()\`, \`skewX()\`, \`skewY()\`.`);
+    }
+    return miss('The value has text that isn\'t a transform function.');
+  }
 
   const resolveArg = (raw: string): { expr: t.Expression; suffix: string } | null => {
-    const m = TRANSFORM_TOKEN_RE.exec(raw.trim());
+    const m = TRANSFORM_ARGUMENT_RE.exec(raw.trim());
     if (!m) return null;
     const [, literal, sentinel, suffix] = m;
     const expr = literal !== undefined ? t.numericLiteral(parseFloat(literal)) : exprs[parseInt(sentinel, 10)];
     return { expr, suffix };
   };
 
-  let translateX: t.ObjectExpression | null = null;
-  let translateY: t.ObjectExpression | null = null;
-  let scaleX: t.Expression = t.numericLiteral(1);
-  let scaleY: t.Expression = t.numericLiteral(1);
-  let rotate: t.Expression = t.numericLiteral(0);
-  let skewX: t.Expression | null = null;
-  let skewY: t.Expression | null = null;
-  let matched = false;
+  // Same rule as per-property values: no unit is only valid CSS for a
+  // literal 0, so anything else unitless leaves the whole value alone
+  // instead of guessing px/deg.
+  type Arg = { expr: t.Expression; suffix: string };
+  const isZero = (a: Arg) => t.isNumericLiteral(a.expr) && a.expr.value === 0;
+  const lengthUnit = (a: Arg) =>
+    a.suffix === '' ? (isZero(a) ? 'px' : null) : CSS_SUFFIX_TO_LENGTH_UNIT[a.suffix] ?? null;
+  const isDegrees = (a: Arg) => a.suffix === 'deg' || (a.suffix === '' && isZero(a));
 
-  TRANSFORM_FN_RE.lastIndex = 0;
+  // Functions are kept in written order, one entry per call - repeated
+  // functions are just repeated entries, which CSSTOM composes like CSS.
+  const functionList: string[] = [];
+  const values: t.Expression[] = [];
+
+  TRANSFORM_FUNCTION_RE.lastIndex = 0;
   let m: RegExpExecArray | null;
-  while ((m = TRANSFORM_FN_RE.exec(text))) {
+  while ((m = TRANSFORM_FUNCTION_RE.exec(text))) {
     const [, fn, argsRaw] = m;
-    const args = argsRaw.split(',').map((a) => a.trim()).filter((a) => a !== '');
-    if (args.length === 0) return false;
+    const args = argsRaw.split(',').map((a) => resolveArg(a));
+    if (args.some((a) => !a)) return miss(`An argument of \`${fn}()\` isn't a single number with a unit.`);
+    const resolved = args as Arg[];
 
-    if (fn === 'translate') {
-      const x = resolveArg(args[0]);
-      const y = args.length > 1 ? resolveArg(args[1]) : { expr: t.numericLiteral(0), suffix: 'px' };
-      if (!x || !y) return false;
-      const xUnit = x.suffix === '' ? 'px' : CSS_SUFFIX_TO_LENGTH_UNIT[x.suffix];
-      const yUnit = y.suffix === '' ? 'px' : CSS_SUFFIX_TO_LENGTH_UNIT[y.suffix];
-      if (!xUnit || !yUnit) return false;
-      translateX = buildUnitObject(x.expr, xUnit);
-      translateY = buildUnitObject(y.expr, yUnit);
-    } else if (fn === 'scale') {
-      const sx = resolveArg(args[0]);
-      // scale(s) means scaleY = scaleX - clone so the same node isn't
-      // inserted into two places in the resulting tree.
-      const sy = args.length > 1 ? resolveArg(args[1]) : (sx && { expr: t.cloneNode(sx.expr, true), suffix: sx.suffix });
-      if (!sx || !sy || sx.suffix !== '' || sy.suffix !== '') return false;
-      scaleX = sx.expr;
-      scaleY = sy.expr;
-    } else if (fn === 'rotate') {
-      const r = resolveArg(args[0]);
-      if (!r || (r.suffix !== '' && r.suffix !== 'deg')) return false;
-      rotate = r.expr;
-    } else if (fn === 'skew') {
-      const kx = resolveArg(args[0]);
-      const ky = args.length > 1 ? resolveArg(args[1]) : { expr: t.numericLiteral(0), suffix: 'deg' };
-      if (!kx || !ky) return false;
-      if ((kx.suffix !== '' && kx.suffix !== 'deg') || (ky.suffix !== '' && ky.suffix !== 'deg')) return false;
-      skewX = kx.expr;
-      skewY = ky.expr;
-    } else if (fn === 'skewX') {
-      const kx = resolveArg(args[0]);
-      if (!kx || (kx.suffix !== '' && kx.suffix !== 'deg')) return false;
-      skewX = kx.expr;
-      skewY ??= t.numericLiteral(0);
-    } else if (fn === 'skewY') {
-      const ky = resolveArg(args[0]);
-      if (!ky || (ky.suffix !== '' && ky.suffix !== 'deg')) return false;
-      skewY = ky.expr;
-      skewX ??= t.numericLiteral(0);
-    } else {
-      return false;
+    const maxArguments = fn === 'translate' || fn === 'scale' ? 2 : 1;
+    if (resolved.length > maxArguments) return miss(`\`${fn}()\` has too many arguments.`);
+
+    let units: (string | null)[];
+    if (fn === 'translate') units = resolved.map(lengthUnit);
+    else if (fn === 'scale') units = resolved.map((a) => (a.suffix === '' ? 'number' : null));
+    else units = resolved.map((a) => (isDegrees(a) ? 'deg' : null));
+
+    const bad = resolved[units.findIndex((u) => !u)];
+    if (bad) {
+      if (fn === 'scale') return miss('`scale()` takes plain numbers, without a unit.');
+      if (fn !== 'translate') {
+        return miss(bad.suffix === ''
+          ? `\`${fn}()\` has a value without a unit. Add \`deg\`, e.g. \`${fn}(\${a()}deg)\`.`
+          : `\`${fn}()\` only accepts \`deg\` - Gameface doesn't support \`${bad.suffix}\`.`);
+      }
+      return miss(bad.suffix === ''
+        ? 'A `translate()` value has no unit. Add one, e.g. `translate(${x()}px)`.'
+        : unsupportedUnitReason(bad.suffix));
     }
-    matched = true;
+
+    functionList.push(`${fn}(${units.join(',')})`);
+    for (const a of resolved) values.push(a.expr);
   }
 
-  if (!matched) return false;
+  if (functionList.length === 0) return false;
 
-  const properties = [
-    t.objectProperty(t.identifier('translateX'), translateX ?? buildUnitObject(t.numericLiteral(0), 'px')),
-    t.objectProperty(t.identifier('translateY'), translateY ?? buildUnitObject(t.numericLiteral(0), 'px')),
-    t.objectProperty(t.identifier('scaleX'), scaleX),
-    t.objectProperty(t.identifier('scaleY'), scaleY),
-    t.objectProperty(t.identifier('rotate'), rotate),
-  ];
-  // skewX/skewY are optional on TransformStyle - only emit them when the
-  // source string actually used skew(), instead of padding every transform
-  // (the overwhelming majority, which never skew) with `skewX: 0, skewY: 0`.
-  if (skewX && skewY) {
-    properties.push(
-      t.objectProperty(t.identifier('skewX'), skewX),
-      t.objectProperty(t.identifier('skewY'), skewY)
-    );
-  }
-
-  valuePath.replaceWith(t.objectExpression(properties));
+  recordStyle(valuePath, 'transform');
+  valuePath.replaceWith(t.objectExpression([
+    t.objectProperty(t.identifier('functions'), t.stringLiteral(functionList.join(' '))),
+    t.objectProperty(t.identifier('values'), t.arrayExpression(values)),
+  ]));
   return true;
 }
 
@@ -394,9 +540,18 @@ function visitAttribute(attrPath: NodePath<t.JSXAttribute>): void {
   handleStyleValue(exprPath);
 }
 
-export default function styleTomPlugin(): PluginObj {
+export default function styleTomPlugin(): PluginObj<StyleTomPass> {
   return {
     name: 'gameface-style-tom',
+    pre(file) {
+      this.enabled = checkRuntime();
+      // Report bookkeeping (dev server only - no-ops otherwise).
+      if (file.opts.filename) beginFile(file.opts.filename);
+    },
+    post(file) {
+      if (this.enabled) checkModuleName(file as unknown as Parameters<typeof checkModuleName>[0]);
+      if (file.opts.filename) endFile(file.opts.filename);
+    },
     visitor: {
       // babel-plugin-jsx-dom-expressions (inside babel-preset-solid) also
       // hooks JSXElement/JSXFragment and, on entering one, does its own
@@ -410,8 +565,11 @@ export default function styleTomPlugin(): PluginObj {
       // every nested style attribute - including inside nested elements -
       // in one synchronous pass, before Solid's own JSXElement visitor for
       // this same node gets its turn and consumes the tree.
-      JSXElement(path) {
-        path.traverse({ JSXAttribute: visitAttribute });
+      JSXElement(path, state) {
+        if (state.enabled) path.traverse({ JSXAttribute: visitAttribute });
+      },
+      JSXFragment(path, state) {
+        if (state.enabled) path.traverse({ JSXAttribute: visitAttribute });
       },
     },
   };

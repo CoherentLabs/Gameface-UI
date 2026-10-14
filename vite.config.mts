@@ -8,6 +8,7 @@ import eslint from 'vite-plugin-eslint';
 import gamefaceViews from './scripts/vite/views-plugin.mts';
 import gamefaceImages from './scripts/vite/images-plugin.mts';
 import styleTomPlugin from './scripts/babel/style-tom-plugin.mts';
+import { styleTomReport } from './scripts/babel/style-tom-report.mts';
 
 export default defineConfig(({ mode }) => {
   const root = mode === 'test' ? 'tests/src/views' : 'src/views';
@@ -26,12 +27,13 @@ export default defineConfig(({ mode }) => {
         assets: resolve(__dirname, 'src/assets'),
         types: resolve(__dirname, 'src/components/Media/Image/ImageTypes.ts'),
       }),
+      styleTomReport(),
       solidPlugin({
         babel: {
           plugins: [styleTomPlugin]
         },
         solid: {
-          moduleName: path.resolve(__dirname, './src/renderer/gameface-dom.ts')
+          moduleName: path.resolve(__dirname, './src/components/BaseComponent/gameface-dom.ts')
         }
       }),
       solidSvg({

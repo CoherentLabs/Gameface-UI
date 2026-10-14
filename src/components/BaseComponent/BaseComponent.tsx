@@ -5,7 +5,7 @@ import eventBus from "@components/Utility/EventBus";
 import { waitForFrames } from "@components/utils/waitForFrames";
 import { DEFAULT_ACTION_NAMES } from "@components/Utility/Navigation/defaults";
 import { DefaultActions } from "@components/Utility/Navigation/types";
-import { setStyleProperty } from "../../renderer/gameface-dom";
+import { resetStyleCache, setStyleProperty } from "./gameface-dom";
 
 const baseEventsSet = new Set([
     "abort", "animationend", "blur", "click", "dblclick", "durationchange", "ended", "finish",
@@ -41,7 +41,16 @@ function reconcileStyles(el: HTMLElement, next: any, prev: any) {
 
     for (const key in next) {
         const value = next[key];
-        if (prev[key] !== value) setStyleProperty(el, key, value);
+        // NumericCSSProperty/TransformStyle can carry an un-invoked accessor
+        // (`value: Accessor<number>`), so the descriptor object can keep the
+        // same identity across effect runs even though the accessor's value
+        // changed underneath it - an identity check alone would skip calling
+        // setStyleProperty and the new value would never reach the DOM.
+        // Always reprocess structured values; gameface-dom.ts's own
+        // per-property cache already skips the actual native write when the
+        // resolved value hasn't changed, so this only costs a comparison.
+        const isStructured = value !== null && typeof value === "object";
+        if (isStructured || prev[key] !== value) setStyleProperty(el, key, value);
     }
 }
 
@@ -57,6 +66,7 @@ function handleStyles(el: HTMLElement, props: ComponentProps) {
 
         if (!compStyles && !extStyles) {
             if (Object.keys(prevStyles).length > 0) {
+                resetStyleCache(el);
                 el.removeAttribute("style");
                 prevStyles = {};
             }
@@ -72,6 +82,7 @@ function handleStyles(el: HTMLElement, props: ComponentProps) {
             const finalString = [compStr, extStr].filter(part => part && String(part).trim() !== "").join(";");
 
             if (styles.cssText !== finalString) {
+                resetStyleCache(el);
                 styles.cssText = finalString;
             }
 

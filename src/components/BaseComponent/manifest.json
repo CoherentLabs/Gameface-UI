@@ -1,5 +1,9 @@
 {
   "name": "BaseComponent",
   "kind": "lib",
-  "description": "Base component for all other components to extend from"
+  "description": "Base component for all other components to extend from",
+  "explicit-dependency": [
+    "scripts/babel/style-tom-plugin.mts",
+    "scripts/babel/style-tom-report.mts"
+  ]
 }
