@@ -1,9 +1,9 @@
-import Tabs from '@components/Layout/Tabs/Tabs';
+import Tabs, { TabsComponentRef } from '@components/Layout/Tabs/Tabs';
 import styles from './ComponentsE2e.module.scss';
-import TabLink from '@components/Layout/TabLink/TabLink';
 import Tab from '@components/Layout/Tab/Tab';
+import TabLink from '@components/Layout/TabLink/TabLink';
 import Flex from '@components/Layout/Flex/Flex';
-import { For } from 'solid-js';
+import { createSignal, For, onCleanup, onMount, Show } from 'solid-js';
 import CheckboxTest from '../../components/Checkbox/CheckboxTest';
 import SegmentTest from '../../components/Segment/SegmentTest';
 import RadioTest from '../../components/Radio/RadioTest';
@@ -96,17 +96,33 @@ const Main = () => {
         'base',
     ]
 
-    return (
-        <div class={styles.Main}>
-            <Tabs default={components[0]}>
+    // Tab buttons only on the dev server (`npm run dev:test-view`), for picking a
+    // test by hand. The built page `npm test` runs has none, leaving the space to
+    // the tested components; specs switch tabs with gf.trigger('change-tab',
+    // '<name>') (see tests/shared/utils.js) in both modes, and data-active-tab
+    // lets them confirm the switch.
+    const showTabButtons = import.meta.env.DEV;
+    const [activeTab, setActiveTab] = createSignal(components[0]);
+    let tabs: TabsComponentRef | undefined;
 
-                <Flex class={styles['TabLink-Container']} align-items='center' wrap='wrap'>
-                    <For each={components}>
-                        {(component) => (
-                            <TabLink location={component} class={`${styles.TabLink} ${component}-link`} activeClass={styles['Active-Tab']}>{component}</TabLink>
-                        )}
-                    </For>
-                </Flex>
+    const onChangeTab = (event: Event) => tabs?.changeTab((event as CustomEvent<string>).detail);
+    onMount(() => document.addEventListener('change-tab', onChangeTab));
+    onCleanup(() => document.removeEventListener('change-tab', onChangeTab));
+
+    return (
+        <div class={styles.Main} data-active-tab={activeTab()}>
+            {/* Always visible, no click handler - also a safe "click outside" target for specs. */}
+            <div class={`${styles['Active-Tab-Label']} active-tab-label`}>{activeTab()}</div>
+            <Tabs default={components[0]} ref={(ref: TabsComponentRef) => (tabs = ref)} onTabChanged={setActiveTab}>
+                <Show when={showTabButtons}>
+                    <Flex class={styles['TabLink-Container']} align-items='center' wrap='wrap'>
+                        <For each={components}>
+                            {(component) => (
+                                <TabLink location={component} class={`${styles.TabLink} ${component}-link`} activeClass={styles['Active-Tab']}>{component}</TabLink>
+                            )}
+                        </For>
+                    </Flex>
+                </Show>
 
                 <Tab location='base'><BaseTest /></Tab>
                 <Tab location='button'><ButtonTest /></Tab>

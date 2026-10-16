@@ -67,14 +67,14 @@ describe('Toast', function () {
         const autoDismissTimeout = 1000; // 1 second
         await gf.trigger('create-toast', { text: toastText, position: 'top-right', timeout: autoDismissTimeout });
         await gf.sleep(autoDismissTimeout + 500); // Wait for timeout plus a buffer
-        try {
-            await gf.get(`.${selectors.toast}`);
-        } catch (error) {
-            // Expected error since the toast should be gone
-            assert.ok(true, 'Toast should be removed from the DOM after timeout');
-            return;
-        }
-        assert.fail('Toast should have been removed from the DOM');
+        // Look for this toast only - a toast from an earlier test can still be
+        // fading out when this one is checked.
+        const stillThere = await gf.executeScript(
+            (selector, text) => [...document.querySelectorAll(selector)].some((el) => el.textContent.trim() === text),
+            `.${selectors.toastText}`,
+            toastText
+        );
+        assert.ok(!stillThere, 'Toast should have been removed from the DOM');
     });
 
     it('Should show progress bar', async () => {

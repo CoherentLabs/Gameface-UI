@@ -13,6 +13,7 @@ The template currently integrates three custom plugins:
 1. **`vite-gameface`**: Ensures the UI is built in an optimized manner, free of errors or warnings when running in Gameface.
 2. **`vite-solid-style-to-css`**: Converts styles from the `style` property into CSS classes for improved performance.
 3. **`gameface-images`**: Exposes every asset as `Image.folder.name` and can pack the images a view uses into texture atlases. It has its own page, [Images and texture atlases](/docs/concepts/images-and-atlases/).
+4. **Style TOM plugin**: Rewrites *dynamic* numeric style values - the ones the plugin above leaves inline - so they can be applied through Gameface's CSS Typed Object Model. Works together with a custom style runtime - see [Typed inline styles (CSSTOM)](/docs/concepts/typed-styles).
 
 ## Vite Gameface Plugin
 
@@ -167,3 +168,15 @@ This will be transformed into:
 ```
 
 The generated class will always be appended at the end of the `class` attribute.
+
+## Style TOM Plugin
+
+The `vite-solid-style-to-css` plugin above only handles *static* styles -
+anything driven by a signal stays inline. The Style TOM plugin handles those
+dynamic values: at build time it rewrites numeric ones like `` `${x()}px` ``
+into a `{ value, unit }` object, which Gameface UI's style runtime then
+applies through Gameface's CSS Typed Object Model instead of as a string.
+
+The plugin only works together with that runtime. See
+[Typed inline styles (CSSTOM)](/docs/concepts/typed-styles) for how the two
+fit together, the setup, and what you need to know when writing styles.

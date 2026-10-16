@@ -75,8 +75,7 @@ describe('Radio', function () {
 
 describe('Radio Button', function () {
     this.beforeAll(async () => {
-        await gf.navigate('http://localhost:3000/components-e2e/');
-        await gf.click('.radio-link');
+        await navigateToPage('.radio-link');
     })
 
     this.afterEach(async () => {
