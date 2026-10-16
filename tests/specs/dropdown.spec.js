@@ -76,7 +76,8 @@ describe('Dropdown', function () {
         await trigger.click();
         assert.ok(await options.waitForVisibility(true), 'Dropdown options should open');
 
-        await gf.click('.dropdown-link');
+        // The view's active-tab label: always visible, outside the dropdown, no click handler.
+        await gf.click('.active-tab-label');
         assert.ok(await options.waitForVisibility(false), 'Dropdown options should close when click occurs elsewhere');
     })
 
