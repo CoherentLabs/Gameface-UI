@@ -6,6 +6,7 @@ import { waitForFrames } from "@components/utils/waitForFrames";
 import { DEFAULT_ACTION_NAMES } from "@components/Utility/Navigation/defaults";
 import { DefaultActions } from "@components/Utility/Navigation/types";
 import { resetStyleCache, setStyleProperty } from "./gameface-dom";
+import isString from "@components/utils/isString";
 
 const baseEventsSet = new Set([
     "abort", "animationend", "blur", "click", "dblclick", "durationchange", "ended", "finish",
@@ -169,7 +170,7 @@ export function navigationActions(el: HTMLElement, accessor: Accessor<Navigation
 
     let anchorElement: HTMLElement | null = null;
     if (anchor) {
-        if (typeof anchor === 'string') {
+        if (isString(anchor)) {
             waitForFrames(() => anchorElement = document.querySelector(anchor));
         } else if (anchor instanceof HTMLElement) {
             anchorElement = anchor;

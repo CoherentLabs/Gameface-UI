@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="510" viewBox="0 0 640 510" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#656d76"/></marker>
+  <marker id="arrowAccent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8250df"/></marker>
+  <marker id="arrowGood" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a7f37"/></marker>
+</defs>
+<rect x="0.5" y="0.5" width="639" height="509" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+<text x="320.0" y="34" font-size="17" fill="#1f2328" text-anchor="middle" font-weight="bold">Which rows are rendered</text>
+<rect x="170" y="115" width="300" height="88" fill="#fff4d6"/>
+<rect x="170" y="290" width="300" height="87" fill="#fff4d6"/>
+<rect x="170" y="203" width="300" height="87" fill="#eaf2ff"/>
+<rect x="190" y="60" width="260" height="24" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="202" y="77.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="normal">row 100</text>
+<text x="440" y="77.0" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal" font-style="italic">not rendered</text>
+<rect x="190" y="89" width="260" height="24" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="202" y="106.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="normal">row 101</text>
+<text x="440" y="106.0" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal" font-style="italic">not rendered</text>
+<rect x="190" y="118" width="260" height="24" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="202" y="135.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row 102</text>
+<rect x="190" y="147" width="260" height="24" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="202" y="164.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row 103</text>
+<rect x="190" y="176" width="260" height="24" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="202" y="193.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row 104</text>
+<rect x="190" y="205" width="260" height="24" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="202" y="222.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row 105</text>
+<rect x="190" y="234" width="260" height="24" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="202" y="251.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row 106</text>
+<rect x="190" y="263" width="260" height="24" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="202" y="280.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row 107</text>
+<rect x="190" y="292" width="260" height="24" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="202" y="309.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row 108</text>
+<rect x="190" y="321" width="260" height="24" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="202" y="338.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row 109</text>
+<rect x="190" y="350" width="260" height="24" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="202" y="367.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row 110</text>
+<rect x="190" y="379" width="260" height="24" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="202" y="396.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="normal">row 111</text>
+<text x="440" y="396.0" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal" font-style="italic">not rendered</text>
+<rect x="190" y="408" width="260" height="24" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="202" y="425.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="normal">row 112</text>
+<text x="440" y="425.0" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal" font-style="italic">not rendered</text>
+<rect x="170" y="203" width="300" height="87" rx="6" fill="none" stroke="#2f6fd6" stroke-width="3"/>
+<path d="M478,117 h8 V201 h-8" fill="none" stroke="#d4a72c" stroke-width="1.5"/><text x="492" y="155.0" font-size="12" fill="#d4a72c" text-anchor="start" font-weight="normal">overscan</text><text x="492" y="171.0" font-size="12" fill="#d4a72c" text-anchor="start" font-weight="normal">(a quarter screen)</text>
+<path d="M478,205 h8 V288 h-8" fill="none" stroke="#2f6fd6" stroke-width="1.5"/><text x="492" y="250.5" font-size="12" fill="#2f6fd6" text-anchor="start" font-weight="normal">the view</text>
+<path d="M478,292 h8 V375 h-8" fill="none" stroke="#d4a72c" stroke-width="1.5"/><text x="492" y="329.5" font-size="12" fill="#d4a72c" text-anchor="start" font-weight="normal">overscan</text><text x="492" y="345.5" font-size="12" fill="#d4a72c" text-anchor="start" font-weight="normal">(a quarter screen)</text>
+<text x="162" y="132" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal">first row =</text>
+<text x="162" y="148" font-size="12" fill="#8250df" text-anchor="end" font-weight="bold">scroll ÷ 40 − overscan</text>
+<text x="320.0" y="476" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">The first row only changes when the scroll crosses a row boundary -</text>
+<text x="320.0" y="494" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">scrolling inside a row does no work at all.</text>
+</svg>

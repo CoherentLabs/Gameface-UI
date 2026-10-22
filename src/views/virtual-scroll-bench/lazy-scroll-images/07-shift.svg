@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="410" viewBox="0 0 760 410" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#656d76"/></marker>
+  <marker id="arrowAccent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8250df"/></marker>
+  <marker id="arrowGood" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a7f37"/></marker>
+</defs>
+<rect x="0.5" y="0.5" width="759" height="409" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+<text x="380.0" y="34" font-size="17" fill="#1f2328" text-anchor="middle" font-weight="bold">A box gets its real height: move everything below</text>
+<text x="180.0" y="66" font-size="14" fill="#1f2328" text-anchor="middle" font-weight="bold">before (guess 40)</text>
+<rect x="70" y="84" width="220" height="40" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="62" y="100" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal">#9</text>
+<text x="298" y="100" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">top 360</text>
+<rect x="70" y="130" width="220" height="40" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="80" y="147.5" width="196" height="5" rx="2.5" fill="#7cc49a"/>
+<text x="62" y="146" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal">#10</text>
+<text x="298" y="146" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">top 400</text>
+<rect x="70" y="176" width="220" height="40" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="62" y="192" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal">#11</text>
+<text x="298" y="192" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">top 440</text>
+<rect x="70" y="222" width="220" height="40" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="62" y="238" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal">#12</text>
+<text x="298" y="238" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">top 480</text>
+<text x="510.0" y="66" font-size="14" fill="#1f2328" text-anchor="middle" font-weight="bold">after (real 103)</text>
+<rect x="400" y="84" width="220" height="40" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="392" y="100" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal">#9</text>
+<text x="628" y="100" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">top 360</text>
+<rect x="400" y="130" width="220" height="103" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="410" y="144.66666666666666" width="196" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="410" y="161.83333333333334" width="141" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="410" y="179.0" width="196" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="410" y="196.16666666666669" width="141" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="410" y="213.33333333333334" width="196" height="5" rx="2.5" fill="#7cc49a"/>
+<text x="392" y="146" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal">#10</text>
+<text x="628" y="146" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">top 400</text>
+<rect x="400" y="239" width="220" height="40" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="392" y="255" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal">#11</text>
+<text x="628" y="255" font-size="12" fill="#8250df" text-anchor="start" font-weight="bold">top 503</text>
+<rect x="400" y="285" width="220" height="40" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="392" y="301" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal">#12</text>
+<text x="628" y="301" font-size="12" fill="#8250df" text-anchor="start" font-weight="bold">top 543</text>
+<line x1="710" y1="196" x2="710" y2="262" stroke="#8250df" stroke-width="2" marker-end="url(#arrowAccent)"/>
+<text x="718" y="234" font-size="13" fill="#8250df" text-anchor="start" font-weight="bold">+63</text>
+<text x="380.0" y="376" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">Plain arithmetic on the notebook - no need to read 5 000 boxes again.</text>
+<text x="380.0" y="394" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal" font-style="italic">The height comes from a ResizeObserver, which reports after layout.</text>
+</svg>

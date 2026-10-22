@@ -1,0 +1,35 @@
+// Spacer: its height is the full list height, so the scrollbar is right from the start
+.list {
+    position: relative;
+    width: 100%;
+}
+
+// Gameface `display: simple` skips the layout solve for a container whose direct
+// children are all absolutely positioned (browsers ignore it and use block)
+.window {
+    display: simple;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+// Static slot styles live here - only transform / size are written per slot
+.slot {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.slotFull {
+    width: 100%;
+}
+
+// Resolves CSS lengths ('10vmin', '5rem') to px
+.probe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    visibility: hidden;
+}

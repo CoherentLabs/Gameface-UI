@@ -3,6 +3,7 @@ import { TokenComponentProps } from "../../types/ComponentProps";
 import styles from './List.module.scss';
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
 import { ListContext } from "./List";
+import isString from "@components/utils/isString";
 
 interface ListIconComponent extends TokenComponentProps, TokenBase {
     isNested: boolean,
@@ -29,7 +30,7 @@ const ListIcon: ParentComponent<ListIconComponent> = (props) => {
 
     const IconStyle = createMemo(() => {
         const base = IconToken()?.style ?? {};
-        const url = typeof listContext?.bulletBgUrl() === 'string' ? listContext?.bulletBgUrl() : listContext?.bulletBgUrl()?.src;
+        const url = isString(listContext?.bulletBgUrl()) ? listContext?.bulletBgUrl() : listContext?.bulletBgUrl()?.src;
         if (!url || IconToken()?.children) return base;
 
         return {

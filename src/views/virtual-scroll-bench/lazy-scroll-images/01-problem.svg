@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="530" viewBox="0 0 640 530" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#656d76"/></marker>
+  <marker id="arrowAccent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8250df"/></marker>
+  <marker id="arrowGood" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a7f37"/></marker>
+</defs>
+<rect x="0.5" y="0.5" width="639" height="529" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+<text x="320.0" y="34" font-size="17" fill="#1f2328" text-anchor="middle" font-weight="bold">A normal Scroll keeps every child alive</text>
+<rect x="170" y="60" width="260" height="22" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="180" y="68.5" width="236" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="170" y="88" width="260" height="22" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="180" y="96.5" width="236" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="170" y="116" width="260" height="22" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="180" y="124.5" width="236" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="170" y="144" width="260" height="22" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="180" y="152.5" width="236" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="170" y="172" width="260" height="22" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="180" y="180.5" width="236" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="170" y="200" width="260" height="22" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="180" y="208.5" width="236" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="170" y="228" width="260" height="22" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="180" y="236.5" width="236" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="170" y="256" width="260" height="22" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="180" y="264.5" width="236" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="170" y="284" width="260" height="22" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="180" y="292.5" width="236" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="170" y="312" width="260" height="22" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="180" y="320.5" width="236" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="170" y="340" width="260" height="22" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="180" y="348.5" width="236" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="170" y="368" width="260" height="22" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="180" y="376.5" width="236" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="170" y="396" width="260" height="22" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="180" y="404.5" width="236" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="156" y="194" width="288" height="88" rx="6" fill="none" stroke="#2f6fd6" stroke-width="3"/>
+<text x="148" y="243.0" font-size="13" fill="#2f6fd6" text-anchor="end" font-weight="bold">what the player sees</text>
+<path d="M448,60 h8 V188 h-8" fill="none" stroke="#656d76" stroke-width="1.5"/><text x="462" y="120.0" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">far away,</text><text x="462" y="136.0" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">but still built</text>
+<path d="M448,288 h8 V418 h-8" fill="none" stroke="#656d76" stroke-width="1.5"/><text x="462" y="349.0" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">far away,</text><text x="462" y="365.0" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">but still built</text>
+<text x="320.0" y="484" font-size="13" fill="#1f2328" text-anchor="middle" font-weight="bold">It costs twice:</text>
+<text x="320.0" y="504" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">all children are created when the screen opens, and Gameface works on every one of them</text>
+<text x="320.0" y="520" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">on every frame while scrolling - visible or not.</text>
+</svg>

@@ -13,6 +13,7 @@ export * from 'solid-js/web';
 import type { Accessor } from 'solid-js';
 import type { NumericCSSProperty, TransformStyle, TypedOMUnit } from '@components/types';
 import { canUseTOM, defaultUnitFor, unitToCssSuffix } from './tom-constants';
+import isString from '@components/utils/isString';
 
 // Version of the value shapes this runtime understands ({ value, unit } and
 // { functions, values }). The Style TOM plugin reads it and stops rewriting
@@ -360,7 +361,7 @@ export function style(
     return value;
   }
 
-  if (typeof value === 'string') {
+  if (isString(value)) {
     resetStyleCache(node);
     (node as HTMLElement).style.cssText = value;
     return value;

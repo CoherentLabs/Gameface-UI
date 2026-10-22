@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="470" viewBox="0 0 720 470" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#656d76"/></marker>
+  <marker id="arrowAccent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8250df"/></marker>
+  <marker id="arrowGood" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a7f37"/></marker>
+</defs>
+<rect x="0.5" y="0.5" width="719" height="469" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+<text x="360.0" y="34" font-size="17" fill="#1f2328" text-anchor="middle" font-weight="bold">A full-height spacer, but only a few real rows</text>
+<rect x="200" y="64" width="260" height="356" rx="6" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="330.0" y="94" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal" font-style="italic">spacer: 5 000 × 40 px = 200 000 px tall</text>
+<text x="330.0" y="112" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal" font-style="italic">(nothing inside it but the rows below)</text>
+<rect x="210" y="196" width="240" height="22" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="222" y="212.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row 2397</text>
+<rect x="210" y="222" width="240" height="22" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="222" y="238.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row 2398</text>
+<rect x="210" y="248" width="240" height="22" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="222" y="264.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row 2399</text>
+<rect x="210" y="274" width="240" height="22" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="222" y="290.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row 2400</text>
+<rect x="210" y="300" width="240" height="22" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="222" y="316.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row 2401</text>
+<rect x="210" y="326" width="240" height="22" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="222" y="342.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row 2402</text>
+<rect x="210" y="352" width="240" height="22" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="222" y="368.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row 2403</text>
+<rect x="188" y="244" width="284" height="80" rx="6" fill="none" stroke="#2f6fd6" stroke-width="3"/>
+<text x="180" y="289.0" font-size="13" fill="#2f6fd6" text-anchor="end" font-weight="bold">the view</text>
+<path d="M476,196 h8 V374 h-8" fill="none" stroke="#656d76" stroke-width="1.5"/><text x="490" y="281.0" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">the only rows</text><text x="490" y="297.0" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">that exist</text>
+<rect x="600" y="64" width="14" height="356" rx="7" fill="#eaeef2" stroke="#d0d7de" stroke-width="1.5"/>
+<rect x="600" y="234.88" width="14" height="18" rx="7" fill="#2f6fd6" stroke="#2f6fd6" stroke-width="1.5"/>
+<text x="607" y="440" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">scrollbar</text>
+<text x="360.0" y="456" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal" font-style="italic">The spacer gives the scrollbar the right size from the start - you can drag straight to the end.</text>
+</svg>

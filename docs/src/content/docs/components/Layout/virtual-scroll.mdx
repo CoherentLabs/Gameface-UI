@@ -1,0 +1,505 @@
+---
+title: VirtualScroll
+---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
+
+The `VirtualScroll` component shows long lists and grids - leaderboards, inventories, server browsers, chat and kill feeds - without slowing your UI down.
+
+Imagine a leaderboard with 5 000 players. A normal [`Scroll`](/components/layout/scroll/) creates all 5 000 rows up front, even though only about 10 fit on the screen. Every one of those rows costs memory, and Gameface keeps doing work for all of them on every frame you scroll. `VirtualScroll` only creates the rows you can actually see (plus a few extra above and below), and swaps their content as you scroll. To the player it looks and feels exactly like the full list.
+
+In practice this is the difference between a list that takes 0.4 s to open and scrolls at 16-25 FPS, and one that opens instantly and stays at 60 FPS - no matter if it has 500 or 20 000 items.
+
+## Installation
+
+Every component ships with the boilerplate. If you are working in your own project, add `VirtualScroll` with the [Gameface CLI](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/):
+
+```bash
+npx gameface-cli add VirtualScroll
+```
+
+The CLI pulls in whatever `VirtualScroll` depends on (including `Scroll`). To refresh an existing copy, [update it](/docs/getting-started/updating-components) instead.
+
+## Usage
+
+Give `VirtualScroll` your data in `items`, tell it how tall one item is with `itemHeight`, and describe how to draw one item as its child function.
+
+<CodePreviewGFUI height={320}>
+```tsx
+import VirtualScroll from '@components/Layout/VirtualScroll/VirtualScroll';
+
+const players = Array.from({ length: 5000 }, (_, i) => ({ name: `Player ${i + 1}`, score: 100000 - i * 17 }));
+
+const App = () => (
+    <VirtualScroll items={players} itemHeight={40} style={{ width: '300px', height: '280px' }}>
+        {(player, index) => (
+            <div style={{ display: 'flex', 'align-items': 'center', height: '100%', padding: '0 12px', color: 'white', 'border-bottom': '1px solid #ffffff22' }}>
+                <span style={{ width: '50px', color: '#9aa3b2' }}>#{index() + 1}</span>
+                <span style={{ 'flex-grow': 1 }}>{player().name}</span>
+                <span style={{ color: '#f0c75e' }}>{player().score}</span>
+            </div>
+        )}
+    </VirtualScroll>
+);
+```
+</CodePreviewGFUI>
+
+Scroll through it - there are 5 000 rows, but only around a dozen exist at any moment.
+
+Two things to notice:
+
+- **The box needs a height.** `VirtualScroll` fills its parent like `Scroll` does, so give it (or its parent) a size.
+- **`player` and `index` are functions** - write `player().name` and `index()`, not `player.name`. This is what lets `VirtualScroll` reuse a row for a different player while you scroll (see [How it works](#how-it-works)).
+
+## How it works
+
+`VirtualScroll` creates a small **pool** of rows - enough to cover the visible area plus a small buffer above and below. When you scroll down and a row leaves the top of the view, that same row is moved to the bottom and starts showing the next player. Nothing is created or destroyed while you scroll; only the text and styles that depend on the item change.
+
+```
+players:  1   2   3   4   5   6   7   8   9   10  11  12  ...  5000
+              └──────── visible ────────┘
+
+pool:    [A] [B] [C] [D] [E] [F] [G] [H] [I] [J]      ← created once
+
+scroll down one row:  row A now shows player 11 and moves to the bottom
+```
+
+The scrollbar still behaves as if every item were there: the list reserves the full height up front, so the handle has the right size from the start and you can drag it straight to the end.
+
+This reuse is called **recycling**, and it is the default. It has one rule, explained in [Writing item components](#writing-item-components).
+
+## Two ways to set it up
+
+### Quick: props and a child function
+
+Good for simple lists, like in the example above. Everything is configured through props:
+
+```tsx
+<VirtualScroll items={players()} itemHeight={40}>
+    {(player, index) => <PlayerRow player={player()} rank={index() + 1} />}
+</VirtualScroll>
+```
+
+### Full: `createVirtualization`
+
+Create the list's settings in your component with `createVirtualization`, and pass the result to `VirtualScroll`. You get back an object you can **control and observe**: scroll to an item, move the focus to it, read which items are visible, and more.
+
+```tsx
+import VirtualScroll, { createVirtualization, VirtualItemProps } from '@components/Layout/VirtualScroll/VirtualScroll';
+
+const PlayerRow = (props: VirtualItemProps<Player>) => (
+    <div class="row">
+        <span>#{props.index + 1}</span>
+        <span>{props.item.name}</span>
+    </div>
+);
+
+const Leaderboard = () => {
+    const leaderboard = createVirtualization({
+        items: () => store.players,
+        component: PlayerRow,
+        itemHeight: 40,
+    });
+
+    return (
+        <>
+            <button onClick={() => leaderboard.scrollToIndex(0)}>Back to top</button>
+            <VirtualScroll virtualization={leaderboard} style={{ height: '400px' }} />
+        </>
+    );
+};
+```
+
+Here the item component receives normal props - `props.item`, `props.index` and `props.focused` - so you don't need the `()`.
+
+Use whichever reads better. Both run exactly the same code underneath.
+
+## Writing item components
+
+Because rows are reused, **always read the item inside your JSX** (or inside an effect / memo). Never copy it once when the row is created:
+
+```tsx
+// ❌ The row keeps showing the first player it was created for
+const PlayerRow = (props: VirtualItemProps<Player>) => {
+    const name = props.item.name;            // read once, never updates
+    const [score] = createSignal(props.item.score);
+    return <div>{name}: {score()}</div>;
+};
+
+// ✅ Updates whenever the row is reused for another player
+const PlayerRow = (props: VirtualItemProps<Player>) => (
+    <div>{props.item.name}: {props.item.score}</div>
+);
+```
+
+The same goes for "local" state inside a row - hover effects, an expanded panel, a running animation. That state belongs to the **row**, not to the player, so it would carry over to whoever the row shows next. Keep such state in your data, or reset it when `props.index` changes:
+
+```tsx
+const PlayerRow = (props: VirtualItemProps<Player>) => {
+    const [expanded, setExpanded] = createSignal(false);
+    // A new player is shown in this row - close the details
+    createEffect(on(() => props.index, () => setExpanded(false), { defer: true }));
+    ...
+};
+```
+
+:::tip
+If your rows contain components that read their props only once - for example [`Checkbox`](/components/basic/checkbox/) or [`ToggleButton`](/components/basic/toggle-button/) take their `checked` value when they are created - use `mode="unmount"` instead. See [Choosing a mode](#choosing-a-mode).
+:::
+
+## Choosing a mode
+
+| Mode | What happens while you scroll | Use it for |
+|---|---|---|
+| `recycle` (default) | Rows are reused for new items. Nothing is created or destroyed. | Anything that **shows** data: leaderboards, inventories, shops, kill feeds, server lists. |
+| `unmount` | Rows that leave the view are destroyed, new rows are created for the items that enter. | Rows with components that **remember things themselves** - checkboxes, toggles, inputs, sliders, accordions - or code that must run once per item (`onMount`). |
+| `append` | Rows are created in batches as you reach the bottom and are never removed. | Short to medium feeds read from top to bottom. Memory grows with everything loaded. |
+
+`recycle` and `unmount` use the same (small) amount of memory. `recycle` does about half the work while scrolling, so prefer it whenever your rows follow the rule above.
+
+```tsx
+<VirtualScroll items={settings} itemHeight={48} mode="unmount">
+    {(setting) => <Checkbox checked={setting().enabled}>{setting().label}</Checkbox>}
+</VirtualScroll>
+```
+
+## Guide
+
+### Leaderboard: highlight me and jump to my rank
+
+A leaderboard usually needs two extras: highlighting the local player, and a button that scrolls to them. `scrollToItem` finds the item for you and `'center'` places it in the middle of the list. `visibleRange()` tells you which ranks are on screen.
+
+<CodePreviewGFUI height={380}>
+```tsx
+import VirtualScroll, { createVirtualization, VirtualItemProps } from '@components/Layout/VirtualScroll/VirtualScroll';
+
+interface Player { id: number; name: string; score: number }
+
+const MY_ID = 3141;
+const players: Player[] = Array.from({ length: 5000 }, (_, i) => ({ id: i, name: i === MY_ID ? 'You' : `Player ${i + 1}`, score: 100000 - i * 17 }));
+
+const Row = (props: VirtualItemProps<Player>) => (
+    <div style={{
+        display: 'flex', 'align-items': 'center', height: '100%', padding: '0 12px', color: 'white',
+        'background-color': props.item.id === MY_ID ? '#2f6fd6' : 'transparent',
+        'border-bottom': '1px solid #ffffff22',
+    }}>
+        <span style={{ width: '60px', color: '#9aa3b2' }}>#{props.index + 1}</span>
+        <span style={{ 'flex-grow': 1 }}>{props.item.name}</span>
+        <span style={{ color: '#f0c75e' }}>{props.item.score}</span>
+    </div>
+);
+
+const App = () => {
+    const leaderboard = createVirtualization({ items: players, component: Row, itemHeight: 40 });
+    const range = leaderboard.visibleRange;
+
+    return (
+        <div style={{ width: '320px', color: 'white' }}>
+            <div style={{ display: 'flex', 'justify-content': 'space-between', 'margin-bottom': '8px' }}>
+                <span>Showing {range().start + 1}-{range().end} of {players.length}</span>
+                <button onClick={() => leaderboard.scrollToItem((p) => p.id === MY_ID, 'center')}>Find me</button>
+            </div>
+            <VirtualScroll virtualization={leaderboard} style={{ height: '280px' }} />
+        </div>
+    );
+};
+```
+</CodePreviewGFUI>
+
+### Inventory: a grid that fits any screen
+
+Add `itemWidth` and the list becomes a **grid**. `VirtualScroll` works out how many columns fit, and recalculates when the screen resolution or the container size changes.
+
+- Sizes can be numbers (pixels) or **any CSS length** - `'10vmin'`, `'4rem'`. Use relative units so the grid scales with the resolution, just like the rest of your UI.
+- `gap` adds space between the cells.
+- `align` decides what happens with the space left over in a row: `'start'` (default) keeps it on the right, `'center'` splits it on both sides, and `'stretch'` makes the cells wider to fill the row (then `itemWidth` is the *minimum* width).
+
+<CodePreviewGFUI height={380}>
+```tsx
+import VirtualScroll, { createVirtualization, VirtualItemProps } from '@components/Layout/VirtualScroll/VirtualScroll';
+
+interface Item { id: number; name: string; rarity: number; count: number }
+
+const COLORS = ['#9aa3b2', '#4cd964', '#3b82f6', '#a855f7', '#f0c75e'];
+const items: Item[] = Array.from({ length: 2000 }, (_, i) => ({ id: i, name: `Item ${i}`, rarity: (i * 7) % 5, count: 1 + (i * 13) % 99 }));
+
+const Slot = (props: VirtualItemProps<Item>) => (
+    <div style={{
+        width: '100%', height: '100%', display: 'flex', 'flex-direction': 'column', 'justify-content': 'space-between',
+        padding: '4px', 'box-sizing': 'border-box', color: 'white', 'font-size': '11px',
+        'background-color': '#242a33', 'border-width': '2px', 'border-style': 'solid',
+        'border-color': props.focused ? 'white' : COLORS[props.item.rarity],
+    }}>
+        <span>{props.item.name}</span>
+        <span style={{ 'align-self': 'flex-end' }}>x{props.item.count}</span>
+    </div>
+);
+
+const App = () => {
+    const inventory = createVirtualization({
+        items,
+        component: Slot,
+        itemWidth: 72,
+        itemHeight: 72,
+        gap: 6,
+        align: 'center',
+    });
+
+    return (
+        <div style={{ color: 'white' }}>
+            <div style={{ 'margin-bottom': '8px' }}>{inventory.columns()} columns</div>
+            <VirtualScroll virtualization={inventory} style={{ width: '100%', height: '300px' }} />
+        </div>
+    );
+};
+```
+</CodePreviewGFUI>
+
+Resize the window: the number of columns changes, and the item you were looking at stays in view.
+
+:::note
+Every cell in the grid has the same size. Items that span several cells, or rows with different heights, are not supported.
+:::
+
+### Keyboard and gamepad navigation
+
+Put the list inside a [`Navigation`](/components/utility/navigation/) and give it an area name with the `navigation` prop. That's all - the arrow keys and the D-pad now move the focus between items, and the list scrolls along.
+
+```tsx
+import Navigation from '@components/Utility/Navigation/Navigation';
+
+<Navigation>
+    <VirtualScroll virtualization={inventory} navigation="inventory" style={{ height: '60vh' }} />
+</Navigation>
+```
+
+How it behaves:
+
+- **Moving works for every item, not only the visible ones.** Holding "down" walks through the whole list; the item that should get the focus is scrolled into view first.
+- **Left / right** move within a row and stop at its ends. **Up / down** move between rows. From the second-to-last row, "down" goes to the last item even if the last row is shorter.
+- **Focus stays visible.** If the player scrolls the focused item away with the mouse wheel or the right stick, the focus moves to the nearest visible item.
+- **The item knows it's focused** - `props.focused` is `true` for it, so you can highlight it (the inventory example above uses it for the white border).
+
+To move the focus from code, for example to the item the player just picked up, use `focusIndex`:
+
+```tsx
+inventory.focusIndex(items.findIndex((item) => item.id === newItemId));
+```
+
+The area works with the rest of the `Navigation` API, so `nav.switchArea('inventory')` and `nav.focusFirst('inventory')` move the player into the list.
+
+#### Leaving the list
+
+`Navigation` never moves the focus to another area by itself. When the player presses a direction at the edge of the list (up in the first row, right in the last column, ...), `VirtualScroll` calls `onNavigationEdge` with that direction, so you can decide where to go:
+
+```tsx
+const inventory = createVirtualization({
+    items: () => store.inventory,
+    component: Slot,
+    itemWidth: '10vmin',
+    itemHeight: '10vmin',
+    onNavigationEdge: (direction) => {
+        if (direction === 'left') nav.switchArea('character-equipment');
+    },
+});
+```
+
+### Kill feed and chat: stay at the bottom
+
+For a feed that grows at the bottom, turn on `stickToEnd`. While the player is at the bottom, new messages keep the list scrolled down. If they scroll up to read something, the list stays where they are.
+
+```tsx
+const [messages, setMessages] = createSignal<Message[]>([]);
+
+engine.on('chat-message', (message: Message) => setMessages((list) => [...list, message]));
+
+<VirtualScroll items={messages()} itemHeight={28} stickToEnd style={{ height: '200px' }}>
+    {(message) => (
+        <div class="chat-line">
+            <span class="author">{message().author}:</span> {message().text}
+        </div>
+    )}
+</VirtualScroll>
+```
+
+### Server browser: load more as you scroll
+
+When your data comes in pages (from the game or a backend), use `onEndReached`. It fires once when the player gets close to the end - `endThreshold` rows away, 2 by default - and again after new items arrive. Show something useful while the list is empty with `fallback`.
+
+```tsx
+const [servers, setServers] = createSignal<Server[]>([]);
+let loading = false;
+
+const loadNextPage = async () => {
+    if (loading) return;
+    loading = true;
+    const page = await requestServers(servers().length, 50); // your engine call
+    setServers((list) => [...list, ...page]);
+    loading = false;
+};
+
+loadNextPage();
+
+<VirtualScroll
+    items={servers()}
+    itemHeight={44}
+    onEndReached={loadNextPage}
+    endThreshold={5}
+    fallback={<div class="empty">Searching for servers...</div>}
+    style={{ height: '70vh' }}
+>
+    {(server) => <ServerRow server={server()} />}
+</VirtualScroll>
+```
+
+### Scrolling from code
+
+The object returned by `createVirtualization` can scroll the list to any item - even one that is far away and has never been created:
+
+```tsx
+list.scrollToIndex(250);              // just enough to make it visible
+list.scrollToIndex(250, 'start');     // item at the top
+list.scrollToIndex(250, 'center');    // item in the middle
+list.scrollToIndex(250, 'end');       // item at the bottom
+
+list.scrollToItem((player) => player.id === friendId, 'center');
+list.scrollToOffset(0);               // back to the very top
+```
+
+You can call these before the list is on screen (for example right after `createVirtualization`) - the last request is applied as soon as the list is ready.
+
+### Knowing what's on screen
+
+The same object also tells you what the list is showing. These are signals, so you can use them in JSX or effects:
+
+| | Example use |
+|---|---|
+| `visibleRange()` | "Showing 21-40 of 5 000", page indicators |
+| `renderedRange()` | Prefetch data or icons for the items that are about to appear |
+| `focusedIndex()` | Show the details of the focused item in a side panel |
+| `columns()` | Show or adapt to the current grid size |
+
+```tsx
+const details = () => {
+    const index = inventory.focusedIndex();
+    return index >= 0 ? items[index] : null;
+};
+
+<Show when={details()}>{(item) => <ItemDetails item={item()} />}</Show>
+```
+
+If you prefer a callback, `onRangeChange` is called whenever the rendered items change.
+
+### Updating the data
+
+The list follows your data: add, remove or change items and it updates. With a Solid store, pass a function so changes inside the store are picked up:
+
+```tsx
+const [store, setStore] = createStore({ inventory: [] as Item[] });
+
+createVirtualization({
+    items: () => store.inventory,   // ✅ follows the store
+    component: Slot,
+    itemHeight: 64,
+});
+```
+
+If items are removed while the player is scrolled near the end, the list moves back so it never ends up empty.
+
+:::note
+The other options (`itemHeight`, `itemWidth`, `mode`, ...) are read once when the list is created. To change them, create the list again - for example inside a keyed `<Show>`.
+:::
+
+### Styling
+
+`VirtualScroll` is a [`Scroll`](/components/layout/scroll/) underneath, so `style` and `class` work the same way, and so does the scrollbar. Each item sits inside a wrapper that has the item's exact size - make your item fill it with `width: 100%; height: 100%`.
+
+`minHandleSize` keeps the scrollbar handle easy to see and grab in very long lists (24 px by default).
+
+## Tips
+
+- **Use it for long lists.** Below roughly 50-100 items a plain `Scroll` with `For` is simpler and just as fast.
+- **Keep item components light.** Only a screenful of them exists, but they update every time a row is reused while scrolling.
+- **Prefer relative sizes** (`vmin`, `rem`) for `itemHeight` / `itemWidth` / `gap`, so the list scales with the resolution.
+- **Don't build the "everything in the DOM" version for speed.** In Gameface, every element inside a scrolled area costs time on every frame, visible or not - this is exactly what `VirtualScroll` avoids.
+
+## API
+
+### Props
+
+| Prop Name | Type | Default | Description |
+|---|---|---|---|
+| `virtualization` | `Virtualization<T>` | `undefined` | Settings created with [`createVirtualization`](#createvirtualizationoptions). When set, the props below marked *(quick setup)* are ignored. |
+| `items` | `T[]` | `[]` | *(quick setup)* The data to show. |
+| `children` | `(item: () => T, index: () => number) => JSX.Element` | - | *(quick setup)* Draws one item. Both arguments are functions. |
+| `itemHeight` | `number \| string` | - | *(quick setup)* Height of one item - a number in pixels or a CSS length like `'5vmin'`. Required. |
+| `itemWidth` | `number \| string` | `undefined` | *(quick setup)* Width of one item. Setting it turns the list into a grid. |
+| `gap` | `number \| string` | `0` | *(quick setup)* Space between items. |
+| `align` | `'start' \| 'center' \| 'stretch'` | `'start'` | *(quick setup)* What to do with the space left over in a grid row. |
+| `mode` | `'recycle' \| 'unmount' \| 'append'` | `'recycle'` | *(quick setup)* How items are created while scrolling. See [Choosing a mode](#choosing-a-mode). |
+| `overscan` | `number \| string` | a quarter of the view | *(quick setup)* How much extra is kept ready above and below the visible area: a number of rows, or a CSS length. At least 1 row. |
+| `batchSize` | `number` | `5` | *(quick setup)* Rows created at once in `append` mode. |
+| `stickToEnd` | `boolean` | `false` | *(quick setup)* Keep the list at the bottom when items are added while it is at the bottom. |
+| `onEndReached` | `() => void` | `undefined` | *(quick setup)* Called when the player scrolls close to the end. |
+| `endThreshold` | `number` | `2` | *(quick setup)* How many rows before the end `onEndReached` fires. |
+| `onRangeChange` | `(range: { start, end }) => void` | `undefined` | *(quick setup)* Called when the rendered items change. |
+| `onNavigationEdge` | `(direction: 'up' \| 'down' \| 'left' \| 'right') => void` | `undefined` | *(quick setup)* Called when navigation is moved past the edge of the list. |
+| `navigation` | `string` | `undefined` | Navigation area name. Enables keyboard and gamepad navigation (needs a `Navigation` around the list). |
+| `fallback` | `JSX.Element` | `undefined` | Shown when there are no items. |
+| `minHandleSize` | `number` | `24` | Minimum height of the scrollbar handle in pixels. |
+| `style` | `JSX.CSSProperties` | `{}` | Inline styles for the scroll container. |
+| `class` | `string` | `""` | CSS classes for the scroll container. |
+| `ref` | `ScrollComponentRef` | `undefined` | Same ref as [`Scroll`](/components/layout/scroll/#ref-api). |
+| `onScroll` | `(event: { scrollDirection: 'up' \| 'down' }) => void` | `undefined` | Called when the list is scrolled. |
+| `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Custom navigation action handlers. See [Navigation actions](#implemented-navigation-actions). |
+
+The *(quick setup)* props are read once, when the list is created - except `items`, which can change at any time.
+
+### `createVirtualization(options)`
+
+Creates the settings and controls of a list. Call it inside a component and pass the result to `<VirtualScroll virtualization={...} />`.
+
+#### Options
+
+Same as the *(quick setup)* props above, with two differences:
+
+| Option | Type | Description |
+|---|---|---|
+| `items` | `T[] \| () => T[]` | The data. Pass a function to follow a signal or a store. |
+| `component` | `Component<VirtualItemProps<T>>` | The component that draws one item (instead of `children`). |
+
+#### Item props (`VirtualItemProps<T>`)
+
+| Prop | Type | Description |
+|---|---|---|
+| `item` | `T` | The item this row is showing right now. |
+| `index` | `number` | Its position in `items`. |
+| `focused` | `boolean` | `true` while this item has the keyboard / gamepad focus. |
+
+#### Returned object
+
+| Member | Description |
+|---|---|
+| `scrollToIndex(index, align?)` | Scrolls to an item. `align`: `'nearest'` (default), `'start'`, `'center'`, `'end'`. |
+| `scrollToItem(find, align?)` | Finds the first item for which `find(item, index)` returns `true` and scrolls to it. |
+| `scrollToOffset(pixels)` | Scrolls to a pixel position from the top. |
+| `focusIndex(index)` | Scrolls to an item and gives it the navigation focus. |
+| `visibleRange()` | Signal - `{ start, end }` of the fully visible items (`end` not included). |
+| `renderedRange()` | Signal - `{ start, end }` of the items that currently exist (visible + extra). |
+| `focusedIndex()` | Signal - index of the focused item, or `-1`. |
+| `columns()` | Signal - the number of columns (`1` for a list). |
+| `remeasure()` | Measures the sizes again. Normally automatic. |
+
+## Implemented Navigation Actions
+
+When the `navigation` prop is set, `VirtualScroll` handles these actions while the focus is inside the list:
+
+| Action Name | Behavior |
+|---|---|
+| `move-up` | Focuses the item above. |
+| `move-down` | Focuses the item below (or the last item, from the second-to-last row). |
+| `move-left` | Focuses the previous item in the row. |
+| `move-right` | Focuses the next item in the row. |
+| `pan` | Scrolls the list with the right stick (from [`Scroll`](/components/layout/scroll/#implemented-navigation-actions)). |
+
+You can override any of them with the `onAction` prop, the same way as for [`Scroll`](/components/layout/scroll/).

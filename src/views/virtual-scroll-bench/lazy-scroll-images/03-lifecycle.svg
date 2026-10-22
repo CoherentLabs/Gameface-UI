@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="300" viewBox="0 0 800 300" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#656d76"/></marker>
+  <marker id="arrowAccent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8250df"/></marker>
+  <marker id="arrowGood" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a7f37"/></marker>
+</defs>
+<rect x="0.5" y="0.5" width="799" height="299" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+<text x="400.0" y="34" font-size="17" fill="#1f2328" text-anchor="middle" font-weight="bold">The life of one item</text>
+<text x="115.0" y="70" font-size="14" fill="#1f2328" text-anchor="middle" font-weight="bold">Never seen</text>
+<text x="400.0" y="70" font-size="14" fill="#1f2328" text-anchor="middle" font-weight="bold">Near the screen</text>
+<text x="685.0" y="70" font-size="14" fill="#1f2328" text-anchor="middle" font-weight="bold">Far away again</text>
+<rect x="30" y="100" width="170" height="50" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="115.0" y="130" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal" font-style="italic">40 px (a guess)</text>
+<rect x="315" y="88" width="170" height="74" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="325" y="100.3" width="146" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="325" y="115.1" width="104" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="325" y="129.9" width="146" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="325" y="144.7" width="104" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="600" y="88" width="170" height="74" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="685.0" y="129" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal" font-style="italic">74 px (remembered)</text>
+<line x1="212" y1="125" x2="303" y2="125" stroke="#8250df" stroke-width="2" marker-end="url(#arrowAccent)"/>
+<text x="257.5" y="116" font-size="12" fill="#8250df" text-anchor="middle" font-weight="normal">comes close</text>
+<line x1="497" y1="125" x2="588" y2="125" stroke="#8250df" stroke-width="2" marker-end="url(#arrowAccent)"/>
+<text x="542.5" y="116" font-size="12" fill="#8250df" text-anchor="middle" font-weight="normal">goes away</text>
+<text x="20" y="205" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal"></text>
+<text x="115.0" y="205" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">height: estimated</text>
+<text x="400.0" y="205" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">height: real, measured</text>
+<text x="685.0" y="205" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">height: last measured</text>
+<text x="20" y="229" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal"></text>
+<text x="115.0" y="229" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">content: not created</text>
+<text x="400.0" y="229" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">content: shown</text>
+<text x="685.0" y="229" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">content: hidden or destroyed</text>
+<text x="20" y="253" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal"></text>
+<text x="115.0" y="253" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">cost: almost nothing</text>
+<text x="400.0" y="253" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">cost: normal</text>
+<text x="685.0" y="253" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">cost: almost nothing</text>
+</svg>

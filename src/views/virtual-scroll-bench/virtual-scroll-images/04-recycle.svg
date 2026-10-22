@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="780" height="420" viewBox="0 0 780 420" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#656d76"/></marker>
+  <marker id="arrowAccent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8250df"/></marker>
+  <marker id="arrowGood" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a7f37"/></marker>
+</defs>
+<rect x="0.5" y="0.5" width="779" height="419" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+<text x="390.0" y="34" font-size="17" fill="#1f2328" text-anchor="middle" font-weight="bold">recycle: the same rows, showing different items</text>
+<text x="190.0" y="70" font-size="14" fill="#1f2328" text-anchor="middle" font-weight="bold">before</text>
+<rect x="90" y="90" width="200" height="34" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="102" y="112.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row A</text>
+<text x="280" y="112.0" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal" font-style="italic">shows item 100</text>
+<rect x="90" y="132" width="200" height="34" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="102" y="154.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row B</text>
+<text x="280" y="154.0" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal" font-style="italic">shows item 101</text>
+<rect x="90" y="174" width="200" height="34" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="102" y="196.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row C</text>
+<text x="280" y="196.0" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal" font-style="italic">shows item 102</text>
+<rect x="90" y="216" width="200" height="34" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="102" y="238.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row D</text>
+<text x="280" y="238.0" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal" font-style="italic">shows item 103</text>
+<rect x="90" y="258" width="200" height="34" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="102" y="280.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row E</text>
+<text x="280" y="280.0" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal" font-style="italic">shows item 104</text>
+<rect x="90" y="300" width="200" height="34" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="102" y="322.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row F</text>
+<text x="280" y="322.0" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal" font-style="italic">shows item 105</text>
+<rect x="78" y="126" width="224" height="172" rx="6" fill="none" stroke="#2f6fd6" stroke-width="2.5"/>
+<text x="580.0" y="70" font-size="14" fill="#1f2328" text-anchor="middle" font-weight="bold">after scrolling one row</text>
+<rect x="480" y="90" width="200" height="34" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="492" y="112.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row B</text>
+<text x="670" y="112.0" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal" font-style="italic">shows item 101</text>
+<rect x="480" y="132" width="200" height="34" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="492" y="154.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row C</text>
+<text x="670" y="154.0" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal" font-style="italic">shows item 102</text>
+<rect x="480" y="174" width="200" height="34" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="492" y="196.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row D</text>
+<text x="670" y="196.0" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal" font-style="italic">shows item 103</text>
+<rect x="480" y="216" width="200" height="34" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="492" y="238.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row E</text>
+<text x="670" y="238.0" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal" font-style="italic">shows item 104</text>
+<rect x="480" y="258" width="200" height="34" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="492" y="280.0" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">row F</text>
+<text x="670" y="280.0" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal" font-style="italic">shows item 105</text>
+<rect x="480" y="300" width="200" height="34" rx="4" fill="#efe5ff" stroke="#8250df" stroke-width="2"/>
+<text x="492" y="322.0" font-size="13" fill="#8250df" text-anchor="start" font-weight="bold">row A</text>
+<text x="670" y="322.0" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal" font-style="italic">shows item 106</text>
+<rect x="468" y="126" width="224" height="172" rx="6" fill="none" stroke="#2f6fd6" stroke-width="2.5"/>
+<path d="M306,107.0 C455,90 455,317.0 464,317.0" fill="none" stroke="#8250df" stroke-width="2" marker-end="url(#arrowAccent)"/>
+<text x="368" y="222" font-size="12" fill="#8250df" text-anchor="middle" font-weight="bold">row A moves</text>
+<text x="368" y="238" font-size="12" fill="#8250df" text-anchor="middle" font-weight="bold">to the bottom,</text>
+<text x="368" y="254" font-size="12" fill="#8250df" text-anchor="middle" font-weight="bold">shows item 106</text>
+<text x="390.0" y="368" font-size="13" fill="#1f2328" text-anchor="middle" font-weight="normal">Nothing is created or destroyed - only the text, images and position of row A change.</text>
+<text x="390.0" y="388" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">Row r is always drawn by pool row (r mod pool size), so one row crossed = one pool row updated.</text>
+<text x="390.0" y="406" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal" font-style="italic">Moving uses transform only - Gameface skips the layout solve for it.</text>
+</svg>

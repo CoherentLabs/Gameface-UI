@@ -7,6 +7,7 @@ import { Bar, ScrollBar } from './ScrollBar';
 import { BaseComponentRef, ComponentBaseProps } from '@components/types/ComponentProps';
 import { Handle } from './ScrollHandle';
 import { useNavigation } from '@components/Utility/Navigation/Navigation';
+import isString from '@components/utils/isString';
 
 export const ScrollContext = createContext<{
     scrollToMouseHandler: (event: MouseEvent) => void,
@@ -16,6 +17,10 @@ export const ScrollContext = createContext<{
     handleHeight: Accessor<number>,
     handleTop: Accessor<number>
     overflow: Accessor<boolean>
+    scrollTop: Accessor<number>
+    viewportHeight: Accessor<number>
+    contentWidth: Accessor<number>
+    scrollToPosition: (value: number) => void
 }>();
 
 export interface ScrollComponentRef extends BaseComponentRef {
@@ -37,13 +42,17 @@ interface OnScrollEventData {
 
 interface ScrollProps extends ComponentBaseProps {
     ref?: ScrollComponentRef,
-    onScroll?: OnScrollHandler
+    onScroll?: OnScrollHandler,
+    minHandleSize?: number
 }
 
 const Scroll: ParentComponent<ScrollProps> = (props) => {
     const [overflow, setOverflow] = createSignal(false);
     const [handleHeight, setHandleHeight] = createSignal(0);
     const [handleTop, setHandleTop] = createSignal(0);
+    const [scrollTop, setScrollTop] = createSignal(0);
+    const [viewportHeight, setViewportHeight] = createSignal(0);
+    const [contentWidth, setContentWidth] = createSignal(0);
 
     let containerRef: HTMLDivElement, contentWrapperRef: HTMLDivElement;
     let maxScroll: number, maxHandleMovement: number;
@@ -56,12 +65,16 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     function updateMeasurements() {
         const containerHeight = containerRef!.clientHeight;
         const contentHeight = contentWrapperRef!.scrollHeight;
+        setViewportHeight(containerHeight);
+        // The inner content element excludes the wrapper's scrollbar padding
+        const inner = contentWrapperRef!.firstElementChild as HTMLElement | null;
+        setContentWidth(inner ? inner.clientWidth : contentWrapperRef!.clientWidth);
 
         if (contentHeight > containerHeight) {
             setOverflow(true);
 
             const ratio = containerHeight / contentHeight;
-            const newHandleHeight = containerHeight * ratio;
+            const newHandleHeight = Math.min(containerHeight, Math.max(containerHeight * ratio, props.minHandleSize ?? 24));
             setHandleHeight(newHandleHeight);
 
             maxScroll = contentHeight - containerHeight;
@@ -73,6 +86,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
             setOverflow(false);
             setHandleHeight(0);
             setHandleTop(0);
+            setScrollTop(contentWrapperRef!.scrollTop);
         }
     }
 
@@ -117,6 +131,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     }
 
     function updateHandlePosition() {
+        setScrollTop(contentWrapperRef!.scrollTop);
         const newHandleTop = maxScroll > 0 ? (contentWrapperRef!.scrollTop / maxScroll) * maxHandleMovement : 0;
         setHandleTop(clamp(newHandleTop, 0, maxHandleMovement));
     }
@@ -124,7 +139,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     function scrollToElement(element: HTMLElement | string) {
         if (!overflow()) return;
 
-        if (typeof element === 'string') {
+        if (isString(element)) {
             element = contentWrapperRef!.querySelector(element) as HTMLElement;
         }
 
@@ -152,6 +167,12 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
         updateHandlePosition();
     }
 
+    // Unconditional scroll used by virtualized content - the DOM clamps the value
+    function scrollToPosition(value: number) {
+        contentWrapperRef!.scrollTop = value;
+        updateHandlePosition();
+    }
+
     function scrollUp() {
         scrollWith(-100);
     }
@@ -171,7 +192,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     function scrollIntoView(element: HTMLElement | string) {
         if (!overflow()) return;
 
-        if (typeof element === 'string') {
+        if (isString(element)) {
             element = contentWrapperRef!.querySelector(element) as HTMLElement
         }
 
@@ -264,23 +285,33 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
         },
     }
 
-    props.onAction = mergeProps(defaultActions, props.onAction) 
+    // Not assigned back to props - props passed through spreads only have getters
+    const onAction = mergeProps(defaultActions, props.onAction);
+
+    let containerObserver: ResizeObserver | undefined;
 
     onMount(() => {
+        // The content observer misses container-only size changes (e.g. resolution changes)
+        containerObserver = new ResizeObserver(updateMeasurements);
+        containerObserver.observe(containerRef!);
         contentWrapperRef!.addEventListener('scroll', updateHandlePosition);
         contentWrapperRef!.addEventListener('property-scroll', updateHandlePosition)
         if (nav) nav.resumeAction('pan');
     });
 
     onCleanup(() => {
-        if (contentWrapperRef!) contentWrapperRef.removeEventListener('scroll', updateHandlePosition);
+        containerObserver?.disconnect();
+        if (contentWrapperRef!) {
+            contentWrapperRef.removeEventListener('scroll', updateHandlePosition);
+            contentWrapperRef.removeEventListener('property-scroll', updateHandlePosition);
+        }
         stopScrollingToMouse();
         if (nav) nav.pauseAction('pan');
     });
 
     return (
-        <ScrollContext.Provider value={{ scrollToMouseHandler, stopScrollingToMouse, updateMeasurements, onHandleMouseDown, handleHeight, handleTop, overflow }}>
-            <LayoutBase focusin={handleFocusIn} {...props} refObject={scrollObjectRef} >
+        <ScrollContext.Provider value={{ scrollToMouseHandler, stopScrollingToMouse, updateMeasurements, onHandleMouseDown, handleHeight, handleTop, overflow, scrollTop, viewportHeight, contentWidth, scrollToPosition }}>
+            <LayoutBase focusin={handleFocusIn} {...props} onAction={onAction} refObject={scrollObjectRef} >
                 <div ref={containerRef!} class={styles.scroll}>
                     <ScrollContent ref={contentWrapperRef!} parentChildren={props.children} />
                     <ScrollBar parentChildren={props.children} />

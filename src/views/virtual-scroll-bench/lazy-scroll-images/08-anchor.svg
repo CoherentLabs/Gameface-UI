@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="360" viewBox="0 0 800 360" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#656d76"/></marker>
+  <marker id="arrowAccent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8250df"/></marker>
+  <marker id="arrowGood" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a7f37"/></marker>
+</defs>
+<rect x="0.5" y="0.5" width="799" height="359" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+<text x="400.0" y="34" font-size="17" fill="#1f2328" text-anchor="middle" font-weight="bold">A box above the view grows: keep what the player reads still</text>
+<text x="135.0" y="66" font-size="14" fill="#1f2328" text-anchor="middle" font-weight="bold">before</text>
+<clipPath id="clip50"><rect x="36" y="80" width="198" height="212"/></clipPath>
+<g clip-path="url(#clip50)">
+<rect x="50" y="84" width="170" height="40" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="58" y="99" font-size="11" fill="#656d76" text-anchor="start" font-weight="normal">#9</text>
+<rect x="50" y="130" width="170" height="40" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="58" y="145" font-size="11" fill="#656d76" text-anchor="start" font-weight="normal">#10</text>
+<rect x="50" y="176" width="170" height="56" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="60" y="187.5" width="146" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="60" y="201.5" width="104" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="60" y="215.5" width="146" height="5" rx="2.5" fill="#7cc49a"/>
+<text x="135.0" y="246" font-size="11" fill="#656d76" text-anchor="middle" font-weight="normal"></text>
+<text x="58" y="191" font-size="11" fill="#656d76" text-anchor="start" font-weight="normal">#11</text>
+<rect x="50" y="238" width="170" height="40" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="58" y="253" font-size="11" fill="#656d76" text-anchor="start" font-weight="normal">#12</text>
+<rect x="50" y="284" width="170" height="40" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="58" y="299" font-size="11" fill="#656d76" text-anchor="start" font-weight="normal">#13</text>
+</g>
+<rect x="38" y="160" width="194" height="120" rx="6" fill="none" stroke="#2f6fd6" stroke-width="3"/>
+<text x="135.0" y="318" font-size="13" fill="#2f6fd6" text-anchor="middle" font-weight="bold">reading #11</text>
+<text x="395.0" y="66" font-size="14" fill="#1f2328" text-anchor="middle" font-weight="bold">box above grew by 63</text>
+<clipPath id="clip310"><rect x="296" y="80" width="198" height="212"/></clipPath>
+<g clip-path="url(#clip310)">
+<rect x="310" y="84" width="170" height="40" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="318" y="99" font-size="11" fill="#656d76" text-anchor="start" font-weight="normal">#9</text>
+<rect x="310" y="130" width="170" height="103" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="318" y="145" font-size="11" fill="#656d76" text-anchor="start" font-weight="normal">#10</text>
+<rect x="310" y="239" width="170" height="56" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="320" y="250.5" width="146" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="320" y="264.5" width="104" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="320" y="278.5" width="146" height="5" rx="2.5" fill="#7cc49a"/>
+<text x="395.0" y="309" font-size="11" fill="#656d76" text-anchor="middle" font-weight="normal"></text>
+<text x="318" y="254" font-size="11" fill="#656d76" text-anchor="start" font-weight="normal">#11</text>
+<rect x="310" y="301" width="170" height="40" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="318" y="316" font-size="11" fill="#656d76" text-anchor="start" font-weight="normal">#12</text>
+<rect x="310" y="347" width="170" height="40" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="318" y="362" font-size="11" fill="#656d76" text-anchor="start" font-weight="normal">#13</text>
+</g>
+<rect x="298" y="160" width="194" height="120" rx="6" fill="none" stroke="#2f6fd6" stroke-width="3"/>
+<text x="395.0" y="318" font-size="13" fill="#cf222e" text-anchor="middle" font-weight="bold">✗ what they read jumped down</text>
+<text x="655.0" y="66" font-size="14" fill="#1f2328" text-anchor="middle" font-weight="bold">scroll moved by 63</text>
+<clipPath id="clip570"><rect x="556" y="80" width="198" height="212"/></clipPath>
+<g clip-path="url(#clip570)">
+<rect x="570" y="21" width="170" height="40" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="578" y="36" font-size="11" fill="#656d76" text-anchor="start" font-weight="normal">#9</text>
+<rect x="570" y="67" width="170" height="103" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="578" y="82" font-size="11" fill="#656d76" text-anchor="start" font-weight="normal">#10</text>
+<rect x="570" y="176" width="170" height="56" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="580" y="187.5" width="146" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="580" y="201.5" width="104" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="580" y="215.5" width="146" height="5" rx="2.5" fill="#7cc49a"/>
+<text x="655.0" y="246" font-size="11" fill="#656d76" text-anchor="middle" font-weight="normal"></text>
+<text x="578" y="191" font-size="11" fill="#656d76" text-anchor="start" font-weight="normal">#11</text>
+<rect x="570" y="238" width="170" height="40" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="578" y="253" font-size="11" fill="#656d76" text-anchor="start" font-weight="normal">#12</text>
+<rect x="570" y="284" width="170" height="40" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="578" y="299" font-size="11" fill="#656d76" text-anchor="start" font-weight="normal">#13</text>
+</g>
+<rect x="558" y="160" width="194" height="120" rx="6" fill="none" stroke="#2f6fd6" stroke-width="3"/>
+<text x="655.0" y="318" font-size="13" fill="#1a7f37" text-anchor="middle" font-weight="bold">✓ same place on screen</text>
+<text x="400.0" y="346" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal" font-style="italic">Only items above the view cause a correction - items below can grow freely.</text>
+</svg>

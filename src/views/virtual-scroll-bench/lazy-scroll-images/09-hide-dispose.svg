@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="300" viewBox="0 0 760 300" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#656d76"/></marker>
+  <marker id="arrowAccent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8250df"/></marker>
+  <marker id="arrowGood" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a7f37"/></marker>
+</defs>
+<rect x="0.5" y="0.5" width="759" height="299" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+<text x="380.0" y="34" font-size="17" fill="#1f2328" text-anchor="middle" font-weight="bold">What happens to content that goes far away</text>
+<text x="104" y="108.0" font-size="15" fill="#1f2328" text-anchor="end" font-weight="bold">hide</text>
+<rect x="120" y="80" width="78" height="46" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<rect x="208" y="80" width="78" height="46" rx="4" fill="#eceff3" stroke="#8c959f" stroke-width="1.5"/>
+<text x="247.0" y="107.0" font-size="11" fill="#656d76" text-anchor="middle" font-weight="normal" font-style="italic">hidden</text>
+<rect x="296" y="80" width="78" height="46" rx="4" fill="#eceff3" stroke="#8c959f" stroke-width="1.5"/>
+<text x="335.0" y="107.0" font-size="11" fill="#656d76" text-anchor="middle" font-weight="normal" font-style="italic">hidden</text>
+<rect x="384" y="80" width="78" height="46" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="394" y="92.83333333333333" width="54" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="394" y="108.16666666666667" width="34" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="472" y="80" width="78" height="46" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="482" y="92.83333333333333" width="54" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="482" y="108.16666666666667" width="34" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="560" y="80" width="78" height="46" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<rect x="648" y="80" width="78" height="46" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="104" y="198.0" font-size="15" fill="#1f2328" text-anchor="end" font-weight="bold">dispose</text>
+<rect x="120" y="170" width="78" height="46" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<rect x="208" y="170" width="78" height="46" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<rect x="296" y="170" width="78" height="46" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<rect x="384" y="170" width="78" height="46" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="394" y="182.83333333333334" width="54" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="394" y="198.16666666666666" width="34" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="472" y="170" width="78" height="46" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="482" y="182.83333333333334" width="54" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="482" y="198.16666666666666" width="34" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="560" y="170" width="78" height="46" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<rect x="648" y="170" width="78" height="46" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<path d="M208,132 v6 H374 v-6" fill="none" stroke="#656d76" stroke-width="1.5"/><text x="291.0" y="154" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">seen before, kept hidden</text>
+<path d="M384,132 v6 H550 v-6" fill="none" stroke="#2e8b57" stroke-width="1.5"/><text x="467.0" y="154" font-size="12" fill="#2e8b57" text-anchor="middle" font-weight="normal">near</text>
+<path d="M560,132 v6 H726 v-6" fill="none" stroke="#656d76" stroke-width="1.5"/><text x="643.0" y="154" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">never seen</text>
+<path d="M384,222 v6 H550 v-6" fill="none" stroke="#2e8b57" stroke-width="1.5"/><text x="467.0" y="244" font-size="12" fill="#2e8b57" text-anchor="middle" font-weight="normal">near - the only content that exists</text>
+<text x="380.0" y="266" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">hide: coming back is instant and keeps state, but memory grows with what was seen.</text>
+<text x="380.0" y="284" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">dispose: memory stays small, content is created again when it comes back.</text>
+</svg>

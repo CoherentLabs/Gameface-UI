@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="520" viewBox="0 0 640 520" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#656d76"/></marker>
+  <marker id="arrowAccent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8250df"/></marker>
+  <marker id="arrowGood" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a7f37"/></marker>
+</defs>
+<rect x="0.5" y="0.5" width="639" height="519" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+<text x="320.0" y="34" font-size="17" fill="#1f2328" text-anchor="middle" font-weight="bold">Which items get content</text>
+<rect x="170" y="121" width="300" height="102" fill="#fff4d6" stroke="none"/>
+<rect x="170" y="329" width="300" height="104" fill="#fff4d6" stroke="none"/>
+<rect x="170" y="222" width="300" height="108" fill="#eaf2ff" stroke="none"/>
+<rect x="190" y="60" width="260" height="24" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<rect x="190" y="89" width="260" height="30" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<rect x="190" y="124" width="260" height="24" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="200" y="133.5" width="236" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="190" y="153" width="260" height="36" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="200" y="162.5" width="236" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="200" y="174.5" width="171" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="190" y="194" width="260" height="26" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="200" y="204.5" width="236" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="190" y="225" width="260" height="24" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="200" y="234.5" width="236" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="190" y="254" width="260" height="40" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="200" y="264.8333333333333" width="236" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="200" y="278.1666666666667" width="171" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="190" y="299" width="260" height="28" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="200" y="310.5" width="236" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="190" y="332" width="260" height="30" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="200" y="344.5" width="236" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="190" y="367" width="260" height="24" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="200" y="376.5" width="236" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="190" y="396" width="260" height="34" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="200" y="404.8333333333333" width="236" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="200" y="416.1666666666667" width="171" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="190" y="435" width="260" height="24" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<rect x="190" y="464" width="260" height="26" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<rect x="170" y="222" width="300" height="108" rx="6" fill="none" stroke="#2f6fd6" stroke-width="3"/>
+<path d="M478,60 h8 V117 h-8" fill="none" stroke="#656d76" stroke-width="1.5"/><text x="492" y="84.5" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">far away</text><text x="492" y="100.5" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">empty boxes</text>
+<path d="M478,123 h8 V221 h-8" fill="none" stroke="#d4a72c" stroke-width="1.5"/><text x="492" y="168.0" font-size="12" fill="#d4a72c" text-anchor="start" font-weight="normal">half a screen</text><text x="492" y="184.0" font-size="12" fill="#d4a72c" text-anchor="start" font-weight="normal">content ready</text>
+<path d="M478,224 h8 V328 h-8" fill="none" stroke="#2f6fd6" stroke-width="1.5"/><text x="492" y="272.0" font-size="12" fill="#2f6fd6" text-anchor="start" font-weight="normal">the view</text><text x="492" y="288.0" font-size="12" fill="#2f6fd6" text-anchor="start" font-weight="normal">content shown</text>
+<path d="M478,331 h8 V431 h-8" fill="none" stroke="#d4a72c" stroke-width="1.5"/><text x="492" y="377.0" font-size="12" fill="#d4a72c" text-anchor="start" font-weight="normal">half a screen</text><text x="492" y="393.0" font-size="12" fill="#d4a72c" text-anchor="start" font-weight="normal">content ready</text>
+<path d="M478,437 h8 V490 h-8" fill="none" stroke="#656d76" stroke-width="1.5"/><text x="492" y="459.5" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">far away</text><text x="492" y="475.5" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">empty boxes</text>
+<text x="160" y="269.0" font-size="14" fill="#1f2328" text-anchor="end" font-weight="bold">"near"</text>
+<text x="160" y="287.0" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal">= view + overscan</text>
+</svg>

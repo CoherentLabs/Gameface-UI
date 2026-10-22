@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="630" viewBox="0 0 900 630" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#656d76"/></marker>
+  <marker id="arrowAccent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8250df"/></marker>
+  <marker id="arrowGood" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a7f37"/></marker>
+</defs>
+<rect x="0.5" y="0.5" width="899" height="629" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+<text x="450.0" y="34" font-size="18" fill="#1f2328" text-anchor="middle" font-weight="bold">Three ways to show a long list</text>
+<text x="160.0" y="66" font-size="16" fill="#1f2328" text-anchor="middle" font-weight="bold">Normal Scroll</text>
+<text x="460.0" y="66" font-size="16" fill="#1f2328" text-anchor="middle" font-weight="bold">VirtualScroll</text>
+<text x="760.0" y="66" font-size="16" fill="#1f2328" text-anchor="middle" font-weight="bold">LazyScroll</text>
+<rect x="60" y="96" width="200" height="26" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="70" y="106.5" width="176" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="60" y="128" width="200" height="26" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="70" y="138.5" width="176" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="60" y="160" width="200" height="26" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="70" y="170.5" width="176" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="60" y="192" width="200" height="26" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="70" y="202.5" width="176" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="60" y="224" width="200" height="26" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="70" y="234.5" width="176" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="60" y="256" width="200" height="26" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="70" y="266.5" width="176" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="60" y="288" width="200" height="26" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="70" y="298.5" width="176" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="60" y="320" width="200" height="26" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="70" y="330.5" width="176" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="60" y="352" width="200" height="26" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="70" y="362.5" width="176" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="60" y="384" width="200" height="26" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="70" y="394.5" width="176" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="60" y="416" width="200" height="26" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="70" y="426.5" width="176" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="60" y="448" width="200" height="26" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="70" y="458.5" width="176" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="48" y="219" width="224" height="100" rx="6" fill="none" stroke="#2f6fd6" stroke-width="3"/>
+<rect x="356" y="90" width="208" height="390" rx="6" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="460.0" y="136" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal" font-style="italic">nothing here</text>
+<text x="460.0" y="440" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal" font-style="italic">nothing here</text>
+<rect x="360" y="192" width="200" height="26" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="370" y="202.5" width="176" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="360" y="224" width="200" height="26" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="370" y="234.5" width="176" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="360" y="256" width="200" height="26" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="370" y="266.5" width="176" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="360" y="288" width="200" height="26" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="370" y="298.5" width="176" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="360" y="320" width="200" height="26" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="370" y="330.5" width="176" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="348" y="219" width="224" height="100" rx="6" fill="none" stroke="#2f6fd6" stroke-width="3"/>
+<rect x="660" y="96" width="200" height="26" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<rect x="660" y="128" width="200" height="40" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<rect x="660" y="174" width="200" height="22" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<rect x="660" y="202" width="200" height="34" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="670" y="210.83333333333334" width="176" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="670" y="222.16666666666666" width="126" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="660" y="242" width="200" height="26" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="670" y="252.5" width="176" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="660" y="274" width="200" height="48" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="670" y="287.5" width="176" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="670" y="303.5" width="126" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="660" y="328" width="200" height="30" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="670" y="340.5" width="176" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="660" y="364" width="200" height="22" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="670" y="372.5" width="176" height="5" rx="2.5" fill="#7cc49a"/>
+<rect x="660" y="392" width="200" height="40" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<rect x="660" y="438" width="200" height="26" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<rect x="660" y="470" width="200" height="30" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<rect x="648" y="237" width="224" height="126" rx="6" fill="none" stroke="#2f6fd6" stroke-width="3"/>
+<text x="160.0" y="536" font-size="13" fill="#1f2328" text-anchor="middle" font-weight="normal">every item is built</text>
+<text x="160.0" y="554" font-size="13" fill="#1f2328" text-anchor="middle" font-weight="normal">simple, but slow for long lists</text>
+<text x="160.0" y="578" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal" font-style="italic">40 007 elements · 16 FPS</text>
+<text x="460.0" y="536" font-size="13" fill="#1f2328" text-anchor="middle" font-weight="normal">only rows near the view exist</text>
+<text x="460.0" y="554" font-size="13" fill="#1f2328" text-anchor="middle" font-weight="normal">all items the same size</text>
+<text x="460.0" y="578" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal" font-style="italic">624 elements · 60 FPS</text>
+<text x="760.0" y="536" font-size="13" fill="#1f2328" text-anchor="middle" font-weight="normal">one empty box per item,</text>
+<text x="760.0" y="554" font-size="13" fill="#1f2328" text-anchor="middle" font-weight="normal">content only near the view, any height</text>
+<text x="760.0" y="578" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal" font-style="italic">~5 000 elements · experiment</text>
+<rect x="300" y="587" width="26" height="16" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<rect x="310" y="592.5" width="2" height="5" rx="2.5" fill="#7cc49a"/>
+<text x="334" y="600" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">content</text>
+<rect x="410" y="587" width="26" height="16" rx="4" fill="#f6f8fa" stroke="#8c959f" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="444" y="600" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">empty box</text>
+<rect x="540" y="587" width="26" height="16" rx="4" fill="none" stroke="#2f6fd6" stroke-width="2.5"/>
+<text x="574" y="600" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">what the player sees</text>
+</svg>

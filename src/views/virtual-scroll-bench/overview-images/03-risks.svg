@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="400" viewBox="0 0 900 400" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#656d76"/></marker>
+  <marker id="arrowAccent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8250df"/></marker>
+  <marker id="arrowGood" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a7f37"/></marker>
+</defs>
+<rect x="0.5" y="0.5" width="899" height="399" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+<text x="450.0" y="34" font-size="18" fill="#1f2328" text-anchor="middle" font-weight="bold">The three things to watch out for</text>
+<rect x="25" y="56" width="270" height="300" rx="10" fill="#fbfcfd" stroke="#d0d7de" stroke-width="1.5"/>
+<text x="160.0" y="82" font-size="14" fill="#8250df" text-anchor="middle" font-weight="bold">recycle: the row remembers</text>
+<rect x="315" y="56" width="270" height="300" rx="10" fill="#fbfcfd" stroke="#d0d7de" stroke-width="1.5"/>
+<text x="450.0" y="82" font-size="14" fill="#cf222e" text-anchor="middle" font-weight="bold">unmount / dispose: the item forgets</text>
+<rect x="605" y="56" width="270" height="300" rx="10" fill="#fbfcfd" stroke="#d0d7de" stroke-width="1.5"/>
+<text x="740.0" y="82" font-size="14" fill="#2f6fd6" text-anchor="middle" font-weight="bold">off-screen items do not exist</text>
+<text x="50" y="112" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">row A shows the Sword,</text>
+<text x="50" y="128" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">its details panel is open</text>
+<rect x="50" y="138" width="220" height="30" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="60" y="158" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">Sword</text>
+<rect x="50" y="168" width="220" height="22" rx="4" fill="#fff4d6" stroke="#d4a72c" stroke-width="1.5"/>
+<text x="60" y="183" font-size="11" fill="#1f2328" text-anchor="start" font-weight="normal">details: damage 45</text>
+<line x1="160.0" y1="198" x2="160.0" y2="222" stroke="#656d76" stroke-width="1.8" marker-end="url(#arrow)"/>
+<text x="168.0" y="214" font-size="11" fill="#656d76" text-anchor="start" font-weight="normal">scroll</text>
+<rect x="50" y="230" width="220" height="30" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="60" y="250" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">Potion</text>
+<rect x="50" y="260" width="220" height="22" rx="4" fill="#fde8e8" stroke="#cf222e" stroke-width="1.5"/>
+<text x="60" y="275" font-size="11" fill="#cf222e" text-anchor="start" font-weight="bold">details still open ✗</text>
+<text x="160.0" y="306" font-size="12" fill="#1f2328" text-anchor="middle" font-weight="normal">state, animations and transitions</text>
+<text x="160.0" y="322" font-size="12" fill="#1f2328" text-anchor="middle" font-weight="normal">carry over to the next item</text>
+<text x="160.0" y="342" font-size="12" fill="#1a7f37" text-anchor="middle" font-weight="bold">fix: read everything from the item</text>
+<text x="340" y="112" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">a cooldown is at 70 %</text>
+<rect x="340" y="122" width="220" height="46" rx="4" fill="#dff3e4" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="350" y="142" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">Grenade</text>
+<g transform="translate(0,-2)"><rect x="340" y="150" width="220" height="14" rx="7" fill="#eaeef2" stroke="#d0d7de" stroke-width="1.5"/><rect x="340" y="150" width="154" height="14" rx="7" fill="#2e8b57"/></g>
+<line x1="450.0" y1="176" x2="450.0" y2="222" stroke="#656d76" stroke-width="1.8" marker-end="url(#arrow)"/>
+<text x="458.0" y="196" font-size="11" fill="#656d76" text-anchor="start" font-weight="normal">scroll away</text>
+<text x="458.0" y="210" font-size="11" fill="#656d76" text-anchor="start" font-weight="normal">and back</text>
+<rect x="340" y="230" width="220" height="46" rx="4" fill="#fde8e8" stroke="#cf222e" stroke-width="1.5"/>
+<text x="350" y="250" font-size="13" fill="#1f2328" text-anchor="start" font-weight="bold">Grenade</text>
+<g transform="translate(0,-2)"><rect x="340" y="258" width="220" height="14" rx="7" fill="#eaeef2" stroke="#d0d7de" stroke-width="1.5"/><rect x="340" y="258" width="0" height="14" rx="7" fill="#cf222e"/></g>
+<text x="552" y="250" font-size="11" fill="#cf222e" text-anchor="end" font-weight="bold">restarted at 0 % ✗</text>
+<text x="450.0" y="306" font-size="12" fill="#1f2328" text-anchor="middle" font-weight="normal">a new element: animations restart,</text>
+<text x="450.0" y="322" font-size="12" fill="#1f2328" text-anchor="middle" font-weight="normal">typed text and open panels are lost</text>
+<text x="450.0" y="342" font-size="12" fill="#1a7f37" text-anchor="middle" font-weight="bold">fix: keep progress &amp; state in data</text>
+<rect x="630" y="104" width="220" height="34" rx="6" fill="#1f2328"/>
+<text x="640" y="126" font-size="12" fill="#e6edf3" text-anchor="start" font-weight="normal">querySelector('#item-4000')</text>
+<text x="740.0" y="160" font-size="15" fill="#cf222e" text-anchor="middle" font-weight="bold">→ null ✗</text>
+<text x="630" y="190" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">the same for refs, Tutorial steps,</text>
+<text x="630" y="206" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">tooltips, scrollIntoView(element),</text>
+<text x="630" y="222" font-size="12" fill="#656d76" text-anchor="start" font-weight="normal">:nth-child styles and e2e tests</text>
+<rect x="630" y="238" width="220" height="34" rx="6" fill="#1f2328"/>
+<text x="640" y="260" font-size="12" fill="#7ee787" text-anchor="start" font-weight="normal">list.scrollToIndex(4000)</text>
+<text x="740.0" y="306" font-size="12" fill="#1f2328" text-anchor="middle" font-weight="normal">only rendered items have an element</text>
+<text x="740.0" y="322" font-size="12" fill="#1f2328" text-anchor="middle" font-weight="normal">(in recycle, element ≠ item)</text>
+<text x="740.0" y="342" font-size="12" fill="#1a7f37" text-anchor="middle" font-weight="bold">fix: go through the index API</text>
+</svg>

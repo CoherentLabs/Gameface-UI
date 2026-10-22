@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="230" viewBox="0 0 720 230" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#656d76"/></marker>
+  <marker id="arrowAccent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8250df"/></marker>
+  <marker id="arrowGood" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a7f37"/></marker>
+</defs>
+<rect x="0.5" y="0.5" width="719" height="229" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+<text x="360.0" y="34" font-size="17" fill="#1f2328" text-anchor="middle" font-weight="bold">Why it waits two frames before reading positions</text>
+<line x1="30" y1="140" x2="690" y2="140" stroke="#656d76" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="686" y="160" font-size="12" fill="#656d76" text-anchor="end" font-weight="normal">time</text>
+<rect x="40" y="62" width="180" height="62" rx="8" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1.5"/>
+<text x="130.0" y="84" font-size="13" fill="#1f2328" text-anchor="middle" font-weight="bold">frame 0</text>
+<text x="130.0" y="102" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">items created</text>
+<text x="130.0" y="118" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal"></text>
+<circle cx="130.0" cy="140" r="6" fill="#cf222e"/>
+<text x="130.0" y="186" font-size="13" fill="#cf222e" text-anchor="middle" font-weight="bold">✗ read now: every top = 0</text>
+<rect x="270" y="62" width="180" height="62" rx="8" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1.5"/>
+<text x="360.0" y="84" font-size="13" fill="#1f2328" text-anchor="middle" font-weight="bold">frame 1</text>
+<text x="360.0" y="102" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">Gameface calculates</text>
+<text x="360.0" y="118" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">the layout</text>
+<circle cx="360.0" cy="140" r="6" fill="#656d76"/>
+<rect x="500" y="62" width="180" height="62" rx="8" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1.5"/>
+<text x="590.0" y="84" font-size="13" fill="#1f2328" text-anchor="middle" font-weight="bold">frame 2</text>
+<text x="590.0" y="102" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal">layout is ready</text>
+<text x="590.0" y="118" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal"></text>
+<circle cx="590.0" cy="140" r="6" fill="#1a7f37"/>
+<text x="590.0" y="186" font-size="13" fill="#1a7f37" text-anchor="middle" font-weight="bold">✓ read now: correct numbers</text>
+<text x="360.0" y="212" font-size="12" fill="#656d76" text-anchor="middle" font-weight="normal" font-style="italic">Gameface lays out on the next frames - reading too early returns zeros.</text>
+</svg>

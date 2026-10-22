@@ -1,0 +1,5 @@
+{
+  "name": "VirtualScroll",
+  "version": "1.0.0",
+  "description": "Scroll container that renders only the visible part of long lists and grids, with recycling, keyboard / gamepad navigation and responsive sizing"
+}

@@ -1,6 +1,7 @@
 import { createMemo, ParentComponent } from "solid-js";
 import LayoutBase from "../LayoutBase";
 import { ComponentBaseProps } from "../../types/ComponentProps";
+import isString from "@components/utils/isString";
 
 interface TransformMethods {
     skew?: { x?: number; y?: number; };
@@ -63,7 +64,7 @@ function handleTransformProps(props: TransformMethods & { matrix?: TransformMeth
 }
 
 function getTransformOrigin(origin: Transform['origin']) {
-    return typeof origin === 'string'
+    return isString(origin)
         ? origin
         : origin && typeof origin === 'object'
             ? `${origin.x} ${origin.y} ${origin.z}`

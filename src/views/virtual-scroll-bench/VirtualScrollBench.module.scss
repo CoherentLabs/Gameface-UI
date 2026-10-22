@@ -1,0 +1,261 @@
+.bench {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #14171c;
+    overflow: hidden;
+    font-family: monospace;
+    color: #e6e6e6;
+}
+
+.stage {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 640px;
+    height: 480px;
+}
+
+// Same box for every mode
+.list {
+    width: 640px;
+    height: 480px;
+    background-color: #1b1f26;
+}
+
+.plainList {
+    display: flex;
+    flex-direction: column;
+}
+
+.plainRow {
+    height: 40px;
+}
+
+.plainGrid {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.simpleList {
+    position: relative;
+    width: 100%;
+}
+
+.simpleWindow {
+    display: simple;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.simpleCell {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+// Chat layout - variable-height messages
+.message {
+    padding: 6px 10px;
+    color: #e6e6e6;
+    font-size: 12px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: #2a2f38;
+}
+
+.author {
+    font-weight: bold;
+}
+
+// LazyScroll experiment
+.lazyRoot {
+    position: relative;
+    width: 100%;
+}
+
+.lazyContent {
+    width: 100%;
+}
+
+.lazyContentFill {
+    width: 100%;
+    height: 100%;
+}
+
+.plainCell {
+    width: 80px;
+    height: 80px;
+}
+
+.card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 4px;
+    box-sizing: border-box;
+    background-color: #242a33;
+    border-width: 1px;
+    border-style: solid;
+    overflow: hidden;
+}
+
+.icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 6px;
+    flex-shrink: 0;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.name {
+    font-size: 10px;
+    color: #ffffff;
+    white-space: nowrap;
+}
+
+.meta {
+    font-size: 9px;
+    color: #9aa3b2;
+    white-space: nowrap;
+}
+
+.bar {
+    height: 3px;
+    margin-top: 2px;
+    background-color: #3a3a3a;
+}
+
+.barFill {
+    height: 100%;
+    background-color: #4cd964;
+}
+
+.panel {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    background-color: rgba(20, 23, 28, 0.94);
+    border-width: 1px;
+    border-style: solid;
+    border-color: #3a3f48;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+.title {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.rowLabel {
+    width: 70px;
+    color: #9aa3b2;
+}
+
+.btn {
+    padding: 3px 8px;
+    margin-right: 4px;
+    background-color: #2a2f38;
+    border-radius: 3px;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #39404c;
+    }
+}
+
+.btnActive {
+    background-color: #2f6fd6;
+
+    &:hover {
+        background-color: #2f6fd6;
+    }
+}
+
+.btnPrimary {
+    background-color: #2e8b57;
+
+    &:hover {
+        background-color: #37a466;
+    }
+}
+
+.btnDisabled {
+    opacity: 0.4;
+}
+
+.status {
+    margin-top: 4px;
+    color: #f0c75e;
+}
+
+.liveStats {
+    margin-top: 6px;
+}
+
+.table {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+.tr {
+    display: flex;
+    flex-direction: row;
+    padding: 3px 0;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: #2a2f38;
+}
+
+.th {
+    color: #9aa3b2;
+}
+
+.tdMode {
+    width: 140px;
+}
+
+.td {
+    width: 80px;
+    text-align: right;
+}
+
+.rel {
+    color: #9aa3b2;
+}
+
+.note {
+    width: 860px;
+    margin-top: 6px;
+    color: #7d8594;
+    font-size: 11px;
+}
