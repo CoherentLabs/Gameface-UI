@@ -5,6 +5,7 @@ import eventBus from "@components/Utility/EventBus";
 import { waitForFrames } from "@components/utils/waitForFrames";
 import { DEFAULT_ACTION_NAMES } from "@components/Utility/Navigation/defaults";
 import { DefaultActions } from "@components/Utility/Navigation/types";
+import { resetStyleCache, setStyleProperty } from "./gameface-dom";
 
 const baseEventsSet = new Set([
     "abort", "animationend", "blur", "click", "dblclick", "durationchange", "ended", "finish",
@@ -27,29 +28,29 @@ function handleClasses(el: Element, props: ComponentProps) {
 
 type StyleObject = Record<string, string | number | null | undefined>;
 
-function reconcileStyles(elStyle: CSSStyleDeclaration, next: any, prev: any) {
+// Delegates to gameface-dom.ts's setStyleProperty rather than writing
+// el.style directly - props.style is typed to accept NumericCSSProperty
+// ({ value, unit }) and TransformStyle, not just plain CSS strings/numbers,
+// and only setStyleProperty (with its per-element CSSTOM cache) understands
+// those shapes. Writing them through el.style/CSSStyleDeclaration directly
+// would stringify them to "[object Object]".
+function reconcileStyles(el: HTMLElement, next: any, prev: any) {
     for (const key in prev) {
-        if (next[key] == null) {
-            if (key.indexOf("-") > -1) {
-                elStyle.removeProperty(key);
-            } else {
-                // @ts-ignore
-                elStyle[key] = "";
-            }
-        }
+        if (next[key] == null) setStyleProperty(el, key, null);
     }
 
     for (const key in next) {
         const value = next[key];
-
-        if (prev[key] !== value) {
-            if (key.indexOf("-") > -1) {
-                elStyle.setProperty(key, String(value));
-            } else {
-                // @ts-ignore
-                elStyle[key] = value;
-            }
-        }
+        // NumericCSSProperty/TransformStyle can carry an un-invoked accessor
+        // (`value: Accessor<number>`), so the descriptor object can keep the
+        // same identity across effect runs even though the accessor's value
+        // changed underneath it - an identity check alone would skip calling
+        // setStyleProperty and the new value would never reach the DOM.
+        // Always reprocess structured values; gameface-dom.ts's own
+        // per-property cache already skips the actual native write when the
+        // resolved value hasn't changed, so this only costs a comparison.
+        const isStructured = value !== null && typeof value === "object";
+        if (isStructured || prev[key] !== value) setStyleProperty(el, key, value);
     }
 }
 
@@ -65,6 +66,7 @@ function handleStyles(el: HTMLElement, props: ComponentProps) {
 
         if (!compStyles && !extStyles) {
             if (Object.keys(prevStyles).length > 0) {
+                resetStyleCache(el);
                 el.removeAttribute("style");
                 prevStyles = {};
             }
@@ -80,6 +82,7 @@ function handleStyles(el: HTMLElement, props: ComponentProps) {
             const finalString = [compStr, extStr].filter(part => part && String(part).trim() !== "").join(";");
 
             if (styles.cssText !== finalString) {
+                resetStyleCache(el);
                 styles.cssText = finalString;
             }
 
@@ -92,7 +95,7 @@ function handleStyles(el: HTMLElement, props: ComponentProps) {
             ...(extStyles as StyleObject || {})
         };
 
-        reconcileStyles(styles, nextStyles, prevStyles);
+        reconcileStyles(el, nextStyles, prevStyles);
 
         prevStyles = nextStyles;
     });

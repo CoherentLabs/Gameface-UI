@@ -1,0 +1,503 @@
+---
+title: Typed inline styles (CSSTOM)
+sidebar:
+    order: 7
+    badge:
+      text: 'v4.2.0'
+      variant: 'tip'
+---
+
+import TypedStylesFlow from '@docs-components/TypedStylesFlow.astro';
+
+<Summary>
+In version 4.2.0, Gameface UI introduced the Style TOM plugin and CSSTOM style runtime library that can automatically detect and rewrite reactive numeric style values, applying them through Gameface's CSS Typed Object Model, improving performance and reducing runtime parsing overhead.
+</Summary>
+
+## How it works
+
+The plugin and runtime library are located in `scripts/babel/style-tom-plugin.mts` and `src/components/BaseComponent/gameface-dom.ts` respectively.
+
+The plugin is responsible for detecting reactive numeric style values in your Solid components and rewriting them into a structured format that the runtime can understand and then apply them efficiently using CSSTOM.
+
+This allows you to keep writing normal Solid styles. When a style changes reactively, the
+Style TOM plugin (`scripts/babel/style-tom-plugin.mts`) looks for supported
+numeric values before Solid compiles the JSX. For example, this authored style:
+
+```tsx
+import { createSignal } from 'solid-js';
+
+const [x, setX] = createSignal(24);
+
+<div style={{ left: `${x()}px`, opacity: 0.8 }} />
+```
+
+is conceptually rewritten to:
+
+```jsx
+<div style={{ left: { value: x(), unit: 'px' }, opacity: 0.8 }} />
+```
+
+The style runtime (`src/components/BaseComponent/gameface-dom.ts`) receives the structured
+value and applies it through Gameface's [CSS Typed Object Model](https://docs.coherent-labs.com/cpp-gameface/content_development/csstypedobjectmodel/)
+(CSSTOM), passing the number and unit separately instead of making Gameface
+parse a CSS string. This fast path is used only when the property is supported
+and the element exposes `attributeStyleMap` - see [Supported properties](#supported-properties).
+The `opacity` number in this example also uses CSSTOM, without needing a unit.
+Values that are not eligible continue through the normal inline-style path that Solid normally uses.
+
+Here is a visual representation of how a dynamic style flows through the Style TOM plugin and the CSSTOM runtime:
+
+<TypedStylesFlow />
+
+
+## Setup
+
+Both pieces are registered through `vite-plugin-solid` in `vite.config.mts` -
+the plugin as a Babel plugin, the runtime through Solid's `moduleName`
+option:
+
+```diff lang=js
++import styleTomPlugin from './scripts/babel/style-tom-plugin.mts';
++import { styleTomReport } from './scripts/babel/style-tom-report.mts';
+
+export default defineConfig({
+  plugins: [
++    // styleTomReport(), // optional - see "Finding styles that aren't rewritten"
+    solidPlugin({
++      babel: {
++        plugins: [styleTomPlugin]
++      },
+      solid: {
++        moduleName: path.resolve(__dirname, './src/components/BaseComponent/gameface-dom.ts')
+      }
+    }),
+    ...
+  ],
+  ...
+});
+```
+
+The plugin and runtime have no options to configure. Detection is
+conservative: when the plugin cannot confidently recognize a value, it leaves
+it alone rather than guessing.
+
+:::caution[Existing projects]
+If your project was created before 4.2.0, update your components first, then
+add the config above:
+
+```bash
+gameface-cli update
+```
+
+The updated `BaseComponent` brings everything the plugin needs: the style
+runtime (`src/components/BaseComponent/gameface-dom.ts`) and the plugin files
+in `scripts/babel/`. The plugin also rewrites styles you pass to Gameface UI
+components, so they need this updated `BaseComponent` - don't enable the
+plugin on an older one.
+:::
+
+The plugin checks this for you. If the style runtime is missing, doesn't
+match the plugin's version, or `BaseComponent` doesn't use it, the plugin
+rewrites nothing and prints a warning telling you to run
+`gameface-cli update` - your UI builds exactly as it would without the
+plugin. If Solid's `moduleName` doesn't point to the style runtime, the build
+stops with an error showing the line to add, because the rewritten styles
+would not work.
+
+## Supported properties \{#supported-properties\}
+
+Only properties Gameface documents as CSSTOM-eligible use it. Everything else
+(colors, `display`, shorthands like `margin`, `padding`, `border`,
+`background`, `font`, `flex`, `transition`, `animation`, `outline`, and
+custom properties) is applied as an ordinary style:
+
+* **Position**: `top`, `left`, `right`, `bottom`
+* **Size**: `width`, `height`, `min-width`, `min-height`, `max-width`, `max-height`
+* **Margin**: `margin-top`, `margin-right`, `margin-bottom`, `margin-left`
+* **Padding**: `padding-top`, `padding-right`, `padding-bottom`, `padding-left`
+* **Border width**: `border-top-width`, `border-right-width`, `border-bottom-width`, `border-left-width`
+* **Flex**: `flex-basis`, `flex-grow`, `flex-shrink`
+* **Text**: `font-size`, `letter-spacing`, `line-height`, `text-decoration-thickness`, `text-stroke-width`, `text-underline-offset`
+* **Other**: `opacity`, `z-index`
+
+## Finding styles that aren't rewritten
+
+To be able to find styles that aren't rewritten, you can use the `styleTomReport()` plugin that is exported from `scripts/babel/style-tom-report.mts`.
+
+The reporter logs the dynamic styles that the style tom plugin could and
+couldn't rewrite, so you can find the ones that miss the fast path. To enable it you need to include the `styleTomReport()` plugin in your Vite configuration as shown below:
+
+```diff lang=js
+export default defineConfig({
+  plugins: [
++    styleTomReport(),
+    solidPlugin({...})
+  ],
+});
+```
+
+It must come before `solidPlugin()` in `plugins`, as in [Setup](#setup) -
+that's how it maps each entry back to the right line in your source file.
+
+To write the report somewhere else, pass `file`, relative to the project root
+(default `'style-tom-report.log'`):
+
+```js
+styleTomReport({ file: 'reports/style-tom.log' }),
+```
+
+The report only runs with the dev server (`npm run dev`). `npm run build`
+never writes it and it adds nothing to the built UI.
+
+When it's on, the dev server writes `style-tom-report.log` in the project
+root. It lists every dynamic style on a [supported property](#supported-properties),
+and every dynamic `transform`, in two groups:
+
+* **Not rewritten** - these go through the slower string path. Each entry
+  says why it wasn't rewritten and how to fix it.
+* **Rewritten** - these already use CSSTOM.
+
+Static values, unsupported properties such as `color`, and values that already
+use CSSTOM without a rewrite (like `opacity: o()`) aren't listed.
+
+Each entry starts with the file's full path, line and column - Ctrl+click it
+in VS Code to jump there:
+
+```txt
+G:\my-ui\src\views\hud\Hud.tsx:42:25
+    left: `${x()}`
+    No unit, so it stays a string. Add the unit, e.g. `${x()}px`.
+```
+
+When the "not rewritten" list changes, one line appears in the terminal:
+
+```txt
+[style-tom] 3 dynamic styles can't use the CSSTOM fast path. Details: G:\my-ui\style-tom-report.log
+```
+
+The report covers the files the dev server has compiled so far, so open the
+views you want checked. It updates as you edit files.
+
+## Values that can use CSSTOM
+
+The plugin rewrites a dynamic value when it can identify its number and unit,
+and the runtime uses CSSTOM when the property is supported and the element
+exposes `attributeStyleMap`.
+
+For a property that takes a unit, such as `width` or `left`, include the unit
+in a template literal or string concatenation:
+
+```tsx
+<div style={{ width: `${x()}px` }} />
+<div style={{ width: x() + 'px' }} />
+```
+
+Both forms are conceptually rewritten to:
+
+```tsx
+<div style={{ width: { value: x(), unit: 'px' } }} />
+```
+
+The dynamic expression, such as `x()`, should return a number. For unitless
+properties such as `opacity`, `z-index`, `flex-grow`, `flex-shrink`, and
+`line-height`, pass a number directly:
+
+```tsx
+<div style={{ opacity: opacity() }} />
+```
+
+### Transforms
+
+The plugin supports `translate()`, `scale()`, `rotate()`, `skewX()`, and
+`skewY()` in a transform template literal or string concatenation:
+
+```tsx
+<div style={{ transform: `translate(${x()}px, ${y()}px) rotate(${angle()}deg)` }} />
+<div style={{ transform: 'rotate(' + angle() + 'deg)' }} />
+```
+
+:::caution
+Gameface doesn't support the combined `skew()` function, so use `skewX()` and
+`skewY()` instead. A value containing `skew()` isn't rewritten, and Gameface
+ignores it:
+
+```tsx
+<div style={{ transform: `skew(${ax()}deg, ${ay()}deg)` }} />            // ❌ ignored by Gameface
+<div style={{ transform: `skewX(${ax()}deg) skewY(${ay()}deg)` }} />     // ✅ works, rewritten
+```
+:::
+
+The value is rewritten only if every function in it can be rewritten.
+Otherwise the entire value stays a plain CSS string:
+
+* Every function must be one of the five above. Other functions Gameface
+  supports, such as `translateX()`, `translateY()`, `scaleX()`, `scaleY()`,
+  `rotateZ()`, `translate3d()` and `matrix()`, still work, but the plugin
+  doesn't rewrite them so the value remains a plain CSS string.
+* `translate()` takes values in `px`, `%`, `vw`, `vh`, `vmin`, `vmax`,
+  `em`, `rem` or `pt`. `rotate()` and the `skew` functions take `deg` - the
+  only angle unit Gameface supports. `scale()` takes plain numbers.
+* As with other properties, a missing unit is not guessed. Only a literal
+  `0` may be written without one:
+
+```tsx
+<div style={{ transform: `translate(${x()}px, 0)` }} />  // ✅ rewritten
+<div style={{ transform: `translate(${x()}, 0)` }} />    // ❌ left alone - no unit on x()
+<div style={{ transform: `rotate(${angle()})` }} />      // ❌ left alone - no unit
+```
+
+Functions are applied in the order you write them, and a function can be used
+more than once, exactly as in a plain CSS string:
+
+```tsx
+// Rotates first, then moves outward - the element orbits as angle() changes.
+<div style={{ transform: `rotate(${angle()}deg) translate(${radius()}px)` }} />
+
+// Both translations apply - equivalent to translate(x() + y()).
+<div style={{ transform: `translate(${x()}px) translate(${y()}px)` }} />
+```
+
+Each value is rewritten to an object listing the functions in order and the
+numbers to apply (see [Writing a transform by hand](#writing-a-transform-by-hand)
+for how the object works):
+
+```tsx
+<div style={{ transform: { functions: 'rotate(deg) translate(px)', values: [angle(), radius()] } }} />
+```
+
+On every update the runtime only changes the numbers that moved. The order
+is fixed by your source code, so it's set up once per element.
+
+## Values that stay on the normal style path
+
+Values that the plugin cannot safely recognize are still valid styles. They
+continue through Solid's ordinary inline-style handling, which updates the
+style when the reactive value changes. For example, colors and CSS keywords
+are not numeric CSSTOM values:
+
+```tsx
+<div style={{ color: textColor(), display: isVisible() ? 'block' : 'none' }} />
+```
+
+A supported property also stays on that path if the plugin cannot see the
+number and unit together. For example, a prebuilt string passed as the whole
+property value is not rewritten:
+
+```tsx
+const leftValue = () => `${x()}px`;
+<div style={{ left: leftValue() }} />
+```
+
+Likewise, a template literal with no unit is left alone; the plugin does not
+guess that the value should be in pixels:
+
+```tsx
+<div style={{ left: `${x()}` }} />
+```
+
+The plugin also leaves values it cannot safely trace, such as `props.style`,
+spreads, computed property names, reassigned bindings, and helpers with
+multiple conditional returns. A spread only hides the properties it
+provides; adjacent properties can still be rewritten:
+
+```tsx
+<div style={{ ...props.styles, left: `${props.x}px` }} />
+```
+
+Fully static styles are left for [`vite-solid-style-to-css`](/docs/concepts/plugins#vite-solid-style-to-css-plugin),
+which moves them into a CSS class. A number for a property that takes a unit
+(`width`, `left`, `margin-top`, ...) should come with its unit; in typed code,
+use the `{ value, unit }` shape. For example,
+`style={{ width: { value: w(), unit: 'px' } }}`. If a plain number reaches
+such a property from untyped code, the runtime treats it as pixels.
+
+## When to write the value explicitly
+
+Most values do not need the object form. Use it when the plugin cannot see a
+recognizable expression in the JSX, or when a value is passed in as a number
+and needs a unit such as `px` or `vh`. The object shape is `{ value, unit }`:
+
+```jsx
+<div style={{ width: { value: props.width, unit: 'vh' } }} />
+```
+
+The shape can be mixed with plain values, including switching between them
+from one render to the next:
+
+```jsx
+<div style={{ width: expanded() ? { value: w(), unit: 'px' } : 'auto' }} />
+```
+
+### Writing a transform by hand
+
+A transform has its own object shape, `{ functions, values }`. It's what the
+plugin produces from a transform string, and you can write it yourself too -
+for example when the numbers come from props:
+
+```jsx
+<div style={{ transform: { functions: 'translate(px,px) rotate(deg)', values: [props.x, props.y, props.angle] } }} />
+```
+
+The syntax has been designed in this way to optimize the handling of dynamic transform values in a structured and predictable way and reduce unnecessary recalculations and comparisons at runtime so you get the most performant update.
+
+Think of it as a CSS transform string split in two:
+
+* `functions` is the transform with the numbers taken out. Every place a
+  number was, you write only its unit.
+* `values` is the numbers that were taken out, in the same order.
+
+So `translate(10px, 20px) rotate(45deg)` becomes:
+
+```jsx
+{
+  functions: 'translate(px,px) rotate(deg)',  // translate(10px, 20px) rotate(45deg) without the numbers
+  values: [10, 20, 45]                        // 10 -> first px, 20 -> second px, 45 -> deg
+}
+```
+
+More examples:
+
+| CSS string | `functions` | `values` |
+|---|---|---|
+| `translate(10px, 20px)` | `'translate(px,px)'` | `[10, 20]` |
+| `translate(10px)` | `'translate(px)'` | `[10]` - Y is 0, as in CSS |
+| `translate(-50%, 10vh)` | `'translate(percent,vh)'` | `[-50, 10]` |
+| `scale(2)` | `'scale(number)'` | `[2]` |
+| `scale(2, 0.5)` | `'scale(number,number)'` | `[2, 0.5]` |
+| `rotate(45deg)` | `'rotate(deg)'` | `[45]` |
+| `skewX(10deg) skewY(5deg)` | `'skewX(deg) skewY(deg)'` | `[10, 5]` |
+| `rotate(45deg) translate(100px)` | `'rotate(deg) translate(px)'` | `[45, 100]` |
+| `translate(50px) translate(30px)` | `'translate(px) translate(px)'` | `[50, 30]` |
+
+Rules:
+
+* Supported functions: `translate()` and `scale()` with one or two arguments,
+  `rotate()`, `skewX()` and `skewY()` with one.
+* Units: `px`, `percent` (for `%`), `vw`, `vh`, `vmin`, `vmax`, `em`, `rem`
+  and `pt` for `translate()`; `deg` for `rotate()`, `skewX()` and `skewY()`;
+  `number` for `scale()`, which has no unit.
+* `values` needs exactly one number per unit in `functions`.
+* An entry in `values` can be a number or a signal, e.g. `values: [x, y]`
+  instead of `values: [x(), y()]`.
+* Functions are applied in the order written, and the same function can
+  appear more than once.
+
+Keep `functions` the same between updates and change only `values` - that's
+the fast path, since only the numbers that changed are written. Changing
+`functions` (for example switching from `px` to `%`) also works, but rebuilds
+the element's transform. A `functions` string with anything else in it, such
+as `rotateZ(deg)`, is applied as a plain CSS string instead of through
+CSSTOM - so a typo produces invalid CSS, which Gameface ignores.
+
+## 💡Quick reference
+
+What the plugin rewrites, at a glance. The sections below explain the rules.
+
+✅ **Rewritten** - applied through CSSTOM:
+
+```tsx
+// A value with its unit - template literal or concatenation
+<div style={{ left: `${x()}px` }} />
+<div style={{ left: x() + 'px' }} />
+<div style={{ width: `${w()}%` }} />
+<div style={{ height: `${h()}vh` }} />
+<div style={{ 'font-size': `${size()}rem` }} />
+
+// Any expression inside ${...}
+<div style={{ left: `${x() * 2 + offset}px` }} />
+<div style={{ left: `${props.x}px` }} />
+
+// style:prop directive
+<div style:left={`${x()}px`} />
+
+// Properties next to a spread
+<div style={{ ...props.styles, left: `${x()}px` }} />
+
+// A local function or memo used only as a style
+const boxStyle = () => ({ left: `${x()}px` });
+const boxStyle = createMemo(() => ({ left: `${x()}px` }));
+<div style={boxStyle()} />
+
+// Transforms
+<div style={{ transform: `translate(${x()}px, ${y()}px)` }} />
+<div style={{ transform: `translate(${x()}%)` }} />
+<div style={{ transform: `translate(0, ${y()}px)` }} />
+<div style={{ transform: `scale(${s()})` }} />
+<div style={{ transform: `scale(${sx()}, ${sy()})` }} />
+<div style={{ transform: `rotate(${angle()}deg)` }} />
+<div style={{ transform: `skewX(${ax()}deg) skewY(${ay()}deg)` }} />
+<div style={{ transform: `translate(${x()}px, ${y()}px) scale(${s()}) rotate(${angle()}deg)` }} />
+<div style={{ transform: `rotate(${angle()}deg) translate(${r()}px)` }} />   // any order
+<div style={{ transform: `translate(${x()}px) translate(${y()}px)` }} />     // repeated functions
+<div style={{ transform: 'rotate(' + angle() + 'deg)' }} />
+<div style:transform={`rotate(${angle()}deg)`} />
+```
+
+✅ **Applied through CSSTOM without a rewrite** - already in the form the
+runtime needs:
+
+```tsx
+<div style={{ opacity: opacity() }} />                  // number on a unitless property
+<div style={{ width: { value: w(), unit: 'px' } }} />   // the { value, unit } shape
+```
+
+❌ **Not rewritten** - applied through the normal style path:
+
+```tsx
+// No unit, and the plugin doesn't guess one.
+// Fix: add the unit - `${x()}px`
+<div style={{ left: `${x()}` }} />
+
+// The plugin only sees a call, not a unit. A number still gets CSSTOM (as px),
+// but a string like '50px' doesn't.
+// Fix: { value: x(), unit: 'px' }
+<div style={{ left: x() }} />
+
+// The string is built elsewhere ('50px'), so the plugin can't split it.
+// Fix: keep only the number in the signal and write `${left()}px`
+const [left, setLeft] = createSignal('50px');
+<div style={{ left: left() }} />
+
+// The plugin doesn't look inside a condition (? :). It still works, just slower.
+// Fix: move the condition inside the template - `${on() ? a() : b()}px`
+<div style={{ left: on() ? `${a()}px` : `${b()}px` }} />
+
+// Text around the value - only a single `${value}unit` can be rewritten.
+// Fix: do the math in JavaScript - `${x() + 10}px`
+<div style={{ left: `calc(${x()}px + 10px)` }} />
+
+// Static - nothing changes at runtime. vite-solid-style-to-css moves it into a CSS class.
+<div style={{ left: '50%' }} />
+
+// Not a CSSTOM-supported property (shorthand, custom property, color).
+// Fix for shorthands: use the individual property, e.g. `margin-left`
+<div style={{ margin: `${m()}px` }} />
+<div style={{ '--offset': `${x()}px` }} />
+<div style={{ color: color() }} />
+
+// Transforms
+// translateX() isn't one of the rewritten functions. Fix: `translate(${x()}px)`
+<div style={{ transform: `translateX(${x()}px)` }} />
+// One unsupported function keeps the whole value a string. Fix: `rotate(45deg)`
+<div style={{ transform: `translate(${x()}px) rotateZ(45deg)` }} />
+// No unit on x(). Fix: `translate(${x()}px, 0)`
+<div style={{ transform: `translate(${x()}, 0)` }} />
+// Gameface doesn't support skew(). Fix: `skewX(${a()}deg) skewY(${b()}deg)`
+<div style={{ transform: `skew(${a()}deg, ${b()}deg)` }} />
+// Static - nothing to update at runtime.
+<div style={{ transform: `rotate(45deg)` }} />
+
+// Style objects the plugin can't follow
+// Comes from outside the component - its contents can't be seen at build time.
+<div style={props.style} />
+
+// Also used somewhere other than a style, so it's left alone to keep that use unchanged.
+const shared = () => ({ left: `${x()}px` });
+log(shared());
+<div style={shared()} />
+
+// Reassigned, so the plugin can't know which function runs. Fix: use const.
+let boxStyle = () => ({ left: `${x()}px` });
+boxStyle = otherStyle;
+<div style={boxStyle()} />
+```

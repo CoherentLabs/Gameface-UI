@@ -4,7 +4,17 @@ title: Changelog
 
 import { Badge } from '@astrojs/starlight/components'
 
-## 5.0.0 :badge[Latest]{variant="note"}
+## 5.1.0 :badge[Latest]{variant="note"}
+
+- <Badge text="New" variant="tip" size="small" /> Added the [Style TOM plugin and CSSTOM style runtime](/docs/concepts/typed-styles): a `style={{...}}` value driven by a signal (e.g. `` `${x()}px` ``) is now automatically rewritten at build time into the shape Gameface's CSS Typed Object Model understands, so updating it at runtime skips the string parsing a plain `element.style` write would otherwise require on every change. `transform` strings (`translate()`, `scale()`, `rotate()`, `skewX()`, `skewY()`) get the same treatment. No changes needed to existing components - this only affects the small set of properties [Gameface documents as CSSTOM-eligible](/docs/concepts/typed-styles#supported-properties); everything else keeps working exactly as before.
+- <Badge text="New" variant="tip" size="small" /> Added an optional [dev-server report](/docs/concepts/typed-styles#finding-styles-that-arent-rewritten) listing the dynamic styles the Style TOM plugin couldn't rewrite, with the reason and a suggested fix for each.
+
+  :::note
+  To use it in an existing project, run `gameface-cli update` - every component is bumped to its next minor version because they share the updated `BaseComponent`, which now ships the style runtime and plugin files. Then make the one-time `vite.config.mts` change from [Setup](/docs/concepts/typed-styles#setup); `update`/`add` never rewrite config files.
+  :::
+
+
+## 5.0.0
 
 ### ⚠️ Breaking Changes
 

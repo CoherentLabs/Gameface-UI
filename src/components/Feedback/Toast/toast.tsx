@@ -64,15 +64,20 @@ const useToast = (): [ParentComponent, (options: ToastOptions) => void] => {
         });
     
         if (timeout > 0) {
+            // Progress comes from elapsed time, not from counting ticks: Gameface
+            // runs timers at most once per frame, so short intervals fire less
+            // often than requested and a tick count would outlast `timeout`.
+            const start = performance.now();
             const timerID = setInterval(() => {
+                const elapsedTicks = Math.floor(((performance.now() - start) / timeout) * INTERVALS);
                 setTimers((prev) => {
                     const next = { ...prev }; // copy
-                    if (next[id] >= INTERVALS) {
+                    if (elapsedTicks >= INTERVALS) {
                         removeItem(position, id);
                         clearInterval(timerID);
                         delete next[id];
                     } else {
-                        next[id] = (next[id] ?? 0) + 1;
+                        next[id] = elapsedTicks;
                     }
                     return next;
                 });
@@ -106,6 +111,11 @@ const useToast = (): [ParentComponent, (options: ToastOptions) => void] => {
             return row === 2 ? 'column-reverse' : 'column';
         };
 
+        // The bottom row is column-reverse, where the flex start is the bottom
+        // edge - so 'start' (not 'end') keeps bottom toasts at the screen's
+        // bottom, with newer ones stacking upward.
+        const justify = (row: number) => (row === 2 ? 'start' : flexItems(row));
+
         return (
             <Portal mount={document.querySelector('#root')!}>
                 <Grid
@@ -119,7 +129,7 @@ const useToast = (): [ParentComponent, (options: ToastOptions) => void] => {
                             return (
                                 <GridTile row={Math.floor(index() / GRID_SIZE) + 1} col={(index() % GRID_SIZE) + 1}>
                                     <Flex
-                                        justify-content={flexItems(Math.floor(index() / GRID_SIZE))}
+                                        justify-content={justify(Math.floor(index() / GRID_SIZE))}
                                         align-items={flexItems(index() % GRID_SIZE)}
                                         direction={direction(Math.floor(index() / GRID_SIZE))}
                                         style={{ height: '100%' }}

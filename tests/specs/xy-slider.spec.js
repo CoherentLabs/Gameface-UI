@@ -41,7 +41,10 @@ describe('XYSlider', function () {
         await background.click();
         const assertionEl = await gf.get(`.${selectors.assertionElement}`);
 
-        assert.equal(await assertionEl.text(), 'x: 100 | y: 99', 'Slider\'s thumb should move to the center');
+        // The click lands on the background's center pixel, so rounding can put
+        // either axis 1 off the exact center (100) depending on the layout.
+        const [x, y] = (await assertionEl.text()).match(/-?\d+/g).map(Number);
+        assert.ok(Math.abs(x - 100) <= 1 && Math.abs(y - 100) <= 1, `Slider's thumb should move to the center (got x: ${x} | y: ${y})`);
     })
 
     it('Should change min and max reactively', async () => {
