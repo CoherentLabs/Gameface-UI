@@ -206,11 +206,11 @@ export function navigationActions(el: HTMLElement, accessor: Accessor<Navigation
         listeners.push([name, handler]);
     }
 
-    return () => {
+    onCleanup(() => {
         for (const [name, handler] of listeners) {
             eventBus.off(name, handler);
         }
-    };
+    });
 }
 
 function baseComponent(el: Element, accessor: () => ComponentProps) {

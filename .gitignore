@@ -6,3 +6,4 @@ dist
 # Generated at release and uploaded as a release asset, never committed
 registry.json
 src/components/Media/Image/ImageTypes.ts
+style-tom-report.log
