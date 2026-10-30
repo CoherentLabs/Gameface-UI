@@ -1,6 +1,6 @@
 import { ColorPickerRef } from "@components/Complex/ColorPicker/ColorPicker"
 import Block from "@components/Layout/Block/Block"
-import { createSignal, onMount, useContext } from "solid-js"
+import { createSignal, onCleanup, onMount, useContext } from "solid-js"
 import { parseHSVAColor } from "@components/Complex/ColorPicker/colorPickerUtils";
 import MenuColorPicker, { ColorData } from "./MenuColorPicker";
 import ExtraContent from "../SidePanel/ExtraContent";
@@ -17,6 +17,7 @@ const ColorPreview = (props: {id: string}) => {
     let colorPickerRef: ColorPickerRef;
     const nav = useNavigation();
     const menu = useContext(MenuContext);
+    let eventCleanup: () => void;
 
     const handleChange = (value: ColorData) => {
         setColor(parseHSVAColor(value).rgba)
@@ -24,10 +25,12 @@ const ColorPreview = (props: {id: string}) => {
     }
 
     onMount(() => {
-        eventBus.once(menu!.TutorialSteps.InteractiveTwo.title, () => {
+        eventCleanup = eventBus.once(menu!.TutorialSteps.InteractiveTwo.title, () => {
             nav?.focusFirst(NAV_AREA_NAME);
         })
     })
+
+    onCleanup(() => eventCleanup?.());
     
     return (
         <Block class={styles.wrapper} anchor={`#${props.id}`} onAction={{

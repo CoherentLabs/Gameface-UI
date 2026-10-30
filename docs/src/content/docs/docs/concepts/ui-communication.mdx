@@ -111,12 +111,34 @@ eventBus.on(eventName: string, callback: EventCallback): void
 The `off` method removes a listener for a specific event.
 
 ```tsx
-eventBus.off(eventName: string): void
+eventBus.off(eventName: string, callback: EventCallback): void
 ```
 
-| Parameter   | Type     | Description                                 |
-| ----------- | -------- | ------------------------------------------- |
-| `eventName` | `string` | The name of the event to stop listening for |
+| Parameter   | Type                  | Description                                    |
+| ----------- | --------------------- | ---------------------------------------------- |
+| `eventName` | `string`              | The name of the event to stop listening for    |
+| `callback`  | `EventCallback`       | The callback that was passed to `on`           |
+
+#### `once`
+
+The `once` method registers a listener that is removed automatically after it fires. It returns a cleanup function that removes the listener.
+
+```tsx
+eventBus.once(eventName: string, callback: EventCallback): () => void
+```
+
+| Parameter   | Type                  | Description                                    |
+| ----------- | --------------------- | ---------------------------------------------- |
+| `eventName` | `string`              | The name of the event to listen for            |
+| `callback`  | `EventCallback`       | The function to call when the event is emitted |
+
+:::caution
+If the component can unmount before the event fires, pass the cleanup function to `onCleanup`. Otherwise the listener stays registered and keeps the component in memory.
+
+```tsx
+onMount(() => onCleanup(eventBus.once('button-clicked', callback)));
+```
+:::
 
 #### `hasRegistered`
 
@@ -228,6 +250,18 @@ onMount(() => {
 ```
 
 This is particularly useful when using arrow functions, as they will be **automatically removed** after being triggered.
+
+If the component can unmount before the event fires, remove the listener in `onCleanup`. Otherwise it stays registered and keeps the component in memory. Pass the function `once` returns:
+
+```tsx
+onMount(() => {
+    onCleanup(eventBus.once('button-clicked', (data: string) => {
+        console.log(data);
+    }));
+});
+```
+
+`off` can't remove a `once` listener, because `once` registers a wrapper around your callback.
 
 ### Checking if an event has been registered
 

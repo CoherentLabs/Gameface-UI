@@ -273,7 +273,10 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     });
 
     onCleanup(() => {
-        if (contentWrapperRef!) contentWrapperRef.removeEventListener('scroll', updateHandlePosition);
+        if (contentWrapperRef!) {
+            contentWrapperRef.removeEventListener('scroll', updateHandlePosition);
+            contentWrapperRef.removeEventListener('property-scroll', updateHandlePosition);
+        }
         stopScrollingToMouse();
         if (nav) nav.pauseAction('pan');
     });

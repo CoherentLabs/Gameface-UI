@@ -68,6 +68,7 @@ class EventBus {
         };
 
         this.on(event, onceCallback);
+        return () => this.off(event, onceCallback);
     }
 
     hasRegistered(event: string, callback?: EventCallback) {
