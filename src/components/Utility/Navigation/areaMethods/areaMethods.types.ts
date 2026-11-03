@@ -1,4 +1,4 @@
-import { KeyName } from 'coherent-gameface-interaction-manager/dist/types/interaction-manager';
+import type { KeyName, NavigationEdgeHandler } from 'coherent-gameface-interaction-manager';
 
 /**
  * Interface defining all area-related navigation methods
@@ -65,4 +65,12 @@ export interface AreaMethods {
      * Resumes navigation, allowing spatial navigation actions to execute again
      */
     resumeNavigation: () => void;
+
+    /**
+     * Sets the handler called when navigation hits the edge of an area. Return `false` from it to prevent looping.
+     * An area holds one handler. Pass `null` to remove it.
+     * @param area - The name of the navigation area
+     * @param handler - The edge handler, or `null` to remove the current one
+     */
+    setEdgeHandler: (area: string, handler: NavigationEdgeHandler | null) => void;
 }
