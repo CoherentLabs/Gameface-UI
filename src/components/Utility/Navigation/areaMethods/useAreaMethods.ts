@@ -3,7 +3,7 @@ import { SetStoreFunction } from 'solid-js/store';
 import { NavigationConfigType } from '../types';
 import { AreaMethods } from './areaMethods.types';
 import { spatialNavigation } from 'coherent-gameface-interaction-manager';
-import type { KeyName, NavigationEdgeHandler } from 'coherent-gameface-interaction-manager';
+import type { KeyName, NavigationEdgeHandler, SwitchAreaOptions } from 'coherent-gameface-interaction-manager';
 
 export default function createAreaMethods(
     areas: Set<string>,
@@ -50,25 +50,29 @@ export default function createAreaMethods(
         return true;  
     } 
 
+    // The scope only follows the area when focus actually moved into it
     const focusFirst = (area: string) => {
-        if (!isAreaValid(area)) return;
+        if (!isAreaValid(area)) return null;
 
-        spatialNavigation.focusFirst(area);
-        setConfig('scope', area);
+        const element = spatialNavigation.focusFirst(area);
+        if (element) setConfig('scope', area);
+        return element;
     };
 
     const focusLast = (area: string) => {
-        if (!isAreaValid(area)) return;
+        if (!isAreaValid(area)) return null;
 
-        spatialNavigation.focusLast(area);
-        setConfig('scope', area);
+        const element = spatialNavigation.focusLast(area);
+        if (element) setConfig('scope', area);
+        return element;
     };
 
-    const switchArea = (area: string) => {
-        if (!isAreaValid(area)) return;
+    const switchArea = (area: string, options?: SwitchAreaOptions) => {
+        if (!isAreaValid(area)) return null;
 
-        spatialNavigation.switchArea(area);
-        setConfig('scope', area);
+        const element = spatialNavigation.switchArea(area, options);
+        if (element) setConfig('scope', area);
+        return element;
     };
 
     const clearFocus = () => spatialNavigation.clearFocus();
