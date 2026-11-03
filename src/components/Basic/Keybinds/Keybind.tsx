@@ -4,7 +4,8 @@ import { ComponentProps } from "@components/types/ComponentProps";
 import style from './Keybinds.module.scss'
 import { BindingCode, BindingLabel } from "./util/mappings";
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
-import { gamepad, GamepadInput, GamepadMappings } from "coherent-gameface-interaction-manager";
+import { gamepad, GamepadMappings } from "coherent-gameface-interaction-manager";
+import type { GamepadInput } from "coherent-gameface-interaction-manager";
 import { GamepadBindingCode } from "./util/glyphs";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
 import { useNavigation } from "@components/Utility/Navigation/Navigation";

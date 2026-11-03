@@ -3,13 +3,13 @@ import { SetStoreFunction } from 'solid-js/store';
 import { NavigationConfigType } from '../types';
 import { AreaMethods } from './areaMethods.types';
 import { spatialNavigation } from 'coherent-gameface-interaction-manager';
-import { KeyName } from 'coherent-gameface-interaction-manager/dist/types/interaction-manager';
+import type { KeyName, NavigationEdgeHandler } from 'coherent-gameface-interaction-manager';
 
 export default function createAreaMethods(
     areas: Set<string>,
-    setConfig: SetStoreFunction<NavigationConfigType>
+    setConfig: SetStoreFunction<NavigationConfigType>,
+    navigationEdgeHandlers: Map<string, NavigationEdgeHandler>
 ): AreaMethods {
-
     const registerArea = (area: string, elements: string[] | HTMLElement[], focused?: boolean) => {
         waitForFrames(() => {
             spatialNavigation[spatialNavigation.enabled ? 'add' : 'init']([
@@ -79,6 +79,20 @@ export default function createAreaMethods(
 
     const resetNavigationKeys = () => spatialNavigation.resetKeys();
 
+    const setEdgeHandler = (area: string, handler: NavigationEdgeHandler | null) => {
+        if (handler === null) {
+            navigationEdgeHandlers.delete(area);
+            return;
+        }
+
+        if (navigationEdgeHandlers.has(area)) {
+            console.warn(`Area: ${area} already has onEdge callback registered!`)
+            return;
+        }
+
+        navigationEdgeHandlers.set(area, handler)
+    }
+
     return {
         registerArea,
         unregisterArea,
@@ -89,6 +103,7 @@ export default function createAreaMethods(
         changeNavigationKeys,
         resetNavigationKeys,
         pauseNavigation,
-        resumeNavigation
+        resumeNavigation,
+        setEdgeHandler
     };
 }

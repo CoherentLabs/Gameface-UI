@@ -1,11 +1,13 @@
 import { children, createEffect, on, onCleanup, onMount, ParentComponent } from "solid-js"
 import { useNavigation } from "./Navigation";
-//@ts-ignore
 import { spatialNavigation } from 'coherent-gameface-interaction-manager';
+import type { NavigationEdgeHandler } from 'coherent-gameface-interaction-manager';
+
 interface NavigationAreaProps {
     name: string,
     selector?: string,
     focused?: boolean,
+    onEdge?: NavigationEdgeHandler
 }
 
 const NavigationArea: ParentComponent<NavigationAreaProps> = (props) => {
@@ -34,9 +36,14 @@ const NavigationArea: ParentComponent<NavigationAreaProps> = (props) => {
     onMount(() => {
         const shouldFocus = props.focused || props.name === nav.getScope();
         init(shouldFocus);
+        if (props.onEdge) nav.setEdgeHandler(props.name, props.onEdge);
     })
 
-    onCleanup(() => deinit())
+    onCleanup(() => {
+        deinit();
+        // Unconditional, so handlers set later through nav.setEdgeHandler don't outlive the area
+        nav.setEdgeHandler(props.name, null);
+    })
 
     return (
         <>{cachedChildren()}</>
