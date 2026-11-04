@@ -35,7 +35,7 @@ export interface AreaMethods {
     /**
      * Focuses the area's last focused element (or its first if there is none) and updates the navigation scope
      * @param area - The name of the navigation area to switch to
-     * @param options - `direction` focuses the closest element on entry; `fallback` is used if there is none amd switches to the specified fallback focus strategy
+     * @param options - `direction` focuses the closest element on entry; `fallback` is the focus strategy used if there is none
      * @returns The focused element, or `null` if nothing was focused
      */
     switchArea: (area: string, options?: SwitchAreaOptions) => HTMLElement | null;

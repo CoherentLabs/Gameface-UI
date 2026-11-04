@@ -1,6 +1,6 @@
 {
   "name": "gameface-ui-template",
-  "version": "5.1.1",
+  "version": "5.2.0",
   "description": "",
   "scripts": {
     "start": "vite",
@@ -38,7 +38,7 @@
   "dependencies": {
     "@solid-primitives/jsx-tokenizer": "^1.1.1",
     "@types/node": "^22.9.0",
-    "coherent-gameface-interaction-manager": "^3.0.1",
+    "coherent-gameface-interaction-manager": "^3.1.0",
     "cors-env": "^1.0.2",
     "d3-array": "^3.2.4",
     "d3-shape": "^3.2.0",
