@@ -3,13 +3,13 @@ import { SetStoreFunction } from 'solid-js/store';
 import { NavigationConfigType } from '../types';
 import { AreaMethods } from './areaMethods.types';
 import { spatialNavigation } from 'coherent-gameface-interaction-manager';
-import { KeyName } from 'coherent-gameface-interaction-manager/dist/types/interaction-manager';
+import type { KeyName, NavigationEdgeHandler, SwitchAreaOptions } from 'coherent-gameface-interaction-manager';
 
 export default function createAreaMethods(
     areas: Set<string>,
-    setConfig: SetStoreFunction<NavigationConfigType>
+    setConfig: SetStoreFunction<NavigationConfigType>,
+    navigationEdgeHandlers: Map<string, NavigationEdgeHandler>
 ): AreaMethods {
-
     const registerArea = (area: string, elements: string[] | HTMLElement[], focused?: boolean) => {
         waitForFrames(() => {
             spatialNavigation[spatialNavigation.enabled ? 'add' : 'init']([
@@ -50,25 +50,29 @@ export default function createAreaMethods(
         return true;  
     } 
 
+    // The scope only follows the area when focus actually moved into it
     const focusFirst = (area: string) => {
-        if (!isAreaValid(area)) return;
+        if (!isAreaValid(area)) return null;
 
-        spatialNavigation.focusFirst(area);
-        setConfig('scope', area);
+        const element = spatialNavigation.focusFirst(area);
+        if (element) setConfig('scope', area);
+        return element;
     };
 
     const focusLast = (area: string) => {
-        if (!isAreaValid(area)) return;
+        if (!isAreaValid(area)) return null;
 
-        spatialNavigation.focusLast(area);
-        setConfig('scope', area);
+        const element = spatialNavigation.focusLast(area);
+        if (element) setConfig('scope', area);
+        return element;
     };
 
-    const switchArea = (area: string) => {
-        if (!isAreaValid(area)) return;
+    const switchArea = (area: string, options?: SwitchAreaOptions) => {
+        if (!isAreaValid(area)) return null;
 
-        spatialNavigation.switchArea(area);
-        setConfig('scope', area);
+        const element = spatialNavigation.switchArea(area, options);
+        if (element) setConfig('scope', area);
+        return element;
     };
 
     const clearFocus = () => spatialNavigation.clearFocus();
@@ -78,6 +82,20 @@ export default function createAreaMethods(
     }
 
     const resetNavigationKeys = () => spatialNavigation.resetKeys();
+
+    const setEdgeHandler = (area: string, handler: NavigationEdgeHandler | null) => {
+        if (handler === null) {
+            navigationEdgeHandlers.delete(area);
+            return;
+        }
+
+        if (navigationEdgeHandlers.has(area)) {
+            console.warn(`Area: ${area} already has onEdge callback registered!`)
+            return;
+        }
+
+        navigationEdgeHandlers.set(area, handler)
+    }
 
     return {
         registerArea,
@@ -89,6 +107,7 @@ export default function createAreaMethods(
         changeNavigationKeys,
         resetNavigationKeys,
         pauseNavigation,
-        resumeNavigation
+        resumeNavigation,
+        setEdgeHandler
     };
 }

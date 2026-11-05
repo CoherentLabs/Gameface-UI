@@ -395,9 +395,10 @@ The `Navigation` component exposes a comprehensive API through the `useNavigatio
 |------------------------|----------------------------------------------------------------------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `registerArea`         | `area: string, elements: string[] \| HTMLElement[], focused?: boolean` | `void`    | Registers a navigation area with focusable elements. If `focused` is true, automatically focuses the first element in the area.                                                                            |
 | `unregisterArea`       | `area: string`                                                       | `void`       | Unregisters a navigation area and removes it from spatial navigation.                                                                                                                                       |
-| `focusFirst`           | `area: string`                                                       | `void`       | Focuses the first focusable element in the specified area and updates the navigation `scope`.                                                                                                                |
-| `focusLast`            | `area: string`                                                       | `void`       | Focuses the last focusable element in the specified area and updates the navigation `scope`.                                                                                                                 |
-| `switchArea`           | `area: string`                                                       | `void`       | Switches the active navigation to the specified area by focusing the first element in it and updating the navigation `scope`.                                                                                |
+| `focusFirst`           | `area: string`                                                       | `HTMLElement \| null` | Focuses the first focusable element in the specified area and updates the navigation `scope`. Returns the focused element, or `null` if nothing was focused - the `scope` is then unchanged.            |
+| `focusLast`            | `area: string`                                                       | `HTMLElement \| null` | Focuses the last focusable element in the specified area and updates the navigation `scope`. Returns the focused element, or `null` if nothing was focused - the `scope` is then unchanged.             |
+| `switchArea`           | `area: string, options?: { direction: 'up' \| 'down' \| 'left' \| 'right', fallback?: 'first' \| 'last' \| 'lastFocused' }` | `HTMLElement \| null` | Focuses the area's last focused element (or its first if there is none) and updates the navigation `scope`. With a `direction`, focuses the element closest to the edge navigation enters from; `fallback` is used if there is none. See [Moving between areas](#moving-between-areas). |
+| `setEdgeHandler`       | `area: string, handler: NavigationEdgeHandler \| null`               | `void`       | Sets the handler called when navigation hits the edge of an area. An area holds one handler; pass `null` to remove it. Same as the `onEdge` prop of [Navigation.Area](#navigationarea-props).               |
 | `clearFocus`           | None                                                                 | `void`       | Clears the current focus from all navigation areas.                                                                                                                                                         |
 | `changeNavigationKeys` | `keys: { up?: string, down?: string, left?: string, right?: string }, clearCurrent?: boolean` | `void` | Changes the navigation keys for spatial navigation. If `clearCurrent` is true, clears current active keys before setting new ones.                                                                         |
 | `resetNavigationKeys`  | None                                                                 | `void`       | Resets navigation keys to their default values.                                                                                                                                                             |
@@ -426,6 +427,7 @@ When a `Navigation.Area` mounts:
 | `name`     | `string`                               | *required*  | The unique name identifier for this navigation area. Used to reference the area in methods like `focusFirst`, `switchArea`, and for `scope` tracking.                                         |
 | `selector` | `string`                               | `undefined` | CSS class selector for navigable elements. If provided, only elements matching this selector will be navigable. If omitted, all child elements are considered navigable.                    |
 | `focused`  | `boolean`                              | `false`     | When true, this area will automatically receive focus when it mounts, focusing its first navigable element.                                                                                 |
+| `onEdge`   | `(e: { direction, area, element }) => boolean \| void` | `undefined` | Called when navigation hits the edge of this area. Return `false` to stop focus from wrapping around inside the area. See [Moving between areas](#moving-between-areas).     |
 
 #### Usage
 
@@ -532,6 +534,90 @@ const MyComponent = () => {
 The `ref` prop accepts both a callback function with a `NavigationRef` argument and a direct variable assignment. If you need to immediately run some logic when the navigation mounts, 
 use the callback pattern to ensure the API is ready (Option A).
 :::
+
+### Moving between areas
+
+Spatial navigation never leaves an area on its own. When there is no element in the pressed direction, focus loops around to the opposite side of the same area. Use the `onEdge` prop to send focus to another area instead.
+
+```tsx ins={12-16, 24-28}
+import Navigation, { useNavigation } from "@components/Utility/Navigation/Navigation";
+
+const SettingsPanels = () => {
+    const navigation = useNavigation();
+
+    return (
+        <>
+            <Navigation.Area
+                name="categories"
+                selector="category"
+                focused
+                onEdge={({ direction }) => {
+                    if (direction !== 'right') return;
+                    navigation.switchArea('options', { direction, fallback: 'first' });
+                    return false;
+                }}>
+                <div class="category">Graphics</div>
+                <div class="category">Audio</div>
+            </Navigation.Area>
+
+            <Navigation.Area
+                name="options"
+                selector="option"
+                onEdge={({ direction }) => {
+                    if (direction !== 'left') return;
+                    navigation.switchArea('categories');
+                    return false;
+                }}>
+                <div class="option">Resolution</div>
+                <div class="option">V-Sync</div>
+            </Navigation.Area>
+        </>
+    );
+};
+
+const Settings = () => (
+    <Navigation>
+        <SettingsPanels />
+    </Navigation>
+);
+```
+
+The handler receives the `direction`, the `area` name and the focused `element`. Returning `false` stops the loop-around; returning nothing keeps it, so directions you don't handle behave as before.
+
+`switchArea` picks the element to focus based on its options:
+
+- **No options** - the element last focused in the area, or its first element. Used above to return to the category the user came from.
+- **`direction`** - the element closest to the edge navigation enters from, on the same row (or column) as the focused element.
+- **`fallback`** - used with `direction` when no element lines up with the focused one, e.g. the target area sits lower on screen than the focused row. Without it, focus doesn't move.
+
+When nothing in the target area lines up with the focused element, `fallback` decides where focus goes:
+
+```tsx
+onEdge={({ direction }) => {
+    if (direction !== 'right') return;
+    navigation.switchArea('options', { direction, fallback: 'first' });
+    return false;
+}}
+```
+
+Alternatively, `switchArea` returns `null` when nothing was focused, so you can run your own fallback:
+
+```tsx
+onEdge={({ direction }) => {
+    if (direction !== 'right') return;
+    navigation.switchArea('options', { direction }) ?? navigation.focusFirst('options');
+    return false;
+}}
+```
+
+To add or remove a handler after the area has mounted, use `setEdgeHandler`. It sets the same handler as the prop, and an area holds only one: if the area already has a handler (from the prop or an earlier call), the new one is ignored with a warning. 
+
+Remove the current one with `null` first to replace it:
+
+```tsx
+navigation.setEdgeHandler('categories', null);
+navigation.setEdgeHandler('categories', ({ direction }) => { /* ... */ });
+```
 
 ### Action states (Pause/Resume)
 

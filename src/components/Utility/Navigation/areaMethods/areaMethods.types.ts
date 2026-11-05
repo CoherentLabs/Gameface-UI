@@ -1,4 +1,4 @@
-import { KeyName } from 'coherent-gameface-interaction-manager/dist/types/interaction-manager';
+import type { KeyName, NavigationEdgeHandler, SwitchAreaOptions } from 'coherent-gameface-interaction-manager';
 
 /**
  * Interface defining all area-related navigation methods
@@ -21,20 +21,24 @@ export interface AreaMethods {
     /**
      * Focuses the first focusable element in the specified area and updates the navigation scope
      * @param area - The name of the navigation area to focus
+     * @returns The focused element, or `null` if nothing was focused (the scope is then unchanged)
      */
-    focusFirst: (area: string) => void;
+    focusFirst: (area: string) => HTMLElement | null;
 
     /**
      * Focuses the last focusable element in the specified area and updates the navigation scope
      * @param area - The name of the navigation area to focus
+     * @returns The focused element, or `null` if nothing was focused (the scope is then unchanged)
      */
-    focusLast: (area: string) => void;
+    focusLast: (area: string) => HTMLElement | null;
 
     /**
-     * Switches the active navigation to the specified area by focusing the first element in it and updating the navigation scope
+     * Focuses the area's last focused element (or its first if there is none) and updates the navigation scope
      * @param area - The name of the navigation area to switch to
+     * @param options - `direction` focuses the closest element on entry; `fallback` is the focus strategy used if there is none
+     * @returns The focused element, or `null` if nothing was focused
      */
-    switchArea: (area: string) => void;
+    switchArea: (area: string, options?: SwitchAreaOptions) => HTMLElement | null;
 
     /**
      * Clears the current focus from all navigation areas
@@ -65,4 +69,12 @@ export interface AreaMethods {
      * Resumes navigation, allowing spatial navigation actions to execute again
      */
     resumeNavigation: () => void;
+
+    /**
+     * Sets the handler called when navigation hits the edge of an area. Return `false` from it to prevent looping.
+     * An area holds one handler. Pass `null` to remove it.
+     * @param area - The name of the navigation area
+     * @param handler - The edge handler, or `null` to remove the current one
+     */
+    setEdgeHandler: (area: string, handler: NavigationEdgeHandler | null) => void;
 }

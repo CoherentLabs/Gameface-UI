@@ -1,5 +1,6 @@
 import { createContext, onCleanup, onMount, ParentComponent, useContext } from "solid-js"
 import { gamepad } from 'coherent-gameface-interaction-manager';
+import type { NavigationEdgeHandler } from 'coherent-gameface-interaction-manager';
 import NavigationArea from "./NavigationArea";
 import { createStore } from "solid-js/store";
 import { ActionMap, NavigationConfigType } from "./types";
@@ -39,12 +40,13 @@ const Navigation: ParentComponent<NavigationProps> = (props) => {
         scope: props.scope ?? "",
     })
     const areas = new Set<string>();
+    const navigationEdgeHandlers = new Map<string, NavigationEdgeHandler>();
 
     // Create action methods and extract internal-only methods
     const { registerAction, unregisterAction, ...publicActionMethods } = createActionMethods(config, setConfig);
 
     // Create area methods and extract internal-only methods
-    const areaMethods = createAreaMethods(areas, setConfig);
+    const areaMethods = createAreaMethods(areas, setConfig, navigationEdgeHandlers);
 
     // Compose public API
     const navigationAPI = {
@@ -65,6 +67,8 @@ const Navigation: ParentComponent<NavigationProps> = (props) => {
     }
     
     onMount(() => {
+        spatialNavigation.onNavigationEdge = (e) => navigationEdgeHandlers.get(e.area)?.(e);
+
         if (config.gamepad) {
             gamepad.enabled = true;
             gamepad.pollingInterval = props.pollingInterval ?? 200;
@@ -76,8 +80,8 @@ const Navigation: ParentComponent<NavigationProps> = (props) => {
     })
 
     onCleanup(() => {
-         deInitActions()
-         spatialNavigation.deinit();
+        deInitActions()
+        spatialNavigation.deinit();
     })
 
     return (

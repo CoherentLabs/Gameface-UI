@@ -4,7 +4,22 @@ title: Changelog
 
 import { Badge } from '@astrojs/starlight/components'
 
-## 5.1.1 :badge[Latest]{variant="note"}
+## 5.2.0 :badge[Latest]{variant="note"}
+
+### 🛠 Navigation Improvements
+
+[Navigation](/components/utility/navigation/) now integrates the spatial navigation changes from [coherent-gameface-interaction-manager 3.1.0](https://frontend-tools.coherent-labs.com/interaction-manager/changelog/).
+
+- <Badge text="Feature" variant="success" size="small" /> [Navigation.Area](/components/utility/navigation/#navigationarea-props): Added the `onEdge` prop, called when navigation hits the edge of the area. Use it to move focus to another area - see [Moving between areas](/components/utility/navigation/#moving-between-areas).
+- <Badge text="Feature" variant="success" size="small" /> [Navigation](/components/utility/navigation/#area-methods): Added `setEdgeHandler` for setting or removing an area's edge handler after it has mounted.
+- <Badge text="Feature" variant="success" size="small" /> [Navigation](/components/utility/navigation/#area-methods): `switchArea` accepts `{ direction, fallback }` options for focusing the element closest to where navigation enters the area.
+- <Badge text="Change" variant="note" size="small" /> [Navigation](/components/utility/navigation/#area-methods): `focusFirst`, `focusLast` and `switchArea` now return the focused element, or `null`. When nothing is focused, the navigation `scope` is no longer updated.
+
+  :::note
+  Requires `coherent-gameface-interaction-manager` 3.1.0 or later.
+  :::
+
+## 5.1.1
 
 - <Badge text="Fix" variant="danger" size="small" /> Components with navigation actions (`onAction`) no longer leak memory. Their action handlers were never removed from the event bus on unmount, so each unmounted component and its DOM stayed in memory.
 - <Badge text="Fix" variant="danger" size="small" /> [Scroll](/components/layout/scroll): The `property-scroll` listener is now removed on unmount.
