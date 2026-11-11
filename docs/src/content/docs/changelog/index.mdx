@@ -4,7 +4,17 @@ title: Changelog
 
 import { Badge } from '@astrojs/starlight/components'
 
-## 5.1.1 :badge[Latest]{variant="note"}
+## 5.1.2 :badge[Latest]{variant="note"}
+
+- <Badge text="Fix" variant="danger" size="small" /> [Scroll](/components/layout/scroll): Clicking and holding on the scroll bar track no longer makes a small handle bounce endlessly around the cursor. The handle now stops under the cursor.
+- <Badge text="Fix" variant="danger" size="small" /> [Scroll](/components/layout/scroll): Releasing the mouse outside the scroll bar now stops the click-and-hold scrolling.
+- <Badge text="Fix" variant="danger" size="small" /> [Scroll](/components/layout/scroll): The scroll step for track clicks now shrinks back when the content gets shorter, instead of keeping the largest step it ever reached.
+
+  :::note
+  Run `gameface-cli update` to pick up the fix. `Dropdown` gets a patch bump because it uses `Scroll`.
+  :::
+
+## 5.1.1
 
 - <Badge text="Fix" variant="danger" size="small" /> Components with navigation actions (`onAction`) no longer leak memory. Their action handlers were never removed from the event bus on unmount, so each unmounted component and its DOM stayed in memory.
 - <Badge text="Fix" variant="danger" size="small" /> [Scroll](/components/layout/scroll): The `property-scroll` listener is now removed on unmount.
