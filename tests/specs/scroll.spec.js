@@ -114,6 +114,57 @@ describe('Scroll', function () {
         assert.equal(await assertionEl.text(), 'down', 'Element\'s text should correspond with scroll direction');
     })
 
+    describe('track click-and-hold', () => {
+        const getTrackPoint = async (ratio) => {
+            const bar = await gf.get(`.${selectors.longBar}`);
+            const { x, y } = await bar.getPositionOnScreen();
+            const { width, height } = await bar.getSize();
+            return { x: Math.round(x + width / 2), y: Math.round(y + height * ratio) };
+        };
+
+        const getHandleBounds = async () => {
+            const handle = await gf.get(`.${selectors.longHandle}`);
+            const { y } = await handle.getPositionOnScreen();
+            const { height } = await handle.getSize();
+            return { top: y, bottom: y + height };
+        };
+
+        it('Should stop the handle under the cursor without bouncing', async () => {
+            const { x, y } = await getTrackPoint(0.6);
+            await gf.mouseMove(x, y);
+            await gf.mousePress(x, y);
+            try {
+                // The handle is ~1px tall here, so allow 1px for rounding
+                await gf.retryIfFails(async () => {
+                    const { top, bottom } = await getHandleBounds();
+                    assert.ok(top - 1 <= y && y <= bottom + 1, `Handle (${top}-${bottom}) should be under the cursor (${y})`);
+                });
+                const { top } = await getHandleBounds();
+                for (let i = 0; i < 5; i++) {
+                    await gf.sleep(70);
+                    assert.equal((await getHandleBounds()).top, top, 'Handle should stay still while the mouse is held');
+                }
+            } finally {
+                await gf.mouseRelease(x, y);
+            }
+        });
+
+        it('Should stop scrolling when the mouse is released outside the bar', async () => {
+            const { x, y } = await getTrackPoint(0.95);
+            await gf.mouseMove(x, y);
+            await gf.mousePress(x, y);
+            await gf.sleep(300);
+            await gf.mouseMove(x - 200, y);
+            await gf.mouseRelease(x - 200, y);
+
+            const atRelease = await getHandleBounds();
+            await gf.sleep(500);
+            const after = await getHandleBounds();
+            assert.ok(atRelease.bottom < y, 'Handle should still be scrolling when the mouse is released');
+            assert.equal(after.top, atRelease.top, 'Handle should stop moving after release');
+        });
+    });
+
     describe('reactivity', () => {
         const scenarios = [
             { selector: `.${selectors.scroll}`, desc: 'root' },

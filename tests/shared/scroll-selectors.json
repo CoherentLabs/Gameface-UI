@@ -6,5 +6,8 @@
   "assertionElement": "assertion-element",
   "bar": "bar",
   "handle": "handle",
-  "reactive": "reactive"
+  "reactive": "reactive",
+  "longScroll": "long-scroll",
+  "longBar": "long-bar",
+  "longHandle": "long-handle"
 }

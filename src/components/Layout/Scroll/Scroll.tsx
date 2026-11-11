@@ -11,7 +11,6 @@ import { useNavigation } from '@components/Utility/Navigation/Navigation';
 export const ScrollContext = createContext<{
     scrollToMouseHandler: (event: MouseEvent) => void,
     updateMeasurements: () => void,
-    stopScrollingToMouse: () => void,
     onHandleMouseDown: (event: MouseEvent) => void,
     handleHeight: Accessor<number>,
     handleTop: Accessor<number>
@@ -40,6 +39,8 @@ interface ScrollProps extends ComponentBaseProps {
     onScroll?: OnScrollHandler
 }
 
+const SCROLL_STEP = 100;
+
 const Scroll: ParentComponent<ScrollProps> = (props) => {
     const [overflow, setOverflow] = createSignal(false);
     const [handleHeight, setHandleHeight] = createSignal(0);
@@ -48,7 +49,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     let containerRef: HTMLDivElement, contentWrapperRef: HTMLDivElement;
     let maxScroll: number, maxHandleMovement: number;
     let startY = 0, startScrollTop = 0, prevScrollTop = 0;
-    let scrollStep = 100;
+    let scrollStep = SCROLL_STEP;
     let scrollToMouseInterval: NodeJS.Timeout;
     let scrollToMouseTimeout: NodeJS.Timeout;
     const nav = useNavigation();
@@ -66,7 +67,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
 
             maxScroll = contentHeight - containerHeight;
             maxHandleMovement = containerHeight - newHandleHeight;
-            scrollStep = Math.max(scrollStep, Math.floor(maxScroll / 20));
+            scrollStep = Math.max(SCROLL_STEP, Math.floor(maxScroll / 20));
 
             updateHandlePosition();
         } else {
@@ -153,11 +154,11 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     }
 
     function scrollUp() {
-        scrollWith(-100);
+        scrollWith(-SCROLL_STEP);
     }
 
     function scrollDown() {
-        scrollWith(100, 1);
+        scrollWith(SCROLL_STEP, 1);
     }
 
     function begin() {
@@ -217,11 +218,14 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
         const hasReachedHandle = Math.abs(clickPosition - handleCenter) < handleHeight() / 2;
         if (hasReachedHandle) return true;
 
-        if (clickPosition < handleCenter) {
-            contentWrapperRef!.scrollTop -= scrollStep;
-        } else {
-            contentWrapperRef!.scrollTop += scrollStep;
-        }
+        // Don't step past the click, or a small handle bounces around the click position endlessly
+        const targetHandleTop = clamp(clickPosition - handleHeight() / 2, 0, maxHandleMovement);
+        const targetScrollTop = (targetHandleTop / maxHandleMovement) * maxScroll;
+        const distance = targetScrollTop - contentWrapperRef!.scrollTop;
+        if (Math.abs(distance) < 1) return true;
+
+        // Math.sign(distance) gives the direction to scroll
+        contentWrapperRef!.scrollTop += Math.sign(distance) * Math.min(scrollStep, Math.abs(distance));
 
         updateHandlePosition();
     }
@@ -231,6 +235,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
         const barRect = containerRef!.getBoundingClientRect();
         const clickPosition = event.clientY - barRect.top;
         scrollToMousePositionWithStep(clickPosition);
+        window.addEventListener('mouseup', stopScrollingToMouse);
 
         scrollToMouseTimeout = setTimeout(() => {
             scrollToMouseInterval = setInterval(() => {
@@ -243,6 +248,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     const stopScrollingToMouse = () => {
         if (scrollToMouseTimeout) clearTimeout(scrollToMouseTimeout);
         if (scrollToMouseInterval) clearInterval(scrollToMouseInterval);
+        window.removeEventListener('mouseup', stopScrollingToMouse);
     }
 
     createEffect(on(handleTop, handleOnScroll, {defer: true}))
@@ -282,7 +288,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     });
 
     return (
-        <ScrollContext.Provider value={{ scrollToMouseHandler, stopScrollingToMouse, updateMeasurements, onHandleMouseDown, handleHeight, handleTop, overflow }}>
+        <ScrollContext.Provider value={{ scrollToMouseHandler, updateMeasurements, onHandleMouseDown, handleHeight, handleTop, overflow }}>
             <LayoutBase focusin={handleFocusIn} {...props} refObject={scrollObjectRef} >
                 <div ref={containerRef!} class={styles.scroll}>
                     <ScrollContent ref={contentWrapperRef!} parentChildren={props.children} />
