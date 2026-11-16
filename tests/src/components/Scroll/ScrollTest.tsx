@@ -21,6 +21,9 @@ const ScrollTest = () => {
         { label: "Scroll to the end", action: () => scrollRef.end()},
         { label: "Scroll to element", action: () => scrollRef.scrollToElement('.assertion-element')},
         { label: "Scroll element into view", action: () => scrollRef.scrollIntoView('.assertion-element')},
+        { label: "Scroll to offset", action: () => scrollRef.scrollTo(50)},
+        { label: "Scroll to offset past the end", action: () => scrollRef.scrollTo(100000)},
+        { label: "Scroll to negative offset", action: () => scrollRef.scrollTo(-500)},
     ];
 
     const reset = () => {

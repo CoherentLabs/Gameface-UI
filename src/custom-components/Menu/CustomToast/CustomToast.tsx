@@ -47,7 +47,7 @@ const CustomToast = (props: CustomToastProps) => {
                     {props.close(<CustomButton text="Start" variation="select" handler={props.action} />)}
                     {props.close(<CustomButton text="Skip" variation="back" />)}
                 </div>
-                <Progress.Bar class={styles['toast-progress']} progress={props.progress() * 5}>
+                <Progress.Bar class={styles['toast-progress']} progress={props.progress() * 100}>
                     <Progress.Bar.Fill class={styles['toast-progress-fill']} />
                 </Progress.Bar>
             </div>

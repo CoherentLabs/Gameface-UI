@@ -48,8 +48,16 @@ const App = () => {
 
 ## API
 
+### `useToast(options?: UseToastOptions)`
+Returns `[Toaster, createToast]`.
+
+| Option Name | Type | Default | Description |
+|-------------|------|---------|-------------|
+| `max` | `number \| Partial<Record<Position, number>>` | none | The most toasts shown at once per position. When a new toast goes over it, the oldest one at that position is removed (with its hide animation). A number applies to every position; an object sets it per position. |
+| `hideTimeout` | `number` | `1000` | The longest time in milliseconds a toast waits for its hide animation before it is removed anyway. |
+
 ### `createToast(options: ToastOptions)`
-Creates a new toast notification with the specified options.
+Creates a new toast notification with the specified options. Returns `{ id, dismiss }`, so the toast can be removed later from outside its body.
 #### Parameters
 | Option Name | Type                | Default       | Description                                                                                  |
 |-------------|---------------------|---------------|----------------------------------------------------------------------------------------------|
@@ -64,8 +72,18 @@ When defining the body function, you receive the following helpers:
 | Argument | Type | Description |
 |----------|------|-------------|
 | `close` | `(children: JSX.Element) => JSX.Element` | A wrapper function that attaches a click-to-close listener to any element. |
-| `progress` | `() => number` | A signal returning the current lifetime of the toast (0 to 20). |
+| `progress` | `() => number` | A signal returning the time left, from `1` (just shown) to `0` (timed out). Always `1` for toasts without a timeout. |
 | `dismiss` | `() => void` | A function to programmatically remove the toast from the UI. |
+
+### `useToastItem()`
+Called inside a toast's body, returns its toast:
+
+| Member | Type | Description |
+|--------|------|-------------|
+| `onHide` | `(fn: () => Promise<void> \| void) => () => void` | Registers work that must finish before the toast is removed, such as a hide animation. Returns a function that unregisters it. |
+| `leaving` | `() => boolean` | `true` while the toast is hiding. |
+| `progress` | `() => number` | Same as the `progress` argument. |
+| `dismiss` | `() => void` | Same as the `dismiss` argument. |
 
 ## Guide
 
@@ -121,7 +139,7 @@ const App = () => {
                 <>
                     This is a toast message
                     <div style={{ width: '100%', height: '5px', background: '#ccc' }}>
-                        <Progress.Bar progress={progress() * 5} />
+                        <Progress.Bar progress={progress() * 100} />
                     </div>
                     {close(<button>Close</button>)}
                 </>
@@ -146,8 +164,50 @@ If you try to use the `progress` signal outside the return of the `body` functio
 :::
 
 :::note
-The `progress` signal returns a value between `0` and `20` to allow for smoother progress bar and to not harm performance. If you want to get a value between `0` and `100`, you can multiply the value by `5`.
+The `progress` signal counts the time left down from `1` to `0`, updating 20 times over the toast's lifetime so it doesn't harm performance. Multiply it by `100` for a percentage.
+
+Before version 2.0.0 it counted up from `0` to `20`. To update code written for it, replace `progress() * 5` with `progress() * 100` (or `(1 - progress()) * 100` to keep a bar that fills up instead of emptying).
 :::
+
+### Limiting how many toasts are shown
+
+Pass `max` to `useToast` to cap the toasts at each position. When a new toast goes over the limit, the oldest one is removed:
+
+```tsx
+// At most 3 toasts at every position
+const [Toaster, createToast] = useToast({ max: 3 });
+
+// Only the top-right corner is limited
+const [Toaster, createToast] = useToast({ max: { 'top-right': 2 } });
+```
+
+### Adding exit animations
+
+A toast that is removed (timed out, closed, dismissed or pushed out by `max`) first gets the `toast-leaving` class and `data-toast-state="leaving"` on its wrapper, and stays on screen until its hide animation ends.
+
+With CSS, start an animation from the `toast-leaving` class. The toast is removed when the animation ends:
+
+```css
+.toast-leaving .my-toast {
+    animation: fade-out 0.3s ease-in forwards;
+}
+```
+
+From code, register the animation with `useToastItem().onHide` inside the body. The toast is removed when the returned promise resolves:
+
+```tsx
+import { useToastItem } from '@components/Feedback/Toast/toast';
+
+const MyToast = () => {
+    const toast = useToastItem();
+    let ref!: HTMLDivElement;
+    toast?.onHide(() => playHideAnimation(ref)); // returns a Promise
+
+    return <div ref={ref}>Saved</div>;
+};
+```
+
+A toast never waits longer than `hideTimeout` (1000 ms by default), so a broken animation can't leave it on screen.
 
 ### Adding entrance animations
 
