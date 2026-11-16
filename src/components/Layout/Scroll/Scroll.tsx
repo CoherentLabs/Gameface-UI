@@ -18,6 +18,8 @@ export const ScrollContext = createContext<{
 }>();
 
 export interface ScrollComponentRef extends BaseComponentRef {
+    /** Scrolls the content to `value` px from the top, clamped to the scrollable range */
+    scrollTo: (value: number) => void,
     scrollToElement: (element: HTMLElement | string) => void,
     scrollIntoView: (element: HTMLElement | string) => void,
     scrollUp: () => void,
@@ -153,6 +155,12 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
         updateHandlePosition();
     }
 
+    function scrollToOffset(value: number) {
+        if (!overflow() || !Number.isFinite(value)) return;
+        contentWrapperRef!.scrollTop = clamp(value, 0, maxScroll);
+        updateHandlePosition();
+    }
+
     function scrollUp() {
         scrollWith(-SCROLL_STEP);
     }
@@ -205,6 +213,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     }
 
     const scrollObjectRef = {
+        scrollTo: scrollToOffset,
         scrollToElement,
         scrollIntoView,
         scrollUp,

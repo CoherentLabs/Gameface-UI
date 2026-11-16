@@ -1,8 +1,15 @@
 import { onMount, onCleanup } from 'solid-js';
-import useToast from '@components/Feedback/Toast/toast';
+import useToast, { useToastItem } from '@components/Feedback/Toast/toast';
 import './ToastTest.css';
 
 import classes from '../../../shared/toast-selectors.json';
+
+// Keep in sync with tests/specs/toast.spec.js
+/** Position with a max count, for the max count tests */
+const MAX_POSITION = 'bottom-left';
+const MAX_COUNT = 2;
+/** Cap on the hide wait, for the hide timeout test */
+const HIDE_TIMEOUT = 600;
 
 interface ToastEventDetail {
     position?:
@@ -17,10 +24,21 @@ interface ToastEventDetail {
         | 'middle-center';
     text?: string;
     timeout?: number;
+    /** ms the toast's hide hook takes; -1 = never resolves */
+    hideDelay?: number;
 }
 
+/** Registers a hide hook on its toast, like a hide animation would */
+const HideHook = (props: { delay: number }) => {
+    const toast = useToastItem();
+    toast?.onHide(() => props.delay < 0
+        ? new Promise<void>(() => {})
+        : new Promise<void>((resolve) => setTimeout(resolve, props.delay)));
+    return null;
+};
+
 const ToasterTest = () => {
-    const [Toaster, createToast] = useToast();
+    const [Toaster, createToast] = useToast({ max: { [MAX_POSITION]: MAX_COUNT }, hideTimeout: HIDE_TIMEOUT });
 
     const setupToast = (event: Event) => {
         const { detail } = event as CustomEvent<ToastEventDetail>;
@@ -31,10 +49,12 @@ const ToasterTest = () => {
                     <div class={classes.toast}>
                         <div class={classes.toastText}>{detail.text || 'Default Toast'}</div>
                         {close(<button class={classes.toastCloseButton}>X</button>)}
+                        {detail.hideDelay !== undefined && <HideHook delay={detail.hideDelay} />}
                         <div
                             class={classes.toastProgress}
+                            data-progress={progress()}
                             style={{
-                                width: `${progress() * 5}%`,
+                                width: `${progress() * 100}%`,
                                 'background-color': 'red',
                                 height: '4px',
                                 'margin-top': '8px',
@@ -43,7 +63,7 @@ const ToasterTest = () => {
                     </div>
                 );
             },
-            timeout: detail.timeout || 3000,
+            timeout: detail.timeout ?? 3000,
         });
     };
 

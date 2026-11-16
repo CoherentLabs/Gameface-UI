@@ -64,6 +64,7 @@ To interact with the `Scroll` programmatically, you can use the `ScrollComponent
 ### Methods
 |Method |Parameters |Return Value |Description |
 |---|---|---|---|
+| `scrollTo` | `value: number` | `void` | Scrolls the content to `value` pixels from the top. Values outside the scrollable range are clamped to the top or the end. Does nothing when the content doesn't overflow. |
 | `scrollToElement` | `element: string \| HTMLElement`  | `void` | Scrolls the container so the target element is aligned at the top of the scrollable area. The element must be part of the content inside the Scroll component. |
 | `scrollIntoView`  | `element: string \| HTMLElement`  | `void` | Scrolls just enough to ensure the element is fully visible within the scrollable area. The element must be part of the content inside the Scroll component. |
 | `scrollUp` | none | `void` | Scrolls the content upward by a fixed amount. |
