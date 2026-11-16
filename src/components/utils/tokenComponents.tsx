@@ -1,5 +1,6 @@
 import { createToken, isToken, JSXTokenizer, resolveTokens } from '@solid-primitives/jsx-tokenizer';
 import { ParentProps, JSX, createMemo, createUniqueId, mergeProps } from 'solid-js';
+import { AttrProps } from '@components/types/ComponentProps';
 
 type TokenizerType<T extends Record<string, any>> = JSXTokenizer<{ props: ParentProps<T> }>;
 
@@ -29,7 +30,7 @@ export const useTokens = <T extends Record<string, any>>(tokenizer: TokenizerTyp
     });
 };
 
-export type TokenBase = { class?: string; style?: JSX.CSSProperties };
+export type TokenBase = AttrProps & { class?: string; style?: JSX.CSSProperties };
 
 const emptyToken = () => null;
 

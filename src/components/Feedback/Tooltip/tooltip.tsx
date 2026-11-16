@@ -1,8 +1,8 @@
 import { createMemo, createSignal, JSX, onCleanup, onMount, ParentComponent, Show, splitProps } from "solid-js";
 import styles from './Tooltip.module.scss';
-import { BaseComponentRef, ComponentProps } from "@components/types/ComponentProps";
+import { AttrProps, BaseComponentRef, ComponentProps } from "@components/types/ComponentProps";
 import { getSafePosition } from "@components/utils/getSafePosition";
-import { navigationActions } from "@components/BaseComponent/BaseComponent";
+import { forwardAttrs, navigationActions } from "@components/BaseComponent/BaseComponent";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
 
 export interface TooltipRef extends BaseComponentRef {
@@ -17,7 +17,7 @@ interface TooltipOptions<T extends Record<string, any> = { message: string }> ex
 }
 
 const DEFAULT_TIP_POSITION = 'bottom';
-const createTooltip = <T extends Record<string, any> = { message: string }>(options: TooltipOptions<T> = {}): ParentComponent<T & { style?: JSX.CSSProperties, class?: string, ref?: TooltipRef}> => {
+const createTooltip = <T extends Record<string, any> = { message: string }>(options: TooltipOptions<T> = {}): ParentComponent<T & AttrProps & { style?: JSX.CSSProperties, class?: string, ref?: TooltipRef}> => {
     const defaultOptions: TooltipOptions<T> = {
         content: (props) => <div class={styles['tooltip-message']}>{props.message}</div>,
         position: DEFAULT_TIP_POSITION,
@@ -31,7 +31,9 @@ const createTooltip = <T extends Record<string, any> = { message: string }>(opti
         let tooltipChildrenRef!: HTMLDivElement;
         let tooltipRef!: HTMLDivElement;
         let wrapperRef: HTMLDivElement | undefined;
-        const [others, contentProps] = splitProps(props, ['style', 'class', 'ref']);
+        // attr:* stays on the tooltip's root; everything else goes to the content.
+        const attrKeys = Object.keys(props).filter((key) => key.startsWith('attr:')) as (keyof typeof props)[];
+        const [others, attrs, contentProps] = splitProps(props, ['style', 'class', 'ref'], attrKeys);
 
         const toggleEventListeners = (on = true) => {
             const method = on ? 'addEventListener' : 'removeEventListener';
@@ -114,7 +116,7 @@ const createTooltip = <T extends Record<string, any> = { message: string }>(opti
         });
 
         return (
-            <div class={tooltipWrapperClasses()} style={others.style} ref={wrapperRef}>
+            <div class={tooltipWrapperClasses()} style={others.style} ref={wrapperRef} use:forwardAttrs={attrs}>
                 <Show when={options.action !== 'none'} fallback={props.children}>
                     <div 
                         ref={tooltipChildrenRef}

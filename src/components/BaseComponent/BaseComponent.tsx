@@ -1,5 +1,5 @@
 import { createEffect, onCleanup, Accessor } from "solid-js";
-import { ComponentProps, NavigationActionsConfig } from "@components/types/ComponentProps";
+import { AttrProps, ComponentProps, NavigationActionsConfig } from "@components/types/ComponentProps";
 import { useNavigation } from "@components/Utility/Navigation/Navigation";
 import eventBus from "@components/Utility/EventBus";
 import { waitForFrames } from "@components/utils/waitForFrames";
@@ -101,10 +101,11 @@ function handleStyles(el: HTMLElement, props: ComponentProps) {
     });
 }
 
-function handleAttrs(el: Element, props: ComponentProps) {
+function handleAttrs(el: Element, accessor: Accessor<AttrProps | null | undefined>) {
     let prevKeys: string[] = [];
 
     createEffect(() => {
+        const props = accessor() ?? {};
         const currentKeys: string[] = [];
 
         for (const key in props) {
@@ -213,12 +214,17 @@ export function navigationActions(el: HTMLElement, accessor: Accessor<Navigation
     });
 }
 
+/** Sets the `attr:*` props of a slot token on the element the slot renders. */
+export function forwardAttrs(el: Element, accessor: Accessor<AttrProps | null | undefined>) {
+    handleAttrs(el, accessor);
+}
+
 function baseComponent(el: Element, accessor: () => ComponentProps) {
     const props = accessor();
 
     handleClasses(el, props);
     handleStyles(el as HTMLElement, props);
-    handleAttrs(el, props);
+    handleAttrs(el, () => props);
 
     const cleanupEvents = handleEvents(el, props);
     onCleanup(() => cleanupEvents());
