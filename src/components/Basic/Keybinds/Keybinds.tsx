@@ -4,7 +4,8 @@ import { createStore, unwrap } from "solid-js/store";
 import {BindingCode, BindingLabel, MAPPINGS} from "./util/mappings";
 import { GlyphOverrides  } from "./util/glyphs";
 import { GLYPHS as DEFAULT_GLYPHS }  from "./util/glyphs";
-import { AxisInput, GamepadInput, GamepadMappings } from "coherent-gameface-interaction-manager";
+import { GamepadMappings } from "coherent-gameface-interaction-manager";
+import type { AxisInput, GamepadInput } from "coherent-gameface-interaction-manager";
 
 export type Action = string;
 export type KeyCode = BindingLabel | GamepadInput | (string & {}) | null;
