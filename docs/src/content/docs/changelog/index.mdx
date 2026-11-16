@@ -16,7 +16,7 @@ import { Badge } from '@astrojs/starlight/components'
 - <Badge text="Change" variant="note" size="small" /> [Navigation](/components/utility/navigation/#area-methods): `focusFirst`, `focusLast` and `switchArea` now return the focused element, or `null`. When nothing is focused, the navigation `scope` is no longer updated.
 
   :::note
-  Requires `coherent-gameface-interaction-manager` 3.1.0 or later.
+  Requires `coherent-gameface-interaction-manager` 3.1.0 or later. Run `gameface-cli update` to pick up the changes. `Navigation` gets a minor bump, and every component that depends on it gets a patch bump.
   :::
 
 ## 5.1.2
@@ -25,27 +25,16 @@ import { Badge } from '@astrojs/starlight/components'
 - <Badge text="Fix" variant="danger" size="small" /> [Scroll](/components/layout/scroll): Releasing the mouse outside the scroll bar now stops the click-and-hold scrolling.
 - <Badge text="Fix" variant="danger" size="small" /> [Scroll](/components/layout/scroll): The scroll step for track clicks now shrinks back when the content gets shorter, instead of keeping the largest step it ever reached.
 
-  :::note
-  Run `gameface-cli update` to pick up the fix. `Dropdown` gets a patch bump because it uses `Scroll`.
-
 ## 5.1.1
 
 - <Badge text="Fix" variant="danger" size="small" /> Components with navigation actions (`onAction`) no longer leak memory. Their action handlers were never removed from the event bus on unmount, so each unmounted component and its DOM stayed in memory.
 - <Badge text="Fix" variant="danger" size="small" /> [Scroll](/components/layout/scroll): The `property-scroll` listener is now removed on unmount.
 - <Badge text="Feature" variant="success" size="small" /> [EventBus](/docs/concepts/ui-communication#once): `once` now returns a function that removes the listener, so a `once` listener that hasn't fired yet can be cleaned up with `onCleanup(eventBus.once(...))`.
 
-  :::note
-  Run `gameface-cli update` to pick up the fix. Every component that depends on `BaseComponent` gets a patch bump.
-  :::
-
 ## 5.1.0
 
 - <Badge text="New" variant="tip" size="small" /> Added the [Style TOM plugin and CSSTOM style runtime](/docs/concepts/typed-styles): a `style={{...}}` value driven by a signal (e.g. `` `${x()}px` ``) is now automatically rewritten at build time into the shape Gameface's CSS Typed Object Model understands, so updating it at runtime skips the string parsing a plain `element.style` write would otherwise require on every change. `transform` strings (`translate()`, `scale()`, `rotate()`, `skewX()`, `skewY()`) get the same treatment. No changes needed to existing components - this only affects the small set of properties [Gameface documents as CSSTOM-eligible](/docs/concepts/typed-styles#supported-properties); everything else keeps working exactly as before.
 - <Badge text="New" variant="tip" size="small" /> Added an optional [dev-server report](/docs/concepts/typed-styles#finding-styles-that-arent-rewritten) listing the dynamic styles the Style TOM plugin couldn't rewrite, with the reason and a suggested fix for each.
-
-  :::note
-  To use it in an existing project, run `gameface-cli update` - every component is bumped to its next minor version because they share the updated `BaseComponent`, which now ships the style runtime and plugin files. Then make the one-time `vite.config.mts` change from [Setup](/docs/concepts/typed-styles#setup); `update`/`add` never rewrite config files.
-  :::
 
 
 ## 5.0.0

@@ -23,6 +23,7 @@ export default function createAreaMethods(
     const unregisterArea = (area: string) => {
         spatialNavigation.remove(area)
         areas.delete(area);
+        navigationEdgeHandlers.delete(area);
     }
 
     const pauseNavigation = () => {

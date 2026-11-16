@@ -18,7 +18,8 @@ const NavigationArea: ParentComponent<NavigationAreaProps> = (props) => {
 
     const refresh = () => {
         if (!spatialNavigation.enabled) return;
-        deinit();
+        // Rebuild only - unregisterArea would also drop the area's edge handler
+        spatialNavigation.remove(props.name);
         init(false);
     }
 
@@ -39,11 +40,7 @@ const NavigationArea: ParentComponent<NavigationAreaProps> = (props) => {
         if (props.onEdge) nav.setEdgeHandler(props.name, props.onEdge);
     })
 
-    onCleanup(() => {
-        deinit();
-        // Unconditional, so handlers set later through nav.setEdgeHandler don't outlive the area
-        nav.setEdgeHandler(props.name, null);
-    })
+    onCleanup(() => deinit())
 
     return (
         <>{cachedChildren()}</>
