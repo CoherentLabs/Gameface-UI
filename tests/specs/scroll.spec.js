@@ -130,7 +130,7 @@ describe('Scroll', function () {
         };
 
         it('Should stop the handle under the cursor without bouncing', async () => {
-            const { x, y } = await getTrackPoint(0.6);
+            const { x, y } = await getTrackPoint(0.625);
             await gf.mouseMove(x, y);
             await gf.mousePress(x, y);
             try {
