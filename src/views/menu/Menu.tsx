@@ -227,14 +227,14 @@ const Menu = () => {
     return (
         <MenuContext.Provider value={MenuContextValue}>
             <Navigation ref={(api) => navigationRef = api} actions={defaultActions} pollingInterval={100} >
-                <Tutorial 
-                    click={handleClick} 
+                <Tutorial
                     onStart={handleTutorialStart}
                     onEnd={handleTutorialEnd}
-                    ref={setTutorial} 
-                    outset={5} 
+                    ref={setTutorial}
+                    outset={5}
                     tooltip={(props) => <CustomTooltip {...props} exit={() => tutorial()?.exit()} />}>
-                    <Toaster /> 
+                    <Tutorial.Spotlight click={handleClick} />
+                    <Toaster />
                     <Tutorial.Step title={TutorialSteps.End.title} content={TutorialSteps.End.content} order={TutorialSteps.End.order} outset={-10} position={"top"}>
                         <div class={styles.Menu}>
                             <Tabs ref={tabsRef} onBeforeTabChange={handleBeforeTabChange} onTabChanged={handleTabChange} default={OPTIONS[0]}>

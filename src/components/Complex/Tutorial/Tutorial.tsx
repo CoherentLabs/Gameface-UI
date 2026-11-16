@@ -1,9 +1,12 @@
-import { Accessor, createContext, createEffect, createMemo, createSignal, JSX, onMount, Setter, Show } from "solid-js";
+import { Accessor, createContext, createEffect, createMemo, createSignal, JSX, onMount, Setter } from "solid-js";
+import { resolveTokens } from "@solid-primitives/jsx-tokenizer";
 import { ComponentProps } from "@components/types/ComponentProps";
 import Step from "./Step";
 import styles from './Tutorial.module.scss';
 import { Portal } from "solid-js/web";
 import TutorialTooltip, { ToolTipData, TooltipType } from "./TutorialTooltip";
+import TutorialSpotlight, { Spotlight } from "./TutorialSpotlight";
+import TutorialOverlay, { Overlay } from "./TutorialOverlay";
 import { clamp } from "@components/utils/clamp";
 import getScrollableParent from "@components/utils/getScrollableParent";
 import { waitForFrames } from "@components/utils/waitForFrames";
@@ -31,6 +34,8 @@ interface TutorialContextType {
     setInitialRender: Setter<boolean>,
     setOutset: Setter<number | null>,
     progress: Accessor<number>,
+    target: Accessor<HTMLElement | null>,
+    highlightStyles: Accessor<JSX.CSSProperties>,
 }
 export const TutorialContext = createContext<TutorialContextType>();
 
@@ -184,16 +189,6 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
         }, !elementHasLoaded ? 3 : 0)
     })
 
-    const tutorialClasses = createMemo(() => {
-        const classes = [styles.tutorial];
-        targetElement() && classes.push(styles['tutorial-visible'])
-
-        return classes.join(" ");
-    })
-
-    props.componentClasses = tutorialClasses;
-    props.componentStyles = tutorialStyles;
-
     onMount(() => {
         if (!props.ref || !element) return;
 
@@ -223,12 +218,25 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
         setInitialRender,
         setOutset,
         exit,
-        progress
+        progress,
+        target: targetElement,
+        highlightStyles: tutorialStyles,
     }
+
+    // Tutorial wraps the app, so it renders its children as well as reading the slot tokens from them.
+    // Resolve once and share the list, because every read of props.children rebuilds the app.
+    // Declared here and not at module level to prevent potential HMR errors during dev.
+    const tokenizers = [Spotlight, Overlay] as const;
+    let resolved: Accessor<JSX.Element[]> = () => [];
+
+    const resolveChildren = () => {
+        resolved = resolveTokens(tokenizers, () => props.children, { includeJSXElements: true });
+        return <>{resolved()}</>;
+    };
 
     return (
         <TutorialContext.Provider value={ctxObject}>
-            {props.children}
+            {resolveChildren()}
             <Portal>
                 <div
                     ref={element}
@@ -237,19 +245,18 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
                         anchor: props.anchor,
                         ...props.onAction,
                     }}>
-                </div>
-                <Show when={targetElement()}>
-                    <div class={styles.overlay}></div>
-                </Show>
-                <div class={styles['tooltip-reference']} style={tutorialStyles()}>
-                    <TutorialTooltip
-                        userTooltip={props.tooltip}
-                        tooltipData={tooltipData}
-                        progress={progress} />
+                    <TutorialSpotlight parentChildren={resolved()} />
+                    <TutorialOverlay parentChildren={resolved()} />
+                    <div class={styles['tooltip-reference']} style={tutorialStyles()}>
+                        <TutorialTooltip
+                            userTooltip={props.tooltip}
+                            tooltipData={tooltipData}
+                            progress={progress} />
+                    </div>
                 </div>
             </Portal>
         </TutorialContext.Provider>
     );
 };
 
-export default Object.assign(Tutorial, { Step });
+export default Object.assign(Tutorial, { Step, Spotlight, Overlay });
