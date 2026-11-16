@@ -1,4 +1,5 @@
-.scroll {
+.scroll,
+.long-scroll {
     max-width: 10vmax;
     max-height: 10vmax;
     border: 1px solid white;

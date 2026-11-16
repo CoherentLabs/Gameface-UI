@@ -6,6 +6,9 @@ import selectors from "../../../shared/scroll-selectors.json";
 
 const ScrollTest = () => {
     let scrollRef!: ScrollComponentRef;
+    let longScrollRef!: ScrollComponentRef;
+    // Enough rows that the handle is shorter than one track-click step
+    const longRows = Array.from({ length: 500 }, (_, i) => `Row ${i}`);
     const [direction, setDirection] = createSignal<'up' | 'down' | undefined>(undefined);
     const [overflow, setOverflow] = createSignal(false);
     const [customIcon, setCustomIcon] = createSignal(false);
@@ -24,6 +27,7 @@ const ScrollTest = () => {
         setDirection(undefined);
         setOverflow(false);
         scrollRef?.begin();
+        longScrollRef?.begin();
     };
 
     const isReactive = createMemo(() => direction() === 'down');
@@ -66,6 +70,15 @@ const ScrollTest = () => {
                 </Scroll.Content>
                 <Scroll.Bar style={reactiveStyle()} class={`${selectors.bar} ${reactiveClass()}`}>
                     <Scroll.Handle style={reactiveStyle()} class={`${selectors.handle} ${reactiveClass()}`} />
+                </Scroll.Bar>
+            </Scroll>
+
+            <Scroll ref={longScrollRef} class={selectors.longScroll}>
+                <Scroll.Content>
+                    <For each={longRows}>{(row) => <Block>{row}</Block>}</For>
+                </Scroll.Content>
+                <Scroll.Bar class={selectors.longBar}>
+                    <Scroll.Handle class={selectors.longHandle} />
                 </Scroll.Bar>
             </Scroll>
         </>
