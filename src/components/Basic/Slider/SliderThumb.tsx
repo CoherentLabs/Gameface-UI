@@ -1,9 +1,10 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import styles from './Slider.module.scss';
 import { createMemo, JSX, ParentComponent, Show } from 'solid-js';
-import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
+import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
+import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 
-interface SliderThumbProps {
+interface SliderThumbProps extends TokenBase {
     style?: JSX.CSSProperties,
     class?: string,
 }
@@ -33,7 +34,7 @@ export const SliderThumb: ParentComponent<SliderThumbComponentProps> = (props) =
 
     return (
         <Show when={ThumbToken()}>
-            <div class={thumbClasses()} style={thumbStyle()}>{props.value()}</div>
+            <div class={thumbClasses()} style={thumbStyle()} use:forwardAttrs={ThumbToken()}>{props.value()}</div>
         </Show>
     )
 }

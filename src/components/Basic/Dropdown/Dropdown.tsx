@@ -9,7 +9,8 @@ import baseComponent, { navigationActions } from '@components/BaseComponent/Base
 import mergeNavigationActions from '@components/utils/mergeNavigationActions';
 import { useNavigation } from '@components/Utility/Navigation/Navigation';
 import style from './Dropdown.module.scss';
-export interface CommonDropdownSlotProps {
+import { TokenBase } from '@components/utils/tokenComponents';
+export interface CommonDropdownSlotProps extends TokenBase {
     style?: JSX.CSSProperties,
     class?: string,
 }

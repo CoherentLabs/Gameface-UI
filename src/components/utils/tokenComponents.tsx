@@ -32,6 +32,18 @@ export const useTokens = <T extends Record<string, any>>(tokenizer: TokenizerTyp
 
 export type TokenBase = AttrProps & { class?: string; style?: JSX.CSSProperties };
 
+/** A token's `attr:*` props only, for slots rendered through a GFUI component, where `use:forwardAttrs` can't be used. */
+export const tokenAttrs = (token: AttrProps | null | undefined): AttrProps => {
+    const attrs: AttrProps = {};
+    if (!token) return attrs;
+
+    for (const key in token) {
+        if (key.startsWith('attr:')) attrs[key as `attr:${string}`] = token[key as `attr:${string}`];
+    }
+
+    return attrs;
+};
+
 const emptyToken = () => null;
 
 export const createTokenComponent = <T extends Record<string, any>>(withId = false) => {

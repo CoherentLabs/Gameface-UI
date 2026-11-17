@@ -1,9 +1,10 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import styles from './Slider.module.scss';
 import { createMemo, JSX } from 'solid-js';
-import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
+import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
+import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 
-interface SliderHandleProps {
+interface SliderHandleProps extends TokenBase {
     style?: JSX.CSSProperties,
     class?: string,
     classActive?: string,
@@ -45,6 +46,6 @@ export const SliderHandle = (props: SliderHandleComponentProps) => {
     })
 
     return (
-        <div class={handleClasses()} style={handleStyle()} onMouseDown={props.handleMouseDown}></div>
+        <div class={handleClasses()} style={handleStyle()} onMouseDown={props.handleMouseDown} use:forwardAttrs={HandleToken()}></div>
     )
 }

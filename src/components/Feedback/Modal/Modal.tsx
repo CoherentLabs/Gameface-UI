@@ -5,7 +5,7 @@ import styles from './Modal.module.scss';
 import ModalWindow, { Window } from "./ModalWindow";
 import ModalCloseButton from "./ModalCloseButton";
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
-import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
+import baseComponent, { forwardAttrs, navigationActions } from "@components/BaseComponent/BaseComponent";
 
 export interface ModalProps extends ComponentProps {
     open?: boolean;
@@ -100,8 +100,9 @@ const Modal: ParentComponent<ModalProps> = (props) => {
                                 onMouseMove={stealMouseEvents}
                                 onMouseUp={stealMouseEvents}
                                 onClick={close} 
-                                class={modalOverlayClasses()} 
-                                style={OverlayToken?.()?.style}></div>
+                                class={modalOverlayClasses()}
+                                style={OverlayToken?.()?.style}
+                                use:forwardAttrs={OverlayToken()}></div>
                         )}
                         <ModalWindow parentChildren={props.children}></ModalWindow>
                     </Show>

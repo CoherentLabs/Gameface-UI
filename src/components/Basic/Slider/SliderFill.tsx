@@ -1,9 +1,10 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import styles from './Slider.module.scss';
 import { createMemo, JSX, ParentComponent } from 'solid-js';
-import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
+import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
+import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 
-interface SliderFillProps {
+interface SliderFillProps extends TokenBase {
     style?: JSX.CSSProperties,
     class?: string,
 }
@@ -31,6 +32,6 @@ export const SliderFill:ParentComponent<SliderFillComponentProps> = (props) => {
     })
 
     return (
-        <div class={fillClasses()} style={fillStyle()}></div>
+        <div class={fillClasses()} style={fillStyle()} use:forwardAttrs={FillToken()}></div>
     )
 }

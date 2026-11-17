@@ -1,7 +1,7 @@
 import { ParentComponent, useContext, ParentProps, onCleanup, onMount, Show } from 'solid-js';
 import { CommonDropdownSlotProps, DropdownContext } from './Dropdown';
 import { createTokenComponent } from '@components/utils/tokenComponents';
-import { navigationActions } from '@components/BaseComponent/BaseComponent';
+import { forwardAttrs, navigationActions } from '@components/BaseComponent/BaseComponent';
 import style from './Dropdown.module.scss';
 
 export interface OptionTokenProps extends CommonDropdownSlotProps {
@@ -55,6 +55,7 @@ export const DropdownOption: ParentComponent<{ option: ParentProps<OptionTokenPr
         onMouseOver={(e: MouseEvent) => (e.currentTarget as HTMLElement).focus()}
         class={optionClasses(props.option)}
         style={{...props.option.style}}
+        use:forwardAttrs={props.option}
         use:navigationActions={{'select': () => {
             dropdown?.selectOption(props.option.value)
             if (!dropdown?.multiple()) dropdown?.handleNavigationClose();

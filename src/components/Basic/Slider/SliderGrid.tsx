@@ -1,10 +1,11 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import styles from './Slider.module.scss';
 import { createMemo, For, JSX, Show } from 'solid-js';
-import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
+import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
+import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 import SliderPol from './SliderPol';
 
-interface SliderGridProps {
+interface SliderGridProps extends TokenBase {
     style?: JSX.CSSProperties,
     class?: string,
     pols?: number,
@@ -62,7 +63,7 @@ export const SliderGrid = (props: SliderGridComponentProps) => {
 
     return (
         <Show when={GridToken()}>
-            <div class={gridClasses()} style={GridToken?.()?.style}>
+            <div class={gridClasses()} style={GridToken?.()?.style} use:forwardAttrs={GridToken()}>
                 <For each={polsArr}>
                     {(pol, index) => (
                         <>

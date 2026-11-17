@@ -1,10 +1,11 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import styles from './XYSlider.module.scss';
 import { createMemo, JSX, useContext } from 'solid-js';
-import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
+import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
+import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 import { XYSliderContext } from './XYSlider';
 
-interface XYSliderHandleProps {
+interface XYSliderHandleProps extends TokenBase {
     style?: JSX.CSSProperties,
     class?: string,
 }
@@ -33,6 +34,6 @@ export const XYSliderHandle = (props: TokenComponentProps) => {
     })
 
     return (
-        <div class={handleClasses()} style={handleStyle()}></div>
+        <div class={handleClasses()} style={handleStyle()} use:forwardAttrs={HandleToken()}></div>
     )
 }

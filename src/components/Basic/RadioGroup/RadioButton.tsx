@@ -4,10 +4,10 @@ import { ComponentProps } from "@components/types/ComponentProps";
 import styles from './Radio.module.scss';
 import { RadioButtonControl } from "./RadioButtonControl";
 import { Show } from "solid-js";
-import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
+import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
 import baseComponent from "@components/BaseComponent/BaseComponent";
 
-export interface CommonRadioButtonSlotProps {
+export interface CommonRadioButtonSlotProps extends TokenBase {
     style?: JSX.CSSProperties,
     class?: string,
 }

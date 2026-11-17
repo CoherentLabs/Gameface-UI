@@ -2,13 +2,14 @@ import { Accessor, Component, createSignal, JSX } from 'solid-js';
 import styles from './Segment.module.scss';
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { SegmentIndicatorData } from './Segment';
-import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
+import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
+import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 
 interface SegmentIndicatorProps extends TokenComponentProps {
     data: Accessor<SegmentIndicatorData>
 }
 
-interface SegmentIndicatorSlotProps {
+interface SegmentIndicatorSlotProps extends TokenBase {
     style?: JSX.CSSProperties,
     class?: string,
 }
@@ -25,7 +26,8 @@ const SegmentIndicator: Component<SegmentIndicatorProps> = (props) => {
 
     return (
         <div 
-            style={inlineStyles()} 
+            style={inlineStyles()}
+            use:forwardAttrs={IndicatorSlot()}
             class={`${styles.indicator} ${IndicatorSlot()?.class ?? ''} ${props.data().showTransition ? styles['show-transition'] : ''}`}>
         </div>
     )

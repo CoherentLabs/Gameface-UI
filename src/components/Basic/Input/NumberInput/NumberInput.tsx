@@ -23,7 +23,7 @@ interface NumberInputProps extends Omit<TextInputProps, 'max-symbols' | 'value' 
     step?: number,
     onChange?: (value: valueType) => void;
 }
-interface InputControlTokenProps extends TokenBase {
+export interface InputControlTokenProps extends TokenBase {
     position?: 'before' | 'after'
 }
 
