@@ -1,4 +1,4 @@
-import { children, createEffect, on, onCleanup, onMount, ParentComponent } from "solid-js"
+import { children, createEffect, onCleanup, onSettled, ParentComponent, untrack } from "solid-js"
 import { useNavigation } from "./Navigation";
 import { spatialNavigation } from 'coherent-gameface-interaction-manager';
 import type { NavigationEdgeHandler } from 'coherent-gameface-interaction-manager';
@@ -14,7 +14,8 @@ const NavigationArea: ParentComponent<NavigationAreaProps> = (props) => {
     const nav = useNavigation();
     if (!nav) throw new Error('useNavigation must be used within Navigation');
     const cachedChildren = children(() => props.children);
-    const navigatableElements = props.selector ? [`.${props.selector}`] : cachedChildren();
+    // Intentional one-time read (Solid 2 warns on untracked top-level reads).
+    const navigatableElements = untrack(() => props.selector ? [`.${props.selector}`] : cachedChildren());
 
     const refresh = () => {
         if (!spatialNavigation.enabled) return;
@@ -32,9 +33,9 @@ const NavigationArea: ParentComponent<NavigationAreaProps> = (props) => {
     };
     
     // Refresh whenever children change
-    createEffect(on(cachedChildren, refresh, { defer: true }))
+    createEffect(() => cachedChildren(), () => refresh(), { defer: true })
 
-    onMount(() => {
+    onSettled(() => {
         const shouldFocus = props.focused || props.name === nav.getScope();
         init(shouldFocus);
         if (props.onEdge) nav.setEdgeHandler(props.name, props.onEdge);

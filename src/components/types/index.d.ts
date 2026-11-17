@@ -37,7 +37,8 @@ export type TransformStyle = {
   values: (Accessor<number> | number)[];
 };
 
-declare module "solid-js" {
+// Solid 2: the JSX namespace (and CSSProperties) lives in @solidjs/web.
+declare module "@solidjs/web" {
   namespace JSX {
     interface CSSProperties {
       "border-top-width"?: Property.BorderTopWidth | NumericCSSProperty;

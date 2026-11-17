@@ -1,4 +1,4 @@
-// Drop-in replacement for the parts of `solid-js/web` that write inline
+// Drop-in replacement for the parts of `@solidjs/web` that write inline
 // styles. Everything else Solid needs (templating, insertion, event
 // delegation, control-flow components, ...) is re-exported untouched - see
 // `solid.moduleName` in vite.config.mts for how this module is wired in.
@@ -8,11 +8,27 @@
 // parse. Gameface's CSS Typed Object Model (attributeStyleMap) accepts
 // already-typed values instead, skipping that parsing step:
 // https://docs.coherent-labs.com/cpp-gameface/content_development/csstypedobjectmodel/
-export * from 'solid-js/web';
+export * from '@solidjs/web';
 
 import type { Accessor } from 'solid-js';
 import type { NumericCSSProperty, TransformStyle, TypedOMUnit } from '@components/types';
 import { canUseTOM, defaultUnitFor, unitToCssSuffix } from './tom-constants';
+
+// Gameface compat (Solid 2): Solid 2's DOM runtime appends children with
+// `parent.insertBefore(node, marker)` where `marker` can be `undefined`.
+// Browsers coerce `undefined` to `null` (append), but Gameface's insertBefore
+// throws "Arguments[1] expect type : Node". This module is imported by every
+// compiled JSX module (it is `solid.moduleName`), so patching here runs before
+// any render. Checked on cohtml 3.2.0.12.
+const GF_INSERT_PATCHED = Symbol.for('gameface-ui.insertBeforePatched');
+if (typeof Node !== 'undefined' && !(Node.prototype.insertBefore as any)[GF_INSERT_PATCHED]) {
+  const nativeInsertBefore = Node.prototype.insertBefore;
+  const insertBefore = function <T extends Node>(this: Node, node: T, child: Node | null | undefined): T {
+    return nativeInsertBefore.call(this, node, child === undefined ? null : child) as T;
+  };
+  (insertBefore as any)[GF_INSERT_PATCHED] = true;
+  Node.prototype.insertBefore = insertBefore;
+}
 
 // Version of the value shapes this runtime understands ({ value, unit } and
 // { functions, values }). The Style TOM plugin reads it and stops rewriting
@@ -381,6 +397,10 @@ export function style(
     // reprocess those - setProp's own per-property cache already skips the
     // actual native write when the resolved value hasn't changed, so this
     // only costs a comparison, not a wasted write.
+    // Solid 2: this runs in the effect's apply phase, which is untracked, so
+    // reading an un-invoked accessor here does NOT subscribe to it. Only a
+    // value read in the compute phase (`{ value: x() }`, which is what the
+    // style-TOM plugin emits) triggers an update.
     const isStructured = next !== null && typeof next === 'object';
     if (isStructured || next !== prevProps[key]) setProp(node, cache, key, next);
   }

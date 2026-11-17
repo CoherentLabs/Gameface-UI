@@ -4,12 +4,14 @@ import baseComponent, { navigationActions } from "@components/BaseComponent/Base
 
 const TextBlock: ParentComponent<ComponentProps> = (props) => {
     return <p
-        ref={props.ref as HTMLParagraphElement}
-        use:baseComponent={props}
-        use:navigationActions={{
-            anchor: props.anchor,
-            ...props.onAction,
-        }}
+        ref={[
+            props.ref as (el: HTMLParagraphElement) => void,
+            baseComponent(props),
+            navigationActions({
+                anchor: props.anchor,
+                ...props.onAction,
+            }),
+        ]}
     >
         {props.children}
     </p>

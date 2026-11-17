@@ -1,13 +1,11 @@
 import { waitForFrames } from '@components/utils/waitForFrames';
-import { SetStoreFunction } from 'solid-js/store';
-import { NavigationConfigType } from '../types';
 import { AreaMethods } from './areaMethods.types';
 import { spatialNavigation } from 'coherent-gameface-interaction-manager';
 import type { KeyName, NavigationEdgeHandler, SwitchAreaOptions } from 'coherent-gameface-interaction-manager';
 
 export default function createAreaMethods(
     areas: Set<string>,
-    setConfig: SetStoreFunction<NavigationConfigType>,
+    setScope: (area: string) => void,
     navigationEdgeHandlers: Map<string, NavigationEdgeHandler>
 ): AreaMethods {
     const registerArea = (area: string, elements: string[] | HTMLElement[], focused?: boolean) => {
@@ -56,7 +54,7 @@ export default function createAreaMethods(
         if (!isAreaValid(area)) return null;
 
         const element = spatialNavigation.focusFirst(area);
-        if (element) setConfig('scope', area);
+        if (element) setScope(area);
         return element;
     };
 
@@ -64,7 +62,7 @@ export default function createAreaMethods(
         if (!isAreaValid(area)) return null;
 
         const element = spatialNavigation.focusLast(area);
-        if (element) setConfig('scope', area);
+        if (element) setScope(area);
         return element;
     };
 
@@ -72,7 +70,7 @@ export default function createAreaMethods(
         if (!isAreaValid(area)) return null;
 
         const element = spatialNavigation.switchArea(area, options);
-        if (element) setConfig('scope', area);
+        if (element) setScope(area);
         return element;
     };
 

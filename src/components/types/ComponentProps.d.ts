@@ -1,6 +1,6 @@
-import { JSX, ParentProps } from "solid-js";
+import { ParentProps } from "solid-js";
+import { JSX } from "@solidjs/web";
 import Events from "./BaseComponent";
-import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
 import { ActionName } from "@components/Utility/Navigation/types";
 
 export type ExcludedEvents =
@@ -53,15 +53,13 @@ export type NavigationActionsConfig = {
 // Component prop type (excludes anchor - use the top-level anchor prop instead)
 export type ComponentNavigationActions = Omit<NavigationActionsConfig, 'anchor'>;
 
-declare module "solid-js" {
+// Solid 2: the JSX namespace lives in @solidjs/web. The 1.x `DirectiveFunctions`
+// augmentation is gone - `use:` directives are now `ref={baseComponent(props)}`
+// / `ref={navigationActions(config)}` factories (see BaseComponent.tsx).
+declare module "@solidjs/web" {
     namespace JSX {
         interface IntrinsicElements {
             p: JSX.HTMLAttributes<HTMLParagraphElement> & { cohinline?: any };
-        }
-
-        interface DirectiveFunctions {
-            baseComponent: typeof baseComponent;
-            navigationActions: typeof navigationActions;
         }
     }
 }

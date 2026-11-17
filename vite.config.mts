@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
-import solidPlugin from 'vite-plugin-solid';
+import solidPlugin from '@solidjs/vite-plugin';
 import solidSvg from 'vite-plugin-solid-svg';
 import path, { resolve } from 'node:path';
 import solidStyleToCssPlugin from 'vite-solid-style-to-css';
@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => {
   return {
     root: root,
     plugins: [
-      gamefaceViews({ root: resolve(__dirname, root) }),
+      gamefaceViews({ root: resolve(import.meta.dirname, root) }),
       eslint({
         include: ['src/**/*.ts', 'src/**/*.tsx'],
         emitWarning: true,
@@ -24,8 +24,8 @@ export default defineConfig(({ mode }) => {
       }),
       solidStyleToCssPlugin(),
       gamefaceImages({
-        assets: resolve(__dirname, 'src/assets'),
-        types: resolve(__dirname, 'src/components/Media/Image/ImageTypes.ts'),
+        assets: resolve(import.meta.dirname, 'src/assets'),
+        types: resolve(import.meta.dirname, 'src/components/Media/Image/ImageTypes.ts'),
       }),
       styleTomReport(),
       solidPlugin({
@@ -33,7 +33,7 @@ export default defineConfig(({ mode }) => {
           plugins: [styleTomPlugin]
         },
         solid: {
-          moduleName: path.resolve(__dirname, './src/components/BaseComponent/gameface-dom.ts')
+          moduleName: path.resolve(import.meta.dirname, './src/components/BaseComponent/gameface-dom.ts')
         }
       }),
       solidSvg({
@@ -49,7 +49,7 @@ export default defineConfig(({ mode }) => {
     build: {
       assetsInlineLimit: 0,
       cssMinify: false,
-      outDir: resolve(__dirname, 'dist'),
+      outDir: resolve(import.meta.dirname, 'dist'),
       emptyOutDir: true,
       target: 'esnext',
       modulePreload: false,
@@ -63,10 +63,10 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
-        '@components': path.resolve(__dirname, "./src/components"),
-        '@custom-components': path.resolve(__dirname, "./src/custom-components"),
-        '@recipes': path.resolve(__dirname, "./src/recipes"),
-        '@assets': path.resolve(__dirname, "./src/assets"),
+        '@components': path.resolve(import.meta.dirname, "./src/components"),
+        '@custom-components': path.resolve(import.meta.dirname, "./src/custom-components"),
+        '@recipes': path.resolve(import.meta.dirname, "./src/recipes"),
+        '@assets': path.resolve(import.meta.dirname, "./src/assets"),
       }
     },
     css: {

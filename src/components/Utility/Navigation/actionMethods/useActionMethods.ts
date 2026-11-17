@@ -1,14 +1,12 @@
 import { actions, keyboard, gamepad } from 'coherent-gameface-interaction-manager';
-import { SetStoreFunction } from 'solid-js/store';
-import { ActionName, ActionCfg, DefaultActions, NavigationConfigType } from '../types';
+import { ActionName, ActionCfg, DefaultActions } from '../types';
 import { DEFAULT_ACTION_NAMES } from '../defaults';
 import eventBus from '@components/Utility/EventBus';
 import { ActionMethods } from './actionMethods.types';
+import type { NavigationState } from '../navigationState';
 
-export default function createActionMethods(
-    config: NavigationConfigType,
-    setConfig: SetStoreFunction<NavigationConfigType>
-): ActionMethods {
+export default function createActionMethods(state: NavigationState): ActionMethods {
+    const { config, getScope, getAction, getActions, setAction, setPaused } = state;
     // For regular pause/unpause subscribers
     const actionSubscribers = new Map<string, number>();
     // For force paused actions
@@ -65,7 +63,7 @@ export default function createActionMethods(
             return console.warn(`Action ${name} is already registered! If you wish to update it's data use updateAction() instead.`)
         }
 
-        setConfig('actions', name, data);
+        setAction(name, data);
         registerAction(name);
     }
 
@@ -79,7 +77,7 @@ export default function createActionMethods(
         }
 
         unregisterAction(name);
-        setConfig('actions', name, undefined);
+        setAction(name, undefined);
     }
 
     const updateAction = (name: ActionName, data: ActionCfg) => {
@@ -88,7 +86,7 @@ export default function createActionMethods(
         }
 
         unregisterAction(name)
-        setConfig('actions', name, data);
+        setAction(name, data);
         registerAction(name);
     }
 
@@ -100,10 +98,6 @@ export default function createActionMethods(
         actions.execute(name);
     }
 
-    const getScope = () => config.scope;
-    const getAction = (name: ActionName) => config.actions[name];
-    const getActions = () => config.actions;
-
     const pauseAction = (name: ActionName, force: boolean = false) => {
         if (!getAction(name)) return console.warn('Action not found');
 
@@ -113,7 +107,7 @@ export default function createActionMethods(
                 return;
             }
             forcePausedActions.add(name);
-            setConfig('actions', name, 'paused', true);
+            setPaused(name, true);
             return;
         }
 
@@ -125,7 +119,7 @@ export default function createActionMethods(
 
         if (newCount === 0) {
             if (!forcePausedActions.has(name)) {
-                setConfig('actions', name, 'paused', true);
+                setPaused(name, true);
             }
         }
     };
@@ -138,7 +132,7 @@ export default function createActionMethods(
             if (!forcePausedActions.has(name)) return; // Wasn't forced
             forcePausedActions.delete(name);
 
-            setConfig('actions', name, 'paused', false);
+            setPaused(name, false);
             return;
         }
 
@@ -154,7 +148,7 @@ export default function createActionMethods(
         }
 
         if (newCount === 1) { 
-            setConfig('actions', name, 'paused', false);
+            setPaused(name, false);
         }
     };
 

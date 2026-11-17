@@ -11,23 +11,21 @@ const LayoutBase: ParentComponent<ComponentProps> = (props) => {
         };
     };
 
+    const forwardRef = (el: HTMLDivElement) => {
+        if (!props.ref) return;
+
+        if (props.refObject) {
+            (props.ref as (arg: any) => void)({
+                ...props.refObject,
+                element: el,
+            });
+        } else {
+            (props.ref as (arg: any) => void)(el);
+        }
+    };
+
     return (
-        <div
-            ref={(el) => {
-                if (!props.ref) return;
-                
-                if (props.refObject) {
-                    (props.ref as (arg: any) => void)({
-                        ...props.refObject,
-                        element: el,
-                    });
-                } else {
-                    (props.ref as (arg: any) => void)(el);
-                }
-            }}
-            use:baseComponent={props}
-            use:navigationActions={navConfig()}
-        >
+        <div ref={[forwardRef, baseComponent(props), navigationActions(navConfig())]}>
             {props.children}
         </div>
     );

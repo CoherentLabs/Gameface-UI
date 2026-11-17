@@ -104,7 +104,7 @@ function generateEntry(view: View, viewsRoot: string) {
         .map((file) => `import '${importSpecifier(view, file)}';`);
 
     return [
-        `import { render } from 'solid-js/web';`,
+        `import { render } from '@solidjs/web';`,
         `import { createComponent } from 'solid-js';`,
         ...styles,
         `import View from '${importSpecifier(view, view.component)}';`,
