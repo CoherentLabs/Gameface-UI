@@ -1,0 +1,86 @@
+---
+title: Changelog
+---
+
+import { Badge } from '@astrojs/starlight/components'
+
+## 2.0.0 :badge[Latest]{variant="note"}
+
+<Badge text="Breaking" variant="danger" size="small" /> For Solid 2 and Vite 8. Solid 1 projects stay on 1.x.
+
+<Badge text="Breaking" variant="danger" size="small" /> The template rewriting (closing tags, attribute quotes, `<!>` placeholders) is removed. Solid 2's compiler does it itself: set its 4 `omit*` options to `false` (see [Solid compiler options](/gameface-vite-plugin/vite-plugin-solid)).
+
+<Badge text="Feature" variant="success" size="small" /> The plugin now carries Gameface runtime fixes for Solid 2. It injects them as an inline script at the top of `<head>`, so they run before your app, in development and in production builds. First fix: `Node.insertBefore(node, undefined)` now appends like in browsers. Solid 2 relies on this, and without the fix Gameface throws `Arguments[1] expect type : Node` and the UI stops updating.
+
+## 1.0.4
+
+<Badge text="Fix" variant="danger" size="small" /> Resolved an issue where inline SVG elements with dynamic children in SolidJS caused runtime errors or silent build failures in production.
+
+The following example now renders correctly:
+
+```tsx
+import { createSignal } from 'solid-js';
+
+const SVGComponent = () => {
+    const arr = Array.from({ length: 5 });
+    const [firstName] = createSignal('first name');
+
+    return <svg viewBox="0 0 200 200" width="300" height="300" >
+        <For each={arr}>
+            {(_, index) => <rect y={index() * 10} width="618" height={(index() + 1) * 10} fill={`#${index() + 4}${index() + 3}${index() + 2}${index() + 1}${index()}9`} />}
+        </For>
+        <text x="20" y="35">{firstName()}</text>
+    </svg>
+}
+```
+
+## 1.0.3
+
+<Badge text="Fix" variant="danger" size="small" /> Resolved issues with using `()` brackets in SolidJS components, which previously caused errors with the plugin. The generated template from the SolidJS plugin, transformed by vite-gameface, contained `(<!>)` in place of `({expression})`, leading to build errors. This update ensures proper transformation of components using `()` brackets, eliminating these errors.
+
+For instance, the following code now functions as expected:
+
+```tsx
+const MyComponent = () => {
+    const [test] = createSignal('test');
+    return (
+        <span>({test()})</span>
+    );
+};
+```
+
+## 1.0.2
+
+<Badge text="Fix" variant="danger" size="small" /> Resolved Vite warnings related to the plugin when building with source maps enabled by regenerating the source maps after transforming the code.
+
+The warnings included:
+
+```
+[plugin gameface] Sourcemap is likely to be incorrect: a plugin (gameface) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help
+```
+
+<Badge text="Fix" variant="danger" size="small" /> Corrected the handling of inlined `SVGs` to ensure proper transformation of child SVG elements wrapped within components. For instance, the [SolidJS clock example](https://www.solidjs.com/examples/clock) now functions correctly due to the plugin's improved transformation of `SVG` elements in such scenarios.
+
+Here is an example of a case that is now transformed correctly:
+
+```tsx
+const SVGComponent = ()=>{
+    return <svg>
+        <Line />
+    </svg>
+}
+
+const Line = () => {
+    return <line stroke="red" stroke-width="2px"></line>
+}
+```
+
+## 1.0.1
+
+<Badge text="New" variant="tip" size="small" /> Added public documentation for the plugin.
+
+## 1.0.0
+
+<Badge text="Feature" variant="success" size="small" /> Plugin resolves unclosed tags when using SolidJS in Gameface.
+
+<Badge text="Feature" variant="success" size="small" /> Plugin fixes SVGs for compatibility with Gameface when using SolidJS.

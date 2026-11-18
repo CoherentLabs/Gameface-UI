@@ -1,0 +1,35 @@
+---
+title: How to use
+sidebar:
+    order: 3
+---
+
+Add the plugin to the `plugins` array in your Vite configuration file, and set Solid's 4 `omit*` compiler options to `false`:
+
+```diff lang=js title="vite.config.js"
+import { defineConfig } from 'vite';
+import solid from '@solidjs/vite-plugin';
++import solidGameface from 'vite-gameface';
+
+export default defineConfig({
+    ...
+    plugins: [
+        solid({
++            solid: {
++                omitQuotes: false,
++                omitAttributeSpacing: false,
++                omitNestedClosingTags: false,
++                omitLastClosingTag: false,
++            },
+        }),
++        solidGameface()
+    ],
+    ...
+});
+```
+
+The plugin injects its runtime fixes into every HTML page Vite processes (`index.html` and other HTML entries), in development and in production builds. Its position in the `plugins` array doesn't matter.
+
+:::caution
+If your app isn't loaded through an HTML page that Vite processes (for example, a library build that is embedded in another page), the fixes are not injected. Include them in the host page yourself.
+:::

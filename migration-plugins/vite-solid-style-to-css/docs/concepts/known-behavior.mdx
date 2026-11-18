@@ -1,0 +1,99 @@
+---
+title: Known Behavior
+---
+
+## Dynamic `style` Properties
+
+When signals are used to dynamically update a style property at runtime, those properties will not be converted into CSS classes.
+
+For instance, consider the following example:
+
+```jsx
+const Component = () => {
+    const [bgColor, setBgColor] = createSignal('red');
+
+    return <div style={{ height: '50%', 'background-color': bgColor() }} />
+}
+```
+
+The plugin will transform the `div` element as follows:
+
+```html
+<div class="_div_12345" style="background-color: red;"></div>
+```
+
+In this case, the `background-color` property remains inline and will be updated dynamically using the `bgColor` signal.
+
+The generated `_div_12345` class will include only the static styles:
+
+```css
+._div_12345 {
+    height: 50%;
+}
+```
+
+## Combining `class` with `style` properties
+
+The plugin assigns unique CSS classes to elements with transformed `style` properties, but there are limitations when combining `style` with the `class` property.
+
+Currently, using the `style` property alongside a spread operator that includes a `class` property is not supported. For example:
+
+```jsx
+const Component = () => {
+    const additionalProperties = {
+        class: 'test-class'
+    };
+
+    return <div style={{ height: '50%' }} {...additionalProperties} />;
+};
+```
+
+In this case, the `style` property for the `div` element will not be transformed. Additionally, if the `suppressWarnings` flag is not set to `true` in the plugin's initialization within the `vite.config.mts` file, a warning will be displayed:
+
+```bash
+[vite-style-to-css-plugin] warning: The JSX element <div> contains a "style" attribute along with a spread 
+operator ({...additionalProperties}). This combination is not supported, so the styles for this element will not be transformed.
+```
+
+Other combinations are supported, and the `style` property will be correctly transformed into a CSS class. For instance:
+
+```jsx
+import MyCSSModule from './MyCSSModule.module.css';
+
+const Component = () => {
+    const [dynamicClass, setDynamicClass] = createSignal('test-class-1');
+
+    return (
+        <div
+            style={{ height: '50%' }}
+            class={dynamicClass() + ' ' + MyCSSModule.AnotherTestClass + ' test-class-3'}
+        />
+    );
+};
+```
+
+`MyCSSModule.module.css`:
+
+```css
+.test-class-2 { }
+```
+
+This will be transformed into:
+
+```html
+<div class="test-class-1 test-class-2 test-class-3 _div_12345"></div>
+```
+
+### Object and array `class` values (Solid 2)
+
+On native elements, a dynamic `class` is combined with the generated class as an array, so Solid 2's object and array forms keep working:
+
+```jsx
+<div class={{ active: isActive() }} style={{ height: '50%' }} />
+// becomes
+<div class={[{ active: isActive() }, '_div_12345']} />
+```
+
+Because Solid applies array and object classes one by one, the order of the classes in the `class` attribute is not guaranteed. The generated class is always present.
+
+On components, `class` is a regular prop, so a dynamic `class` is still concatenated as a string (`yourClass + ' _Block_12345'`). Pass `class` to a component as a string when the component also has static styles.

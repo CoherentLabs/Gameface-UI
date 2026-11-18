@@ -1,0 +1,38 @@
+{
+  "name": "vite-solid-style-to-css",
+  "version": "2.0.0",
+  "type": "module",
+  "description": "A Vite plugin that converts Solid.js inline styles to CSS for better performance and maintainability.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "npm run clean:dist&&rollup -c",
+    "dev": "rollup -c -w",
+    "publish:package": "npm run clean&&npm i&&rollup -c&&npm publish",
+    "clean:dist": "rm -rf dist",
+    "clean": "npm run clean:dist&&rm -rf node_modules&&rm package-lock.json"
+  },
+  "types": "dist/index.d.ts",
+  "author": "CoherentLabs",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/generator": "^7.27.0",
+    "@babel/parser": "^7.27.0",
+    "@babel/traverse": "^7.27.0",
+    "@babel/types": "^7.27.0",
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "@types/babel__generator": "^7.6.8",
+    "@types/babel__traverse": "^7.20.7",
+    "@types/node": "^22.13.14",
+    "rollup": "^4.38.0",
+    "tslib": "^2.8.1",
+    "typescript": "^5.8.2",
+    "vite": "^8.0.0"
+  },
+  "dependencies": {
+    "magic-string": "^0.30.21",
+    "unocss": "^66.6.6"
+  }
+}

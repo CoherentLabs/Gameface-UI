@@ -1,0 +1,35 @@
+---
+title: Changelog
+---
+
+import { Badge } from '@astrojs/starlight/components'
+
+## 2.0.0 :badge[Latest]{variant="note"}
+
+<Badge text="Breaking" variant="danger" size="small" /> Requires Vite 8 and Solid 2. Solid 1 projects stay on 1.x.
+
+<Badge text="Fix" variant="danger" size="small" /> Generated class names are now deterministic (a hash of the file path and the element's position) instead of random. Previously, a module transformed more than once (dev server, hot reload) could get one class in its CSS and a different one on the element, so static styles were lost.
+
+<Badge text="Fix" variant="danger" size="small" /> In development, components with the same file name in different folders (e.g. two `MenuItem.tsx`) no longer overwrite each other's generated CSS.
+
+<Badge text="Feature" variant="success" size="small" /> Supports Solid 2's object and array `class` forms. On native elements, when a dynamic `class` is combined with static styles, the generated class is now added as an array entry (`class={[yourClass, "_div_…"]}`) instead of being concatenated as a string. So `class={{ active: on() }}` and `class={["base", { active: on() }]}` keep working. On components, `class` is a plain prop and is still concatenated as a string.
+
+## 1.0.3
+
+<Badge text="Fix" variant="danger" size="small" /> Resolved Vite warnings related to the plugin when building with source maps enabled by regenerating the source maps after transforming the code.
+
+The warnings included:
+
+```
+[plugin solid-style-to-css] Sourcemap is likely to be incorrect: a plugin (solid-style-to-css) was used to transform files, but didn't generate a sourcemap for the transformation. Consult the plugin documentation for help
+```
+
+## 1.0.2
+
+<Badge text="New" variant="tip" size="small" /> Added public documentation for the plugin.
+
+## 1.0.1
+
+<Badge text="Feature" variant="success" size="small" /> Plugin automatically converts `styles` property to `CSS` classes.
+
+<Badge text="Feature" variant="success" size="small" /> Plugin adds unique class names to avoid style conflicts.

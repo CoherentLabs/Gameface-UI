@@ -1,0 +1,29 @@
+---
+title: Solid compiler options
+sidebar:
+    order: 1
+---
+
+Solid's compiler shortens the HTML in its templates: it leaves out closing tags, attribute quotes and the spaces between attributes. Gameface can't parse that HTML. Version 1 of this plugin rewrote the templates; with Solid 2 the compiler can produce complete HTML itself.
+
+Set these options in `@solidjs/vite-plugin`:
+
+```ts
+import { defineConfig } from 'vite';
+import solid from '@solidjs/vite-plugin';
+
+export default defineConfig({
+    plugins: [
+        solid({
+            solid: {
+                omitQuotes: false,             // quote every attribute value
+                omitAttributeSpacing: false,   // keep spaces between attributes (e.g. on <svg>)
+                omitNestedClosingTags: false,  // close nested elements
+                omitLastClosingTag: false,     // close the last element
+            },
+        }),
+    ],
+});
+```
+
+Solid's `<!>` placeholders stay in the templates. Gameface parses them as comment nodes, the same way browsers do.
