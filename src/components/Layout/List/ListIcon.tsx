@@ -1,4 +1,5 @@
-import { createMemo, JSX, ParentComponent, Show, useContext } from "solid-js";
+import { createMemo, ParentComponent, Show, useContext } from "solid-js";
+import { JSX } from "@solidjs/web";
 import { TokenComponentProps } from "../../types/ComponentProps";
 import styles from './List.module.scss';
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
@@ -11,25 +12,20 @@ interface ListIconComponent extends TokenComponentProps, TokenBase {
 
 export const Icon = createTokenComponent<TokenBase>()
 const ListIcon: ParentComponent<ListIconComponent> = (props) => {
-    const IconToken = useToken(Icon, props.parentChildren)
+    const IconToken = useToken(Icon, () => props.parentChildren)
     const listContext = useContext(ListContext);
 
-    const IconClasses = createMemo(() => {
-        const classes = [styles.icon];
-
-        classes.push(listContext?.bulletBgUrl() 
-            ? styles[`icon-custom`] 
-            : styles[`icon-${listContext?.bulletType()}`])
-
-        classes.push(listContext?.bulletClass() ?? "")
-        classes.push(IconToken()?.class ?? "");
-
-        return classes.join(' ');
-    })
+    const IconClasses = () => [
+        styles.icon,
+        listContext?.bulletBgUrl() ? styles[`icon-custom`] : styles[`icon-${listContext?.bulletType()}`],
+        listContext?.bulletClass(),
+        IconToken()?.class,
+    ];
 
     const IconStyle = createMemo(() => {
         const base = IconToken()?.style ?? {};
-        const url = typeof listContext?.bulletBgUrl() === 'string' ? listContext?.bulletBgUrl() : listContext?.bulletBgUrl()?.src;
+        const bg = listContext?.bulletBgUrl();
+        const url = typeof bg === 'string' ? bg : bg?.src;
         if (!url || IconToken()?.children) return base;
 
         return {
@@ -41,7 +37,7 @@ const ListIcon: ParentComponent<ListIconComponent> = (props) => {
     return (
         <>
             <Show when={IconToken()?.children}>
-                <div style={IconStyle()} class={`${IconToken()?.class ?? ""} ${styles.icon} ${listContext?.bulletClass() ?? ''}`}>
+                <div style={IconStyle()} class={[IconToken()?.class, styles.icon, listContext?.bulletClass()]}>
                     {IconToken()?.children}
                 </div>
             </Show>

@@ -6,8 +6,8 @@ import Absolute from "@components/Layout/Absolute/Absolute";
 import styles from './RadialMenu.module.scss';
 
 const MenuIndicator: ParentComponent<TokenComponentProps> = (props) => {
-    const IndicatorToken = useToken(Indicator, props.parentChildren);
-    const IconToken = useToken(Icon, IndicatorToken()?.children);
+    const IndicatorToken = useToken(Indicator, () => props.parentChildren);
+    const IconToken = useToken(Icon, () => IndicatorToken()?.children);
     
     const context = useContext(RadialMenuContext);
     if (!context) {

@@ -95,17 +95,17 @@ const DEFAULT_AREA_OPACITY = 0.25;
  * identical, so they share one pipeline.
  */
 export const createSeriesChart = (config: SeriesChartConfig): ParentComponent<SeriesChartProps> => (props) => {
-    const legendToken = useToken(Legend, props.children);
-    const tooltipToken = useToken(Tooltip, props.children);
-    const labelsToken = useToken(Labels, props.children);
-    const strokeToken = useToken(config.strokeTokenizer, props.children);
-    const pointToken = useToken(config.pointTokenizer, props.children);
+    const legendToken = useToken(Legend, () => props.children);
+    const tooltipToken = useToken(Tooltip, () => props.children);
+    const labelsToken = useToken(Labels, () => props.children);
+    const strokeToken = useToken(config.strokeTokenizer, () => props.children);
+    const pointToken = useToken(config.pointTokenizer, () => props.children);
     const fillToken = config.fillTokenizer
-        ? useToken(config.fillTokenizer, props.children)
+        ? useToken(config.fillTokenizer, () => props.children)
         : () => null;
-    const xAxisToken = useToken(XAxis, props.children);
-    const yAxisToken = useToken(YAxis, props.children);
-    const gridToken = useToken(Grid, props.children);
+    const xAxisToken = useToken(XAxis, () => props.children);
+    const yAxisToken = useToken(YAxis, () => props.children);
+    const gridToken = useToken(Grid, () => props.children);
 
     const [size, observePlot] = useChartSize();
     const model = useChartData(() => props.data, props.onSeriesToggle);

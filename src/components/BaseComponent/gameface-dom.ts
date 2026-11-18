@@ -14,22 +14,6 @@ import type { Accessor } from 'solid-js';
 import type { NumericCSSProperty, TransformStyle, TypedOMUnit } from '@components/types';
 import { canUseTOM, defaultUnitFor, unitToCssSuffix } from './tom-constants';
 
-// Gameface compat (Solid 2): Solid 2's DOM runtime appends children with
-// `parent.insertBefore(node, marker)` where `marker` can be `undefined`.
-// Browsers coerce `undefined` to `null` (append), but Gameface's insertBefore
-// throws "Arguments[1] expect type : Node". This module is imported by every
-// compiled JSX module (it is `solid.moduleName`), so patching here runs before
-// any render. Checked on cohtml 3.2.0.12.
-const GF_INSERT_PATCHED = Symbol.for('gameface-ui.insertBeforePatched');
-if (typeof Node !== 'undefined' && !(Node.prototype.insertBefore as any)[GF_INSERT_PATCHED]) {
-  const nativeInsertBefore = Node.prototype.insertBefore;
-  const insertBefore = function <T extends Node>(this: Node, node: T, child: Node | null | undefined): T {
-    return nativeInsertBefore.call(this, node, child === undefined ? null : child) as T;
-  };
-  (insertBefore as any)[GF_INSERT_PATCHED] = true;
-  Node.prototype.insertBefore = insertBefore;
-}
-
 // Version of the value shapes this runtime understands ({ value, unit } and
 // { functions, values }). The Style TOM plugin reads it and stops rewriting
 // if it expects a different one - bump both together when a shape changes.

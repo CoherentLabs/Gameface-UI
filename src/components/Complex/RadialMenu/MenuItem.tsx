@@ -10,7 +10,7 @@ interface MenuItemComponentProps extends TokenComponentProps {
 }
 
 export const MenuItem: ParentComponent<MenuItemComponentProps> = (props) => {
-    const SelectorToken = useToken(Selector, props.parentChildren);
+    const SelectorToken = useToken(Selector, () => props.parentChildren);
     const context = useContext(RadialMenuContext);
     if (!context) {
         console.error('RadialMenu.Item must be used inside a RadialMenu component');

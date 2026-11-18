@@ -113,12 +113,12 @@ const spreadOutsideLabels = (anchors: ChartLabelAnchor[], centreY: number): Char
  * they share one geometry pipeline, one hit-testing setup and one legend.
  */
 export const createRadialChart = (config: RadialChartConfig): ParentComponent<RadialChartProps> => (props) => {
-    const legendToken = useToken(Legend, props.children);
-    const tooltipToken = useToken(Tooltip, props.children);
-    const labelsToken = useToken(Labels, props.children);
-    const sliceToken = useToken(config.sliceTokenizer, props.children);
+    const legendToken = useToken(Legend, () => props.children);
+    const tooltipToken = useToken(Tooltip, () => props.children);
+    const labelsToken = useToken(Labels, () => props.children);
+    const sliceToken = useToken(config.sliceTokenizer, () => props.children);
     const holeToken = config.holeTokenizer
-        ? useToken(config.holeTokenizer, props.children)
+        ? useToken(config.holeTokenizer, () => props.children)
         : () => null;
 
     const [size, observePlot] = useChartSize();

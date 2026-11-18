@@ -21,22 +21,13 @@ const Absolute: ParentComponent<AbsoluteProps> = (props) => {
         }
     });
 
-    const absoluteClasses = createMemo(() => {
-        const base = [styles.absolute];
-
+    const centerClass = () => {
         const center = props.center;
-        if (center) {
-            base.push(
-                typeof center === "boolean" 
-                ? styles.center 
-                : styles[`center-${center.toLowerCase()}`]
-            )
-        }
+        if (!center) return undefined;
+        return typeof center === "boolean" ? styles.center : styles[`center-${center.toLowerCase()}`];
+    };
 
-        return base.join(" ");
-    })
-
-    return <LayoutBase {...props} componentClasses={absoluteClasses} componentStyles={positionStyle} />
+    return <LayoutBase {...props} class={[styles.absolute, centerClass(), props.class]} componentStyles={positionStyle} />
 }
 
 export default Absolute;

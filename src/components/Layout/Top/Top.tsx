@@ -6,7 +6,7 @@ import styles from './Top.module.scss';
 const Top: ParentComponent<LayoutSectionProps> = (props) => {
     return <LayoutBase 
         {...props} 
-        componentClasses={styles.top} 
+        class={[styles.top, props.class]} 
         componentStyles={{'flex-basis': props.basis ? `${props.basis}%` : ""}} />
 }
 

@@ -22,7 +22,7 @@ const TabLink: ParentComponent<TabLinkProps> = (props) => {
     };
   
     return (
-        <LayoutBase {...props} click={handleTabChange} componentClasses={() => props.activeClass && props.location === tabs.current() ? props.activeClass : ""}>
+        <LayoutBase {...props} click={handleTabChange} class={[props.location === tabs.current() && props.activeClass, props.class]}>
             {props.children}
         </LayoutBase>
     );

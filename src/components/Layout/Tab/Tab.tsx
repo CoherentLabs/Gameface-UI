@@ -1,4 +1,4 @@
-import { children, ParentComponent, Show, useContext } from 'solid-js';
+import { children, ParentComponent, Show, untrack, useContext } from 'solid-js';
 import { ComponentBaseProps } from '../../types/ComponentProps';
 import { TabsContext } from '../Tabs/Tabs';
 
@@ -14,7 +14,8 @@ const Tab: ParentComponent<TabProps> = (props) => {
         throw new Error('Tab must be used within a <Tabs> component');
     }
 
-    if (props.KeepInMemory) {
+    // Chosen once at creation, as in 1.x.
+    if (untrack(() => props.KeepInMemory)) {
         let resolved = children(() => props.children);
         return (
             <Show when={props.location === tabs.current()}>

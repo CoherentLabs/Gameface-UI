@@ -1,5 +1,5 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, createContext, createMemo, For, onMount, ParentComponent, useContext } from "solid-js";
+import { Accessor, createContext, createMemo, For, onSettled, ParentComponent, useContext } from "solid-js";
 import styles from './List.module.scss';
 import { useTokens } from "@components/utils/tokenComponents";
 import { ListItem,  Item, NestedListContext } from "./ListItem";
@@ -26,9 +26,10 @@ interface ListContext {
 
 const isPredefined = (t: bulletType) => (PREDEFINED_TYPES as readonly string[]).includes(t as string);
 
-export const ListContext = createContext<ListContext>();
+// `null` default: ListIcon reads it optionally (pattern 1.3.o).
+export const ListContext = createContext<ListContext | null>(null);
 const List: ParentComponent<ListProps> = (props) => {
-    const itemTokens = useTokens(Item, props.children);
+    const itemTokens = useTokens(Item, () => props.children);
     const nestedContext = useContext(NestedListContext);
     
     const isOrdered = createMemo(() => props.type === 'ordered' || props["bullet-type"] === 'number');
@@ -50,7 +51,7 @@ const List: ParentComponent<ListProps> = (props) => {
     const bulletClass = createMemo(() => props["bullet-class"] ?? "");
 
     const contextValue = {
-        type: props.type || 'unordered',
+        get type() { return props.type || 'unordered'; },
         isOrdered,
         bulletType,
         bulletBgUrl,
@@ -58,8 +59,8 @@ const List: ParentComponent<ListProps> = (props) => {
     }
 
     const vnode = (
-        <ListContext.Provider value={contextValue}>
-            <LayoutBase componentClasses={`${styles.list}`} {...props}>
+        <ListContext value={contextValue}>
+            <LayoutBase {...props} class={[styles.list, props.class]}>
                 <For each={itemTokens()}>
                     {(item, index) => (
                         <ListItem 
@@ -69,11 +70,11 @@ const List: ParentComponent<ListProps> = (props) => {
                     )}
                 </For>
             </LayoutBase>
-        </ListContext.Provider>
+        </ListContext>
     )
 
     if (nestedContext) {
-        onMount(() => nestedContext.mountNested(vnode));
+        onSettled(() => { nestedContext.mountNested(vnode); });
         return null;
     }
     

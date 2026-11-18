@@ -2,8 +2,9 @@ import { defineConfig } from 'vite';
 import solidPlugin from '@solidjs/vite-plugin';
 import solidSvg from 'vite-plugin-solid-svg';
 import path, { resolve } from 'node:path';
-import solidStyleToCssPlugin from 'vite-solid-style-to-css';
-import solidGameface from 'vite-gameface';
+// Solid 2 versions of our plugins, kept in the repo until they are published (task 8).
+import solidStyleToCssPlugin from './migration-plugins/vite-solid-style-to-css/src/index.ts';
+import solidGameface from './migration-plugins/vite-gameface/src/index.ts';
 import eslint from 'vite-plugin-eslint';
 import gamefaceViews from './scripts/vite/views-plugin.mts';
 import gamefaceImages from './scripts/vite/images-plugin.mts';
@@ -33,7 +34,11 @@ export default defineConfig(({ mode }) => {
           plugins: [styleTomPlugin]
         },
         solid: {
-          moduleName: path.resolve(import.meta.dirname, './src/components/BaseComponent/gameface-dom.ts')
+          moduleName: path.resolve(import.meta.dirname, './src/components/BaseComponent/gameface-dom.ts'),
+          omitQuotes: false,
+          omitAttributeSpacing: false,
+          omitNestedClosingTags: false,
+          omitLastClosingTag: false
         }
       }),
       solidSvg({

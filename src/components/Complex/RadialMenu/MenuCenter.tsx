@@ -6,7 +6,7 @@ import styles from './RadialMenu.module.scss';
 import MenuIndicator from "./MenuIndicator";
 
 export const MenuCenter: ParentComponent<TokenComponentProps> = (props) => {
-    const contentToken = useToken(Content, props.parentChildren)
+    const contentToken = useToken(Content, () => props.parentChildren)
     const context = useContext(RadialMenuContext);
     if (!context) {
         console.error('RadialMenu.Content must be used inside a RadialMenu component');

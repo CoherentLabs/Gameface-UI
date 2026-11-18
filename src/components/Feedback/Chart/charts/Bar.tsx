@@ -73,13 +73,13 @@ const barPath = (x: number, y: number, width: number, height: number, radius: nu
 };
 
 const BarChart: ParentComponent<BarProps> = (props) => {
-    const legendToken = useToken(Legend, props.children);
-    const tooltipToken = useToken(Tooltip, props.children);
-    const labelsToken = useToken(Labels, props.children);
-    const fillToken = useToken(Fill, props.children);
-    const xAxisToken = useToken(XAxis, props.children);
-    const yAxisToken = useToken(YAxis, props.children);
-    const gridToken = useToken(Grid, props.children);
+    const legendToken = useToken(Legend, () => props.children);
+    const tooltipToken = useToken(Tooltip, () => props.children);
+    const labelsToken = useToken(Labels, () => props.children);
+    const fillToken = useToken(Fill, () => props.children);
+    const xAxisToken = useToken(XAxis, () => props.children);
+    const yAxisToken = useToken(YAxis, () => props.children);
+    const gridToken = useToken(Grid, () => props.children);
 
     const [size, observePlot] = useChartSize();
     const model = useChartData(() => props.data, props.onSeriesToggle);

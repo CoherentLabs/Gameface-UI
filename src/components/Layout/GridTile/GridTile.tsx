@@ -1,4 +1,5 @@
-import { ParentComponent, JSX, useContext, createSignal } from "solid-js";
+import { ParentComponent, useContext, untrack } from "solid-js";
+import { JSX } from "@solidjs/web";
 import { ComponentBaseProps } from "../../types/ComponentProps";
 import LayoutBase from "../LayoutBase";
 import { BaseComponentRef } from "../../types/ComponentProps";
@@ -25,10 +26,12 @@ const GridTile: ParentComponent<GridTileProps> = (props) => {
     if (!gridContext) throw new Error("GridTile component must be used within a Grid component");
 
     const { placeTile } = gridContext;
-    const [tile, setTile] = createSignal<JSX.Element | null>(null);
+    // The current tile content. Not reactive state (nothing renders from it),
+    // so a plain variable: no signal write during setup.
+    let tile: JSX.Element | null = null;
 
     const moveTile = (newRow: number, newCol: number) => {
-        placeTile(newRow - 1, newCol - 1, tile());
+        placeTile(newRow - 1, newCol - 1, tile);
     }
 
     const removeTile = () => {
@@ -36,24 +39,23 @@ const GridTile: ParentComponent<GridTileProps> = (props) => {
     }
 
     const replaceTile = (newTile: Element | JSX.Element) => {
-        setTile(newTile)
-        placeTile(props.row - 1, props.col - 1, tile());
+        tile = newTile as JSX.Element;
+        placeTile(props.row - 1, props.col - 1, tile);
     }
 
     const gridTileRef = {
-        row: props.row,
-        col: props.col,
+        get row() { return props.row; },
+        get col() { return props.col; },
+        get tile() { return tile; },
         moveTile,
         removeTile,
         replaceTile,
     }
 
-    const initialTile = (
-        <LayoutBase {...props} refObject={gridTileRef} />
-    )
-
-    setTile(initialTile)
-    placeTile(props.row - 1, props.col - 1, tile());
+    tile = <LayoutBase {...props} refObject={gridTileRef} />;
+    // Register with the parent Grid while being created (its signal allows
+    // owned writes). Position is read once, as in 1.x.
+    untrack(() => placeTile(props.row - 1, props.col - 1, tile));
 
     return null
 }

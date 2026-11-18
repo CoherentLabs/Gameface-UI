@@ -1,31 +1,35 @@
-import { createToken, isToken, JSXTokenizer, resolveTokens } from '@solid-primitives/jsx-tokenizer';
-import { ParentProps, JSX, createMemo, createUniqueId, mergeProps } from 'solid-js';
+import { createToken, isToken, JSXTokenizer, resolveTokens } from './jsx-tokenizer';
+import { ParentProps, createMemo, createUniqueId, merge } from 'solid-js';
+import { JSX } from '@solidjs/web';
 
 type TokenizerType<T extends Record<string, any>> = JSXTokenizer<{ props: ParentProps<T> }>;
 
-export const useToken = <T extends Record<string, any>>(tokenizer: TokenizerType<T>, parentChildren: JSX.Element) => {
+/**
+ * Finds the first token of `tokenizer` in the children.
+ * `parentChildren` is an accessor (`() => props.children`), so the result
+ * follows changes to the children (Solid 2: no untracked read in setup).
+ */
+export const useToken = <T extends Record<string, any>>(tokenizer: TokenizerType<T>, parentChildren: () => JSX.Element) => {
+    const tokens = resolveTokens(tokenizer, parentChildren, { includeJSXElements: true });
+
     return createMemo(() => {
-        if (!parentChildren) return null;
-
-        const tokens = resolveTokens(tokenizer, () => parentChildren, { includeJSXElements: true })();
-        if (!tokens || tokens.length === 0) return null;
-
-        return tokens.find(token => isToken(tokenizer, token))?.data.props;
+        const token = tokens().find(token => isToken(tokenizer, token));
+        return token ? token.data.props : null;
     });
 };
 
-export const useTokens = <T extends Record<string, any>>(tokenizer: TokenizerType<T>, parentChildren: JSX.Element) => {
+/** Finds all tokens of `tokenizer` in the children, in order. See {@link useToken}. */
+export const useTokens = <T extends Record<string, any>>(tokenizer: TokenizerType<T>, parentChildren: () => JSX.Element) => {
+    const tokens = resolveTokens(tokenizer, parentChildren, { includeJSXElements: true });
+
     return createMemo(() => {
-        if (!parentChildren) return null;
-
-        const tokens = resolveTokens(tokenizer, () => parentChildren, { includeJSXElements: true })();
-        if (!tokens || tokens.length === 0) return null;
-
-        return tokens.reduce((acc, token) => {
+        const found = tokens().reduce((acc, token) => {
             if (isToken(tokenizer, token)) acc.push(token.data.props);
 
             return acc;
         }, [] as ParentProps<T>[]);
+
+        return found.length ? found : null;
     });
 };
 
@@ -37,6 +41,6 @@ export const createTokenComponent = <T extends Record<string, any>>(withId = fal
     return createToken((props: ParentProps<T>) => {
         if (!withId) return { props };
 
-        return { props: mergeProps(props, { _id: withId ? createUniqueId() : undefined }) as ParentProps<T> & { _id?: string } };
+        return { props: merge(props, { _id: createUniqueId() }) as ParentProps<T> & { _id?: string } };
     }, emptyToken);
 };

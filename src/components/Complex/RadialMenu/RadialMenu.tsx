@@ -48,7 +48,7 @@ interface RadialMenuProps extends ComponentProps {
 const EPS = 0.00001;
 
 const RadialMenu: ParentComponent<RadialMenuProps> = (props) => {
-    const ItemTokens = useTokens(Item, props.children);
+    const ItemTokens = useTokens(Item, () => props.children);
     let element: HTMLDivElement | undefined;
     let eventAttached = false;
 

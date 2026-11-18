@@ -1,4 +1,4 @@
-import { Accessor, createContext, createEffect, createSignal, onCleanup, onMount, ParentComponent, on, mergeProps } from 'solid-js';
+import { Accessor, createContext, createEffect, createSignal, onCleanup, onSettled, ParentComponent } from 'solid-js';
 import styles from './Scroll.module.scss';
 import LayoutBase from '../LayoutBase';
 import { clamp } from '@components/utils/clamp';
@@ -251,7 +251,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
         window.removeEventListener('mouseup', stopScrollingToMouse);
     }
 
-    createEffect(on(handleTop, handleOnScroll, {defer: true}))
+    createEffect(() => handleTop(), () => handleOnScroll(), { defer: true });
 
     const handleFocusIn = (e: FocusEvent) => {
         if (props.focusin) return props.focusin(e);
@@ -270,9 +270,11 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
         },
     }
 
-    props.onAction = mergeProps(defaultActions, props.onAction) 
+    // User actions override the defaults. Passed to LayoutBase as a prop
+    // (writing `props.onAction` is unreliable in Solid 2).
+    const onAction = () => ({ ...defaultActions, ...props.onAction });
 
-    onMount(() => {
+    onSettled(() => {
         contentWrapperRef!.addEventListener('scroll', updateHandlePosition);
         contentWrapperRef!.addEventListener('property-scroll', updateHandlePosition)
         if (nav) nav.resumeAction('pan');
@@ -288,14 +290,14 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     });
 
     return (
-        <ScrollContext.Provider value={{ scrollToMouseHandler, updateMeasurements, onHandleMouseDown, handleHeight, handleTop, overflow }}>
-            <LayoutBase focusin={handleFocusIn} {...props} refObject={scrollObjectRef} >
+        <ScrollContext value={{ scrollToMouseHandler, updateMeasurements, onHandleMouseDown, handleHeight, handleTop, overflow }}>
+            <LayoutBase focusin={handleFocusIn} {...props} onAction={onAction()} refObject={scrollObjectRef} >
                 <div ref={containerRef!} class={styles.scroll}>
                     <ScrollContent ref={contentWrapperRef!} parentChildren={props.children} />
                     <ScrollBar parentChildren={props.children} />
                 </div>
             </LayoutBase>
-        </ScrollContext.Provider>
+        </ScrollContext>
     );
 };
 

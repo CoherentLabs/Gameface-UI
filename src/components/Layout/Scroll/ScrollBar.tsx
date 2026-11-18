@@ -1,4 +1,5 @@
-import { createMemo, JSX, ParentComponent, Show, useContext } from 'solid-js';
+import { createMemo, ParentComponent, Show, useContext } from 'solid-js';
+import { JSX } from '@solidjs/web';
 import { ScrollContext } from './Scroll';
 import styles from './Scroll.module.scss';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
@@ -14,18 +15,14 @@ export const Bar = createTokenComponent<BarTokenProps>();
 
 export const ScrollBar: ParentComponent<TokenComponentProps> = (props) => {
     const scrollContext = useContext(ScrollContext);
-    const BarToken = useToken(Bar, props.parentChildren);
+    const BarToken = useToken(Bar, () => props.parentChildren);
 
     const scrollBarStyles = createMemo(() => {
         const token = BarToken();
         if (token && token.style) return { ...token.style };
     });
 
-    const scrollBarClasses = createMemo(() => {
-        if (BarToken()?.class) return styles['scroll-bar'] + ' ' + BarToken()?.class;
-
-        return styles['scroll-bar'];
-    });
+    const scrollBarClasses = () => [styles['scroll-bar'], BarToken()?.class];
 
     return (
         <Show when={scrollContext?.overflow()}>

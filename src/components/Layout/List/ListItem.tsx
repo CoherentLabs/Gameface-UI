@@ -1,4 +1,5 @@
-import { Accessor, createContext, createSignal, JSX, ParentComponent, ParentProps, Show } from "solid-js";
+import { Accessor, createContext, createSignal, ParentComponent, Show } from "solid-js";
+import { JSX } from "@solidjs/web";
 import LayoutBase from "../LayoutBase";
 import ListIcon from "./ListIcon";
 import styles from './List.module.scss';
@@ -14,7 +15,8 @@ export interface nestedListCtx {
     mountNested: (list: JSX.Element) => void,
     nestedList: Accessor<JSX.Element>
 }
-export const NestedListContext = createContext<nestedListCtx>();
+// `null` default: a List checks whether it is nested (pattern 1.3.o).
+export const NestedListContext = createContext<nestedListCtx | null>(null);
 export const Item = createTokenComponent<ComponentProps>()
 
 export const ListItem: ParentComponent<ListItemComponentProps> = (props) => {
@@ -33,11 +35,11 @@ export const ListItem: ParentComponent<ListItemComponentProps> = (props) => {
     );
 
     return (
-        <NestedListContext.Provider value={{mountNested, nestedList}}>
+        <NestedListContext value={{mountNested, nestedList}}>
             <LayoutBase 
-                componentClasses={`${styles['list-item']} ${nestedList() ? styles['list-item-nested'] : ''} ${props.item.class ?? ''}`}
                 style={props.item.style}
-                {...props.item}>
+                {...props.item}
+                class={[styles['list-item'], nestedList() && styles['list-item-nested'], props.item.class]}>
 
                 <Show when={nestedList()} fallback={<ItemHeader />}>
                     <div class={styles['list-item']}>
@@ -47,6 +49,6 @@ export const ListItem: ParentComponent<ListItemComponentProps> = (props) => {
                 </Show>
 
             </LayoutBase>
-        </NestedListContext.Provider>
+        </NestedListContext>
     );
 }

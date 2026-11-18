@@ -7,7 +7,7 @@ import Layout from "@components/Layout/Layout/Layout";
 export const Window = createTokenComponent<TokenBase>();
 
 const ModalWindow: ParentComponent<TokenComponentProps> = (props) => {
-    const WindowToken = useToken(Window, props.parentChildren);
+    const WindowToken = useToken(Window, () => props.parentChildren);
 
     const modalWindowClasses = createMemo(() => {
         const classes = [styles['modal-window']];

@@ -30,7 +30,7 @@ export const Overlay = createTokenComponent<TokenBase>();
 
 const Modal: ParentComponent<ModalProps> = (props) => {
     let element!: HTMLDivElement;
-    const OverlayToken = useToken(Overlay, props.children);
+    const OverlayToken = useToken(Overlay, () => props.children);
 
     const [isOpen, setIsOpen] = createSignal(props.open);
 

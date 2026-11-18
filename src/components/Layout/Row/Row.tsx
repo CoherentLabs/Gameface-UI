@@ -4,7 +4,7 @@ import { ComponentBaseProps } from "../../types/ComponentProps";
 import LayoutBase from "../LayoutBase";
 
 const Row: ParentComponent<ComponentBaseProps> = (props) => {
-    return <LayoutBase {...props} componentClasses={styles.row} />
+    return <LayoutBase {...props} class={[styles.row, props.class]} />
 }
 
 export default Row;

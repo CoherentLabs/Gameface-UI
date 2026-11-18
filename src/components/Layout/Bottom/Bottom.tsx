@@ -6,7 +6,7 @@ import styles from './Bottom.module.scss';
 const Bottom: ParentComponent<LayoutSectionProps> = (props) => {
     return <LayoutBase 
         {...props} 
-        componentClasses={styles.bottom} 
+        class={[styles.bottom, props.class]} 
         componentStyles={{'flex-basis': props.basis ? `${props.basis}%` : ""}} />
 }
 

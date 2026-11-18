@@ -1,6 +1,7 @@
 import { ParentComponent } from 'solid-js';
 import { ComponentProps } from '../types/ComponentProps';
 import baseComponent, { navigationActions } from '@components/BaseComponent/BaseComponent';
+import exposeRef from '@components/utils/exposeRef';
 
 const LayoutBase: ParentComponent<ComponentProps> = (props) => {
     const navConfig = () => {
@@ -11,21 +12,8 @@ const LayoutBase: ParentComponent<ComponentProps> = (props) => {
         };
     };
 
-    const forwardRef = (el: HTMLDivElement) => {
-        if (!props.ref) return;
-
-        if (props.refObject) {
-            (props.ref as (arg: any) => void)({
-                ...props.refObject,
-                element: el,
-            });
-        } else {
-            (props.ref as (arg: any) => void)(el);
-        }
-    };
-
     return (
-        <div ref={[forwardRef, baseComponent(props), navigationActions(navConfig())]}>
+        <div class={props.class} ref={[exposeRef(props, () => props.refObject), baseComponent(props), navigationActions(navConfig())]}>
             {props.children}
         </div>
     );

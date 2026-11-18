@@ -35,7 +35,7 @@ const CarouselItems: ParentComponent<CarouselItemsProps> = (props) => {
 
     props.componentClasses = () => styles['carousel-items'];
 
-    const ItemsTokens = useTokens(Item, props.children);
+    const ItemsTokens = useTokens(Item, () => props.children);
 
     createEffect(() => {
         carouselContext.setItems(ItemsTokens() || []);

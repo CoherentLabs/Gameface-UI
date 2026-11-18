@@ -82,12 +82,12 @@ const polygonPath = (angles: number[], radius: number) => {
 };
 
 const SpiderChart: ParentComponent<SpiderProps> = (props) => {
-    const legendToken = useToken(Legend, props.children);
-    const tooltipToken = useToken(Tooltip, props.children);
-    const labelsToken = useToken(Labels, props.children);
-    const shapeToken = useToken(Shape, props.children);
-    const webToken = useToken(Web, props.children);
-    const axisToken = useToken(Axis, props.children);
+    const legendToken = useToken(Legend, () => props.children);
+    const tooltipToken = useToken(Tooltip, () => props.children);
+    const labelsToken = useToken(Labels, () => props.children);
+    const shapeToken = useToken(Shape, () => props.children);
+    const webToken = useToken(Web, () => props.children);
+    const axisToken = useToken(Axis, () => props.children);
 
     const [size, observePlot] = useChartSize();
     const model = useChartData(() => props.data, props.onSeriesToggle);

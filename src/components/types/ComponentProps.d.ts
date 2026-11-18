@@ -24,7 +24,8 @@ export interface BaseComponentRef {
 
 export interface ComponentBaseProps extends ParentProps, Omit<Events, ExcludedEvents> {
     style?: JSX.CSSProperties
-    class?: string,
+    /** String, object (`{ name: cond }`) or array, like Solid's native `class`. */
+    class?: JSX.ClassValue,
     [key: `attr:${string}`]: any;
     anchor?: HTMLElement | string;
     onAction?: ComponentNavigationActions
@@ -32,7 +33,6 @@ export interface ComponentBaseProps extends ParentProps, Omit<Events, ExcludedEv
 
 export interface ComponentProps<T extends Record<string, any> = {}> extends ComponentBaseProps {
     componentStyles?: JSX.CSSProperties | (() => JSX.CSSProperties),
-    componentClasses?: string | (() => string)
     ref?: unknown | ((ref: BaseComponentRef & T) => void);
     refObject?: T;
 }

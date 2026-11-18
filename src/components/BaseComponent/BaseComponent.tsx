@@ -19,21 +19,6 @@ const baseEventsSet = new Set([
 
 type ElementGetter = () => HTMLElement | undefined;
 
-function handleClasses(getEl: ElementGetter, props: ComponentProps) {
-    createEffect(
-        () => {
-            const rawBase = props.componentClasses;
-            const base = typeof rawBase === "function" ? rawBase() : rawBase;
-            const ext = props.class;
-            return base ? (ext ? base + " " + ext : base) : (ext || "");
-        },
-        (finalClass) => {
-            const el = getEl();
-            if (el && el.className !== finalClass) el.className = finalClass;
-        }
-    );
-}
-
 type StyleObject = Record<string, string | number | null | undefined>;
 
 // Delegates to gameface-dom.ts's setStyleProperty rather than writing
@@ -241,12 +226,15 @@ export function navigationActions(config: NavigationActionsConfig | undefined): 
     };
 }
 
+// Classes are not handled here. Each component puts them on its root element with
+// Solid's native `class`, own classes first and `props.class` last:
+//   class={[styles.x, { [styles.y]: cond() }, props.class]}
+// (decision 1.3.u in the migration notes).
 function baseComponent(props: ComponentProps): RefCallback {
     // Setup (owned): effects and cleanup.
     let el: HTMLElement | undefined;
     const getEl = () => el;
 
-    handleClasses(getEl, props);
     handleStyles(getEl, props);
     handleAttrs(getEl, props);
 

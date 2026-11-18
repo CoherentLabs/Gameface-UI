@@ -224,7 +224,7 @@ const TrackersItem: ParentComponent<{ token: TrackerItemTokenProps }> = (props) 
 };
 
 const Trackers: ParentComponent<TrackersProps> = (props) => {
-    const itemTokens = useTokens(Item, props.children);
+    const itemTokens = useTokens(Item, () => props.children);
     const wrapperRefs = new Map<string, HTMLElement>();
 
     const registerItem = (id: string, el: HTMLElement) => wrapperRefs.set(id, el);

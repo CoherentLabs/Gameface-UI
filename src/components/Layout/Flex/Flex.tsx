@@ -18,16 +18,6 @@ interface FlexProps extends ComponentBaseProps {
 const Flex: ParentComponent<FlexProps> = (props) => {
     onSettled(() => { warnIfUnsupported(props, 'gap'); });
 
-    const classes = createMemo(() => {
-        const flexClasses = [styles.flex];
-        if (props.direction) flexClasses.push(styles[`flex-${props.direction}`]);
-        if (props.wrap) flexClasses.push(styles[`flex-${props.wrap}`]);
-        if (props['justify-content']) flexClasses.push(styles[`flex-justify-${props['justify-content']}`]);
-        if (props['align-items']) flexClasses.push(styles[`flex-align-${props['align-items']}`]);
-        if (props['align-content']) flexClasses.push(styles[`flex-content-${props['align-content']}`]);
-        return flexClasses.join(' ');
-    });
-
     const gapStyles = createMemo(() => ({
         gap: props.gap,
         'row-gap': props['row-gap'],
@@ -37,7 +27,15 @@ const Flex: ParentComponent<FlexProps> = (props) => {
     return (
         <LayoutBase 
             {...props} 
-            componentClasses={classes()}
+            class={[
+                styles.flex,
+                props.direction && styles[`flex-${props.direction}`],
+                props.wrap && styles[`flex-${props.wrap}`],
+                props['justify-content'] && styles[`flex-justify-${props['justify-content']}`],
+                props['align-items'] && styles[`flex-align-${props['align-items']}`],
+                props['align-content'] && styles[`flex-content-${props['align-content']}`],
+                props.class,
+            ]}
             componentStyles={gapStyles()} 
         />
     );

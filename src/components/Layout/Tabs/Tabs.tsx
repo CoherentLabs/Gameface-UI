@@ -1,7 +1,8 @@
-import { Accessor, onMount, ParentComponent } from "solid-js";
+import { onSettled, ParentComponent, untrack } from "solid-js";
 import { createContext, createSignal } from "solid-js";
 
-export const TabsContext = createContext<TabsContextValue>();
+// `null` default: Tab / TabLink report their own error outside Tabs (pattern 1.3.o).
+export const TabsContext = createContext<TabsContextValue | null>(null);
 
 type changeTabMethod = (newTab: string) => void;
 
@@ -22,7 +23,7 @@ interface TabsProps {
 }
 
 const Tabs: ParentComponent<TabsProps> = (props) => {
-    const [current, setCurrent] = createSignal(props.default ?? '');
+    const [current, setCurrent] = createSignal(untrack(() => props.default ?? ''));
 
     const changeTab = async (newLocation: string) => {
         const response = await onBeforeTabChangeHandler(current(), newLocation)
@@ -43,16 +44,16 @@ const Tabs: ParentComponent<TabsProps> = (props) => {
         changeTab,
     };
 
-    onMount(() => {
-        if (props.ref) {
-            (props.ref as (ref: any) => void)(tabsRefObject);
-        }
-      });
+    // Tabs renders no element of its own, so the ref gets only the API.
+    // onSettled (not setup) so a ref callback may write signals.
+    onSettled(() => {
+        if (typeof props.ref === 'function') props.ref(tabsRefObject);
+    });
 
     return (
-        <TabsContext.Provider value={{ current, changeTab }}>
+        <TabsContext value={{ current, changeTab }}>
             {props.children}
-        </TabsContext.Provider>
+        </TabsContext>
     );
 }
 

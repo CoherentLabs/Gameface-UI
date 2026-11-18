@@ -6,7 +6,7 @@ import baseComponent from "@components/BaseComponent/BaseComponent";
 
 const Fill = createTokenComponent<TokenBase>();
 const ProgressBar: ParentComponent<ProgressProps> = (props) => {
-    const fillToken = useToken(Fill, props.children)
+    const fillToken = useToken(Fill, () => props.children)
     let fillElement: HTMLDivElement | undefined;
 
     createEffect(() => {

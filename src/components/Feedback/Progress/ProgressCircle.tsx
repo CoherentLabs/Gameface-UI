@@ -13,9 +13,9 @@ const Outline = createTokenComponent<TokenBase>();
 
 const PATH_DATA = "M60 6 a54 54 0 1 1 0 108 a54 54 0 1 1 0 -108";
 const ProgressCircle: ParentComponent<ProgressProps> = (props) => {
-    const fillToken = useToken(Fill, props.children)
-    const outlineToken = useToken(Outline, props.children)
-    const textToken = useToken(Text, props.children)
+    const fillToken = useToken(Fill, () => props.children)
+    const outlineToken = useToken(Outline, () => props.children)
+    const textToken = useToken(Text, () => props.children)
 
     const outlineClasses = createMemo(() => {
         const classes = [styles['circle-outline']];

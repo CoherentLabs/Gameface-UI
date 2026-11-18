@@ -7,7 +7,7 @@ import Bottom from "../Bottom/Bottom";
 import Content from "../Content/Content";
 
 const Layout: ParentComponent<ComponentBaseProps> = (props) => {
-    return <LayoutBase {...props} componentClasses={styles.layout} />
+    return <LayoutBase {...props} class={[styles.layout, props.class]} />
 }
 
 export default Object.assign(Layout, {Top, Bottom, Content})
