@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { createHash } from "crypto";
 import { Plugin } from "vite";
-import { parse } from "@babel/parser";
+import { parse, parseExpression } from "@babel/parser";
 import _traverse, { NodePath } from "@babel/traverse";
 import _generate from "@babel/generator";
 import { JSXAttribute, JSXExpressionContainer, JSXOpeningElement, JSXSpreadAttribute, ObjectProperty } from "@babel/types";
@@ -114,6 +114,17 @@ function filterStylePropsAndGenerateStyles(expression: JSXExpressionContainer['e
  * - If the `class` attribute value is of any other type, it is replaced with a `StringLiteral`
  *   containing the new class name.
  */
+/**
+ * `((c) => typeof c === "string" ? c + " cls" : c == null ? "cls" : [c, "cls"])(<expression>)`
+ */
+function mergeComponentClass(expression: any, className: string) {
+    const call = parseExpression(
+        `((c) => typeof c === "string" ? c + " ${className}" : c == null ? "${className}" : [c, "${className}"])(__class__)`
+    ) as any;
+    call.arguments[0] = expression;
+    return call;
+}
+
 function addClassToJSXAttribute(locationInfo: string, existingClassAttr: JSXAttribute, className: string, isNativeElement: boolean) {
     switch (existingClassAttr.value?.type) {
         case 'StringLiteral': {
@@ -132,25 +143,15 @@ function addClassToJSXAttribute(locationInfo: string, existingClassAttr: JSXAttr
                 break;
             }
 
-            existingClassAttr.value.expression = {
-                type: "BinaryExpression",
-                operator: "+",
-                left: existingClassAttr.value.expression.type !== "JSXEmptyExpression"
-                    ? existingClassAttr.value.expression
-                    : { type: "Identifier", name: "undefined" },
-                right: {
-                    type: "BinaryExpression",
-                    operator: "+",
-                    left: {
-                        type: "StringLiteral",
-                        value: " ",
-                    },
-                    right: {
-                        type: "StringLiteral",
-                        value: className,
-                    },
-                },
-            };
+            if (expression.type === "JSXEmptyExpression") {
+                existingClassAttr.value = { type: "StringLiteral", value: className };
+                break;
+            }
+
+            // A component can get any class form, and its own code may treat `props.class` as text
+            // (a Solid 1 template literal), so the type is decided at runtime: a string stays a string,
+            // anything else becomes an array. NOT FINAL (B.3b): revisit when the plugins are upstreamed (task 8).
+            existingClassAttr.value.expression = mergeComponentClass(expression, className);
             break;
         }
         case 'JSXElement':

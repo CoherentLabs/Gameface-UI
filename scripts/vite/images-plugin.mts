@@ -215,7 +215,7 @@ function isComponentTagSite(node: AstNode, parent: AstNode | null) {
 /**
  * The props object of a tag site, so `src` can be written straight into it. Null
  * when the props are not an object literal: a spread compiles to a bare identifier
- * or a `mergeProps(...)` call, neither of which can be written into.
+ * or a `merge(...)` call (`mergeProps` in Solid 1), neither of which can be written into.
  */
 function propsOfComponentCall(node: AstNode, parent: AstNode | null) {
     if (!isComponentTagSite(node, parent)) return null;
@@ -1087,8 +1087,8 @@ export default function gamefaceImages(options: ImagesPluginOptions): Plugin {
             const header = [
                 ...imports,
                 ...(usesWrapper ? [
-                    `import { createComponent as __createComponent, mergeProps as __mergeProps } from 'solid-js';`,
-                    `const __withSrc = (src) => (props) => __createComponent(${local}, __mergeProps(props, { src }));`,
+                    `import { createComponent as __createComponent, merge as __merge } from 'solid-js';`,
+                    `const __withSrc = (src) => (props) => __createComponent(${local}, __merge(props, { src }));`,
                 ] : []),
                 ...declarations,
             ];

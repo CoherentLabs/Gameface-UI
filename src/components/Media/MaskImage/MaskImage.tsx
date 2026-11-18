@@ -2,22 +2,18 @@ import { ParentComponent } from "solid-js";
 import { ImageComponentProps } from "../shared/types";
 import useImageOptions from "../shared/useImageOptions";
 import baseComponent from "@components/BaseComponent/BaseComponent";
+import exposeRef from "@components/utils/exposeRef";
 import styles from '../shared/shared.module.scss';
 
 
 const MaskImage: ParentComponent<ImageComponentProps> = (props) => {
   const maskStyles = useImageOptions('mask', props);
 
-  props.componentClasses = () => {
-    const base = props.fill ? `${styles['mask-image']} ${styles.fill}` : styles['mask-image'];
-    return `${base} ${maskStyles().cls}`;
-  };
-  props.componentStyles = () => maskStyles().s;
-
   return (
     <div
-      ref={props.ref as HTMLDivElement}
-      use:baseComponent={props}>
+      class={[styles['mask-image'], props.fill && styles.fill, maskStyles().cls, props.class]}
+      style={{ ...maskStyles().s, ...props.style }}
+      ref={[exposeRef(props), baseComponent(props)]}>
         {props.children}
     </div>
   )

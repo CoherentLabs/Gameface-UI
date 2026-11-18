@@ -12,7 +12,7 @@ import { Badge } from '@astrojs/starlight/components'
 
 <Badge text="Fix" variant="danger" size="small" /> In development, components with the same file name in different folders (e.g. two `MenuItem.tsx`) no longer overwrite each other's generated CSS.
 
-<Badge text="Feature" variant="success" size="small" /> Supports Solid 2's object and array `class` forms. On native elements, when a dynamic `class` is combined with static styles, the generated class is now added as an array entry (`class={[yourClass, "_div_…"]}`) instead of being concatenated as a string. So `class={{ active: on() }}` and `class={["base", { active: on() }]}` keep working. On components, `class` is a plain prop and is still concatenated as a string.
+<Badge text="Feature" variant="success" size="small" /> Supports Solid 2's object and array `class` forms. On native elements, when a dynamic `class` is combined with static styles, the generated class is now added as an array entry (`class={[yourClass, "_div_…"]}`) instead of being concatenated as a string. So `class={{ active: on() }}` and `class={["base", { active: on() }]}` keep working. On components, a dynamic `class` is checked at runtime: a string stays a string (so components that treat `props.class` as text keep working), and an array or object gets the generated class as an array entry.
 
 ## 1.0.3
 

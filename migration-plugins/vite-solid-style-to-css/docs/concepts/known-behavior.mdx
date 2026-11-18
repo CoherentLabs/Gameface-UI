@@ -96,4 +96,4 @@ On native elements, a dynamic `class` is combined with the generated class as an
 
 Because Solid applies array and object classes one by one, the order of the classes in the `class` attribute is not guaranteed. The generated class is always present.
 
-On components, `class` is a regular prop, so a dynamic `class` is still concatenated as a string (`yourClass + ' _Block_12345'`). Pass `class` to a component as a string when the component also has static styles.
+On components, `class` is a regular prop that the component may treat as a string, so the type is checked at runtime: a string `class` gets the generated class appended (`"yourClass _Block_12345"`), and an array or object `class` gets it as an array entry (`[yourClass, "_Block_12345"]`).

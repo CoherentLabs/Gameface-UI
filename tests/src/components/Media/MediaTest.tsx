@@ -1,5 +1,5 @@
-import { createSignal, createMemo, onMount, onCleanup, For } from "solid-js";
-import { Dynamic } from "solid-js/web";
+import { createSignal, createMemo, onSettled, For } from "solid-js";
+import { dynamic } from "@solidjs/web";
 import grandeImage from '@assets/icons/hud/grenade.png'
 import weaponImage from '@assets/icons/hud/weapon.png'
 import xboxA from '@assets/icons/gamepad/xbox/a.png'
@@ -36,9 +36,13 @@ const MediaTest = () => {
     const isReactive = createMemo(() => reactivity() === true);
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
+    // A computed key: switches the rendered component when `glyph` changes.
+    const Glyph = dynamic(() => Image.icons.gamepad.xbox[glyph()]);
 
-    onMount(() => document.addEventListener('reset', reset))
-    onCleanup(() => document.removeEventListener('reset', reset))
+    onSettled(() => {
+        document.addEventListener('reset', reset);
+        return () => document.removeEventListener('reset', reset);
+    });
 
     return (
         <>
@@ -75,7 +79,7 @@ const MediaTest = () => {
             <Image src={xboxA} class={selectors.imageDotRef} />
 
             {/* A computed key: the plugin hands out the whole xbox folder as components. */}
-            <Dynamic component={Image.icons.gamepad.xbox[glyph()]} class={selectors.imageDynamic} />
+            <Glyph class={selectors.imageDynamic} />
 
             {/* Option values the stylesheet has no class for fall through to inline styles. */}
             <Image src={src()} options={{ size: '50px 50px', position: '10px 20px' }} class={selectors.imageCustomOptions} />
