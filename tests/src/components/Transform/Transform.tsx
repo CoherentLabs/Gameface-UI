@@ -1,6 +1,6 @@
 // src/playground/PositionTester.tsx
 import Transform from "@components/Layout/Transform/Transform";
-import { createSignal, createMemo, onMount, onCleanup, For } from "solid-js";
+import { createSignal, createMemo, onSettled, onCleanup, For } from "solid-js";
 import './transform.css'
 import selectors from "../../../shared/transform-selectors.json";
 
@@ -27,7 +27,7 @@ const TransformTest = () => {
   const reactiveClass = createMemo(() => (isReactive() ? "reactive" : ""));
   const reactiveStyle = createMemo(() => (isReactive() ? { "background-color": "blue" } : {}));
 
-  onMount(() => document.addEventListener("reset", reset));
+  onSettled(() => { document.addEventListener("reset", reset); });
   onCleanup(() => document.removeEventListener("reset", reset));
 
   return (

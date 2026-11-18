@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { createMemo, createSignal, For, onCleanup, onSettled, Show, flush } from "solid-js";
 import Stepper, { StepperRef } from "@components/Basic/Stepper/Stepper";
 import './stepper.css';
 import selectors from "../../../shared/stepper-selectors.json";
@@ -35,6 +35,8 @@ const StepperTest = () => {
         setShouldLoop(false);
         setPosition(undefined);
         setCustomBtn(false);
+        // Solid 2 stages writes: apply them before the ref call reads the new props.
+        flush();
         stepperRef?.setOption('test0')
     };
 
@@ -42,7 +44,7 @@ const StepperTest = () => {
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
-    onMount(() => document.addEventListener('reset', reset))
+    onSettled(() => { document.addEventListener('reset', reset); });
     onCleanup(() => document.removeEventListener('reset', reset)) 
 
     return (

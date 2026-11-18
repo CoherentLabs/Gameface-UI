@@ -17,6 +17,7 @@ const Tab: ParentComponent<TabProps> = (props) => {
     // Chosen once at creation, as in 1.x.
     if (untrack(() => props.KeepInMemory)) {
         let resolved = children(() => props.children);
+        // eslint-disable-next-line solid/components-return-once -- KeepInMemory is chosen once, as in 1.x
         return (
             <Show when={props.location === tabs.current()}>
                 <>{resolved()}</>

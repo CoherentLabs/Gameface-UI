@@ -1,4 +1,4 @@
-import { createSignal, onCleanup, onMount } from "solid-js";
+import { createSignal, onCleanup, onSettled, flush } from "solid-js";
 import Segment, { SegmentRef } from "@components/Basic/Segment/Segment";
 import './segment.css';
 import selectors from "../../../shared/segment-selectors.json";
@@ -12,6 +12,8 @@ const SegmentTest = () => {
     const resetSegment = () => {
         setDisabled(false);
         setDisabledBtn(false);
+        // Solid 2 stages writes: apply them before the ref call reads the new props.
+        flush();
         segmentRef?.selectOption('test1');
     };
 
@@ -19,7 +21,7 @@ const SegmentTest = () => {
         segmentRef?.selectOption('test3');
     }
 
-    onMount(() => {
+    onSettled(() => {
         document.addEventListener('reset', resetSegment)
         document.addEventListener('selectSegmentOption', changeOption)
     })

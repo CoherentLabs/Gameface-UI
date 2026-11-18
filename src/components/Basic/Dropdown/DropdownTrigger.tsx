@@ -32,13 +32,13 @@ export const DropdownTrigger: ParentComponent<TokenComponentProps> = (props) => 
     });
 
     return (
-        <div onClick={() => dropdown?.toggle(!dropdown.open())} class={style['dropdown-trigger'] + ` ${TriggerToken?.()?.class || ''}`} style={triggerStyles()}>
+        <div onClick={() => dropdown?.toggle(!dropdown.open())} class={[style['dropdown-trigger'], TriggerToken?.()?.class]} style={triggerStyles()}>
             <div class={style['dropdown-trigger-selected']}>
                 <Show when={dropdown?.selected()}>
                     {dropdown?.options.get(dropdown?.selected())?.label}
                 </Show>
                 <Show when={!dropdown?.selected()}>
-                    <InlineTextBlock class={style['dropdown-placeholder'] + ` ${PlaceholderToken?.()?.class || ''}`} style={placeholderStyles()}>
+                    <InlineTextBlock class={[style['dropdown-placeholder'], PlaceholderToken?.()?.class]} style={placeholderStyles()}>
                         <Show when={PlaceholderToken?.()}>
                             {PlaceholderToken?.()?.children || 'Select an option'}
                         </Show>
@@ -48,7 +48,7 @@ export const DropdownTrigger: ParentComponent<TokenComponentProps> = (props) => 
                     </InlineTextBlock>
                 </Show>
             </div>
-            <div class={style['dropdown-icon'] + ` ${IconToken?.()?.class || ''}`} style={IconStyles()}>
+            <div class={[style['dropdown-icon'], IconToken?.()?.class]} style={IconStyles()}>
                 <Show when={IconToken?.()}>
                     {IconToken?.()?.children || <DropdownIcon />}
                 </Show>

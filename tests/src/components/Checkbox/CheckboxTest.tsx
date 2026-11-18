@@ -1,5 +1,5 @@
 import Checkbox, { CheckboxRef } from "@components/Basic/Checkbox/Checkbox";
-import { createSignal, For, onCleanup, onMount } from "solid-js";
+import { createSignal, For, onCleanup, onSettled } from "solid-js";
 import selectors from '../../../shared/checkbox-selectors.json';
 import './checkbox.css';
 
@@ -17,7 +17,7 @@ const CheckboxTest = () => {
         setDisabled(false);
     };
 
-    onMount(() => {
+    onSettled(() => {
         document.addEventListener('reset', resetCheckbox)
     })
 

@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require('../shared/stepper-selectors.json');
-const { navigateToPage } = require('../shared/utils');
+const { navigateToPage, elementChildren } = require('../shared/utils');
 
 describe('Stepper', function () {
     this.beforeAll(async () => {
@@ -62,13 +62,13 @@ describe('Stepper', function () {
     it('Should cycle through control position options', async () => {
         await gf.click(`.${selectors.scenarioBtn}.scenario-3`);
 
-        const children = await gf.children(`.${selectors.stepper}`);
+        const children = await elementChildren(await gf.get(`.${selectors.stepper}`));
         assert.equal((await children[0].classes()).includes(selectors.stepperControl), true, 'First child should be stepper control');
         assert.equal((await children[1].classes()).includes(selectors.stepperControl), true, 'Second child should be stepper control');
 
         await gf.click(`.${selectors.scenarioBtn}.scenario-3`);
 
-        const updatedChildren = await gf.children(`.${selectors.stepper}`);
+        const updatedChildren = await elementChildren(await gf.get(`.${selectors.stepper}`));
         const length = updatedChildren.length;
         assert.equal(
             (await updatedChildren[length - 1].classes()).includes(selectors.stepperControl),

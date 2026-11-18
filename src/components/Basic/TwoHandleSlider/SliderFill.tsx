@@ -36,6 +36,6 @@ export const SliderFill:ParentComponent<SliderFillComponentProps> = (props) => {
     })
 
     return (
-        <div class={fillClasses()} style={fillStyle()}></div>
+        <div class={fillClasses()} style={fillStyle()} />
     )
 }

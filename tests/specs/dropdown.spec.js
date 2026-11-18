@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require("../shared/dropdown-selectors.json");
-const { navigateToPage } = require('../shared/utils');
+const { navigateToPage, elementChildren } = require('../shared/utils');
 
 describe('Dropdown', function () {
     this.beforeAll(async () => {
@@ -39,7 +39,7 @@ describe('Dropdown', function () {
 
 
         await gf.click(`.${selectors.option}2`)
-        assert.equal(await (await trigger.children())[0].text(), 'test2', 'Trigger should hold the value of the selected option');
+        assert.equal(await (await elementChildren(trigger))[0].text(), 'test2', 'Trigger should hold the value of the selected option');
         assert.equal(await options.isVisible(), false, 'Dropdown options should close after selecting new option');
     })
 

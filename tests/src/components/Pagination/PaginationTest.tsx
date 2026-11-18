@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { createMemo, createSignal, For, onCleanup, onSettled, Show } from "solid-js";
 import selectors from "../../../shared/pagination-selectors.json";
 import Pagination, { PaginationRef } from "@components/Basic/Pagination/Pagination";
 import "./pagination.css" 
@@ -36,7 +36,7 @@ const PaginationTest = () => {
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
-    onMount(() => document.addEventListener('reset', reset))
+    onSettled(() => { document.addEventListener('reset', reset); });
     onCleanup(() => document.removeEventListener('reset', reset)) 
 
     return (

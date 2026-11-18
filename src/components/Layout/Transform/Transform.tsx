@@ -48,18 +48,18 @@ function generateTransformMatrix(matrix: TransformMethods) {
     return transformString.trim();
 }
 
-function handleTransformProps(props: TransformMethods & { matrix?: TransformMethods }) {
-    if (props.matrix) {
-        (props.translate || props.rotate || props.scale || props.skew) && console.warn(
+function handleTransformProps(methods: TransformMethods & { matrix?: TransformMethods }) {
+    if (methods.matrix) {
+        (methods.translate || methods.rotate || methods.scale || methods.skew) && console.warn(
             "Invalid usage: The property 'matrix' shouldn't be combined with individual transform properties ('translate', 'rotate', 'scale', or 'skew'). Use either 'matrix' or the other properties individually."
         )
-        return generateTransformMatrix(props.matrix)
+        return generateTransformMatrix(methods.matrix)
     }
 
-    if (props.translate) return getTransformString(props.translate, 'translate');
-    if (props.rotate) return getTransformString(props.rotate, 'rotate');
-    if (props.skew) return getTransformString(props.skew, 'skew');
-    if (props.scale) return getTransformString(props.scale, 'scale');
+    if (methods.translate) return getTransformString(methods.translate, 'translate');
+    if (methods.rotate) return getTransformString(methods.rotate, 'rotate');
+    if (methods.skew) return getTransformString(methods.skew, 'skew');
+    if (methods.scale) return getTransformString(methods.scale, 'scale');
 }
 
 function getTransformOrigin(origin: Transform['origin']) {

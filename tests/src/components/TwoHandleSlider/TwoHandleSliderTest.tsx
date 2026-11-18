@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
+import { createMemo, createSignal, For, onCleanup, onSettled, flush } from "solid-js";
 import './two-handle-slider.css';
 import selectors from "../../../shared/two-handle-slider-selectors.json";
 import TwoHandleSlider, { TwoHandleSliderRef } from "@components/Basic/TwoHandleSlider/TwoHandleSlider";
@@ -32,6 +32,8 @@ const TwoHandleSliderTest = () => {
         setChangeEndStart('none');
         setChangeEndEnd('none');
         setTest('red');
+        // Solid 2 stages writes: apply them before the ref call reads the new props.
+        flush();
         sliderRef?.changeValue(initialRange);
     };
 
@@ -39,7 +41,7 @@ const TwoHandleSliderTest = () => {
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
-    onMount(() => document.addEventListener('reset', reset))
+    onSettled(() => { document.addEventListener('reset', reset); });
     onCleanup(() => document.removeEventListener('reset', reset))
 
     return (

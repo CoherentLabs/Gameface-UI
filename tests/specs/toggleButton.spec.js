@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require('../shared/toggle-button-selectors.json');
-const { navigateToPage } = require('../shared/utils');
+const { navigateToPage, elementChildren, childNodesInfo } = require('../shared/utils');
 
 describe('ToggleButton', function () {
     this.beforeAll(async () => {
@@ -18,8 +18,9 @@ describe('ToggleButton', function () {
         const handle = await control.find(`.${selectors.handle}`);
 
         assert.ok(toggle, 'ToggleButton should be in the DOM');
-        assert.equal(await (await toggle.children())[0].text(), 'Off', '\"off\" should be first child of toggleButton');
-        assert.equal(await (await toggle.children())[2].text(), 'On', '\"on\" should be last child of toggleButton');
+        const childNodes = await childNodesInfo(toggle);
+        assert.equal(childNodes[0].text, 'Off', '\"off\" should be first child of toggleButton');
+        assert.equal(childNodes[childNodes.length - 1].text, 'On', '\"on\" should be last child of toggleButton');
         assert.ok(control, 'ToggleButton control should be in the DOM');
         assert.ok(indicator, 'ToggleButton indicator should be in the DOM');
         assert.ok(handle, 'ToggleButton handle should be in the DOM');

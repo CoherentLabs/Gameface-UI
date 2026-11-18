@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { createMemo, createSignal, For, onCleanup, onSettled, Show, flush } from "solid-js";
 import Scroll, { ScrollComponentRef } from "@components/Layout/Scroll/Scroll";
 import Block from "@components/Layout/Block/Block";
 import './scroll.css';
@@ -26,6 +26,8 @@ const ScrollTest = () => {
     const reset = () => {
         setDirection(undefined);
         setOverflow(false);
+        // Solid 2 stages writes: apply them before the ref call reads the new props.
+        flush();
         scrollRef?.begin();
         longScrollRef?.begin();
     };
@@ -34,7 +36,7 @@ const ScrollTest = () => {
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
-    onMount(() => document.addEventListener('reset', reset))
+    onSettled(() => { document.addEventListener('reset', reset); });
     onCleanup(() => document.removeEventListener('reset', reset)) 
 
     return (

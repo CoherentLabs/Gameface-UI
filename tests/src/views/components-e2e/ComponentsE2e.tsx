@@ -3,7 +3,7 @@ import styles from './ComponentsE2e.module.scss';
 import Tab from '@components/Layout/Tab/Tab';
 import TabLink from '@components/Layout/TabLink/TabLink';
 import Flex from '@components/Layout/Flex/Flex';
-import { createSignal, For, onCleanup, onMount, Show } from 'solid-js';
+import { createSignal, For, onCleanup, onSettled, Show } from 'solid-js';
 import CheckboxTest from '../../components/Checkbox/CheckboxTest';
 import SegmentTest from '../../components/Segment/SegmentTest';
 import RadioTest from '../../components/Radio/RadioTest';
@@ -106,7 +106,7 @@ const Main = () => {
     let tabs: TabsComponentRef | undefined;
 
     const onChangeTab = (event: Event) => tabs?.changeTab((event as CustomEvent<string>).detail);
-    onMount(() => document.addEventListener('change-tab', onChangeTab));
+    onSettled(() => { document.addEventListener('change-tab', onChangeTab); });
     onCleanup(() => document.removeEventListener('change-tab', onChangeTab));
 
     return (

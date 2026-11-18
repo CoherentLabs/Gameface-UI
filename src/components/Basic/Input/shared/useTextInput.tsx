@@ -21,8 +21,9 @@ function useTextInput (props: TextInputProps) {
     }
 
     // The delay is read once, as in 1.x.
-    const delayUpdate = debounce((newValue: string) =>
-        props.onChange?.(newValue), untrack(() => typeof props.delay === 'number' ? props.delay : DEFAULT_DELAY));
+    const delay = untrack(() => typeof props.delay === 'number' ? props.delay : DEFAULT_DELAY);
+    // eslint-disable-next-line solid/reactivity -- called later like an event handler; reads the current onChange
+    const delayUpdate = debounce((newValue: string) => props.onChange?.(newValue), delay);
 
     const applyValue = (newValue: string) => {
         delayUpdate.cancel(); // drop any pending debounced onChange so this synchronous value wins

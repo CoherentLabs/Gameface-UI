@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require('../../shared/input-selectors.json');
-const { navigateToPage } = require('../../shared/utils');
+const { navigateToPage, elementChildren } = require('../../shared/utils');
 
 describe('PasswordInput', function () {
     this.beforeAll(async () => {
@@ -55,14 +55,14 @@ describe('PasswordInput', function () {
             }
         };
 
-        const childrenBeforeSwap = await (await gf.get(`.${selectors.root}`)).children();
+        const childrenBeforeSwap = await elementChildren(await gf.get(`.${selectors.root}`));
         assert.ok(!(await elementExists(selectors.inputAfter)), 'After element should not be in the DOM');
         assert.equal((await childrenBeforeSwap[0].classes()).includes(selectors.inputBefore), true, 'First element of root should be the Before element')
         assert.equal((await childrenBeforeSwap[2].classes()).includes(selectors.inputVisibilityButton), true, 'Last element of root should be the Visibility button element')
 
         await gf.click(`.${selectors.scenarioBtn}.scenario-6`);
 
-        const childrenAfterSwap = await (await gf.get(`.${selectors.root}`)).children();
+        const childrenAfterSwap = await elementChildren(await gf.get(`.${selectors.root}`));
         assert.ok(!(await elementExists(selectors.inputBefore)), 'Before element should not be in the DOM');
         assert.equal((await childrenAfterSwap[0].classes()).includes(selectors.inputVisibilityButton), true, 'First element of root should be the Visibility button element')
         assert.equal((await childrenAfterSwap[2].classes()).includes(selectors.inputAfter), true, 'Last element of root should be the After element')

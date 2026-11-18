@@ -34,6 +34,6 @@ export const XYSliderHandle = (props: TokenComponentProps) => {
     })
 
     return (
-        <div class={handleClasses()} style={handleStyle()}></div>
+        <div class={handleClasses()} style={handleStyle()} />
     )
 }

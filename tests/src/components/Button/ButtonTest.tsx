@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
+import { createMemo, createSignal, For, onCleanup, onSettled } from "solid-js";
 import Button from "@components/Basic/Button/Button";
 import './button.css';
 import selectors from "../../../shared/button-selectors.json";
@@ -23,7 +23,7 @@ const ButtonTest = () => {
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
-    onMount(() => document.addEventListener('reset', reset))
+    onSettled(() => { document.addEventListener('reset', reset); });
     onCleanup(() => document.removeEventListener('reset', reset)) 
 
     return (

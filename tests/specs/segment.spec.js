@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require('../shared/segment-selectors.json');
-const { navigateToPage } = require('../shared/utils');
+const { navigateToPage, elementChildren } = require('../shared/utils');
 
 describe('Segment', function () {
     this.beforeAll(async () => {
@@ -13,15 +13,21 @@ describe('Segment', function () {
 
     it('Should render itself and it\'s slots correctly', async () => {
         const segment = await gf.get(`.${selectors.segment}`);
-        const segmentButtons = Array.from(await segment.children());
+        const segmentButtons = Array.from(await elementChildren(segment));
 
-        assert.ok(segment, 'Checkbox should be in the DOM');
-        assert.equal(segmentButtons.length, 4, 'Segment buttons should be in the DOM');
+        assert.ok(segment, 'Segment should be in the DOM');
+        assert.equal(segmentButtons.length, 3, 'Segment buttons should be in the DOM');
+
+        // The indicator slot renders after the first selection change.
+        await segmentButtons[1].click();
+        await gf.retryIfFails(async () => {
+            assert.equal((await elementChildren(segment)).length, 4, 'Segment indicator should be in the DOM');
+        });
     })
 
     it('Should change selected option', async () => {
         const segment = await gf.get(`.${selectors.segment}`);
-        const segmentButtons = await segment.children()
+        const segmentButtons = await elementChildren(segment)
         const assertionEl = await gf.get(`.${selectors.assertionElement}`)
 
         assert.equal(await assertionEl.text(), "test1", 'Initial selected button should be the first one');
@@ -41,7 +47,7 @@ describe('Segment', function () {
         const segment = await gf.get(`.${selectors.segment}`);
 
         await gf.click(`.${selectors.disableSegment}`);
-        await (await segment.children())[1].click();
+        await (await elementChildren(segment))[1].click();
 
         assert.equal(await gf.text(`.${selectors.assertionElement}`), "test1", 'Selected button should still be the first one');
         assert.equal((await segment.styles())['background-color'], 'rgba(255, 0, 0, 1)');
@@ -49,7 +55,7 @@ describe('Segment', function () {
 
     it('Should test Segment.Button disabled state', async () => {
         await gf.click(`.${selectors.disableSegmentBtn}`);
-        const buttonToDisable = (await gf.children(`.${selectors.segment}`))[1];
+        const buttonToDisable = (await elementChildren(await gf.get(`.${selectors.segment}`)))[1];
         await buttonToDisable.click();
 
         assert.equal(await gf.text(`.${selectors.assertionElement}`), "test1", 'Selected button should still be the first one');
@@ -58,7 +64,7 @@ describe('Segment', function () {
 
     it('Should test it\'s props reactivity', async () => {
         const segment = await gf.get(`.${selectors.segment}`);
-        await (await segment.children())[2].click();
+        await (await elementChildren(segment))[2].click();
 
         const segmentStyles = await segment.styles();
         const isReactive = (await segment.classes()).includes(selectors.reactive);
@@ -68,7 +74,7 @@ describe('Segment', function () {
     })
 
     it('Should test Segment.Buttons props reactivity', async () => {
-        const segmentButton = (await gf.children(`.${selectors.segment}`))[1];
+        const segmentButton = (await elementChildren(await gf.get(`.${selectors.segment}`)))[1];
 
         await segmentButton.click();
         const btnStyles = await segmentButton.styles();

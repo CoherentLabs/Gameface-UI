@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
+import { createMemo, createSignal, For, onCleanup, onSettled, flush } from "solid-js";
 import selectors from "../../../shared/keybinds/keybinds-selectors.json";
 import Keybinds, { KeybindsRef } from "@components/Basic/Keybinds/Keybinds";
 import Keybind from "@components/Basic/Keybinds/Keybind";
@@ -44,6 +44,8 @@ const KeybindsTest = () => {
         setPolicy('block');
         setListeningText(undefined);
         setPlaceholder('Unbound');
+        // Solid 2 stages writes: apply them before the ref call reads the new props.
+        flush();
         keybindsRef?.reset();
     };
 
@@ -53,7 +55,7 @@ const KeybindsTest = () => {
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
-    onMount(() => document.addEventListener('reset', reset))
+    onSettled(() => { document.addEventListener('reset', reset); });
     onCleanup(() => document.removeEventListener('reset', reset))
 
     return (

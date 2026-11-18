@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { createMemo, createSignal, For, onCleanup, onSettled, Show, flush } from "solid-js";
 import Dropdown, { DropdownRef } from "@components/Basic/Dropdown/Dropdown";
 import selectors from '../../../shared/dropdown-selectors.json';
 import './dropdown.css';
@@ -41,6 +41,8 @@ const DropdownTest = () => {
         setBtnDisabled(false);
         setTestInverted(false);
         setOptions(dropdownOptions);
+        // Solid 2 stages writes: apply them before the ref call reads the new props.
+        flush();
         dropdownRef?.deselectAll();
         multipleRef?.deselectAll();
         multipleRef?.toggle(false);
@@ -53,7 +55,7 @@ const DropdownTest = () => {
     const selectOptionMultiple = () => multipleRef?.selectOption("test0");
     const deselectOptionMultiple = () => multipleRef?.deselectOption("test0");
 
-    onMount(() => {
+    onSettled(() => {
         document.addEventListener('reset', reset)
         document.addEventListener('selectOptionMultiple', selectOptionMultiple)
         document.addEventListener('deselectOptionMultiple', deselectOptionMultiple)

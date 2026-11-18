@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require('../../shared/input-selectors.json');
-const { navigateToPage } = require('../../shared/utils');
+const { navigateToPage, elementChildren } = require('../../shared/utils');
 
 describe('NumberInput', function () {
     this.beforeAll(async () => {
@@ -72,7 +72,7 @@ describe('NumberInput', function () {
     it('Should render custom increase button control', async () => {
         const assertionElement = await gf.get(`.${selectors.assertionElement}`);
         const increaseControl = await gf.get(`.${selectors.inputIncreaseControl}`);
-        assert.equal(await (await increaseControl.children()).first().node.nodeName, "SVG", 'Default icon should be of type SVG');
+        assert.equal(await (await elementChildren(increaseControl)).first().node.nodeName, "SVG", 'Default icon should be of type SVG');
 
         await gf.click(`.${selectors.scenarioBtn}.scenario-6`)
         assert.equal(await increaseControl.text(), "Custom icon", 'New icon should have text - Custom Icon');

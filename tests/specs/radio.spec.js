@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require('../shared/radio-selectors.json');
-const { navigateToPage } = require('../shared/utils');
+const { navigateToPage, elementChildren, childNodesInfo } = require('../shared/utils');
 
 describe('Radio', function () {
     this.beforeAll(async () => {
@@ -13,7 +13,7 @@ describe('Radio', function () {
 
     it('Should render itself and it\'s children correctly', async () => {
         const radio = await gf.get(`.${selectors.radio}`);
-        const radioButtons = Array.from(await radio.children());
+        const radioButtons = Array.from(await elementChildren(radio));
 
         assert.ok(radio, 'Radio should be in the DOM');
         assert.equal(radioButtons.length, 3, 'Radio buttons should be in the DOM');
@@ -21,7 +21,7 @@ describe('Radio', function () {
 
     it('Should change selected option', async () => {
         const radio = await gf.get(`.${selectors.radio}`);
-        const radioButtons = await radio.children()
+        const radioButtons = await elementChildren(radio)
 
         assert.equal(await gf.isVisible(`.${selectors.radioIndicator}0`), true, 'The first option indicator should be visible initially');
 
@@ -46,7 +46,7 @@ describe('Radio', function () {
         const radio = await gf.get(`.${selectors.radio}`);
 
         await gf.click(`.${selectors.scenarioBtn}.scenario-1`);
-        await (await radio.children())[1].click();
+        await (await elementChildren(radio))[1].click();
 
         assert.equal(await gf.isVisible(`.${selectors.radioIndicator}0`), true, 'The first option indicator should be visible initially');
         assert.equal((await radio.styles())['background-color'], 'rgba(255, 0, 0, 1)', 'Disabled class should be toggled');
@@ -93,9 +93,11 @@ describe('Radio Button', function () {
     })
 
     it('Should render label before control', async () => {
-        const radioButton = await gf.get(`.${selectors.radioButton}0`);
-        const children = await radioButton.children();
+        // Button 1 is the one with `before` set (RadioTest's isBefore: true).
+        const radioButton = await gf.get(`.${selectors.radioButton}1`);
+        const children = await childNodesInfo(radioButton);
 
-        assert.equal(children[0].node.nodeType, 3, 'The first child should be a text node');
+        assert.equal(children[0].nodeType, 3, 'The first child should be a text node');
+        assert.equal(children[0].text, 'test1', 'The label should come before the control');
     })
 });

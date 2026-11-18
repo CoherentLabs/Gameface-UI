@@ -75,6 +75,7 @@ const List: ParentComponent<ListProps> = (props) => {
 
     if (nestedContext) {
         onSettled(() => { nestedContext.mountNested(vnode); });
+        // eslint-disable-next-line solid/components-return-once -- nesting is fixed for the list's lifetime
         return null;
     }
     

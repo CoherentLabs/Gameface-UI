@@ -32,7 +32,7 @@ const TextSliderPol = (props: PolProps) => {
 
     return (
         <div style={props.style} class={polClasses()}>
-            <div class={styles['grid-pol']}></div>
+            <div class={styles['grid-pol']} />
             <div style={props['text-style']} class={polValueClasses()}>{props.value}</div>
         </div>
     )

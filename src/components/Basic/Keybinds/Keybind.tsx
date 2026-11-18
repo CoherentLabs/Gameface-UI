@@ -21,6 +21,7 @@ const Keybind = (props: KeyBindProps) => {
     const context = useContext(KeybindsContext)
     if (!context) {
         console.warn('Please use the Keybind component only inside the Keybinds component')
+        // eslint-disable-next-line solid/components-return-once -- misuse guard: no Keybinds parent, render nothing
         return
     }
 

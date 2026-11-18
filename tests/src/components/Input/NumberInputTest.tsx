@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
+import { createMemo, createSignal, For, onCleanup, onSettled, flush } from "solid-js";
 import selectors from "../../../shared/input-selectors.json";
 import './input.css';
 import NumberInput, { NumberInputRef } from "@components/Basic/Input/NumberInput/NumberInput";
@@ -34,6 +34,8 @@ const NumberInputTest = () => {
         setDelay(undefined);
         setExternalValue('');
 
+        // Solid 2 stages writes: apply them before the ref call reads the new props.
+        flush();
         inputRef?.clear();
     };
 
@@ -41,7 +43,7 @@ const NumberInputTest = () => {
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
-    onMount(() => document.addEventListener('reset', reset))
+    onSettled(() => { document.addEventListener('reset', reset); });
     onCleanup(() => document.removeEventListener('reset', reset))
 
     return (

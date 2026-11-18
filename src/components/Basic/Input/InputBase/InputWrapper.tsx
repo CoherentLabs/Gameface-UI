@@ -1,6 +1,6 @@
 import mergeNavigationActions from "@components/utils/mergeNavigationActions"
 import baseStyles from '../InputBase/InputBase.module.scss';
-import { ParentComponent } from "solid-js";
+import { ParentComponent, untrack } from "solid-js";
 import { ComponentNavigationActions } from "@components/types/ComponentProps";
 import { useNavigation } from "@components/Utility/Navigation/Navigation";
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
@@ -15,12 +15,13 @@ interface InputWrapperProps {
 
 const InputWrapper: ParentComponent<InputWrapperProps> = (wrapperProps) => {
     const nav = useNavigation()
-    const inputRef = wrapperProps.inputRef;
+    // Both are fixed objects created once by the input component: read them once.
+    const inputRef = untrack(() => wrapperProps.inputRef);
 
     // The ref runs while the wrapper renders, before the child <input> exists,
     // so `input` is a getter (always the current element).
     const refApi = {
-        ...wrapperProps.refObject,
+        ...untrack(() => wrapperProps.refObject),
         get input() { return inputRef.current; },
     };
 

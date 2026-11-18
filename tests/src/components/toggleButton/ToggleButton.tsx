@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
+import { createMemo, createSignal, For, onCleanup, onSettled, flush } from "solid-js";
 import ToggleButton, { ToggleButtonRef } from "@components/Basic/ToggleButton/ToggleButton";
 import './toggleButton.css';
 import selectors from "../../../shared/toggle-button-selectors.json";
@@ -19,6 +19,8 @@ const ToggleButtonTest = () => {
         setDisabled(false);
         setChecked(false);
         setReactive(false);
+        // Solid 2 stages writes: apply them before the ref call reads the new props.
+        flush();
         toggleRef?.setChecked(false);
     };
 
@@ -26,7 +28,7 @@ const ToggleButtonTest = () => {
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
-    onMount(() => document.addEventListener('reset', resetToggle))
+    onSettled(() => { document.addEventListener('reset', resetToggle); });
     onCleanup(() => document.removeEventListener('reset', resetToggle)) 
 
     return (

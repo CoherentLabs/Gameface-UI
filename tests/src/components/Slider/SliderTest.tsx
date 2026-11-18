@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onCleanup, onMount} from "solid-js";
+import { createMemo, createSignal, For, onCleanup, onSettled, flush } from "solid-js";
 import Slider, { SliderRef } from "@components/Basic/Slider/Slider";
 import './slider.css';
 import selectors from "../../../shared/slider-selectors.json";
@@ -22,6 +22,8 @@ const SliderTest = () => {
         setControlled(initialValue);
         setEndValue('none');
         setTest('red');
+        // Solid 2 stages writes: apply them before the ref call reads the new props.
+        flush();
         sliderRef?.changeValue(initialValue);
     };
 
@@ -29,7 +31,7 @@ const SliderTest = () => {
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
-    onMount(() => document.addEventListener('reset', reset))
+    onSettled(() => { document.addEventListener('reset', reset); });
     onCleanup(() => document.removeEventListener('reset', reset)) 
 
     return (

@@ -1,4 +1,4 @@
-import { createSignal, createMemo, onMount, onCleanup, For, Accessor } from "solid-js";
+import { createSignal, createMemo, onSettled, onCleanup, For, Accessor } from "solid-js";
 import selectors from "../../../shared/list-selectors.json";
 import List from "@components/Layout/List/List";
 import PlusIcon from './plusIcon.svg?component-solid';
@@ -45,7 +45,7 @@ const ListTest = () => {
     const reactiveClass = createMemo(() => (isReactive() ? "reactive" : ""));
     const reactiveStyle = createMemo(() => (isReactive() ? { "background-color": "blue" } : {}));
 
-    onMount(() => document.addEventListener("reset", reset));
+    onSettled(() => { document.addEventListener("reset", reset); });
     onCleanup(() => document.removeEventListener("reset", reset));
 
     function renderList(items: NestedListData) {

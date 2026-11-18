@@ -48,7 +48,7 @@ export const DropdownOptions: ParentComponent<TokenComponentProps> = (props) => 
                     </For>
                 </Scroll.Content>
                 <Scroll.Bar {...(TrackToken?.() || {})}>
-                    <Scroll.Handle {...(HandleToken?.() || {})}></Scroll.Handle>
+                    <Scroll.Handle {...(HandleToken?.() || {})} />
                 </Scroll.Bar>
             </Scroll>
         </div>

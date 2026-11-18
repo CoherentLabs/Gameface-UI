@@ -1,5 +1,5 @@
 import { Input, Placeholder } from "../shared/tokens";
-import { Show, createMemo, ParentComponent, createSignal, onCleanup, createEffect, untrack } from "solid-js";
+import { Show, createMemo, ParentComponent, createSignal, onCleanup, createEffect, untrack, flush } from "solid-js";
 import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
 import { InputBase } from "../InputBase/InputBase";
 import { TextInputProps, TextInputRef } from "../shared/types";
@@ -77,6 +77,9 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
 
         setValue(newValue);
         props.delay ? delayUpdate(newValue) : props.onChange?.(newValue);
+        // Solid 2 applies the value binding later; apply it now so the raw text below wins
+        // (keeps "-", "-0", "-0." while typing, as in 1.x).
+        flush();
         //@ts-ignore
         input.value = hasClamped ? newValue : inputValue;
     }
@@ -119,8 +122,9 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
     }
 
     // The delay is read once, as in 1.x.
-    const delayUpdate = debounce((newValue: number | string) =>
-        props.onChange?.(newValue), untrack(() => typeof props.delay === 'number' ? props.delay : DEFAULT_DELAY));
+    const delay = untrack(() => typeof props.delay === 'number' ? props.delay : DEFAULT_DELAY);
+    // eslint-disable-next-line solid/reactivity -- called later like an event handler; reads the current onChange
+    const delayUpdate = debounce((newValue: number | string) => props.onChange?.(newValue), delay);
 
     const applyValue = (newValue: number | string) => {
         if (!inputRef.current) return;

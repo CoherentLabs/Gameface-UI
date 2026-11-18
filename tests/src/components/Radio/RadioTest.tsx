@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
+import { createMemo, createSignal, For, onCleanup, onSettled, flush } from "solid-js";
 import Radio, { RadioRef } from "@components/Basic/RadioGroup/Radio";
 import './radio.css';
 import selectors from "../../../shared/radio-selectors.json";
@@ -24,6 +24,8 @@ const RadioTest = () => {
     const resetRadio = () => {
         setDisabled(false);
         setDisabledBtn(false);
+        // Solid 2 stages writes: apply them before the ref call reads the new props.
+        flush();
         radioRef?.changeOption('test0')
     };
 
@@ -31,7 +33,7 @@ const RadioTest = () => {
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
-    onMount(() => document.addEventListener('reset', resetRadio))
+    onSettled(() => { document.addEventListener('reset', resetRadio); });
     onCleanup(() => document.removeEventListener('reset', resetRadio)) 
 
     return (

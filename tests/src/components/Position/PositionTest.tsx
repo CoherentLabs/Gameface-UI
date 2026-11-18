@@ -1,5 +1,5 @@
 // src/playground/PositionTester.tsx
-import { createSignal, createMemo, onMount, onCleanup, For, ParentComponent } from "solid-js";
+import { createSignal, createMemo, onSettled, onCleanup, For, ParentComponent } from "solid-js";
 import selectors from "../../../shared/position-selectors.json";
 
 interface PositionTesterProps {
@@ -29,7 +29,7 @@ const PositionTest: ParentComponent<PositionTesterProps> = (props) => {
   const reactiveClass = createMemo(() => (isReactive() ? "reactive" : ""));
   const reactiveStyle = createMemo(() => (isReactive() ? { "background-color": "blue" } : {}));
 
-  onMount(() => document.addEventListener("reset", reset));
+  onSettled(() => { document.addEventListener("reset", reset); });
   onCleanup(() => document.removeEventListener("reset", reset));
 
   return (

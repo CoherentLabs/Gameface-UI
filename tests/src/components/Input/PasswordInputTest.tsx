@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
+import { createMemo, createSignal, For, onCleanup, onSettled, flush } from "solid-js";
 import selectors from "../../../shared/input-selectors.json";
 import PasswordInput, { PasswordInputRef } from "@components/Basic/Input/PasswordInput/PasswordInput";
 import { Placeholder } from "@components/Basic/Input/shared/tokens";
@@ -34,6 +34,8 @@ const PasswordInputTest = () => {
         setPosition('after');
         setDelay(undefined);
         setExternalValue('');
+        // Solid 2 stages writes: apply them before the ref call reads the new props.
+        flush();
         inputRef?.clear();
         inputRef?.hide();
     };
@@ -42,7 +44,7 @@ const PasswordInputTest = () => {
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
-    onMount(() => document.addEventListener('reset', reset))
+    onSettled(() => { document.addEventListener('reset', reset); });
     onCleanup(() => document.removeEventListener('reset', reset))
 
     return (

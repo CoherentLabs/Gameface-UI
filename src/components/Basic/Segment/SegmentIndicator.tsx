@@ -27,8 +27,7 @@ const SegmentIndicator: Component<SegmentIndicatorProps> = (props) => {
     return (
         <div 
             style={inlineStyles()} 
-            class={[styles.indicator, IndicatorSlot()?.class, props.data().showTransition && styles['show-transition']]}>
-        </div>
+            class={[styles.indicator, IndicatorSlot()?.class, props.data().showTransition && styles['show-transition']]} />
     )
 }
 

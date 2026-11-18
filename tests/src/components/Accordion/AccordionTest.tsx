@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { createMemo, createSignal, For, onCleanup, onSettled, Show, flush } from "solid-js";
 import selectors from '../../../shared/accordion-selectors.json';
 import Accordion, { AccordionRef } from "@components/Basic/Accordion/Accordion";
 import './accordion.css';
@@ -36,6 +36,8 @@ const AccordionTest = () => {
         setPanelDisabled(false);
         setReactive(false);
         setCustomIcon(false);
+        // Solid 2 stages writes: apply them before the ref call reads the new props.
+        flush();
         accordionRef?.collapseAll();
     };
 
@@ -43,7 +45,7 @@ const AccordionTest = () => {
     const reactiveClass = createMemo(() => isReactive() ? selectors.reactive : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
-    onMount(() => document.addEventListener('reset', reset))
+    onSettled(() => { document.addEventListener('reset', reset); });
     onCleanup(() => document.removeEventListener('reset', reset))
 
     return (

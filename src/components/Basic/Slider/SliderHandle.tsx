@@ -46,6 +46,6 @@ export const SliderHandle = (props: SliderHandleComponentProps) => {
     })
 
     return (
-        <div class={handleClasses()} style={handleStyle()} onMouseDown={props.handleMouseDown}></div>
+        <div class={handleClasses()} style={handleStyle()} onMouseDown={(e) => props.handleMouseDown(e)} />
     )
 }

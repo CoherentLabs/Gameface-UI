@@ -98,7 +98,7 @@ const State: ParentComponent<StateProps> = (props) => {
             exposeRef(props, { changeState, currentState, states }),
             baseComponent(props),
         ]}
-    ></div>
+     />
 }
 
 export default State;

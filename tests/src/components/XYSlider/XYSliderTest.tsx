@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
+import { createMemo, createSignal, For, onCleanup, onSettled, flush } from "solid-js";
 import XYSlider, { XYSliderRef } from "@components/Basic/XYSlider/XYSlider";
 import './xy-slider.css';
 import selectors from "../../../shared/xy-slider-selectors.json";
@@ -19,6 +19,8 @@ const XYSliderTest = () => {
     const reset = () => {
         setValue(initialValue);
         setTest('red');
+        // Solid 2 stages writes: apply them before the ref call reads the new props.
+        flush();
         sliderRef?.changeValue(initialValue);
     };
 
@@ -27,7 +29,7 @@ const XYSliderTest = () => {
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
     const reactiveStyleBG = createMemo(() => isReactive() ? { 'background-image': 'linear-gradient(to right bottom,rgb(255, 0, 0), #b9b9b9, #777777, #3b3b3b, #000000)' } : {});
 
-    onMount(() => document.addEventListener('reset', reset))
+    onSettled(() => { document.addEventListener('reset', reset); });
     onCleanup(() => document.removeEventListener('reset', reset))
 
     return (
