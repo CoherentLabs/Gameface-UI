@@ -1,3 +1,4 @@
+import { untrack } from "solid-js";
 import { GAMEFACE_VERSION, verIsAtLeast } from "./gamefaceVersion";
 
 export type SupportedFeature = 'gap';
@@ -8,7 +9,8 @@ const warnedFeatures = new Set<SupportedFeature>();
 const FEATURE_REQUIREMENTS: Record<SupportedFeature, { minVersion: [number, number], hasTrigger: (props: any) => boolean }> = {
     gap: {
         minVersion: [2, 2],
-        hasTrigger: (props) => !!(props.gap || props["row-gap"] || props["column-gap"])
+        // One-time check (called from onSettled), so read untracked.
+        hasTrigger: (props) => untrack(() => !!(props.gap || props["row-gap"] || props["column-gap"]))
     }
 };
 

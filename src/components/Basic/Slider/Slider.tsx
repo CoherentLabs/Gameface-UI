@@ -1,5 +1,5 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, createSignal, onMount, ParentComponent, createMemo, onCleanup, createEffect, on } from "solid-js";
+import { Accessor, createSignal, ParentComponent, onCleanup, createEffect, untrack } from "solid-js";
 import styles from './Slider.module.scss';
 import { clamp } from "@components/utils/clamp";
 import { Grid, SliderGrid } from "./SliderGrid";
@@ -10,6 +10,7 @@ import { SliderTrack, Track } from "./SliderTrack";
 import { useToken } from "@components/utils/tokenComponents";
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
+import exposeRef from "@components/utils/exposeRef";
 import { calculatePercent, getTrackGeometry, snapToStepAndNormalize, TrackGeometry } from "./sliderMath";
 import { stopImmediatePropagation } from "@components/utils/stopPropagation";
 
@@ -33,39 +34,49 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     const min = () => props.min ?? 0;
     const max = () => props.max ?? 100;
     const step = () => props.step ?? 1;
-    const [value, setValue] = createSignal(clamp(props.value ?? 50, min(), max()));
+
+    // Initial value only, as in 1.x (later changes go through the two-way binding below).
+    const initialValue = untrack(() => clamp(props.value ?? 50, min(), max()));
+    const [value, setValue] = createSignal(initialValue);
+    // Solid 2 stages writes: a read right after setValue() still returns the old
+    // value until the next microtask. The drag/step logic below reads its own
+    // writes in the same call (track click -> drag start, repeated steps), so it
+    // uses `current`, the always-up-to-date plain copy. `value` drives rendering.
+    let current = initialValue;
+    const writeValue = (newValue: number) => {
+        current = newValue;
+        setValue(newValue);
+    };
+
     // purely for navigation state
     const [navEngaged, setNavEngaged] = createSignal(false);
     const percent = () => calculatePercent(value(), min(), max());
 
-    let element!: HTMLDivElement;
     let trackElement!: HTMLDivElement;
     let sliding = false;
     let commitTimeout: ReturnType<typeof setTimeout> | undefined;
     let startValue: number;
     let geometry: TrackGeometry;
 
-    const ThumbSlot = useToken(Thumb, props.children)
-    const GridSlot = useToken(Grid, props.children)
+    const ThumbSlot = useToken(Thumb, () => props.children)
+    const GridSlot = useToken(Grid, () => props.children)
 
-    // On change subscription
-    createEffect(on(value, (v) => props.onChange?.(v), { defer: true }));
+    // On change subscription (block body: an apply function's return value is its cleanup)
+    createEffect(() => value(), (v) => { props.onChange?.(v); }, { defer: true });
 
     // Two Way Binding
-    createEffect(on(() => props.value, (v) => {
+    createEffect(() => props.value, (v) => {
         if (v !== undefined) changeValue(v);
-    }, { defer: true }));
+    }, { defer: true });
 
     const handleTrackClick = (e: MouseEvent) => {
         geometry = getTrackGeometry(trackElement, e.clientX);
-        
+
         const valueRange = max() - min();
         const delta = geometry.start - geometry.trackStart;
         const newValue = min() + (delta / geometry.pixelRange) * valueRange;
 
-        const result = snapValue(newValue)
-
-        setValue(result);
+        writeValue(snapValue(newValue));
         handleMouseDown(e);
     }
 
@@ -74,7 +85,7 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         sliding = true;
 
         geometry = getTrackGeometry(trackElement, e.clientX);
-        startValue = value();
+        startValue = current;
 
         window.addEventListener('mousemove', handleMouseMove);
         window.addEventListener('mouseup', handleMouseUp);
@@ -83,8 +94,7 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     const handleMouseMove = (e: MouseEvent) => {
         if (!sliding) return;
 
-        const result = calculateResult(e)
-        setValue(result);
+        writeValue(calculateResult(e));
     }
 
     const handleMouseUp = () => {
@@ -94,7 +104,7 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
 
-        props.onChangeEnd?.(value());
+        props.onChangeEnd?.(current);
     }
 
     const calculateResult = (e: MouseEvent) => {
@@ -108,21 +118,12 @@ const Slider: ParentComponent<SliderProps> = (props) => {
 
     const snapValue = (value: number) => snapToStepAndNormalize(value, step(), min(), max());
 
-    const SliderClasses = createMemo(() => {
-        const classes = [styles.slider];
-
-        if (ThumbSlot()) classes.push(styles['with-thumb'])
-        if (GridSlot()) classes.push(styles['with-grid'])
-
-        return classes.join(' ');
-    });
-
     const changeValue = (newValue: number) => {
-        setValue(snapValue(newValue));
+        writeValue(snapValue(newValue));
     }
 
     const stepValue = (direction: 1 | -1) => {
-        changeValue(value() + step() * direction);
+        changeValue(current + step() * direction);
     }
 
     // gamepad movement has no release event so we debounce a synthetic commit
@@ -133,22 +134,9 @@ const Slider: ParentComponent<SliderProps> = (props) => {
         if (commitTimeout) clearTimeout(commitTimeout);
         commitTimeout = setTimeout(() => {
             commitTimeout = undefined;
-            props.onChangeEnd?.(value());
+            props.onChangeEnd?.(current);
         }, 250);
     }
-
-    props.componentClasses = () => SliderClasses();
-
-    onMount(() => {
-        if (!props.ref || !element) return;
-
-        (props.ref as unknown as (ref: SliderRef) => void)({
-            value,
-            element,
-            changeValue,
-            stepValue
-        });
-    });
 
     onCleanup(() => {
         handleMouseUp();
@@ -162,11 +150,15 @@ const Slider: ParentComponent<SliderProps> = (props) => {
 
     return (
         <div
-            ref={element!}
-            on:focusin={() => setNavEngaged(true)}
-            on:focusout={() => setNavEngaged(false)}
-            use:baseComponent={props}
-            use:navigationActions={mergeNavigationActions(props, defaultActions)}>
+            class={[styles.slider, ThumbSlot() && styles['with-thumb'], GridSlot() && styles['with-grid'], props.class]}
+            style={props.style}
+            onFocusIn={() => setNavEngaged(true)}
+            onFocusOut={() => setNavEngaged(false)}
+            ref={[
+                exposeRef<Omit<SliderRef, 'element'>>(props, { value, changeValue, stepValue }),
+                baseComponent(props),
+                navigationActions(mergeNavigationActions(props, defaultActions)),
+            ]}>
             <SliderTrack handleClick={handleTrackClick} ref={trackElement} parentChildren={props.children}>
                 <SliderHandle percent={percent} handleMouseDown={handleMouseDown} parentChildren={props.children} active={navEngaged} />
                 <SliderFill percent={percent} parentChildren={props.children} />

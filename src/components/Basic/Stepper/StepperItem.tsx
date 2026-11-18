@@ -1,4 +1,5 @@
-import { JSX, onCleanup, onMount, ParentComponent, ParentProps, Show, useContext } from "solid-js";
+import { onCleanup, onSettled, ParentComponent, ParentProps, Show, untrack, useContext } from "solid-js";
+import { JSX } from "@solidjs/web";
 import styles from './Stepper.module.scss';
 
 import { createTokenComponent } from "@components/utils/tokenComponents";
@@ -20,18 +21,18 @@ interface StepperItempProps {
 
 export const StepperItem: ParentComponent<StepperItempProps> = (props) => {
     const stepperContext = useContext(StepperContext);
-    onMount(() => {
-        stepperContext?.registerOption(props.item.value, props.item.selected);
+    onSettled(() => {
+        untrack(() => stepperContext?.registerOption(props.item.value, props.item.selected));
     })
 
     onCleanup(() => {
-        stepperContext?.unregisterOption(props.item.value);
+        untrack(() => stepperContext?.unregisterOption(props.item.value));
     })
 
     return (
         <Show when={stepperContext?.selected() === props.item.value}>
             <div
-                class={`${styles['stepper-item']} ${props.item.class || ''}`}
+                class={[styles['stepper-item'], props.item.class]}
                 style={props.item.style || {}}>
                 {props.item.children}
             </div>

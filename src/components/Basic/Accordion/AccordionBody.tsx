@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal, JSX, onMount, ParentComponent } from "solid-js";
+import { createEffect, createMemo, createSignal, onSettled, ParentComponent } from "solid-js";
 import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
 import styles from './Accordion.module.scss';
 import { waitForFrames } from "@components/utils/waitForFrames";
@@ -7,9 +7,9 @@ import { CommonAccordionSlotProps, PanelChildrenComponentProps } from "./Accordi
 export const Body = createTokenComponent<CommonAccordionSlotProps>();
 
 export const AccordionBody: ParentComponent<PanelChildrenComponentProps> = (props) => {
-    const BodyToken = useToken(Body, props.parentChildren);
+    const BodyToken = useToken(Body, () => props.parentChildren);
     const [height, setHeight] = createSignal(0);
-    let element!: HTMLDivElement;
+    let element: HTMLDivElement | undefined;
 
     const bodyStyles = createMemo(() => {
         return {
@@ -17,27 +17,29 @@ export const AccordionBody: ParentComponent<PanelChildrenComponentProps> = (prop
         };
     })
 
-    const handleExpand = () => {
-        if (props.isExpanded()) setHeight(element.scrollHeight)
+    const measure = () => {
+        if (element) setHeight(element.scrollHeight);
     }
 
-    createEffect(() => {
-        handleExpand();
-    });
+    // Re-measure the content whenever the panel expands.
+    createEffect(
+        () => props.isExpanded(),
+        (expanded) => { if (expanded) measure(); }
+    );
 
-    onMount(() => {
+    onSettled(() => {
         waitForFrames(() => {
-            handleExpand();
+            if (props.isExpanded()) measure();
         }, 3)
     })
 
     return (
         <div
             ref={element}
-            class={`${styles.body}`}
+            class={styles.body}
             style={bodyStyles()}>
             <div
-                class={`${styles.content} ${BodyToken()?.class || ''}`}
+                class={[styles.content, BodyToken()?.class]}
                 style={BodyToken()?.style}>
                 {BodyToken()?.children}
             </div>

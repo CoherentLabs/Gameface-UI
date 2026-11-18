@@ -1,4 +1,5 @@
-import { createMemo, JSX, ParentComponent, ParentProps, useContext } from "solid-js";
+import { createMemo, ParentComponent, ParentProps, useContext } from "solid-js";
+import { JSX } from "@solidjs/web";
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent } from "@components/utils/tokenComponents";
 import styles from './Accordion.module.scss';

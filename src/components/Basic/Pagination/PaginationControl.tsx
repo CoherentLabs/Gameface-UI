@@ -16,12 +16,12 @@ interface PaginationControlProps extends TokenComponentProps {
 
 export const Control = createTokenComponent<ControlTokenProps>();
 
-const ControlComponent = ({ ControlToken }: { ControlToken: Accessor<ParentProps<ControlTokenProps> | null | undefined> }) => {
+const ControlComponent = (props: { ControlToken: Accessor<ParentProps<ControlTokenProps> | null | undefined> }) => {
     return <>
-        <Show when={ControlToken()?.children}>
-            {ControlToken()?.children}
+        <Show when={props.ControlToken()?.children}>
+            {props.ControlToken()?.children}
         </Show>
-        <Show when={!ControlToken()?.children}>
+        <Show when={!props.ControlToken()?.children}>
             <Arrow class={styles.arrow} />
         </Show>
     </>
@@ -29,7 +29,7 @@ const ControlComponent = ({ ControlToken }: { ControlToken: Accessor<ParentProps
 
 export const PaginationControl: ParentComponent<PaginationControlProps> = (props) => {
     const pagination = useContext(PaginationContext);
-    const ControlToken = useToken(Control, props.parentChildren);
+    const ControlToken = useToken(Control, () => props.parentChildren);
 
     const handleClick = () => {
         return props.direction === 'next' ? pagination?.nextPage() : pagination?.previousPage(); 

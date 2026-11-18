@@ -1,6 +1,7 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import styles from './Slider.module.scss';
-import { createMemo, JSX, ParentComponent, Show } from 'solid-js';
+import { createMemo, ParentComponent, Show } from 'solid-js';
+import { JSX } from '@solidjs/web';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 
 interface SliderThumbProps {
@@ -16,7 +17,7 @@ interface SliderThumbComponentProps extends TokenComponentProps {
 export const Thumb = createTokenComponent<SliderThumbProps>();
 
 export const SliderThumb: ParentComponent<SliderThumbComponentProps> = (props) => {
-    const ThumbToken = useToken(Thumb, props.parentChildren);
+    const ThumbToken = useToken(Thumb, () => props.parentChildren);
 
     const thumbClasses = createMemo(() => {
         const classes = [styles.thumb];

@@ -7,7 +7,7 @@ import TextSliderPol, { Pol } from '@components/Basic/TextSlider/TextSliderPol';
 
 export const TextSliderGrid = (props: TokenComponentProps) => {
     const sliderContext = useContext(TextSliderContext)
-    const PolToken = useToken(Pol, props.parentChildren);
+    const PolToken = useToken(Pol, () => props.parentChildren);
 
     return (
         <div class={styles.grid}>

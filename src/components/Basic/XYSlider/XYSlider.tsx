@@ -1,11 +1,12 @@
 import { clamp } from "@components/utils/clamp";
-import { Accessor, createContext, createEffect, createMemo, createSignal, on, onCleanup, onMount, ParentComponent } from "solid-js";
+import { Accessor, createContext, createEffect, createMemo, createSignal, onCleanup, onSettled, ParentComponent, untrack } from "solid-js";
 import styles from './XYSlider.module.scss';
 import { Handle, XYSliderHandle } from "./XYSliderHandle";
 import { Background, XYSliderBackground } from "./XYSliderBackground";
 import { ComponentProps } from "@components/types/ComponentProps";
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
+import exposeRef from "@components/utils/exposeRef";
 import { useNavigation } from "@components/Utility/Navigation/Navigation";
 
 export type XYSliderValue = {
@@ -34,10 +35,11 @@ interface XYSliderContext {
     hasTransition: Accessor<boolean>
 }
 
-export const XYSliderContext = createContext<XYSliderContext>();
+// `null` default: the handle reads it optionally (pattern 1.3.o).
+export const XYSliderContext = createContext<XYSliderContext | null>(null);
 
 const XYSlider: ParentComponent<XYSliderProps> = (props) => {
-    let draggableArea!: HTMLDivElement;
+    let draggableArea: HTMLDivElement | undefined;
 
     const rect = {
         left: 0,
@@ -56,26 +58,30 @@ const XYSlider: ParentComponent<XYSliderProps> = (props) => {
     let speedBoost = { x: 0, y: 0 };
     const nav = useNavigation();
 
-    const [position, setPosition] = createSignal({ x: 0, y: 0 });
-    const [isDragging, setIsDragging] = createSignal(false);
-    const [hasTransition, setHasTransition] = createSignal(true);
-
     const calculatePercentPosition = (pos: { x: number; y: number }) => ({
         x: ((pos.x - minX()) / (maxX() - minX())) * 100,
         y: ((pos.y - minY()) / (maxY() - minY())) * 100,
     });
 
+    const clampedValue = () => ({
+        x: clamp(props.value?.x ?? (minX() + maxX()) / 2, minX(), maxX()),
+        y: clamp(props.value?.y ?? (minY() + maxY()) / 2, minY(), maxY()),
+    });
+
+    // Start at `value` (or the centre). In 1.x the position was only set by the
+    // deferred effect below, so the handle sat at 0,0 until something changed.
+    const [position, setPosition] = createSignal(untrack(() => calculatePercentPosition(clampedValue())));
+    const [isDragging, setIsDragging] = createSignal(false);
+    const [hasTransition, setHasTransition] = createSignal(true);
+
     createEffect(
-        on(
-            () => [props.value?.x, props.value?.y, minX(), maxX(), minY(), maxY()],
-            () => {
-                const x = clamp(props.value?.x ?? (minX() + maxX()) / 2, minX(), maxX());
-                const y = clamp(props.value?.y ?? (minY() + maxY()) / 2, minY(), maxY());
-                setPosition(calculatePercentPosition({ x, y }));
-                props.onChange?.({ x, y });
-            },
-            { defer: true }
-        )
+        () => [props.value?.x, props.value?.y, minX(), maxX(), minY(), maxY()],
+        () => {
+            const value = clampedValue();
+            setPosition(calculatePercentPosition(value));
+            props.onChange?.(value);
+        },
+        { defer: true }
     );
 
     const calculatePositionFromMouse = (e: MouseEvent) => {
@@ -107,6 +113,7 @@ const XYSlider: ParentComponent<XYSliderProps> = (props) => {
     const handleMouseDown = (e: MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
+        if (!draggableArea) return;
         setHasTransition(false);
 
         const { left, top, width, height } = draggableArea.getBoundingClientRect();
@@ -119,9 +126,6 @@ const XYSlider: ParentComponent<XYSliderProps> = (props) => {
         document.addEventListener("mouseup", handleMouseUp);
     };
 
-    props.componentClasses = () => styles["XYSlider"];
-    props.componentStyles = () => { return { cursor: isDragging() ? "pointer" : "auto" } };
-
     const changeValue = (newValue: XYSliderValue) => {
         const x = clamp(newValue.x, minX(), maxX());
         const y = clamp(newValue.y, minY(), maxY());
@@ -129,16 +133,8 @@ const XYSlider: ParentComponent<XYSliderProps> = (props) => {
         props.onChange?.({ x, y });
     }
 
-    onMount(() => {
+    onSettled(() => {
         if (nav) nav.resumeAction('pan');
-        
-        if (!props.ref || !draggableArea) return;
-
-        (props.ref as unknown as (ref: any) => void)({
-            value: position,
-            element: draggableArea,
-            changeValue
-        });
     });
 
     onCleanup(() => {
@@ -180,16 +176,22 @@ const XYSlider: ParentComponent<XYSliderProps> = (props) => {
     }
 
     return (
-        <XYSliderContext.Provider value={{ position, hasTransition }}>
-            <div ref={draggableArea}
-                use:baseComponent={props}
-                use:navigationActions={mergeNavigationActions(props, defaultActions)}
+        <XYSliderContext value={{ position, hasTransition }}>
+            <div
+                class={[styles["XYSlider"], props.class]}
+                style={{ cursor: isDragging() ? "pointer" : "auto", ...props.style }}
+                ref={[
+                    (node: HTMLDivElement) => { draggableArea = node; },
+                    exposeRef<Omit<XYSliderRef, 'element'>>(props, { value: position, changeValue }),
+                    baseComponent(props),
+                    navigationActions(mergeNavigationActions(props, defaultActions)),
+                ]}
                 onMouseDown={handleMouseDown}
             >
                 <XYSliderBackground parentChildren={props.children} />
-                <XYSliderHandle parentChildren={props.children}></XYSliderHandle>
+                <XYSliderHandle parentChildren={props.children} />
             </div>
-        </XYSliderContext.Provider>
+        </XYSliderContext>
     );
 };
 

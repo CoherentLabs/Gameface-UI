@@ -1,4 +1,5 @@
-import { createMemo, JSX, Show } from 'solid-js';
+import { createMemo, Show } from 'solid-js';
+import { JSX } from '@solidjs/web';
 import styles from './Slider.module.scss';
 
 interface PolProps {

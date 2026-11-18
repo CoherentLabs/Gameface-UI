@@ -12,9 +12,9 @@ export const Icon = createTokenComponent<CommonDropdownSlotProps>();
 
 export const DropdownTrigger: ParentComponent<TokenComponentProps> = (props) => {
     const dropdown = useContext(DropdownContext);
-    const TriggerToken = useToken(Trigger, props.parentChildren);
-    const PlaceholderToken = useToken(Placeholder, props.parentChildren);
-    const IconToken = useToken(Icon, props.parentChildren);
+    const TriggerToken = useToken(Trigger, () => props.parentChildren);
+    const PlaceholderToken = useToken(Placeholder, () => props.parentChildren);
+    const IconToken = useToken(Icon, () => props.parentChildren);
 
     const triggerStyles = createMemo(() => {
         const token = TriggerToken?.();

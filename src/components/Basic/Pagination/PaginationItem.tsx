@@ -12,7 +12,7 @@ interface PaginationItemComponentProps extends TokenComponentProps {
 
 const PaginationItem: Component<PaginationItemComponentProps> = (props) => {
     const pagination = useContext(PaginationContext);
-    const itemToken = useToken(Item, props.parentChildren);
+    const itemToken = useToken(Item, () => props.parentChildren);
 
     const isSelected = createMemo(() => pagination?.current() === props.index);
 
@@ -35,7 +35,7 @@ const PaginationItem: Component<PaginationItemComponentProps> = (props) => {
 
     return (
         <div
-            onclick={() => pagination!.changePage(props.index)}
+            onClick={() => pagination?.changePage(props.index)}
             style={itemToken()?.style}
             class={paginationItemClasses()}>
                 <Show when={props.hasNumbers}>{props.index}</Show>

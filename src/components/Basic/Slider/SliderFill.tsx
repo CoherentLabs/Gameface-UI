@@ -1,6 +1,7 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import styles from './Slider.module.scss';
-import { createMemo, JSX, ParentComponent } from 'solid-js';
+import { createMemo, ParentComponent } from 'solid-js';
+import { JSX } from '@solidjs/web';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 
 interface SliderFillProps {
@@ -15,7 +16,7 @@ interface SliderFillComponentProps extends TokenComponentProps {
 export const Fill = createTokenComponent<SliderFillProps>();
 
 export const SliderFill:ParentComponent<SliderFillComponentProps> = (props) => {
-    const FillToken = useToken(Fill, props.parentChildren);
+    const FillToken = useToken(Fill, () => props.parentChildren);
 
     const fillClasses = createMemo(() => {
         const classes = [styles.fill];
@@ -31,6 +32,6 @@ export const SliderFill:ParentComponent<SliderFillComponentProps> = (props) => {
     })
 
     return (
-        <div class={fillClasses()} style={fillStyle()}></div>
+        <div class={fillClasses()} style={fillStyle()} />
     )
 }

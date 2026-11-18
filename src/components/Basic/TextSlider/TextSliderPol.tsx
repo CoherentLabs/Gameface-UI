@@ -1,4 +1,5 @@
-import { createMemo, JSX } from 'solid-js';
+import { createMemo } from 'solid-js';
+import { JSX } from '@solidjs/web';
 import styles from '@components/Basic/Slider/Slider.module.scss';
 import { createTokenComponent } from '@components/utils/tokenComponents';
 

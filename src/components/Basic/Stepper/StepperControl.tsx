@@ -1,4 +1,5 @@
-import { Accessor, createMemo, JSX, ParentComponent, ParentProps, Show, useContext } from "solid-js";
+import { Accessor, createMemo, ParentComponent, ParentProps, Show, useContext } from "solid-js";
+import { JSX } from "@solidjs/web";
 import styles from './Stepper.module.scss';
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
@@ -20,12 +21,12 @@ interface StepperControlProps extends TokenComponentProps {
     direction: 'prev' | 'next'
 }
 
-const ControlComponent = ({ ControlToken }: { ControlToken: Accessor<ParentProps<ControlTokenProps> | null | undefined> }) => {
+const ControlComponent = (props: { ControlToken: Accessor<ParentProps<ControlTokenProps> | null | undefined> }) => {
     return <>
-        <Show when={ControlToken()?.children}>
-            {ControlToken()?.children}
+        <Show when={props.ControlToken()?.children}>
+            {props.ControlToken()?.children}
         </Show>
-        <Show when={!ControlToken()?.children}>
+        <Show when={!props.ControlToken()?.children}>
             <StepperArrow class={styles['stepper-arrow']} />
         </Show>
     </>
@@ -33,7 +34,7 @@ const ControlComponent = ({ ControlToken }: { ControlToken: Accessor<ParentProps
 
 export const StepperControl: ParentComponent<StepperControlProps> = (props) => {
     const stepperContext = useContext(StepperContext);
-    const ControlToken = useToken(Control, props.parentChildren);
+    const ControlToken = useToken(Control, () => props.parentChildren);
 
     const controlContainerClasses = createMemo(() => {
         const classes = [styles['stepper-control']];

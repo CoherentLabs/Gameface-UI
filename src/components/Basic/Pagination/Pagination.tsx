@@ -1,10 +1,11 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, createContext, createMemo, createSignal, For, onMount, ParentComponent } from "solid-js";
+import { Accessor, createContext, createMemo, createSignal, For, ParentComponent, untrack } from "solid-js";
 import { createTokenComponent, TokenBase } from "@components/utils/tokenComponents";
 import PaginationItem from "./PaginationItem";
 import { Control, PaginationControl } from "./PaginationControl";
 import styles from './Pagination.module.scss';
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
+import exposeRef from "@components/utils/exposeRef";
 
 export interface PaginationRef {
     element: HTMLDivElement,
@@ -34,14 +35,18 @@ interface PaginationItemToken extends Omit<TokenBase, "children"> {
     "selected-class"?: string
 }
 
-export const PaginationContext = createContext<PaginationContext>();
+// `null` default: the parts read it optionally (pattern 1.3.o).
+export const PaginationContext = createContext<PaginationContext | null>(null);
 export const Item = createTokenComponent<PaginationItemToken>();
 
 const Pagination: ParentComponent<PaginationProps> = (props) => {
     const items = createMemo(() => Array.from({ length: props.pageSize }, (_, i) => i + 1));
-    const [index, setIndex] = createSignal(props.pageIndex);
+    // Initial page only, as in 1.x.
+    const initialIndex = untrack(() => props.pageIndex);
+    const [index, setIndex] = createSignal(initialIndex);
+    // Always-current plain copy for next/previous (Solid 2 stages signal writes).
+    let current = initialIndex;
     const length = createMemo(() => items().length);
-    let element!: HTMLDivElement;
 
     const changePage = (index: number) => {
         if (index <= 0 || index > length()) {
@@ -52,7 +57,6 @@ const Pagination: ParentComponent<PaginationProps> = (props) => {
     }
 
     const nextPage = () => {
-        const current = index();
         const isLastIndex = current === length();
 
         if (isLastIndex && !props.loop) return;
@@ -61,7 +65,6 @@ const Pagination: ParentComponent<PaginationProps> = (props) => {
     }
 
     const previousPage = () => {
-        const current = index();
         const isFirstIndex = current === 1;
 
         if (isFirstIndex && !props.loop) return;
@@ -70,6 +73,7 @@ const Pagination: ParentComponent<PaginationProps> = (props) => {
     }
 
     const changeIndex = (newIndex: number) => {
+        current = newIndex;
         setIndex(newIndex);
         props.onChange?.(newIndex);
     }
@@ -86,30 +90,19 @@ const Pagination: ParentComponent<PaginationProps> = (props) => {
         return index() !== length();
     })
 
-    props.componentClasses = styles.pagination;
-
-    onMount(() => {
-        if (!props.ref || !element) return;
-
-        (props.ref as unknown as (ref: any) => void)({
-            element,
-            pageIndex: index,
-            pageSize: length,
-            changeIndex,
-            nextPage,
-            previousPage
-        });
-    });
-
     return (
-        <PaginationContext.Provider value={{ current: index, changePage, nextPage, previousPage }}>
+        <PaginationContext value={{ current: index, changePage, nextPage, previousPage }}>
             <div
-                ref={element!}
-                use:baseComponent={props}
-                use:navigationActions={{
-                    anchor: props.anchor,
-                    ...props.onAction,
-                }}>
+                class={[styles.pagination, props.class]}
+                style={props.style}
+                ref={[
+                    exposeRef<Omit<PaginationRef, 'element'>>(props, { pageIndex: index, pageSize: length, changeIndex, nextPage, previousPage }),
+                    baseComponent(props),
+                    navigationActions({
+                        anchor: props.anchor,
+                        ...props.onAction,
+                    }),
+                ]}>
                 <PaginationControl direction="prev" parentChildren={props.children} visible={showLeftArrow()} />
                 <For each={items()}>
                     {(i) =>
@@ -122,7 +115,7 @@ const Pagination: ParentComponent<PaginationProps> = (props) => {
                 </For>
                 <PaginationControl direction="next" parentChildren={props.children} visible={showRightArrow()} />
             </div>
-        </PaginationContext.Provider>
+        </PaginationContext>
     )
 }
 

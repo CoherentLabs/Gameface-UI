@@ -18,10 +18,10 @@ export const Options = createTokenComponent<OptionsComponentProps>();
 
 export const DropdownOptions: ParentComponent<TokenComponentProps> = (props) => {
     const dropdown = useContext(DropdownContext);
-    const OptionsToken = useToken(Options, props.parentChildren);
-    const OptionsTokens = useTokens(Option, OptionsToken?.()?.children);
-    const TrackToken = useToken(Track, props.parentChildren);
-    const HandleToken = useToken(Handle, props.parentChildren);
+    const OptionsToken = useToken(Options, () => props.parentChildren);
+    const OptionsTokens = useTokens(Option, () => OptionsToken?.()?.children);
+    const TrackToken = useToken(Track, () => props.parentChildren);
+    const HandleToken = useToken(Handle, () => props.parentChildren);
 
     const optionsClasses = createMemo(() => {
         const classes = [style['dropdown-options']];

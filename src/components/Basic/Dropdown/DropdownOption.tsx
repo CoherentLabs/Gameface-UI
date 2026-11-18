@@ -1,4 +1,4 @@
-import { ParentComponent, useContext, ParentProps, onCleanup, onMount, Show } from 'solid-js';
+import { ParentComponent, useContext, ParentProps, onCleanup, onSettled, Show, untrack } from 'solid-js';
 import { CommonDropdownSlotProps, DropdownContext } from './Dropdown';
 import { createTokenComponent } from '@components/utils/tokenComponents';
 import { navigationActions } from '@components/BaseComponent/BaseComponent';
@@ -23,42 +23,41 @@ export const DropdownOption: ParentComponent<{ option: ParentProps<OptionTokenPr
         if (!dropdown?.multiple()) dropdown?.toggle(false);
     }
 
-    onMount(() => {
-        dropdown?.registerOption(props.option.value, props.option.children, element!, props.option.selected);
+    onSettled(() => {
+        untrack(() => dropdown?.registerOption(props.option.value, props.option.children, element!, props.option.selected));
     })
 
     onCleanup(() => {
-        dropdown?.unregisterOption(props.option.value);
+        untrack(() => dropdown?.unregisterOption(props.option.value));
     })
 
     const optionClasses = (option: ParentProps<OptionTokenProps>) => {
-        const classes = [style['dropdown-option']];
-
-        if (option.class) classes.push(option.class);
-        if (dropdown?.isSelected(option.value)) {
-            classes.push(style['dropdown-option-selected']);
-            if (option['class-selected']) classes.push(option['class-selected']);
-        }
-        if (option.disabled) {
-            classes.push(style['dropdown-option-disabled']);
-            if (option['class-disabled']) classes.push(option['class-disabled']);
-        }
-
-        return classes.join(' ');
+        const isSelected = dropdown?.isSelected(option.value);
+        return [
+            style['dropdown-option'],
+            option.class,
+            isSelected && style['dropdown-option-selected'],
+            isSelected && option['class-selected'],
+            option.disabled && style['dropdown-option-disabled'],
+            option.disabled && option['class-disabled'],
+        ];
     }
 
     return <div
-        ref={element}
+        // Plain attribute (was `attr:disabled`, which is a compile error on native elements in Solid 2).
         //@ts-ignore
-        attr:disabled={props.option.disabled || undefined}
-        onclick={() => onClickOption(props.option)}
+        disabled={props.option.disabled || undefined}
+        onClick={() => onClickOption(props.option)}
         onMouseOver={(e: MouseEvent) => (e.currentTarget as HTMLElement).focus()}
         class={optionClasses(props.option)}
         style={{...props.option.style}}
-        use:navigationActions={{'select': () => {
-            dropdown?.selectOption(props.option.value)
-            if (!dropdown?.multiple()) dropdown?.handleNavigationClose();
-        }}}
+        ref={[
+            (node: HTMLDivElement) => { element = node; },
+            navigationActions({'select': () => {
+                dropdown?.selectOption(props.option.value)
+                if (!dropdown?.multiple()) dropdown?.handleNavigationClose();
+            }}),
+        ]}
     >
         <Show when={props.option.children}>
             {props.option.children}

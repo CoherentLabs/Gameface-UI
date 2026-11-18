@@ -1,10 +1,11 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, createSignal, onMount, ParentComponent, createMemo, onCleanup, createEffect, on } from "solid-js";
+import { Accessor, createSignal, ParentComponent, onCleanup, createEffect, untrack } from "solid-js";
 import styles from '@components/Basic/Slider/Slider.module.scss';
 import { clamp } from "@components/utils/clamp";
 import { useToken } from "@components/utils/tokenComponents";
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
+import exposeRef from "@components/utils/exposeRef";
 import { SliderThumb, Thumb } from "../Slider/SliderThumb";
 import { Grid, SliderGrid } from "../Slider/SliderGrid";
 import { SliderTrack, Track } from "../Slider/SliderTrack";
@@ -41,8 +42,21 @@ const TwoHandleSlider: ParentComponent<SliderProps> = (props) => {
     const min = () => props.min ?? 0;
     const max = () => props.max ?? 100;
     const step = () => props.step ?? 1;
-    const [startValue, setStartValue] = createSignal(clamp(props.value?.start ?? min(), min(), max()));
-    const [endValue, setEndValue] = createSignal(clamp(props.value?.end ?? max(), startValue() + step(), max()));
+
+    // Initial values only, as in 1.x (later changes go through the two-way binding below).
+    const initialStart = untrack(() => clamp(props.value?.start ?? min(), min(), max()));
+    const initialEnd = untrack(() => clamp(props.value?.end ?? max(), initialStart + step(), max()));
+    const [startValue, setStartValue] = createSignal(initialStart);
+    const [endValue, setEndValue] = createSignal(initialEnd);
+    // Solid 2 stages writes (a read right after a set returns the old value until
+    // the next microtask). The clamping/drag logic reads one handle right after
+    // writing the other, so it uses these always-current plain copies; the
+    // signals drive rendering.
+    let curStart = initialStart;
+    let curEnd = initialEnd;
+    const writeStart = (value: number) => { curStart = value; setStartValue(value); };
+    const writeEnd = (value: number) => { curEnd = value; setEndValue(value); };
+
     const [activeHandle, setActiveHandle] = createSignal<'start' | 'end'>('start');
     // purely for navigation state
     const [navEngaged, setNavEngaged] = createSignal(false);
@@ -51,23 +65,28 @@ const TwoHandleSlider: ParentComponent<SliderProps> = (props) => {
     const endPercent = () => calculatePercent(endValue(), min(), max());
     const middlePercent = () => endPercent() - startPercent();
 
-    let element!: HTMLDivElement;
     let trackElement!: HTMLDivElement;
     let sliding = false;
     let commitTimeout: ReturnType<typeof setTimeout> | undefined;
-    
+
     let geometry: TrackGeometry;
     let currentStartValue: number,
         currentEndValue: number;
 
-    const ThumbSlot = useToken(Thumb, props.children)
-    const GridSlot = useToken(Grid, props.children)
+    const ThumbSlot = useToken(Thumb, () => props.children)
+    const GridSlot = useToken(Grid, () => props.children)
 
-    createEffect(on([startValue, endValue], ([start, end]) => props.onChange?.({ start, end }), { defer: true }));
+    // Fires once per change of either handle (block body: an apply function's
+    // return value is its cleanup).
+    createEffect(
+        () => ({ start: startValue(), end: endValue() }),
+        (value) => { props.onChange?.(value); },
+        { defer: true }
+    );
     // Two Way Binding
-    createEffect(on(() => props.value, (newValue) => {
+    createEffect(() => props.value, (newValue) => {
         if (newValue) changeValue(newValue);
-    }, {defer: true}));
+    }, { defer: true });
 
     const handleTrackClick = (e: MouseEvent) => {
         geometry = getTrackGeometry(trackElement, e.clientX);
@@ -77,13 +96,13 @@ const TwoHandleSlider: ParentComponent<SliderProps> = (props) => {
         const newValue = min() + (delta / geometry.pixelRange) * valueRange;
         const result = snapValue(newValue);
 
-        const isStartHandle = Math.abs(newValue - startValue()) < Math.abs(newValue - endValue());
+        const isStartHandle = Math.abs(newValue - curStart) < Math.abs(newValue - curEnd);
 
         if (isStartHandle) {
-            setStartValue(clampStartValue(result));
+            writeStart(clampStartValue(result));
             beginActiveDrag('start');
         } else {
-            setEndValue(clampEndValue(result));
+            writeEnd(clampEndValue(result));
             beginActiveDrag('end');
         }
     }
@@ -91,8 +110,8 @@ const TwoHandleSlider: ParentComponent<SliderProps> = (props) => {
     // just attaches the drag, assumes geometry is already calculated
     const beginActiveDrag = (handle: 'start' | 'end') => {
         setActiveHandle(handle);
-        if (handle === 'start') currentStartValue = startValue();
-        else currentEndValue = endValue();
+        if (handle === 'start') currentStartValue = curStart;
+        else currentEndValue = curEnd;
 
         sliding = true;
         window.addEventListener('mousemove', handleMouseMove);
@@ -120,9 +139,9 @@ const TwoHandleSlider: ParentComponent<SliderProps> = (props) => {
         const result = calculateResult(e, base)
 
         if (currHandle === 'start') {
-            setStartValue(clampStartValue(result));
+            writeStart(clampStartValue(result));
         } else {
-            setEndValue(clampEndValue(result));
+            writeEnd(clampEndValue(result));
         }
     }
 
@@ -133,7 +152,7 @@ const TwoHandleSlider: ParentComponent<SliderProps> = (props) => {
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
 
-        props.onChangeEnd?.({ start: startValue(), end: endValue() });
+        props.onChangeEnd?.({ start: curStart, end: curEnd });
     }
 
     const calculateResult = (e: MouseEvent, base: number) => {
@@ -148,51 +167,42 @@ const TwoHandleSlider: ParentComponent<SliderProps> = (props) => {
     const snapValue = (value: number) => snapToStepAndNormalize(value, step(), min(), max());
 
     const clampStartValue = (newValue: number) => {
-        return Math.min(newValue, endValue() - step());   // keep a one-step gap below end
+        return Math.min(newValue, curEnd - step());   // keep a one-step gap below end
     }
 
     const clampEndValue = (newValue: number) => {
-        return Math.max(newValue, startValue() + step());    // keep a one-step gap above start
+        return Math.max(newValue, curStart + step());    // keep a one-step gap above start
     }
-
-    const SliderClasses = createMemo(() => {
-        const classes = [styles.slider];
-
-        if (ThumbSlot()) classes.push(styles['with-thumb'])
-        if (GridSlot()) classes.push(styles['with-grid'])
-
-        return classes.join(' ');
-    });
 
     /** Sets both handles at once, snapping each to step and keeping them from crossing. */
     const changeValue = (newValue: TwoHandleSliderValue) => {
         const start = Math.min(newValue.start, newValue.end - step());
         const end = Math.max(newValue.end, newValue.start + step());
 
-        setStartValue(snapValue(start));
-        setEndValue(snapValue(end));
+        writeStart(snapValue(start));
+        writeEnd(snapValue(end));
     }
 
     /** Sets the start handle, snapped to step and capped one step below the end handle. */
     const changeStart = (newStart: number) => {
         const clampedStart = clampStartValue(newStart);
-        setStartValue(snapValue(clampedStart));
+        writeStart(snapValue(clampedStart));
     }
 
     /** Sets the end handle, snapped to step and floored one step above the start handle. */
     const changeEnd = (newEnd: number) => {
         const clampedEnd = clampEndValue(newEnd);
-        setEndValue(snapValue(clampedEnd));
+        writeEnd(snapValue(clampedEnd));
     }
 
     /** Nudges the start handle by one step in the given direction (1 = up, -1 = down). */
     const stepStart = (direction: 1 | -1) => {
-        changeStart(startValue() + step() * direction);
+        changeStart(curStart + step() * direction);
     }
 
     /** Nudges the end handle by one step in the given direction (1 = up, -1 = down). */
     const stepEnd = (direction: 1 | -1) => {
-        changeEnd(endValue() + step() * direction);
+        changeEnd(curEnd + step() * direction);
     }
 
     // gamepad movement has no release event so we debounce a synthetic commit
@@ -203,7 +213,7 @@ const TwoHandleSlider: ParentComponent<SliderProps> = (props) => {
         if (commitTimeout) clearTimeout(commitTimeout);
         commitTimeout = setTimeout(() => {
             commitTimeout = undefined;
-            props.onChangeEnd?.({ start: startValue(), end: endValue() });
+            props.onChangeEnd?.({ start: curStart, end: curEnd });
         }, 250);
     }
 
@@ -215,22 +225,6 @@ const TwoHandleSlider: ParentComponent<SliderProps> = (props) => {
         }
         scheduleCommit();
     }
-
-    props.componentClasses = () => SliderClasses();
-
-    onMount(() => {
-        if (!props.ref || !element) return;
-
-        (props.ref as (ref: TwoHandleSliderRef) => void)({
-            element,
-            value: () => ({ start: startValue(), end: endValue() }),
-            changeValue,
-            changeStart,
-            changeEnd,
-            stepStart,
-            stepEnd
-        });
-    });
 
     onCleanup(() => {
         handleMouseUp();
@@ -244,30 +238,41 @@ const TwoHandleSlider: ParentComponent<SliderProps> = (props) => {
     const defaultActions = {
         'move-left':  () => { stepActive(-1); },
         'move-right': () => { stepActive(+1); },
-        'select':     () => setActiveHandle(h => h === 'start' ? 'end' : 'start'),
+        'select':     () => { setActiveHandle(h => h === 'start' ? 'end' : 'start'); },
     }
 
     return (
         <div
-            ref={element!}
-            on:focusin={() => setNavEngaged(true)}
-            on:focusout={() => setNavEngaged(false)}
-            use:baseComponent={props}
-            use:navigationActions={mergeNavigationActions(props, defaultActions)}>
+            class={[styles.slider, ThumbSlot() && styles['with-thumb'], GridSlot() && styles['with-grid'], props.class]}
+            style={props.style}
+            onFocusIn={() => setNavEngaged(true)}
+            onFocusOut={() => setNavEngaged(false)}
+            ref={[
+                exposeRef<Omit<TwoHandleSliderRef, 'element'>>(props, {
+                    value: () => ({ start: startValue(), end: endValue() }),
+                    changeValue,
+                    changeStart,
+                    changeEnd,
+                    stepStart,
+                    stepEnd
+                }),
+                baseComponent(props),
+                navigationActions(mergeNavigationActions(props, defaultActions)),
+            ]}>
             <SliderTrack handleClick={handleTrackClick} ref={trackElement} parentChildren={props.children}>
                 {/* Left */}
-                <SliderHandle 
-                    percent={startPercent} 
-                    handleMouseDown={handleMouseDownStartHandle} 
-                    parentChildren={props.children} 
-                    active={() => activeHandle() === 'start' && navEngaged()} 
+                <SliderHandle
+                    percent={startPercent}
+                    handleMouseDown={handleMouseDownStartHandle}
+                    parentChildren={props.children}
+                    active={() => activeHandle() === 'start' && navEngaged()}
                     dragged={() => activeHandle() === 'start'} />
                 <SliderThumb value={startValue} percent={startPercent} parentChildren={props.children} />
                 {/* Right */}
-                <SliderHandle 
-                    percent={endPercent} 
-                    handleMouseDown={handleMouseDownEndHandle} 
-                    parentChildren={props.children} 
+                <SliderHandle
+                    percent={endPercent}
+                    handleMouseDown={handleMouseDownEndHandle}
+                    parentChildren={props.children}
                     active={() => activeHandle() === 'end' && navEngaged()}
                     dragged={() => activeHandle() === 'end'} />
                 <SliderThumb value={endValue} percent={endPercent} parentChildren={props.children} />

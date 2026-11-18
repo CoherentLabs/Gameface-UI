@@ -1,4 +1,5 @@
-import { Accessor, createContext, createEffect, createMemo, createSignal, createUniqueId, DEV, JSX, on, onMount, ParentComponent } from 'solid-js';
+import { Accessor, createContext, createEffect, createSignal, createUniqueId, DEV, onSettled, ParentComponent, untrack } from 'solid-js';
+import { JSX } from '@solidjs/web';
 import { DropdownOptions, Handle, Options, Track } from './DropdownOptions';
 import { Option } from './DropdownOption';
 import { DropdownTrigger, Icon, Placeholder, Trigger } from './DropdownTrigger';
@@ -7,6 +8,7 @@ import { waitForFrames } from '@components/utils/waitForFrames';
 import getScrollableParent from '@components/utils/getScrollableParent';
 import baseComponent, { navigationActions } from '@components/BaseComponent/BaseComponent';
 import mergeNavigationActions from '@components/utils/mergeNavigationActions';
+import exposeRef from '@components/utils/exposeRef';
 import { useNavigation } from '@components/Utility/Navigation/Navigation';
 import style from './Dropdown.module.scss';
 export interface CommonDropdownSlotProps {
@@ -23,7 +25,8 @@ export interface DropdownRef extends BaseComponentRef {
     toggle: (isOpened: boolean) => void
 }
 
-export const DropdownContext = createContext<DropdownContextValue>();
+// `null` default: the parts read it optionally (pattern 1.3.o).
+export const DropdownContext = createContext<DropdownContextValue | null>(null);
 
 interface DropdownContextValue {
     selected: Accessor<string>;
@@ -49,23 +52,26 @@ interface DropdownProps extends ComponentProps {
 }
 
 const Dropdown: ParentComponent<DropdownProps> = (props) => {
-    let element!: HTMLDivElement;
+    let element: HTMLDivElement | undefined;
     const [selected, setSelected] = createSignal('');
     const [selectedValues, setSelectedValues] = createSignal<string[]>([]);
     const [open, setOpen] = createSignal(false);
     const [isInverted, setIsInverted] = createSignal(false);
-    const [ready, setReady] = createSignal(false);
-    
+    // Plain flag (not a signal): only read inside the onChange effect below.
+    let ready = false;
+
     const nav = useNavigation();
     let previousNavScope: string | undefined;
     const areaID = nav && `dropdown-area-${createUniqueId()}`;
 
     const options = new Map<string, {label: string | JSX.Element, element: HTMLElement}>();
 
-    createEffect(on(
+    // Block body: an apply function's return value is its cleanup.
+    createEffect(
         () => props.multiple ? selectedValues() : selected(),
-        (next) => { if (ready()) props.onChange?.(next); },
-    { defer: true } ));
+        (next) => { if (ready) props.onChange?.(next); },
+        { defer: true }
+    );
 
     const applyValue = (next: string | string[] | undefined) => {
         if (next === undefined) return;
@@ -88,15 +94,15 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
         setSelected(options.has(value) ? value : '');
     };
 
-    createEffect(on(() => props.value, applyValue, { defer: true }));
+    createEffect(() => props.value, (value) => { applyValue(value); }, { defer: true });
 
     const registerOption = (value: string, label: string | JSX.Element, element: HTMLElement, selected?: boolean) => {
         options.set(value, {label, element});
-        if (props.value !== undefined) return; 
+        if (props.value !== undefined) return;
 
         if (selected) selectOption(value);
     };
-    const unregisterOption = (value: string) => options.delete(value);
+    const unregisterOption = (value: string) => { options.delete(value); };
 
     const selectOption = (value: string) => {
         if (!options.has(value)) {
@@ -141,18 +147,6 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
 
     const multiple = () => !!props.multiple;
 
-    const dropdownClasses = createMemo(() => {
-        const classes = [style.dropdown];
-
-        if (props.disabled) {
-            classes.push(style['dropdown-disabled']);
-
-            if (props['class-disabled']) classes.push(`${props['class-disabled']}`);
-        }
-
-        return classes.join(' ');
-    });
-
     const toggle = (isOpened: boolean) => {
         if (props.disabled) return;
 
@@ -169,16 +163,15 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
     }
 
     const closeDropdown = (e: MouseEvent) => {
-        if (!element.contains(e.target as Node)) {
+        if (element && !element.contains(e.target as Node)) {
             setOpen(false);
             if (areaID) nav?.switchArea(previousNavScope!);
             document.removeEventListener('click', closeDropdown);
         }
     };
 
-    props.componentClasses = () => dropdownClasses();
-
     function handlePosition() {
+        if (!element) return;
         const clipParent = getScrollableParent(element);
         const clipRect = !clipParent ? { top: 0, height: window.innerHeight } : clipParent.getBoundingClientRect();
         const dropdownRect = element.getBoundingClientRect();
@@ -208,29 +201,19 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
 
     const handleNavigationClose = () => {
         if (!open()) return;
-        
+
         toggle(false);
         nav?.switchArea(previousNavScope!);
     }
 
-    onMount(() => {
+    onSettled(() => {
         waitForFrames(() => {
             handlePosition()
         });
+        // Options register in their own onSettled; apply `value` once they have.
         queueMicrotask(() => {
-            applyValue(props.value);
-            setReady(true);
-        });
-        if (!props.ref || !element) return;
-
-        (props.ref as unknown as (ref: any) => void)({
-            selected,
-            selectedValues,
-            selectOption,
-            deselectOption,
-            deselectAll,
-            toggle,
-            element,
+            untrack(() => applyValue(props.value));
+            ready = true;
         });
     });
 
@@ -255,15 +238,21 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
     }
 
     return (
-        <DropdownContext.Provider value={DropdownContextValue}>
-            <div ref={element}
-                use:baseComponent={props}
-                use:navigationActions={mergeNavigationActions(props, defaultActions)}
+        <DropdownContext value={DropdownContextValue}>
+            <div
+                class={[style.dropdown, props.disabled && style['dropdown-disabled'], props.disabled && props['class-disabled'], props.class]}
+                style={props.style}
+                ref={[
+                    (node: HTMLDivElement) => { element = node; },
+                    exposeRef(props, { selected, selectedValues, selectOption, deselectOption, deselectAll, toggle }),
+                    baseComponent(props),
+                    navigationActions(mergeNavigationActions(props, defaultActions)),
+                ]}
             >
                 <DropdownTrigger parentChildren={props.children} />
-                <DropdownOptions parentChildren={props.children}></DropdownOptions>
+                <DropdownOptions parentChildren={props.children} />
             </div>
-        </DropdownContext.Provider>
+        </DropdownContext>
     );
 };
 

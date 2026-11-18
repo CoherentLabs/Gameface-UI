@@ -41,6 +41,7 @@ export const createTokenComponent = <T extends Record<string, any>>(withId = fal
     return createToken((props: ParentProps<T>) => {
         if (!withId) return { props };
 
-        return { props: merge(props, { _id: createUniqueId() }) as ParentProps<T> & { _id?: string } };
+        const propsWithId = merge(props, { _id: createUniqueId() }) as ParentProps<T> & { _id?: string };
+        return { props: propsWithId };
     }, emptyToken);
 };

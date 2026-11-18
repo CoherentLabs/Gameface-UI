@@ -1,10 +1,11 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, createContext, createMemo, createSignal, createUniqueId, For, onMount, ParentComponent } from "solid-js";
+import { Accessor, createContext, createMemo, createSignal, createUniqueId, For, ParentComponent, untrack } from "solid-js";
 import { AccordionPanel, Panel, PanelTokenProps } from "./AccordionPanel";
 import { Heading, Icon } from "./AccordionHeading";
 import { Body } from "./AccordionBody";
 import { useTokens } from "@components/utils/tokenComponents";
 import baseComponent from "@components/BaseComponent/BaseComponent";
+import exposeRef from "@components/utils/exposeRef";
 import styles from './Accordion.module.scss';
 
 export interface AccordionRef {
@@ -48,11 +49,11 @@ function initPanels(panelData: PanelData[], multiple = false): string[] {
     return arr;
 }
 
-export const AccordionContext = createContext<AccordionContext>();
+// `null` default (pattern 1.3.o).
+export const AccordionContext = createContext<AccordionContext | null>(null);
 
 const Accordion: ParentComponent<AccordionProps> = (props) => {
-    let element!: HTMLDivElement;
-    const PanelTokens = useTokens(Panel, props.children);
+    const PanelTokens = useTokens(Panel, () => props.children);
     const panelData = createMemo(() =>
         PanelTokens()?.map(panel => ({
             id: panel.title ?? createUniqueId(),
@@ -60,7 +61,8 @@ const Accordion: ParentComponent<AccordionProps> = (props) => {
         }))
     );
 
-    const [expandedPanels, setExpandedPanels] = createSignal<string[]>(initPanels(panelData()!, props.multiple));
+    // Initially expanded panels, read once as in 1.x.
+    const [expandedPanels, setExpandedPanels] = createSignal<string[]>(untrack(() => initPanels(panelData() ?? [], props.multiple)));
 
     const toggle = (id: string) => {
         setExpandedPanels(prev => {
@@ -134,42 +136,21 @@ const Accordion: ParentComponent<AccordionProps> = (props) => {
         props.onChange?.(title);
     }
 
-    const accordionClasses = createMemo(() => {
-        const classes = [styles.accordion];
-
-        if (props.disabled) {
-            classes.push(styles.disabled);
-            classes.push(props["class-disabled"] ?? '');
-        }
-
-        return classes.join(' ');
-    });
-
-    props.componentClasses = () => accordionClasses();
-
-    onMount(() => {
-        if (!props.ref || !element) return;
-
-        (props.ref as unknown as (ref: any) => void)({
-            element,
-            expand,
-            collapse,
-            expandAll,
-            collapseAll
-        });
-    });
-
     return (
-        <AccordionContext.Provider value={{ expandedPanels, toggle }}>
+        <AccordionContext value={{ expandedPanels, toggle }}>
             <div
-                ref={element!}
-                use:baseComponent={props}
+                class={[styles.accordion, props.disabled && styles.disabled, props.disabled && props["class-disabled"], props.class]}
+                style={props.style}
+                ref={[
+                    exposeRef<Omit<AccordionRef, 'element'>>(props, { expand, collapse, expandAll, collapseAll }),
+                    baseComponent(props),
+                ]}
             >
                 <For each={panelData()}>
                     {(data) => <AccordionPanel id={data.id} panel={data.panel} />}
                 </For>
             </div>
-        </AccordionContext.Provider>
+        </AccordionContext>
     )
 }
 

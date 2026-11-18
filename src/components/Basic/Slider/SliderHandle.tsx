@@ -1,6 +1,7 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import styles from './Slider.module.scss';
-import { createMemo, JSX } from 'solid-js';
+import { createMemo } from 'solid-js';
+import { JSX } from '@solidjs/web';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 
 interface SliderHandleProps {
@@ -20,7 +21,7 @@ interface SliderHandleComponentProps extends TokenComponentProps {
 export const Handle = createTokenComponent<SliderHandleProps>();
 
 export const SliderHandle = (props: SliderHandleComponentProps) => {
-    const HandleToken = useToken(Handle, props.parentChildren);
+    const HandleToken = useToken(Handle, () => props.parentChildren);
 
     const handleClasses = createMemo(() => {
         const classes = [styles.handle];

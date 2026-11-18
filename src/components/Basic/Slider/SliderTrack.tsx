@@ -1,6 +1,7 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import styles from './Slider.module.scss';
-import { createMemo, JSX, ParentComponent } from 'solid-js';
+import { createMemo, ParentComponent } from 'solid-js';
+import { JSX } from '@solidjs/web';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 
 interface SliderTrackProps {
@@ -16,7 +17,7 @@ interface SliderTrackComponentProps extends TokenComponentProps {
 export const Track = createTokenComponent<SliderTrackProps>();
 
 export const SliderTrack: ParentComponent<SliderTrackComponentProps> = (props) => {
-    const TrackToken = useToken(Track, props.parentChildren);
+    const TrackToken = useToken(Track, () => props.parentChildren);
 
     const trackClasses = createMemo(() => {
         const classes = [styles.track];
