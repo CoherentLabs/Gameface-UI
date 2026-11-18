@@ -20,7 +20,7 @@ const Relative: ParentComponent<RelativeProps> = (props) => {
         }
     });
 
-    return <LayoutBase {...props} class={[styles.relative, props.class]} componentStyles={positionStyle} />
+    return <LayoutBase {...props} class={[styles.relative, props.class]} style={{ ...positionStyle(), ...props.style }} />
 }
 
 export default Relative;

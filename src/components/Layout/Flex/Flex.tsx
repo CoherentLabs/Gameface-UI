@@ -36,7 +36,7 @@ const Flex: ParentComponent<FlexProps> = (props) => {
                 props['align-content'] && styles[`flex-content-${props['align-content']}`],
                 props.class,
             ]}
-            componentStyles={gapStyles()} 
+            style={{ ...gapStyles(), ...props.style }} 
         />
     );
 }

@@ -375,6 +375,9 @@ export function style(
   }
   for (const key of Object.keys(nextProps)) {
     const next = nextProps[key];
+    // Present but empty (`{ height: undefined }`, e.g. from `...props.style`):
+    // nothing to set. The loop above already removed it if it was set before.
+    if (next == null) continue;
     // A structured descriptor (NumericCSSProperty/TransformStyle) can carry
     // an un-invoked accessor, so it can keep the same object identity across
     // runs even though the accessor's value changed underneath it. Always

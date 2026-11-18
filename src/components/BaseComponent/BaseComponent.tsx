@@ -5,7 +5,6 @@ import eventBus from "@components/Utility/EventBus";
 import { waitForFrames } from "@components/utils/waitForFrames";
 import { DEFAULT_ACTION_NAMES } from "@components/Utility/Navigation/defaults";
 import { DefaultActions } from "@components/Utility/Navigation/types";
-import { resetStyleCache, setStyleProperty } from "./gameface-dom";
 
 export type RefCallback<T extends Element = Element> = (el: T) => void;
 
@@ -18,91 +17,6 @@ const baseEventsSet = new Set([
 ]);
 
 type ElementGetter = () => HTMLElement | undefined;
-
-type StyleObject = Record<string, string | number | null | undefined>;
-
-// Delegates to gameface-dom.ts's setStyleProperty rather than writing
-// el.style directly - props.style is typed to accept NumericCSSProperty
-// ({ value, unit }) and TransformStyle, not just plain CSS strings/numbers,
-// and only setStyleProperty (with its per-element CSSTOM cache) understands
-// those shapes. Writing them through el.style/CSSStyleDeclaration directly
-// would stringify them to "[object Object]".
-function reconcileStyles(el: HTMLElement, next: any, prev: any) {
-    for (const key in prev) {
-        if (next[key] == null) setStyleProperty(el, key, null);
-    }
-
-    for (const key in next) {
-        const value = next[key];
-        // NumericCSSProperty/TransformStyle can carry an un-invoked accessor
-        // (`value: Accessor<number>`), so the descriptor object can keep the
-        // same identity across effect runs even though the accessor's value
-        // changed underneath it - an identity check alone would skip calling
-        // setStyleProperty and the new value would never reach the DOM.
-        // Always reprocess structured values; gameface-dom.ts's own
-        // per-property cache already skips the actual native write when the
-        // resolved value hasn't changed, so this only costs a comparison.
-        const isStructured = value !== null && typeof value === "object";
-        if (isStructured || prev[key] !== value) setStyleProperty(el, key, value);
-    }
-}
-
-function handleStyles(getEl: ElementGetter, props: ComponentProps) {
-    let prevStyles: StyleObject = {};
-
-    createEffect(
-        // Compute (tracked): read the style props. Evaluating the props here is
-        // what subscribes to values inside them, e.g. `{ width: { value: w() } }`.
-        () => {
-            const compRaw = props.componentStyles;
-            return {
-                compStyles: typeof compRaw === "function" ? compRaw() : compRaw,
-                extStyles: props.style,
-            };
-        },
-        // Apply (untracked): write them to the element.
-        ({ compStyles, extStyles }) => {
-            const el = getEl();
-            if (!el) return;
-            const styles = el.style;
-
-            if (!compStyles && !extStyles) {
-                if (Object.keys(prevStyles).length > 0) {
-                    resetStyleCache(el);
-                    el.removeAttribute("style");
-                    prevStyles = {};
-                }
-                return;
-            }
-
-            const isCompString = typeof compStyles === "string";
-            const isExtString = typeof extStyles === "string";
-
-            if (isCompString || isExtString) {
-                const compStr = isCompString ? compStyles : "";
-                const extStr = isExtString ? extStyles : "";
-                const finalString = [compStr, extStr].filter(part => part && String(part).trim() !== "").join(";");
-
-                if (styles.cssText !== finalString) {
-                    resetStyleCache(el);
-                    styles.cssText = finalString;
-                }
-
-                prevStyles = {};
-                return;
-            }
-
-            const nextStyles: StyleObject = {
-                ...(compStyles as StyleObject || {}),
-                ...(extStyles as StyleObject || {})
-            };
-
-            reconcileStyles(el, nextStyles, prevStyles);
-
-            prevStyles = nextStyles;
-        }
-    );
-}
 
 // `attr:*` props on Gameface UI components (e.g. `<Block attr:id="x" />`) are
 // forwarded to the element as attributes. On components the compiler still
@@ -226,16 +140,18 @@ export function navigationActions(config: NavigationActionsConfig | undefined): 
     };
 }
 
-// Classes are not handled here. Each component puts them on its root element with
-// Solid's native `class`, own classes first and `props.class` last:
+// Classes and styles are not handled here. Each component puts them on its root
+// element with Solid's native `class` and `style`, its own values first and the
+// user's last:
 //   class={[styles.x, { [styles.y]: cond() }, props.class]}
-// (decision 1.3.u in the migration notes).
+//   style={{ ...ownStyles, ...props.style }}   (or just style={props.style})
+// `style` compiles to gameface-dom's style(), so it still goes through CSSTOM
+// (decisions 1.3.u and 1.3.w in the migration notes).
 function baseComponent(props: ComponentProps): RefCallback {
     // Setup (owned): effects and cleanup.
     let el: HTMLElement | undefined;
     const getEl = () => el;
 
-    handleStyles(getEl, props);
     handleAttrs(getEl, props);
 
     const listeners = collectEvents(props);

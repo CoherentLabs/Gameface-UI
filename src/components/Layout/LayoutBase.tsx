@@ -13,7 +13,7 @@ const LayoutBase: ParentComponent<ComponentProps> = (props) => {
     };
 
     return (
-        <div class={props.class} ref={[exposeRef(props, () => props.refObject), baseComponent(props), navigationActions(navConfig())]}>
+        <div class={props.class} style={props.style} ref={[exposeRef(props, () => props.refObject), baseComponent(props), navigationActions(navConfig())]}>
             {props.children}
         </div>
     );

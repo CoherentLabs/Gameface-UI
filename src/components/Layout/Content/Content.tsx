@@ -7,7 +7,7 @@ const Content: ParentComponent<LayoutSectionProps> = (props) => {
     return <LayoutBase 
         {...props} 
         class={[styles.content, props.class]} 
-        componentStyles={{'flex-basis': props.basis ? `${props.basis}%` : ""}} />
+        style={{ 'flex-basis': props.basis ? `${props.basis}%` : "", ...props.style }} />
 }
 
 export default Content;

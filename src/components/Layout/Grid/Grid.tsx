@@ -78,7 +78,7 @@ const Grid: ParentComponent<GridProps> = (props) => {
     onSettled(() => { warnIfUnsupported(props, "gap"); });
 
     return (
-        <LayoutBase {...props} class={[styles.Grid, props.class]} componentStyles={gridStyles()} refObject={gridObjectRef}>
+        <LayoutBase {...props} class={[styles.Grid, props.class]} style={{ ...gridStyles(), ...props.style }} refObject={gridObjectRef}>
             <GridContext value={{ placeTile }}>
                 {props.children}
                 <For each={gridTiles()}>

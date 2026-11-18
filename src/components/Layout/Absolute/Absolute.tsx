@@ -27,7 +27,7 @@ const Absolute: ParentComponent<AbsoluteProps> = (props) => {
         return typeof center === "boolean" ? styles.center : styles[`center-${center.toLowerCase()}`];
     };
 
-    return <LayoutBase {...props} class={[styles.absolute, centerClass(), props.class]} componentStyles={positionStyle} />
+    return <LayoutBase {...props} class={[styles.absolute, centerClass(), props.class]} style={{ ...positionStyle(), ...props.style }} />
 }
 
 export default Absolute;

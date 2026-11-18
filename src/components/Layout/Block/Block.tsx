@@ -8,9 +8,10 @@ interface BlockProps extends ComponentBaseProps {
 }
 
 const Block: ParentComponent<BlockProps> = (props) => {
-    return <LayoutBase {...props} componentStyles={{
+    return <LayoutBase {...props} style={{
         width: props.width ?? undefined,
-        height: props.height ?? undefined
+        height: props.height ?? undefined,
+        ...props.style
     }}/>
 }
 

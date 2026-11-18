@@ -6,6 +6,7 @@ import exposeRef from "@components/utils/exposeRef";
 const TextBlock: ParentComponent<ComponentProps> = (props) => {
     return <p
         class={props.class}
+        style={props.style}
         ref={[
             exposeRef(props),
             baseComponent(props),

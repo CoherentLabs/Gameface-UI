@@ -8,7 +8,7 @@ interface Layout3DProps extends ComponentBaseProps {
 }
 
 const Layout3D: ParentComponent<Layout3DProps> = (props) => {
-    return <LayoutBase componentStyles={{ perspective: `${props.distance}` }} {...props} class={[styles.layout3D, props.class]} />
+    return <LayoutBase {...props} class={[styles.layout3D, props.class]} style={{ perspective: `${props.distance}`, ...props.style }} />
 }
 
 export default Layout3D

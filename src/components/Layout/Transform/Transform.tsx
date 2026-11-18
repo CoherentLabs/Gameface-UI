@@ -82,7 +82,7 @@ const Transform: ParentComponent<Transform> = (props) => {
     });
 
 
-    return <LayoutBase {...props} componentStyles={transformStyles} />
+    return <LayoutBase {...props} style={{ ...transformStyles(), ...props.style }} />
 }
 
 export default Transform
