@@ -1,7 +1,8 @@
-import { Accessor, For, ParentComponent, ParentProps, createContext, createEffect, onCleanup, onMount, useContext } from 'solid-js';
+import { Accessor, For, ParentComponent, ParentProps, createContext, createEffect, onSettled, untrack, useContext } from 'solid-js';
 import { ComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent, useTokens } from '@components/utils/tokenComponents';
 import baseComponent from "@components/BaseComponent/BaseComponent";
+import exposeRef from '@components/utils/exposeRef';
 import styles from './Trackers.module.scss';
 import { GAMEFACE_VERSION, verIsAtLeast } from '@components/utils/gamefaceVersion';
 import hasEngine from '@components/utils/hasEngine';
@@ -126,7 +127,8 @@ interface TrackersContextValue {
     unregisterItem: (id: string) => void;
 }
 
-const TrackersContext = createContext<TrackersContextValue>();
+// Null default: Solid 2 throws when a context without a default is read outside its provider.
+const TrackersContext = createContext<TrackersContextValue | null>(null);
 
 // scale/rotate accept either a plain number (set once, never re-read) or a
 // signal getter (re-read reactively). This is the only place that cares which.
@@ -148,41 +150,48 @@ const TrackersItem: ParentComponent<{ token: TrackerItemTokenProps }> = (props) 
     const ctx = useContext(TrackersContext);
     let el!: HTMLDivElement;
 
-    props.token.componentClasses = styles['trackers-item'];
+    // Whether scale/rotate are used decides the shape of the transform list, so it's
+    // read once (as in 1.x); their values stay reactive through the effect below.
+    const { scaleIndex, rotateIndex } = untrack(() => {
+        const hasScale = props.token.scale !== undefined;
+        const hasRotate = props.token.rotate !== undefined;
+        return {
+            scaleIndex: hasScale ? 1 : -1,
+            rotateIndex: hasRotate ? (hasScale ? 2 : 1) : -1,
+        };
+    });
+    let transform: CSSTransformValue | undefined;
 
-    onMount(() => {
-        if (import.meta.env.DEV && (props.token.style as { transform?: unknown } | undefined)?.transform && !warnedOwnTransform.has(el)) {
-            warnedOwnTransform.add(el);
-            console.warn(`[Trackers] <Trackers.Item id="${props.token.id}"> sets its own "transform" in style - Trackers controls this element's transform for live position updates (and the scale/rotate props, if used). Your value will be overwritten on the next update.`);
-        }
+    // scale/rotate share the exact same per-element CSSTransformValue that
+    // writeTransform's translate lives in (index 0) - pre-seed it as soon as the
+    // element exists, before registering, so writeTransform's own lazy-create fallback
+    // never fires for this element and there's only ever one parsed transform list.
+    const seedTransform = (node: HTMLDivElement) => {
+        el = node;
+        if (scaleIndex === -1 && rotateIndex === -1) return;
 
-        // scale/rotate share the exact same per-element CSSTransformValue that
-        // writeTransform's translate lives in (index 0) - pre-seed it here,
-        // before registering, so writeTransform's own lazy-create fallback never
-        // fires for this element and there's only ever one parsed transform list.
-        if (props.token.scale !== undefined || props.token.rotate !== undefined) {
-            let parseStr = 'translate(0px, 0px)';
-            let scaleIndex = -1;
-            let rotateIndex = -1;
+        let parseStr = 'translate(0px, 0px)';
+        if (scaleIndex !== -1) parseStr += ' scale(1)';
+        if (rotateIndex !== -1) parseStr += ' rotate(0deg)';
 
-            if (props.token.scale !== undefined) {
-                scaleIndex = 1;
-                parseStr += ' scale(1)';
-            }
-            if (props.token.rotate !== undefined) {
-                rotateIndex = scaleIndex !== -1 ? 2 : 1;
-                parseStr += ' rotate(0deg)';
-            }
+        // eslint-disable-next-line gameface/js-partial-member-access
+        transform = CSSStyleValue.parse('transform', parseStr) as CSSTransformValue;
+        transformCache.set(node, transform);
+    };
 
-            // eslint-disable-next-line gameface/js-partial-member-access
-            const transform = CSSStyleValue.parse('transform', parseStr) as CSSTransformValue;
-            transformCache.set(el, transform);
-
-            createEffect(() => {
+    if (scaleIndex !== -1 || rotateIndex !== -1) {
+        createEffect(
+            // Compute (tracked): a signal getter passed as scale/rotate is read here.
+            () => [
+                scaleIndex !== -1 ? resolveScaleOrRotate(props.token.scale!) : 1,
+                rotateIndex !== -1 ? resolveScaleOrRotate(props.token.rotate!) : 0,
+            ],
+            // Apply: write the values into the shared CSSTOM transform.
+            ([s, r]) => {
+                if (!transform) return;
                 let changed = false;
 
                 if (scaleIndex !== -1) {
-                    const s = resolveScaleOrRotate(props.token.scale!);
                     const comp = transform[scaleIndex] as CSSScale;
                     if ((comp.x as CSSUnitValue).value !== s) {
                         (comp.x as CSSUnitValue).value = s;
@@ -192,7 +201,6 @@ const TrackersItem: ParentComponent<{ token: TrackerItemTokenProps }> = (props) 
                 }
 
                 if (rotateIndex !== -1) {
-                    const r = resolveScaleOrRotate(props.token.rotate!);
                     const comp = transform[rotateIndex] as CSSRotate;
                     if ((comp.angle as CSSUnitValue).value !== r) {
                         (comp.angle as CSSUnitValue).value = r;
@@ -208,16 +216,26 @@ const TrackersItem: ParentComponent<{ token: TrackerItemTokenProps }> = (props) 
                     }
                     styleMap.set('transform', transform);
                 }
-            });
+            }
+        );
+    }
+
+    onSettled(() => {
+        if (import.meta.env.DEV && (props.token.style as { transform?: unknown } | undefined)?.transform && !warnedOwnTransform.has(el)) {
+            warnedOwnTransform.add(el);
+            console.warn(`[Trackers] <Trackers.Item id="${props.token.id}"> sets its own "transform" in style - Trackers controls this element's transform for live position updates (and the scale/rotate props, if used). Your value will be overwritten on the next update.`);
         }
 
-        ctx?.registerItem(props.token.id, el);
+        const id = props.token.id;
+        ctx?.registerItem(id, el);
+        return () => ctx?.unregisterItem(id);
     });
 
-    onCleanup(() => ctx?.unregisterItem(props.token.id));
-
     return (
-        <div ref={el} use:baseComponent={props.token}>
+        <div
+            class={[styles['trackers-item'], props.token.class]}
+            style={props.token.style}
+            ref={[seedTransform, baseComponent(props.token)]}>
             {props.token.children}
         </div>
     );
@@ -252,37 +270,37 @@ const Trackers: ParentComponent<TrackersProps> = (props) => {
         }
     }
 
-    const event = eventNameFor(props.id);
+    onSettled(() => {
+        // The id is read once: a <Trackers> keeps the channel it registered on.
+        const id = props.id;
+        const event = eventNameFor(id);
 
-    onMount(() => {
-        const previous = registry.get(props.id);
+        const previous = registry.get(id);
         if (previous) {
-            if (import.meta.env.DEV) console.warn(`[Trackers] Another <Trackers id="${props.id}"> is already mounted - the earlier instance will stop receiving updates.`);
+            if (import.meta.env.DEV) console.warn(`[Trackers] Another <Trackers id="${id}"> is already mounted - the earlier instance will stop receiving updates.`);
             if (hasEngine()) window.engine!.off(event, previous.handleEvent);
         }
 
-        registry.set(props.id, { event, handleEvent });
+        registry.set(id, { event, handleEvent });
 
         if (hasEngine()) window.engine!.on(event, handleEvent);
+
+        return () => {
+            if (registry.get(id)?.handleEvent === handleEvent) registry.delete(id);
+
+            if (hasEngine()) {
+                window.engine!.off(event, handleEvent);
+            }
+        };
     });
-
-    onCleanup(() => {
-        if (registry.get(props.id)?.handleEvent === handleEvent) registry.delete(props.id);
-
-        if (hasEngine()) {
-            window.engine!.off(event, handleEvent);
-        }
-    });
-
-    props.componentClasses = styles.trackers;
 
     return (
-        <div use:baseComponent={props}>
-            <TrackersContext.Provider value={{ registerItem, unregisterItem }}>
+        <div class={[styles.trackers, props.class]} style={props.style} ref={[exposeRef(props), baseComponent(props)]}>
+            <TrackersContext value={{ registerItem, unregisterItem }}>
                 <For each={itemTokens() ?? []}>
                     {(token) => <TrackersItem token={token} />}
                 </For>
-            </TrackersContext.Provider>
+            </TrackersContext>
         </div>
     );
 };

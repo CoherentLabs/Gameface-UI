@@ -1,4 +1,4 @@
-import { Show, createSignal, onCleanup, onMount } from "solid-js";
+import { Show, createSignal, onSettled } from "solid-js";
 import Trackers, { updateTrackers } from "@components/Performance/Trackers/Trackers";
 import './trackers.css';
 import selectors from "../../../shared/trackers-selectors.json";
@@ -10,7 +10,8 @@ const UNKNOWN_TRACKERS_ID = 'test-trackers-does-not-exist';
 // the mount count lets a test tell a fresh mount apart from the previous one
 // (same id, new element) after it's been torn down and brought back.
 function Item4(props: { onItemMount: () => void }) {
-    onMount(() => props.onItemMount());
+    // Block body: onSettled treats a returned value as a cleanup and halts on a non-function.
+    onSettled(() => { props.onItemMount(); });
 
     return <Trackers.Item id="t4" class={selectors.item4} />;
 }
@@ -36,8 +37,10 @@ const TrackersTest = () => {
         ]);
     };
 
-    onMount(() => document.addEventListener('reset', reset));
-    onCleanup(() => document.removeEventListener('reset', reset));
+    onSettled(() => {
+        document.addEventListener('reset', reset);
+        return () => document.removeEventListener('reset', reset);
+    });
 
     const moveItem1 = () => updateTrackers(TRACKERS_ID, { id: 't1', x: 50, y: 60 });
     const hideItem2 = () => updateTrackers(TRACKERS_ID, { id: 't2', hide: true });
