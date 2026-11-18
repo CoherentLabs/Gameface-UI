@@ -16,9 +16,9 @@ export interface PasswordInputRef extends TextInputRef {
 }
 
 const PasswordInput: ParentComponent<TextInputProps> = (props) => {
-    const BeforeToken = useToken(Before, props.children);
-    const AfterToken = useToken(After, props.children);
-    const VisibilityButtonToken = useToken(VisibilityButton, props.children);
+    const BeforeToken = useToken(Before, () => props.children);
+    const AfterToken = useToken(After, () => props.children);
+    const VisibilityButtonToken = useToken(VisibilityButton, () => props.children);
 
     const {value, handleChange, changeValue, clear } = useTextInput(props);
     const [type, setType] = createSignal<'text' | 'password'>('password');
@@ -65,7 +65,7 @@ const PasswordInput: ParentComponent<TextInputProps> = (props) => {
                         parentChildren={props.children} />
                 </Match>
                 <Match when={!isBefore()}>
-                    <AddonSlot token={BeforeToken} className={styles.Before} />
+                    <AddonSlot token={BeforeToken} class={styles.Before} />
                 </Match>
             </Switch>
 
@@ -87,7 +87,7 @@ const PasswordInput: ParentComponent<TextInputProps> = (props) => {
                         parentChildren={props.children} />
                 </Match>
                 <Match when={!isAfter()}>
-                    <AddonSlot token={AfterToken} className={styles.After} />
+                    <AddonSlot token={AfterToken} class={styles.After} />
                 </Match>
             </Switch>
 

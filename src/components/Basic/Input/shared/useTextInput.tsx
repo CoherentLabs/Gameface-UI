@@ -1,15 +1,17 @@
-import { createEffect, createSignal, on, onCleanup } from "solid-js";
+import { createEffect, createSignal, onCleanup, untrack } from "solid-js";
 import { TextInputProps } from "./types";
 import { debounce } from "@components/utils/debounce";
 import { DEFAULT_DELAY } from "./constants";
 
 function useTextInput (props: TextInputProps) {
-    const [value, setValue] = createSignal<string>(props.value ?? '');
+    const [value, setValue] = createSignal<string>(untrack(() => props.value ?? ''));
 
     // Synchronize internal value with props.value changes
-    createEffect(on(() => props.value ?? "", (newValue) => {
-        if (!exceedsMaxSymbols(newValue)) setValue(newValue);
-    }, { defer: true }));
+    createEffect(
+        () => props.value ?? "",
+        (newValue) => { if (!exceedsMaxSymbols(newValue)) setValue(newValue); },
+        { defer: true }
+    );
 
     const exceedsMaxSymbols = (newValue: string) => {
         const maxSymbols = props['max-symbols'];
@@ -18,8 +20,9 @@ function useTextInput (props: TextInputProps) {
         return newValue.length > maxSymbols;
     }
 
+    // The delay is read once, as in 1.x.
     const delayUpdate = debounce((newValue: string) =>
-        props.onChange?.(newValue), typeof props.delay === 'number' ? props.delay : DEFAULT_DELAY);
+        props.onChange?.(newValue), untrack(() => typeof props.delay === 'number' ? props.delay : DEFAULT_DELAY));
 
     const applyValue = (newValue: string) => {
         delayUpdate.cancel(); // drop any pending debounced onChange so this synchronous value wins

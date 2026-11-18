@@ -1,4 +1,5 @@
-import { createMemo, createSignal, JSX, onMount, useContext } from "solid-js";
+import { createMemo, createSignal, onSettled, untrack, useContext } from "solid-js";
+import { JSX } from "@solidjs/web";
 import { KeybindsContext, KeyCode } from "./Keybinds";
 import { ComponentProps } from "@components/types/ComponentProps";
 import style from './Keybinds.module.scss'
@@ -8,6 +9,7 @@ import { gamepad, GamepadMappings } from "coherent-gameface-interaction-manager"
 import type { GamepadInput } from "coherent-gameface-interaction-manager";
 import { GamepadBindingCode } from "./util/glyphs";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
+import exposeRef from "@components/utils/exposeRef";
 import { useNavigation } from "@components/Utility/Navigation/Navigation";
 
 interface KeyBindProps extends ComponentProps {
@@ -23,7 +25,7 @@ const Keybind = (props: KeyBindProps) => {
     }
 
     const [listening, setListening] = createSignal(false);
-    let el!: HTMLDivElement;
+    let el: HTMLDivElement | undefined;
     const nav = useNavigation();
 
     const label = createMemo(() => {
@@ -47,7 +49,7 @@ const Keybind = (props: KeyBindProps) => {
         if (context.mode === 'gamepad') return;
         
         setListening(true)
-        el.focus();
+        el?.focus();
         window.addEventListener("keydown", onKeyDown, true);
         window.addEventListener("mousedown", onMousedown, true);
         window.addEventListener("wheel", onWheel, true);
@@ -166,20 +168,24 @@ const Keybind = (props: KeyBindProps) => {
         if (success) context.onChange?.(prevKey, code, props.action);
     }
 
-    onMount(() => {
-        if (props.ref) (props.ref as unknown as (ref: HTMLDivElement) => void)(el);
-
-        if (context.bindings[props.action] === undefined) context.bind(props.action, props.value ?? null);
+    // Register the initial binding once mounted (a store write: allowed in onSettled).
+    onSettled(() => {
+        untrack(() => {
+            if (context.bindings[props.action] === undefined) context.bind(props.action, props.value ?? null);
+        });
     })
-
-    props.componentClasses = style.keybind;
 
     return (
         <div
-            ref={el}
-            use:baseComponent={props}
-            use:navigationActions={mergeNavigationActions(props, {'select': startListeningGamepad})}
-            onmouseup={startListening}>
+            class={[style.keybind, props.class]}
+            style={props.style}
+            ref={[
+                (node: HTMLDivElement) => { el = node; },
+                exposeRef(props),
+                baseComponent(props),
+                navigationActions(mergeNavigationActions(props, {'select': startListeningGamepad})),
+            ]}
+            onMouseUp={startListening}>
             {label()}
         </div>
     )

@@ -9,8 +9,8 @@ import InputWrapper from "../InputBase/InputWrapper";
 import styles from '../shared/TextInput.module.scss';
 
 const TextInput: ParentComponent<TextInputProps> = (props) => {
-    const BeforeToken = useToken(Before, props.children);
-    const AfterToken = useToken(After, props.children);
+    const BeforeToken = useToken(Before, () => props.children);
+    const AfterToken = useToken(After, () => props.children);
 
     const {value, handleChange, changeValue, clear } = useTextInput(props);
     const inputRef = { current: undefined as HTMLInputElement | undefined };
@@ -26,7 +26,7 @@ const TextInput: ParentComponent<TextInputProps> = (props) => {
             inputRef={inputRef}
             refObject={refObject}>
             
-            <AddonSlot token={BeforeToken} className={styles.before} />
+            <AddonSlot token={BeforeToken} class={styles.before} />
 
             <InputBase
                 type={'text'}
@@ -38,7 +38,7 @@ const TextInput: ParentComponent<TextInputProps> = (props) => {
                 hasAfter={!!AfterToken()}
             />
 
-            <AddonSlot token={AfterToken} className={styles.after} />
+            <AddonSlot token={AfterToken} class={styles.after} />
 
         </InputWrapper>
     )

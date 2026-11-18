@@ -1,5 +1,5 @@
 import { BaseComponentRef, ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, createMemo, onMount, ParentComponent } from "solid-js";
+import { Accessor, ParentComponent } from "solid-js";
 import { createContext, createSignal } from "solid-js";
 import styles from './Radio.module.scss';
 import { RadioButtons } from "./RadioButtons";
@@ -8,8 +8,10 @@ import { ButtonControl } from "./RadioButtonControl";
 import { ButtonIndicator } from "./RadioButtonIndicator";
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
+import exposeRef from "@components/utils/exposeRef";
 
-export const RadioContext = createContext<RadioContextValue>();
+// `null` default: RadioButton reads it optionally (pattern 1.3.o).
+export const RadioContext = createContext<RadioContextValue | null>(null);
 
 type changeOptionMethod = (newOption: string) => void;
 
@@ -32,23 +34,10 @@ interface RadioProps extends ComponentProps {
 }
 
 const Radio: ParentComponent<RadioProps> = (props) => {
-    const [selected, setSelected] = createSignal('');
+    // A RadioButton with `selected` selects itself while it is being created,
+    // so this signal accepts writes from that setup (ownedWrite).
+    const [selected, setSelected] = createSignal('', { ownedWrite: true });
     const radioOptions: string[] = [];
-    let element!: HTMLDivElement;
-
-    const checkboxClasses = createMemo(() => {
-        const classes = [styles.radio];
-
-        if (props.disabled) {
-            if (props['class-disabled']) classes.push(`${styles.disabled} ${props['class-disabled']}`);
-            else classes.push(styles.disabled);
-        }
-
-        return classes.join(' ');
-    });
-
-
-    props.componentClasses = () => checkboxClasses();
 
     const changeOption = (newOption: string) => {
         if (props.disabled) return;
@@ -66,30 +55,24 @@ const Radio: ParentComponent<RadioProps> = (props) => {
         }
     }
 
-    onMount(() => {
-        if (!props.ref || !element) return;
-
-        (props.ref as unknown as (ref: any) => void)({
-            selected,
-            changeOption,
-            changeSelected,
-            element,
-        });
-    });
-
     const defaultActions = {
         "move-left": () => changeSelected('prev'), 
         'move-right': () => changeSelected('next')
     }
 
     return (
-        <RadioContext.Provider value={{ selected, changeOption, radioOptions }}>
-            <div ref={element}
-                use:baseComponent={props}
-                use:navigationActions={mergeNavigationActions(props, defaultActions)}>
+        <RadioContext value={{ selected, changeOption, radioOptions }}>
+            <div
+                class={[styles.radio, props.disabled && styles.disabled, props.disabled && props['class-disabled'], props.class]}
+                style={props.style}
+                ref={[
+                    exposeRef(props, { selected, changeOption, changeSelected }),
+                    baseComponent(props),
+                    navigationActions(mergeNavigationActions(props, defaultActions)),
+                ]}>
                 <RadioButtons parentChildren={props.children} />
             </div>
-        </RadioContext.Provider>
+        </RadioContext>
     );
 }
 

@@ -1,4 +1,5 @@
-import { JSX, ParentComponent } from "solid-js";
+import { ParentComponent } from "solid-js";
+import { JSX } from "@solidjs/web";
 import styles from './Checkbox.module.scss';
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
@@ -16,14 +17,14 @@ interface CheckboxControlProps extends TokenComponentProps {
 }
 
 export const CheckboxControl: ParentComponent<CheckboxControlProps> = (props) => {
-    const ControlToken = useToken(Control, props.parentChildren);
+    const ControlToken = useToken(Control, () => props.parentChildren);
 
     return (
         <div
-            class={`${styles.control} ${props.before ? styles.before : ''} ${ControlToken()?.class || ''}`}
+            class={[styles.control, props.before && styles.before, ControlToken()?.class]}
             style={ControlToken()?.style || {}}>
             {ControlToken()?.children}
-            <CheckboxIndicator parentChildren={ControlToken()?.children}></CheckboxIndicator>
+            <CheckboxIndicator parentChildren={ControlToken()?.children} />
         </div>
     )
 }

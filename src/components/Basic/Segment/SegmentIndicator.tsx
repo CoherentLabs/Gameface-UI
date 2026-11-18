@@ -1,4 +1,5 @@
-import { Accessor, Component, createSignal, JSX } from 'solid-js';
+import { Accessor, Component } from 'solid-js';
+import { JSX } from '@solidjs/web';
 import styles from './Segment.module.scss';
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { SegmentIndicatorData } from './Segment';
@@ -16,7 +17,7 @@ interface SegmentIndicatorSlotProps {
 export const Indicator = createTokenComponent<SegmentIndicatorSlotProps>();
 
 const SegmentIndicator: Component<SegmentIndicatorProps> = (props) => {
-    const IndicatorSlot = useToken(Indicator, props.parentChildren);
+    const IndicatorSlot = useToken(Indicator, () => props.parentChildren);
 
     const inlineStyles = () => ({
         transform: `translate(${props.data().left}px)`, width: `${props.data().width}px`,
@@ -26,7 +27,7 @@ const SegmentIndicator: Component<SegmentIndicatorProps> = (props) => {
     return (
         <div 
             style={inlineStyles()} 
-            class={`${styles.indicator} ${IndicatorSlot()?.class ?? ''} ${props.data().showTransition ? styles['show-transition'] : ''}`}>
+            class={[styles.indicator, IndicatorSlot()?.class, props.data().showTransition && styles['show-transition']]}>
         </div>
     )
 }

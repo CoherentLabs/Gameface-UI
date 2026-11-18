@@ -1,4 +1,4 @@
-import { createMemo, ParentComponent } from "solid-js";
+import { ParentComponent } from "solid-js";
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
 import EyeIcon from './eye.svg?component-solid'
@@ -18,22 +18,19 @@ interface VisibilityButtonTokenProps extends TokenBase {
 export const VisibilityButton = createTokenComponent<VisibilityButtonTokenProps>();
 
 export const VisibilityButtonComponent: ParentComponent<VisibilityButtonComponentProps> = (props) => {
-    const VisibilityButtonToken = useToken(VisibilityButton, props.parentChildren);
+    const VisibilityButtonToken = useToken(VisibilityButton, () => props.parentChildren);
 
-    const VisibilityButtonClasses = createMemo(() => {
-        const classes = [styles['visibility-button']];
-
-        classes.push(VisibilityButtonToken()?.position === 'before' ? sharedStyles.before : sharedStyles.after);
-        classes.push(VisibilityButtonToken()?.class ?? '');
-
-        return classes.join(' ');
-    });
+    const VisibilityButtonClasses = () => [
+        styles['visibility-button'],
+        VisibilityButtonToken()?.position === 'before' ? sharedStyles.before : sharedStyles.after,
+        VisibilityButtonToken()?.class,
+    ];
 
     return (
         <div 
             class={VisibilityButtonClasses()} 
             style={VisibilityButtonToken()?.style} 
-            onclick={props.toggle}>
+            onClick={() => props.toggle()}>
             {VisibilityButtonToken()?.children || (props.visible() ? <EyeIcon /> : <EyeOffIcon /> )}
         </div>
     )

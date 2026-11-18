@@ -13,11 +13,11 @@ interface RadioButtonControlProps extends TokenComponentProps {
 } 
 
 export const RadioButtonControl: ParentComponent<RadioButtonControlProps> = (props) => {
-    const ControlSlot = useToken(ButtonControl, props.parentChildren);
+    const ControlSlot = useToken(ButtonControl, () => props.parentChildren);
 
     return (
         <div
-            class={`${styles.control} ${props.before ? styles.before : ''} ${ControlSlot?.()?.class || ''}`}
+            class={[styles.control, props.before && styles.before, ControlSlot?.()?.class]}
             style={ControlSlot?.()?.style || {}}>
             {ControlSlot?.()?.children}
             <RadioButtonIndicator parentChildren={ControlSlot?.()?.children} selected={props.selected} />

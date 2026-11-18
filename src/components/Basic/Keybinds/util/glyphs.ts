@@ -1,5 +1,6 @@
 import Image from '@components/Media/Image/Image';
-import { Component, JSX } from "solid-js";
+import { Component } from "solid-js";
+import { JSX } from "@solidjs/web";
 
 /**
  * Maps standard Gamepad API button indices to Gameface-ui Icon components.

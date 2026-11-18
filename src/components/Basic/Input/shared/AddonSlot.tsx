@@ -1,15 +1,19 @@
+import { Show } from "solid-js";
+
 interface AddonSlotProps {
     token: () => any;
-    className?: string;
+    class?: string;
 }
 
+// <Show> instead of an early return, so the slot also appears if the token
+// is added later.
 const AddonSlot = (props: AddonSlotProps) => {
-    if (!props.token()) return null;
-
     return (
-        <div class={`${props.className ?? ""} ${props.token().class ?? ""}`} style={props.token().style}>
-            {props.token().children}
-        </div>
+        <Show when={props.token()}>
+            <div class={[props.class, props.token()?.class]} style={props.token()?.style}>
+                {props.token()?.children}
+            </div>
+        </Show>
     );
 };
 

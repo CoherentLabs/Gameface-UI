@@ -251,7 +251,7 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
         window.removeEventListener('mouseup', stopScrollingToMouse);
     }
 
-    createEffect(() => handleTop(), () => handleOnScroll(), { defer: true });
+    createEffect(() => handleTop(), () => { handleOnScroll(); }, { defer: true });
 
     const handleFocusIn = (e: FocusEvent) => {
         if (props.focusin) return props.focusin(e);

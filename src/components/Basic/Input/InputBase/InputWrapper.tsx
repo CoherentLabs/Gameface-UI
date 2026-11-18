@@ -1,9 +1,10 @@
 import mergeNavigationActions from "@components/utils/mergeNavigationActions"
 import baseStyles from '../InputBase/InputBase.module.scss';
-import { createMemo, onMount, ParentComponent } from "solid-js";
+import { ParentComponent } from "solid-js";
 import { ComponentNavigationActions } from "@components/types/ComponentProps";
 import { useNavigation } from "@components/Utility/Navigation/Navigation";
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
+import exposeRef from "@components/utils/exposeRef";
 
 interface InputWrapperProps {
     props: any,
@@ -13,49 +14,40 @@ interface InputWrapperProps {
 }
 
 const InputWrapper: ParentComponent<InputWrapperProps> = (wrapperProps) => {
-    let element!: HTMLDivElement;
     const nav = useNavigation()
+    const inputRef = wrapperProps.inputRef;
 
-    const inputWrapperClasses = createMemo(() => {
-        const classes = [baseStyles['input-wrapper']];
+    // The ref runs while the wrapper renders, before the child <input> exists,
+    // so `input` is a getter (always the current element).
+    const refApi = {
+        ...wrapperProps.refObject,
+        get input() { return inputRef.current; },
+    };
 
-        if (wrapperProps.props.disabled) {
-            classes.push(baseStyles.disabled);
-            if (wrapperProps.props['class-disabled']) {
-                classes.push(wrapperProps.props['class-disabled']);
-            }
-        }
-
-        return classes.join(' ');
-    });
-
-    onMount(() => {
-        if (!wrapperProps.props.ref || !element) return;
-        
-        (wrapperProps.props.ref as unknown as (ref: any) => void)({
-            element,
-            input: wrapperProps.inputRef.current,
-            ...wrapperProps.refObject,
-        });
-    });
-    
-    wrapperProps.props.componentClasses = () => inputWrapperClasses();
-    
     return (
-        <div 
-            ref={element!}
-            use:baseComponent={wrapperProps.props}
-            use:navigationActions={mergeNavigationActions(wrapperProps.props, {
-                'select': () => {
-                    nav?.pauseNavigation();
-                    wrapperProps.inputRef.current?.focus();
-                },
-                'back': () => {
-                    nav?.resumeNavigation();
-                    wrapperProps.inputRef.current?.blur()
-                },
-                ...wrapperProps.navActions
-            })}>
+        <div
+            class={[
+                baseStyles['input-wrapper'],
+                wrapperProps.props.disabled && baseStyles.disabled,
+                wrapperProps.props.disabled && wrapperProps.props['class-disabled'],
+                wrapperProps.props.class,
+            ]}
+            style={wrapperProps.props.style}
+            ref={[
+                exposeRef(wrapperProps.props, refApi),
+                baseComponent(wrapperProps.props),
+                navigationActions(mergeNavigationActions(wrapperProps.props, {
+                    'select': () => {
+                        nav?.pauseNavigation();
+                        inputRef.current?.focus();
+                    },
+                    'back': () => {
+                        nav?.resumeNavigation();
+                        inputRef.current?.blur()
+                    },
+                    ...wrapperProps.navActions
+                })),
+            ]}>
             {wrapperProps.children}
         </div>
     )

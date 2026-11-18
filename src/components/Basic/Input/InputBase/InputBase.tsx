@@ -1,4 +1,4 @@
-import { Accessor, Component, createMemo, Show } from "solid-js";
+import { Accessor, Component, Show } from "solid-js";
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { useToken } from "@components/utils/tokenComponents";
 import { Input, Placeholder } from "../shared/tokens";
@@ -14,18 +14,15 @@ interface InputComponentProps extends TokenComponentProps {
 }
 
 export const InputBase: Component<InputComponentProps> = (props) => {
-    const InputToken = useToken(Input, props.parentChildren);
-    const PlaceholderToken = useToken(Placeholder, props.parentChildren);
+    const InputToken = useToken(Input, () => props.parentChildren);
+    const PlaceholderToken = useToken(Placeholder, () => props.parentChildren);
 
-    const InputClasses = createMemo(() => {
-        const classes = [styles.input];
-
-        if (props.hasBefore) classes.push(styles['has-before'])
-        if (props.hasAfter) classes.push(styles['has-after'])
-                
-        classes.push(InputToken()?.class ?? '');
-        return classes.join(' ');
-    });
+    const InputClasses = () => [
+        styles.input,
+        props.hasBefore && styles['has-before'],
+        props.hasAfter && styles['has-after'],
+        InputToken()?.class,
+    ];
 
     return (
         <div class={styles['input-element-wrapper']}>
@@ -34,11 +31,11 @@ export const InputBase: Component<InputComponentProps> = (props) => {
                 ref={props.ref}
                 class={InputClasses()}
                 style={InputToken()?.style}
-                onInput={props.handleChange}
-                ondblclick={(e) => e.currentTarget.select()}
+                onInput={(e) => props.handleChange(e)}
+                onDblClick={(e) => e.currentTarget.select()}
                 value={props.value()} />
             <Show when={PlaceholderToken() && props.value() === ''}>
-                <div class={`${styles.placeholder} ${PlaceholderToken()?.class ?? ''}`} style={PlaceholderToken()?.style}>
+                <div class={[styles.placeholder, PlaceholderToken()?.class]} style={PlaceholderToken()?.style}>
                     {PlaceholderToken()?.children || ""}
                 </div>
             </Show>

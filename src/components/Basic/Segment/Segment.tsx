@@ -1,5 +1,5 @@
 import { BaseComponentRef, ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, createMemo, DEV, onCleanup, onMount, ParentComponent, Show } from "solid-js";
+import { Accessor, DEV, onCleanup, ParentComponent, Show } from "solid-js";
 import { createContext, createSignal } from "solid-js";
 import styles from './Segment.module.scss';
 import { SegmentButtons } from "./SegmentButtons";
@@ -7,8 +7,10 @@ import { Button } from "./SegmentButton";
 import SegmentIndicator, { Indicator } from "./SegmentIndicator";
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
+import exposeRef from "@components/utils/exposeRef";
 
-export const SegmentContext = createContext<SegmentContextValue>();
+// `null` default: SegmentButton reads it optionally (pattern 1.3.o).
+export const SegmentContext = createContext<SegmentContextValue | null>(null);
 export interface SegmentIndicatorData {
     left: number,
     width: number,
@@ -48,7 +50,6 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
 
     const options = new Map<string, HTMLDivElement>();
     const orderedOptions: string[] = [];
-    let element!: HTMLDivElement;
     let transitionTimeout: ReturnType<typeof setTimeout>
 
     const registerOption = (value: string, element: HTMLDivElement, selected?: boolean) => {
@@ -77,6 +78,9 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
         }
 
         const oldOption = selected();
+        // Track "first render" locally: Solid 2 stages writes, so reading
+        // firstRender() right after setFirstRender(false) would still return true.
+        let isFirstRender = firstRender();
 
         if (oldOption !== '') {
             const oldLeft = options.get(oldOption)!.offsetLeft;
@@ -88,7 +92,10 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
                 width: oldWidth
             });
 
-            firstRender() && setFirstRender(false);
+            if (isFirstRender) {
+                setFirstRender(false);
+                isFirstRender = false;
+            }
         }
 
         const newLeft = options.get(newOption)!.offsetLeft;
@@ -104,7 +111,7 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
             });
         }, 50);
 
-        if (!firstRender()) props.onChange?.(newOption);
+        if (!isFirstRender) props.onChange?.(newOption);
     }
 
     const changeSelected = (direction: 'prev' | 'next') => {
@@ -116,30 +123,6 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
         }   
     }
 
-    const segmentClasses = createMemo(() => {
-        const classes = [styles.segment];
-
-        if (props.disabled) {
-            if (props['class-disabled']) classes.push(`${styles.disabled} ${props['class-disabled']}`);
-            else classes.push(styles.disabled);
-        }
-
-        return classes.join(' ');
-    });
-
-    props.componentClasses = () => segmentClasses();
-
-    onMount(() => {
-        if (!props.ref || !element) return;
-
-        (props.ref as unknown as (ref: any) => void)({
-            selected,
-            selectOption,
-            changeSelected,
-            element,
-        });
-    });
-
     onCleanup(() => {
         window.clearTimeout(transitionTimeout);
     })
@@ -150,17 +133,22 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
     }
 
     return (
-        <SegmentContext.Provider value={{ selected, selectOption, registerOption, unregisterOption, firstRender }}>
-            <div ref={element}
-                use:baseComponent={props}
-                use:navigationActions={mergeNavigationActions(props, defaultActions)}
+        <SegmentContext value={{ selected, selectOption, registerOption, unregisterOption, firstRender }}>
+            <div
+                class={[styles.segment, props.disabled && styles.disabled, props.disabled && props['class-disabled'], props.class]}
+                style={props.style}
+                ref={[
+                    exposeRef(props, { selected, selectOption, changeSelected }),
+                    baseComponent(props),
+                    navigationActions(mergeNavigationActions(props, defaultActions)),
+                ]}
             >
                 <SegmentButtons parentChildren={props.children} />
                 <Show when={!firstRender()}>
                     <SegmentIndicator data={indicator} parentChildren={props.children} />
                 </Show>
             </div>
-        </SegmentContext.Provider>
+        </SegmentContext>
     );
 }
 

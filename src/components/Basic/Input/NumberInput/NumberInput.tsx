@@ -1,5 +1,5 @@
 import { Input, Placeholder } from "../shared/tokens";
-import { Show, createMemo, ParentComponent, createSignal, onCleanup, createEffect, on } from "solid-js";
+import { Show, createMemo, ParentComponent, createSignal, onCleanup, createEffect, untrack } from "solid-js";
 import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
 import { InputBase } from "../InputBase/InputBase";
 import { TextInputProps, TextInputRef } from "../shared/types";
@@ -31,14 +31,14 @@ export const IncreaseControl = createTokenComponent<InputControlTokenProps>();
 export const DecreaseControl = createTokenComponent<InputControlTokenProps>();
 
 const NumberInput: ParentComponent<NumberInputProps> = (props) => {
-    const [value, setValue] = createSignal<valueType>(props.value ?? '');
-    const IncreaseControlToken = useToken(IncreaseControl, props.children);
-    const DecreaseControlToken = useToken(DecreaseControl, props.children);
+    const [value, setValue] = createSignal<valueType>(untrack(() => props.value ?? ''));
+    const IncreaseControlToken = useToken(IncreaseControl, () => props.children);
+    const DecreaseControlToken = useToken(DecreaseControl, () => props.children);
 
     const inputRef = { current: undefined as HTMLInputElement | undefined };
 
     // Two-way binding: sync external value changes into the input
-    createEffect(on(() => props.value, (newValue) => {
+    createEffect(() => props.value, (newValue) => {
         if (!newValue) {
             setValue('');
             if (inputRef.current) inputRef.current.value = '';
@@ -51,7 +51,7 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
         const clamped = clampValue(parsed).newValue;
         setValue(clamped);
         if (inputRef.current) inputRef.current.value = String(clamped);
-    }, { defer: true }));
+    }, { defer: true });
 
     const transformValue = (value: string) => {
         const isNegative = value.length && value[0] === '-';
@@ -118,8 +118,9 @@ const NumberInput: ParentComponent<NumberInputProps> = (props) => {
         applyValue(newValue);
     }
 
+    // The delay is read once, as in 1.x.
     const delayUpdate = debounce((newValue: number | string) =>
-        props.onChange?.(newValue), typeof props.delay === 'number' ? props.delay : DEFAULT_DELAY);
+        props.onChange?.(newValue), untrack(() => typeof props.delay === 'number' ? props.delay : DEFAULT_DELAY));
 
     const applyValue = (newValue: number | string) => {
         if (!inputRef.current) return;

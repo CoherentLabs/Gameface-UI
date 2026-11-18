@@ -1,9 +1,11 @@
-import { createMemo, JSX, onCleanup, onMount, ParentComponent, ParentProps, useContext } from "solid-js";
+import { onCleanup, onSettled, ParentComponent, ParentProps, untrack, useContext } from "solid-js";
+import { JSX } from "@solidjs/web";
 import { SegmentContext } from "./Segment";
 import { ComponentProps } from "@components/types/ComponentProps";
 import styles from './Segment.module.scss';
 import { createTokenComponent } from "@components/utils/tokenComponents";
 import baseComponent from "@components/BaseComponent/BaseComponent";
+import exposeRef from "@components/utils/exposeRef";
 
 interface SegmentButtonProps extends ParentProps, ComponentProps {
     style?: JSX.CSSProperties,
@@ -19,32 +21,9 @@ export const Button = createTokenComponent<SegmentButtonProps>();
 
 export const SegmentButton: ParentComponent<{ button: SegmentButtonProps }> = (props) => {
     const segment = useContext(SegmentContext);
-    let element!: HTMLDivElement;
+    let element: HTMLDivElement | undefined;
 
     const isSelected = () => segment?.selected() === props.button.value;
-
-    const buttonClasses = createMemo(() => {
-        const classes = [styles['segment-button']];
-
-        if (props.button.disabled) {
-            if (props.button['class-disabled']) classes.push(`${styles.disabled} ${props.button['class-disabled']}`);
-            else classes.push(styles.disabled);
-        }
-
-        if (isSelected()) {
-            classes.push(styles.selected);
-            classes.push(props.button['class-selected'] ?? '');
-
-            if (segment?.firstRender()) {
-                classes.push(styles['first-render']);
-            }
-        }
-
-
-        return classes.join(' ');
-    });
-
-    props.button.componentClasses = () => buttonClasses();
 
     const handleClick = (e?: MouseEvent) => {
         if (props.button.disabled) return;
@@ -53,21 +32,31 @@ export const SegmentButton: ParentComponent<{ button: SegmentButtonProps }> = (p
         props.button.click?.(e as MouseEvent);
     }
 
-    onMount(() => {
-        if (props.button.ref) (props.button.ref as unknown as (ref: any) => void)(element);
-
-        segment?.registerOption(props.button.value, element, props.button.selected)
+    // Register once mounted: selecting reads the button's offsetLeft/Width.
+    onSettled(() => {
+        untrack(() => {
+            if (element) segment?.registerOption(props.button.value, element, props.button.selected);
+        });
     })
 
     onCleanup(() => {
-        segment?.unregisterOption(props.button.value);
+        untrack(() => segment?.unregisterOption(props.button.value));
     })
 
     return (
         <div
-            ref={element}
-            use:baseComponent={props.button}
-            onclick={handleClick}>
+            class={[
+                styles['segment-button'],
+                props.button.disabled && styles.disabled,
+                props.button.disabled && props.button['class-disabled'],
+                isSelected() && styles.selected,
+                isSelected() && props.button['class-selected'],
+                isSelected() && segment?.firstRender() && styles['first-render'],
+                props.button.class,
+            ]}
+            style={props.button.style}
+            ref={[(node: HTMLDivElement) => { element = node; }, exposeRef(props.button), baseComponent(props.button)]}
+            onClick={handleClick}>
             <div class={styles.content}>
                 {props.button.children}
             </div>

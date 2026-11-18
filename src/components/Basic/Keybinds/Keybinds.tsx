@@ -1,6 +1,5 @@
 import { BaseComponentRef } from "@components/types/ComponentProps";
-import { Accessor, batch, createContext, createEffect, createMemo, on, onMount, ParentComponent } from "solid-js";
-import { createStore, unwrap } from "solid-js/store";
+import { Accessor, createContext, createEffect, createMemo, createStore, onSettled, ParentComponent, StoreSetter, untrack } from "solid-js";
 import {BindingCode, BindingLabel, MAPPINGS} from "./util/mappings";
 import { GlyphOverrides  } from "./util/glyphs";
 import { GLYPHS as DEFAULT_GLYPHS }  from "./util/glyphs";
@@ -36,7 +35,8 @@ interface KeybindsContext extends SharedProps {
     useChars?: Accessor<boolean | undefined>,
 }
 
-export const KeybindsContext = createContext<KeybindsContext>();
+// `null` default: Keybind warns when used outside Keybinds (pattern 1.3.o).
+export const KeybindsContext = createContext<KeybindsContext | null>(null);
 
 interface KeybindsProps extends SharedProps {
     defaults?: Bindings,
@@ -50,20 +50,37 @@ interface KeybindsProps extends SharedProps {
 }
 
 const Keybinds: ParentComponent<KeybindsProps> = (props) => {
-    const KEYS = {...MAPPINGS, ...props.overrides}; // { event.code: label }
+    // Read once at creation, as in 1.x.
+    const KEYS = untrack(() => ({...MAPPINGS, ...props.overrides})); // { event.code: label }
     const DISPLAY_LABELS = new Set(Object.values(KEYS)); // Set of valid labels only
-    const GLYPHS = {... DEFAULT_GLYPHS, ...props.glyphOverrides };
+    const GLYPHS = untrack(() => ({... DEFAULT_GLYPHS, ...props.glyphOverrides }));
 
-    const [bindings, setBindings] = createStore<Bindings>({});
-    let defaults = props.defaults ?? undefined;
+    // Solid 2 stages store writes (a read right after a write returns the old
+    // value until the next microtask), but the binding logic below reads its
+    // own writes in the same tick (clearAll + bind, swap, ...). So `now` is the
+    // always-current plain copy the logic reads, and the store is only the
+    // reactive view for rendering (Keybind labels). Same idea as Navigation's
+    // navigationState.ts.
+    const now: Bindings = {};
+    // Created after the initial `defaults` are mapped (below): writing a store
+    // during component setup throws in Solid 2.
+    let setBindings: StoreSetter<Bindings> | undefined;
+    const writeBinding = (action: Action, key: KeyCode) => {
+        now[action] = key;
+        setBindings?.((draft) => { draft[action] = key; });
+    };
+
+    let defaults = untrack(() => props.defaults);
     const byKey = new Map<KeyCode, Action>(); // reverse index
 
     const listeningText = createMemo(() => props.listeningText);
     const placeholder = createMemo(() => props.placeholder);
 
-    createEffect(on(() => props.conflictPolicy, () => {
-        mapBindings({...bindings})
-    }, {defer: true}));
+    createEffect(
+        () => props.conflictPolicy,
+        () => { mapBindings({ ...now }); },
+        { defer: true }
+    );
 
     const sanitizeButtonInput = (input: string | number | null) => {
         if (input === null) return null;
@@ -95,19 +112,17 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
     }
 
     const mapBindings = (next: Bindings) => {
-        batch(() => {
-            clearAll();
-            for (const action in next) bind(action, next[action] ?? null);
-        });
+        clearAll();
+        for (const action in next) bind(action, next[action] ?? null);
     }
 
-     const clearAll = () => {
-        for (const action in bindings) setBindings(action, null);
+    const clearAll = () => {
+        for (const action in now) writeBinding(action, null);
         byKey.clear();
     };
 
     const bind = (action: Action, newKey: KeyCode) => {
-        const prevKey = bindings[action];
+        const prevKey = now[action];
         if (prevKey === newKey) return false;
 
         newKey = props.mode === 'gamepad' 
@@ -119,7 +134,7 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
         // no conflict -> just bind
         if (!conflictAction || conflictAction === action) {
             if (prevKey) byKey.delete(prevKey);
-            setBindings(action, newKey);
+            writeBinding(action, newKey);
             if (newKey !== null) byKey.set(newKey, action);
             return true
         }
@@ -131,18 +146,18 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
                 return false;
 
             case "replace-existing":
-                setBindings(action, newKey);
+                writeBinding(action, newKey);
                 byKey.set(newKey, action);
 
                 // unbind conflict
-                setBindings(conflictAction, null);
+                writeBinding(conflictAction, null);
                 if (prevKey) byKey.delete(prevKey);
                 props.onConflict?.(action, newKey, conflictAction)
                 return true;
 
             case "swap":
-                setBindings(action, newKey);
-                setBindings(conflictAction, prevKey);
+                writeBinding(action, newKey);
+                writeBinding(conflictAction, prevKey);
 
                 byKey.set(newKey, action);
                 if (prevKey) byKey.set(prevKey, conflictAction);
@@ -150,7 +165,7 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
                 return true;
 
             default: // allow-duplicates
-                setBindings(action, newKey);
+                writeBinding(action, newKey);
                 props.onConflict?.(action, newKey, conflictAction)
                 return true;
         }
@@ -160,41 +175,46 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
         if (key === null) return;
 
         let success = byKey.delete(key);
-        batch(() => {
-            for (const action in bindings) {
-                if (bindings[action] === key) {
-                    setBindings(action as Action, null);
-                    if (success) {
-                        props.onChange?.(key, null, action);
-                    }
+        for (const action in now) {
+            if (now[action] === key) {
+                writeBinding(action as Action, null);
+                if (success) {
+                    props.onChange?.(key, null, action);
                 }
             }
-        });
+        }
     }
 
     const userBind = (action: Action, newKey: KeyCode) => {
-        const prevKey = bindings[action] || null;
+        const prevKey = now[action] || null;
         const success = bind(action, newKey);
         if (success) props.onChange?.(prevKey, newKey, action);
     }
 
     const reset = () => mapBindings({...defaults});
 
-    const getRawObject = () => unwrap(bindings)
+    const getRawObject = () => ({ ...now });
 
-    // initialize with defaults if provided
+    // initialize with defaults if provided (only `now` is written here; the
+    // store is created from it right after)
     if (defaults) {
-        mapBindings({ ...defaults });
-        defaults = { ...getRawObject() };
+        const initial = defaults;
+        untrack(() => mapBindings({ ...initial }));
+        defaults = getRawObject();
     // else children will init themselves
-    } else { 
-        queueMicrotask(() => defaults = {...getRawObject()});
+    } else {
+        queueMicrotask(() => defaults = getRawObject());
     }
 
-    onMount(() => {
-        if (props.ref) {
-            (props.ref as (ref: any) => void)({
-                bindings: getRawObject(),
+    const [bindings, setStore] = createStore<Bindings>({ ...now });
+    setBindings = setStore;
+
+    // Keybinds renders no element, so the ref gets only the API (onSettled so
+    // a ref callback may write signals).
+    onSettled(() => {
+        if (typeof props.ref === 'function') {
+            props.ref({
+                get bindings() { return getRawObject(); },
                 mapBindings,
                 bind: userBind,
                 unbindKey,
@@ -211,14 +231,14 @@ const Keybinds: ParentComponent<KeybindsProps> = (props) => {
         placeholder,
         KEYS,
         GLYPHS,
-        onChange: props.onChange,
-        mode: props.mode
+        get onChange() { return props.onChange; },
+        get mode() { return props.mode; },
     }
 
     return (
-        <KeybindsContext.Provider value={contextValue} >
+        <KeybindsContext value={contextValue} >
             {props.children}
-        </KeybindsContext.Provider>
+        </KeybindsContext>
     )
 }
 

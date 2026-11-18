@@ -1,4 +1,4 @@
-import { createMemo, ParentComponent } from "solid-js";
+import { ParentComponent } from "solid-js";
 import ArrowDownIcon from './arrow-down.svg?component-solid'
 import ArrowUpIcon from './arrow-up.svg?component-solid'
 import sharedStyles from '../shared/TextInput.module.scss';
@@ -12,20 +12,17 @@ interface InputControlButtonProps {
 }
 
 const InputControlButton: ParentComponent<InputControlButtonProps> = (props) => {
-    const InputControlButtonClasses = createMemo(() => {
-        const classes = [styles.button];
-
-        classes.push(props.token()?.position === 'before' ? sharedStyles.before : sharedStyles.after);
-        classes.push(props.token()?.class ?? '');
-
-        return classes.join(' ');
-    });
+    const InputControlButtonClasses = () => [
+        styles.button,
+        props.token()?.position === 'before' ? sharedStyles.before : sharedStyles.after,
+        props.token()?.class,
+    ];
 
     return (
         <div 
             class={InputControlButtonClasses()} 
             style={props.token()?.style} 
-            onclick={props.click}>
+            onClick={() => props.click()}>
             {props.token()?.children || (props.orientation === 'up' ? <ArrowUpIcon /> : <ArrowDownIcon /> )}
         </div>
     )

@@ -1,7 +1,8 @@
-import { ParentComponent, createMemo, mergeProps } from "solid-js";
+import { ParentComponent } from "solid-js";
 import { ComponentProps } from "../../types/ComponentProps";
 import styles from './Button.module.scss';
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
+import exposeRef from "@components/utils/exposeRef";
 
 export interface ButtonProps extends ComponentProps {
     disabled?: boolean
@@ -11,28 +12,30 @@ export interface ButtonProps extends ComponentProps {
 
 const buttonSizes = new Set(['large', 'middle', 'small']);
 
-const getButtonClasses = (props: ButtonProps) => {
-    const buttonClasses = [styles.button];
-
-    if (props.textFit) buttonClasses.push(styles[`button-text-fit`]);
-    if (props.disabled) buttonClasses.push(styles[`button-disabled`]);
-    if (!props.size) buttonClasses.push(styles[`button-middle`]); // Default size is middle
-    if (buttonSizes.has(props.size as string)) buttonClasses.push(styles[`button-${props.size}`]);
-
-    return buttonClasses;
-}
-
 const Button: ParentComponent<ButtonProps> = (props) => {
-    const mergedProps = mergeProps({ textFit: true }, props);
-    props.componentClasses = createMemo(() => getButtonClasses(mergedProps).join(' '))
+    // `textFit` defaults to true; `size` defaults to middle.
+    const sizeClass = () => {
+        if (!props.size) return styles['button-middle'];
+        return buttonSizes.has(props.size) ? styles[`button-${props.size}`] : undefined;
+    };
 
     return <button
-        ref={props.ref as HTMLButtonElement}
-        use:baseComponent={props}
-        use:navigationActions={{
-            anchor: props.anchor,
-            ...props.onAction,
-        }}>
+        class={[
+            styles.button,
+            (props.textFit ?? true) && styles['button-text-fit'],
+            props.disabled && styles['button-disabled'],
+            sizeClass(),
+            props.class,
+        ]}
+        style={props.style}
+        ref={[
+            exposeRef(props),
+            baseComponent(props),
+            navigationActions({
+                anchor: props.anchor,
+                ...props.onAction,
+            }),
+        ]}>
         {props.children}
     </button>
 }

@@ -33,7 +33,7 @@ const NavigationArea: ParentComponent<NavigationAreaProps> = (props) => {
     };
     
     // Refresh whenever children change
-    createEffect(() => cachedChildren(), () => refresh(), { defer: true })
+    createEffect(() => cachedChildren(), () => { refresh(); }, { defer: true })
 
     onSettled(() => {
         const shouldFocus = props.focused || props.name === nav.getScope();

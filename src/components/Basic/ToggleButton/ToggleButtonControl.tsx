@@ -1,4 +1,5 @@
-import { createMemo, JSX, ParentComponent } from "solid-js";
+import { ParentComponent } from "solid-js";
+import { JSX } from "@solidjs/web";
 import styles from './ToggleButton.module.scss';
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
@@ -14,19 +15,16 @@ interface ControlTokenProps {
 export const Control = createTokenComponent<ControlTokenProps>();
 
 export const ToggleButtonControl: ParentComponent<TokenComponentProps> = (props) => {
-    const ControlToken = useToken(Control, props.parentChildren);
-    const LabelLeftToken = useToken(LabelLeft, props.parentChildren);
-    const LabelRightToken = useToken(LabelRight, props.parentChildren);
+    const ControlToken = useToken(Control, () => props.parentChildren);
+    const LabelLeftToken = useToken(LabelLeft, () => props.parentChildren);
+    const LabelRightToken = useToken(LabelRight, () => props.parentChildren);
 
-    const controlClasses = createMemo(() => {
-        const classes = [styles.control];
-
-        if (LabelLeftToken()) classes.push(styles['label-left-enabled']);
-        if (LabelRightToken()) classes.push(styles['label-right-enabled']);
-        if (ControlToken()?.class) classes.push(ControlToken()?.class ?? '');
-
-        return classes.join(' ');
-    });
+    const controlClasses = () => [
+        styles.control,
+        LabelLeftToken() && styles['label-left-enabled'],
+        LabelRightToken() && styles['label-right-enabled'],
+        ControlToken()?.class,
+    ];
 
     return (
         <div

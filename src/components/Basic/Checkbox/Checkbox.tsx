@@ -1,11 +1,12 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, Setter, createSignal, onMount, ParentComponent, Show, createContext, createMemo, createEffect, on } from "solid-js";
+import { Accessor, Setter, createSignal, ParentComponent, Show, createContext, createMemo, createEffect, untrack } from "solid-js";
 import styles from './Checkbox.module.scss';
 import { Control, CheckboxControl } from "./CheckboxControl";
 import { Indicator } from "./CheckboxIndicator";
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
+import exposeRef from "@components/utils/exposeRef";
 
 const Label = createTokenComponent<{ before?: boolean }>();
 
@@ -26,64 +27,54 @@ interface CheckBoxProps extends ComponentProps {
 }
 
 
-export const CheckboxContext = createContext<{ checked: Accessor<boolean> }>();
+// `null` default: the indicator reads it optionally (pattern 1.3.o).
+export const CheckboxContext = createContext<{ checked: Accessor<boolean> } | null>(null);
 
 const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
-    const LabelToken = useToken(Label, props.children);
+    const LabelToken = useToken(Label, () => props.children);
 
-    const [checked, setChecked] = createSignal(props.checked ?? false);
+    // Initial value only, as in 1.x.
+    const [checked, setChecked] = createSignal(untrack(() => props.checked ?? false));
     const isBefore = createMemo(() => LabelToken()?.before);
-    let element!: HTMLDivElement;
-
-    const checkboxClasses = createMemo(() => {
-        const classes = [styles.checkbox];
-
-        if (props.disabled) {
-            if (props['class-disabled']) classes.push(`${styles.disabled} ${props['class-disabled']}`);
-            else classes.push(styles.disabled);
-        }
-
-        if (checked() && props['class-checked']) {
-            classes.push(`${props['class-checked']}`);
-        }
-
-        return classes.join(' ');
-    });
-
-
-    props.componentClasses = () => checkboxClasses();
 
     const toggle = () => {
         if (props.disabled) return;
 
         setChecked(prev => !prev);
-        props.onChange?.(checked())
     }
 
+    // onChange fires once per change (click, navigation `select` or the ref's
+    // setChecked). The 1.x toggle also called it directly, right after
+    // setChecked; in Solid 2 that read would return the old value.
     createEffect(
-        on(checked, (v) => {
-            props.onChange?.(v);
-        }, {defer: true})
+        () => checked(),
+        // Block body: whatever an effect's apply function returns is treated
+        // as its cleanup, so a user onChange returning a value would halt Solid.
+        (v) => { props.onChange?.(v); },
+        { defer: true }
     );
 
-    onMount(() => {
-        if (!props.ref || !element) return;
-
-        (props.ref as unknown as (ref: any) => void)({
-            checked,
-            value: props.value,
-            setChecked,
-            element,
-        });
-    });
-
     return (
-        <CheckboxContext.Provider value={{ checked }}>
+        <CheckboxContext value={{ checked }}>
             <div
-                ref={element!}
-                use:baseComponent={props}
-                use:navigationActions={mergeNavigationActions(props, { 'select': toggle })}
-                onclick={toggle}>
+                class={[
+                    styles.checkbox,
+                    props.disabled && styles.disabled,
+                    props.disabled && props['class-disabled'],
+                    checked() && props['class-checked'],
+                    props.class,
+                ]}
+                style={props.style}
+                ref={[
+                    exposeRef<Omit<CheckboxRef, 'element'>>(props, {
+                        checked,
+                        setChecked,
+                        get value() { return props.value; },
+                    }),
+                    baseComponent(props),
+                    navigationActions(mergeNavigationActions(props, { 'select': toggle })),
+                ]}
+                onClick={toggle}>
 
                 <Show when={isBefore()}>
                     {LabelToken()?.children}
@@ -100,7 +91,7 @@ const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
                 </Show>
 
             </div>
-        </CheckboxContext.Provider>
+        </CheckboxContext>
     )
 }
 

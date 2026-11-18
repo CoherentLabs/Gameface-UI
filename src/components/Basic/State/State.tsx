@@ -1,6 +1,8 @@
-import { Accessor, children, createSignal, JSX, onMount, ParentComponent, ParentProps } from "solid-js";
+import { Accessor, children, createSignal, onSettled, ParentComponent, ParentProps, untrack } from "solid-js";
+import { JSX } from "@solidjs/web";
 import { BaseComponentRef, ComponentProps } from "../../types/ComponentProps";
 import baseComponent from "@components/BaseComponent/BaseComponent";
+import exposeRef from "@components/utils/exposeRef";
 
 interface MatchProps extends ParentProps {
     name: string;
@@ -41,10 +43,11 @@ export const states: States = {};
 
 const State: ParentComponent<StateProps> = (props) => {
     let fallbackElement: JSX.Element;
-    let element!: HTMLDivElement;
+    let element: HTMLDivElement | undefined;
     const statesMap: StatesMap = {};
     const [currentState, setCurrentState] = createSignal('');
-    let resolved = children(() => props.children).toArray();
+    // The <Match> children are read once at creation, as in 1.x.
+    const resolved = untrack(() => children(() => props.children).toArray());
 
     for (let i = 0; i < resolved.length; i++) {
         const child = resolved[i] as unknown as MatchProps;
@@ -66,7 +69,7 @@ const State: ParentComponent<StateProps> = (props) => {
         }
 
         const nextStateElement = statesMap[nextStateValue] as Node || fallbackElement;
-        if (!nextStateElement) return;
+        if (!nextStateElement || !element) return;
         if (currentStateElement && element.children.length) element.removeChild(currentStateElement);
         element.appendChild(nextStateElement);
 
@@ -77,22 +80,24 @@ const State: ParentComponent<StateProps> = (props) => {
         }
     }
 
-    if (props.name) states[props.name] = { changeState, currentState };
+    const name = untrack(() => props.name);
+    if (name) states[name] = { changeState, currentState };
 
-    onMount(() => {
-        if (props.default) changeState(props.default);
-        if (!props.ref || !element) return;
-
-        (props.ref as unknown as (ref: any) => void)({
-            changeState,
-            currentState,
-            states,
-            element,
+    // Show the default state once mounted (a signal write: allowed in onSettled).
+    onSettled(() => {
+        untrack(() => {
+            if (props.default) changeState(props.default);
         });
     });
 
-    return <div ref={element!}
-        use:baseComponent={props}
+    return <div
+        class={props.class}
+        style={props.style}
+        ref={[
+            (node: HTMLDivElement) => { element = node; },
+            exposeRef(props, { changeState, currentState, states }),
+            baseComponent(props),
+        ]}
     ></div>
 }
 
