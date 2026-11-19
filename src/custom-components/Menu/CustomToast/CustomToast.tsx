@@ -1,4 +1,5 @@
-import { batch, JSX, onCleanup, onMount } from "solid-js"
+import { onSettled } from "solid-js"
+import type { JSX } from "@solidjs/web"
 import styles from './CustomToast.module.scss';
 import { useNavigation } from "@components/Utility/Navigation/Navigation";
 import Progress from "@components/Feedback/Progress/Progress";
@@ -14,30 +15,26 @@ interface CustomToastProps {
 const CustomToast = (props: CustomToastProps) => {
     const nav = useNavigation();
 
-    onMount(() => {
-        batch(() => {
-            nav?.addAction('start-tutorial', {
-                key: { binds: ['ENTER'], type: ['press'] },
-                button: { binds: ['face-button-down'], type: 'press' },
-                callback: () => {
-                    props.action();
-                    props.dismiss();
-                }
-            })
-            nav?.addAction('dismiss', {
-                key: { binds: ['ESC'], type: ['press'] },
-                button: { binds: ['face-button-right'], type: 'press' },
-                callback: props.dismiss
-            })
+    onSettled(() => {
+        nav?.addAction('start-tutorial', {
+            key: { binds: ['ENTER'], type: ['press'] },
+            button: { binds: ['face-button-down'], type: 'press' },
+            callback: () => {
+                props.action();
+                props.dismiss();
+            }
         })
-    });
-    
-    onCleanup(() => {
-        batch(() => {
+        nav?.addAction('dismiss', {
+            key: { binds: ['ESC'], type: ['press'] },
+            button: { binds: ['face-button-right'], type: 'press' },
+            callback: props.dismiss
+        })
+
+        return () => {
             nav?.removeAction('start-tutorial')
             nav?.removeAction('dismiss')
-        })
-    })
+        };
+    });
     
     return (
         <>

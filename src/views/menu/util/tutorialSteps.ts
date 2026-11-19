@@ -2,7 +2,7 @@ import { TutorialRef } from "@components/Complex/Tutorial/Tutorial";
 import eventBus from "@components/Utility/EventBus";
 import { NavigationRef } from "@components/Utility/Navigation/Navigation";
 import { waitForFrames } from "@components/utils/waitForFrames";
-import { batch, Setter } from "solid-js";
+import { Setter } from "solid-js";
 
 interface TutorialStep {
 	order: number;
@@ -78,11 +78,9 @@ export const TutorialSteps: Record<string, TutorialStep> = {
 			"Some panels have interactions that reflect changes in the menu. Try adjusting the color picker's value.",
 		completed: false,
 		reset: (nav: NavigationRef) => {
-			batch(() => {
-				nav.pauseAction('pan', true);
-				nav.resumeAction('tutorial-next', true);
-				nav.resumeAction('tutorial-previous', true);
-			});
+			nav.pauseAction('pan', true);
+			nav.resumeAction('tutorial-next', true);
+			nav.resumeAction('tutorial-previous', true);
 		},
 		onEnter: ({ setCurrentOption, nav, tutorial }) => {
 			// Setup: Ensure we are looking at the right option
@@ -91,12 +89,10 @@ export const TutorialSteps: Record<string, TutorialStep> = {
 			if (TutorialSteps.InteractiveTwo.completed) return;
 
 			waitForFrames(() => eventBus.emit(TutorialSteps.InteractiveTwo.title))
-			batch(() => {
-				// Resume only pan for stick interaction
-				nav.resumeAction('pan', true);
-				nav.pauseAction('tutorial-next', true);
-				nav.pauseAction('tutorial-previous', true);
-			})
+			// Resume only pan for stick interaction
+			nav.resumeAction('pan', true);
+			nav.pauseAction('tutorial-next', true);
+			nav.pauseAction('tutorial-previous', true);
 			setTimeout(() => {
 				if (TutorialSteps.InteractiveTwo.completed) return;
 

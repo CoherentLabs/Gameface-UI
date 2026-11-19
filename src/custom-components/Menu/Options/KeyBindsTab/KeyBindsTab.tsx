@@ -1,5 +1,5 @@
 import MenuItem from "@custom-components/Menu/MenuItem/MenuItem";
-import { createEffect, For, on, onCleanup, ParentComponent, Show, useContext} from "solid-js";
+import { createEffect, For, onCleanup, ParentComponent, Show, useContext} from "solid-js";
 import CustomSegment from "@custom-components/Menu/CustomSegment/CustomSegment";
 import ExtraContent from "@custom-components/Menu/SidePanel/ExtraContent";
 import CustomList from "@custom-components/Menu/CustomList/CustomList";
@@ -27,11 +27,11 @@ const KeyBindsTab: ParentComponent = () => {
         if (segmentRef.selected() !== "Custom") segmentRef.selectOption("Custom");
     }
 
-    createEffect(on(menu!.inputType, () => {
-            if (!nav) return;
-            nav.registerArea('menu', ['.menu-item'], true)
-        })
-    );
+    // Re-register when the input type swaps the keyboard/gamepad keybind rows.
+    createEffect(() => menu!.inputType(), () => {
+        if (!nav) return;
+        nav.registerArea('menu', ['.menu-item'], true)
+    });
 
     onCleanup(() => {
         nav?.unregisterArea('menu')

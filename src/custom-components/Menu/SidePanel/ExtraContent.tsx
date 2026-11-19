@@ -1,5 +1,5 @@
 import { ParentComponent, Show, useContext } from "solid-js";
-import { Portal } from "solid-js/web";
+import { Portal } from "@solidjs/web";
 import { MenuContext } from "../../../views/menu/Menu";
 import Tutorial from "@components/Complex/Tutorial/Tutorial";
 import { TutorialSteps } from "../../../views/menu/util/tutorialSteps";

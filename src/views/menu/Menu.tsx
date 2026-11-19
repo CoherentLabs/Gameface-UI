@@ -6,7 +6,7 @@ import TabLink from '@components/Layout/TabLink/TabLink';
 import Tab from '@components/Layout/Tab/Tab';
 import Layout from '@components/Layout/Layout/Layout';
 import Scroll, { ScrollComponentRef } from '@components/Layout/Scroll/Scroll';
-import { Accessor, batch, createContext, createEffect, createMemo, createSignal, For, Match, on, onMount, Setter, Show, Switch } from 'solid-js';
+import { Accessor, createContext, createEffect, createMemo, createSignal, For, Match, onSettled, Setter, Show, Switch, untrack } from 'solid-js';
 import Gameplay from '@custom-components/Menu/Options/Gameplay/Gameplay';
 import styles from './Menu.module.scss';
 import { Column12, Column4, Column8 } from '@components/Layout/Column/Column';
@@ -60,10 +60,8 @@ const Menu = () => {
     }
 
     const handleTabChange = (newTab: string) => {
-        batch(() => {
-            setActiveTab(newTab as typeof OPTIONS[number]);
-            setCurrentOption(getFirstOptionOfTab(newTab))
-        });
+        setActiveTab(newTab as typeof OPTIONS[number]);
+        setCurrentOption(getFirstOptionOfTab(newTab))
     }
 
     const handleBeforeTabChange = (_: string, newLocation: string) => {
@@ -77,19 +75,17 @@ const Menu = () => {
     }
 
     const handleModalOpen = () => {
-        batch(() => {
-            navigationRef.pauseNavigation();        
-            navigationRef.pauseInput();
-            navigationRef.addAction('modal-save', {
-                key: { binds: ['ENTER'], type: ['press'] },
-                button: { binds: ['face-button-down'], type: 'press' },
-                callback: () => modalRef.close()
-            })
-            navigationRef.addAction('modal-cancel', {
-                key: { binds: ['ESC'], type: ['press'] },
-                button: { binds: ['face-button-right'], type: 'press' },
-                callback: () => modalRef.close()
-            })
+        navigationRef.pauseNavigation();
+        navigationRef.pauseInput();
+        navigationRef.addAction('modal-save', {
+            key: { binds: ['ENTER'], type: ['press'] },
+            button: { binds: ['face-button-down'], type: 'press' },
+            callback: () => modalRef.close()
+        })
+        navigationRef.addAction('modal-cancel', {
+            key: { binds: ['ESC'], type: ['press'] },
+            button: { binds: ['face-button-right'], type: 'press' },
+            callback: () => modalRef.close()
         })
     }
 
@@ -97,12 +93,10 @@ const Menu = () => {
         if (!nextTab) return;
 
         tabsRef.changeTab(nextTab);
-        batch(() => {
-            navigationRef.removeAction('modal-save');
-            navigationRef.removeAction('modal-cancel');
-            navigationRef.resumeNavigation();
-            navigationRef.resumeInput();
-        })
+        navigationRef.removeAction('modal-save');
+        navigationRef.removeAction('modal-cancel');
+        navigationRef.resumeNavigation();
+        navigationRef.resumeInput();
     }
 
     const showToast = () => {
@@ -119,12 +113,12 @@ const Menu = () => {
         });
     };
 
-    createEffect(() => {
-        const currentStep = tutorial()?.current();
-        const step = Object.values(TutorialSteps).find(s => s.order === currentStep);
-        
-        if (step?.onEnter) {
-            step.onEnter({ setCurrentOption, nav: navigationRef, tutorial: tutorial()! });
+    createEffect(() => tutorial()?.current(), (currentStep) => {
+        const onEnter = Object.values(TutorialSteps).find(s => s.order === currentStep)?.onEnter;
+
+        if (onEnter) {
+            // A side effect: whatever onEnter reads (Navigation state, the tutorial ref) is read once, untracked.
+            untrack(() => onEnter({ setCurrentOption, nav: navigationRef, tutorial: tutorial()! }));
         }
     });
 
@@ -140,35 +134,31 @@ const Menu = () => {
     }
 
     const handleTutorialStart = () => {
-        batch(() => {
-            navigationRef.pauseInput();
-            navigationRef.pauseNavigation();
+        navigationRef.pauseInput();
+        navigationRef.pauseNavigation();
 
-            navigationRef.addAction('tutorial-next', {
-                key: { binds: ['ENTER'], type: ['press'] },
-                button: { binds: ['face-button-down'], type: 'press' },
-                callback: () => {
-                    if (tutorial()!.progress() === 100) return tutorial()!.exit();
-                    executeCurrentStepAction();
-                }
-            })
+        navigationRef.addAction('tutorial-next', {
+            key: { binds: ['ENTER'], type: ['press'] },
+            button: { binds: ['face-button-down'], type: 'press' },
+            callback: () => {
+                if (tutorial()!.progress() === 100) return tutorial()!.exit();
+                executeCurrentStepAction();
+            }
+        })
 
-            navigationRef.addAction('tutorial-previous', {
-                key: {binds: ['ESC'], type: ['press', 'hold']},
-                button: {binds: ['face-button-right'], type: 'press'},
-                callback: () => tutorial()!.previous()
-            })
+        navigationRef.addAction('tutorial-previous', {
+            key: {binds: ['ESC'], type: ['press', 'hold']},
+            button: {binds: ['face-button-right'], type: 'press'},
+            callback: () => tutorial()!.previous()
         })
     }
 
     const handleTutorialEnd = () => {
-        batch(() => {
-            navigationRef.removeAction('tutorial-next')
-            navigationRef.removeAction('tutorial-previous')
-            navigationRef.resumeInput();
-            navigationRef.resumeNavigation();
-            navigationRef.focusFirst('menu');
-        })
+        navigationRef.removeAction('tutorial-next')
+        navigationRef.removeAction('tutorial-previous')
+        navigationRef.resumeInput();
+        navigationRef.resumeNavigation();
+        navigationRef.focusFirst('menu');
     }
 
     const handleClick = () => {
@@ -194,9 +184,9 @@ const Menu = () => {
         if (step?.onAction) executeCurrentStepAction();
     };
 
-    onMount(() => {
+    onSettled(() => {
         eventBus.on('ui-change', () => setHasChanges(true));
-        showToast();      
+        showToast();
         window.addEventListener('gamepadconnected', () => setInputType('gamepad'));
         window.addEventListener('gamepaddisconnected', () => setInputType('keyboard'));
     })
@@ -225,7 +215,7 @@ const Menu = () => {
     let scrollRef!: ScrollComponentRef;
 
     return (
-        <MenuContext.Provider value={MenuContextValue}>
+        <MenuContext value={MenuContextValue}>
             <Navigation ref={(api) => navigationRef = api} actions={defaultActions} pollingInterval={100} >
                 <Tutorial 
                     click={handleClick} 
@@ -365,7 +355,7 @@ const Menu = () => {
                 </Tutorial>
                 <CustomModal ref={modalRef} onClose={handleModalClose} onOpen={handleModalOpen} />
             </Navigation>
-        </MenuContext.Provider>
+        </MenuContext>
     );
 };
 

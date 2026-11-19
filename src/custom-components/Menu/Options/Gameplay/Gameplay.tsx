@@ -1,7 +1,7 @@
 import Stepper from "@components/Basic/Stepper/Stepper";
 import ColorPreview from "@custom-components/Menu/ColorPreview/ColorPreview";
 import MenuItem from "@custom-components/Menu/MenuItem/MenuItem";
-import { createEffect, createSignal, onCleanup, onMount, ParentComponent, Setter, Show, useContext } from "solid-js";
+import { createSignal, onSettled, ParentComponent, Show, useContext } from "solid-js";
 import SubtitleSize from "@custom-components/Menu/SubtitleSize/SubtitleSize";
 import CustomSlider from "@custom-components/Menu/CustomSlider/CustomSlider";
 import CustomToggle from "@custom-components/Menu/CustomToggle/CustomToggle";
@@ -17,13 +17,10 @@ import eventBus from "@components/Utility/EventBus";
 const Gameplay: ParentComponent = () => {
     const [showSubtitleOptions, setShowSubtitleOptions] = createSignal(false);
     const context = useContext(MenuContext);
-    let eventCleanup: () => void;
-
-    onMount(() => {
-        eventCleanup = eventBus.once(context!.TutorialSteps.Interactive.title, () => setShowSubtitleOptions(true));
+    onSettled(() => {
+        const unsubscribe = eventBus.once(context!.TutorialSteps.Interactive.title, () => setShowSubtitleOptions(true));
+        return unsubscribe;
     })
-
-    onCleanup(() => eventCleanup?.());
 
     return (
         <Navigation.Area name="menu" selector="menu-item" focused>

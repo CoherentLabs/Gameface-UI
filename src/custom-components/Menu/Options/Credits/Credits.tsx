@@ -1,4 +1,4 @@
-import { For, onCleanup, onMount } from "solid-js"
+import { For, onSettled } from "solid-js"
 import { CREDITS } from "./creditsContent"
 import List from "@components/Layout/List/List"
 import TextBlock from "@components/Basic/TextBlock/TextBlock";
@@ -25,11 +25,10 @@ const Credits = () => {
         if (direction === 'up') clearInterval(interval)
     } 
     
-    onMount(() => {
+    onSettled(() => {
         interval = setInterval(scrollCredits, 500)
+        return () => clearInterval(interval)
     })
-
-    onCleanup(() => clearInterval(interval))
 
     return (
         <Scroll onScroll={(arg) => handleOnScroll(arg.scrollDirection)} ref={scrollRef}>

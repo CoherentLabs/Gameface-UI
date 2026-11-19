@@ -29,15 +29,16 @@ const Tabs: ParentComponent<TabsProps> = (props) => {
         const response = await onBeforeTabChangeHandler(current(), newLocation)
         if (response === false) return;
         setCurrent(newLocation)
-        await onTabChangedHandler()
+        // Pass the new location: a read of current() right after setCurrent still returns the old tab in Solid 2.
+        await onTabChangedHandler(newLocation)
     }
 
     const onBeforeTabChangeHandler = async (from: string, to: string): Promise<void | boolean> => {
         if (props.onBeforeTabChange) return await props.onBeforeTabChange(from, to);
     }
 
-    const onTabChangedHandler = async () => {
-        if (props.onTabChanged) await props.onTabChanged(current());
+    const onTabChangedHandler = async (location: string) => {
+        if (props.onTabChanged) await props.onTabChanged(location);
     }
 
     const tabsRefObject: TabsComponentRef = {

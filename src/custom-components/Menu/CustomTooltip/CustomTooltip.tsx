@@ -3,6 +3,7 @@ import styles from './CustomTooltip.module.scss'
 import Progress from "@components/Feedback/Progress/Progress"
 import Flex from "@components/Layout/Flex/Flex"
 import { createMemo, Show, useContext } from "solid-js"
+import { dynamic } from "@solidjs/web"
 import { TutorialRef } from "@components/Complex/Tutorial/Tutorial"
 import { TutorialSteps } from "../../../views/menu/util/tutorialSteps"
 import { MenuContext } from "../../../views/menu/Menu"
@@ -49,15 +50,17 @@ const CustomTooltip: TooltipType<CustomTooltipProps> = (props) => {
     }
 
     const NextButton = () => {
+        // `props.Next` comes from props, so render it through dynamic() instead of reading it in this component's body.
+        const Next = dynamic(() => props.Next);
         const changeActiveItem = () => {
             if (props.step() === TutorialSteps.InteractiveTwo.order - 1) {
                 context?.setCurrentOption("subtitleColor")
             }
         }
 
-        return <props.Next click={changeActiveItem} class={styles['tooltip-control']}>
+        return <Next click={changeActiveItem} class={styles['tooltip-control']}>
             <CustomButton text={props.progress() === 100 ? "Done" : "Next" } variation="select" />
-        </props.Next>
+        </Next>
     }
 
     return (
@@ -76,7 +79,7 @@ const CustomTooltip: TooltipType<CustomTooltipProps> = (props) => {
                     <NextButton />
                 </Flex>
             </Show>
-            <div class={styles['tooltip-exit']} onclick={props.exit}>x</div>
+            <div class={styles['tooltip-exit']} onClick={props.exit}>x</div>
         </div>
     )
 }

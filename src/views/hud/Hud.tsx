@@ -8,7 +8,7 @@ import StatusBar from '@custom-components/Hud/StatusBar/StatusBar';
 import Weapons from '@custom-components/Hud/Weapons/Weapons';
 import styles from './Hud.module.scss';
 import RadialMenu, { RadialMenuRef } from '@components/Complex/RadialMenu/RadialMenu';
-import { For, onCleanup, onMount } from 'solid-js';
+import { For, onSettled } from 'solid-js';
 import Weapon1 from "@assets/wheel/weapon1.png";
 import Weapon2 from "@assets/wheel/weapon2.png";
 import Weapon3 from "@assets/wheel/weapon3.png";
@@ -51,14 +51,14 @@ const Hud = () => {
         }
     }
 
-    onMount(() => {
+    onSettled(() => {
         document.addEventListener('keydown', handleKeyDown);
         document.addEventListener('keyup', handleKeyUp);
-    });
 
-    onCleanup(() => {
-        document.removeEventListener('keydown', handleKeyDown);
-        document.removeEventListener('keyup', handleKeyUp);
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+            document.removeEventListener('keyup', handleKeyUp);
+        };
     });
     return (
         <div class={styles.Hud}>
