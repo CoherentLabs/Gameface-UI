@@ -1,6 +1,7 @@
 import { createMemo, createSignal, For, onCleanup, onSettled, Show, flush } from "solid-js";
 import Dropdown, { DropdownRef } from "@components/Basic/Dropdown/Dropdown";
 import selectors from '../../../shared/dropdown-selectors.json';
+import createOnChangeLog from '../onChangeLog';
 import './dropdown.css';
 
 const dropdownOptions = [
@@ -19,9 +20,11 @@ const DropdownTest = () => {
     const [options, setOptions] = createSignal(dropdownOptions);
     const [customIcon, setCustomIcon] = createSignal(false);
     const [testInverted, setTestInverted] = createSignal(false);
+    const log = createOnChangeLog('dropdown');
+    const multipleLog = createOnChangeLog('dropdown-multiple');
 
     const scenarios = [
-        { label: "Select option with ref", action: () => dropdownRef?.selectOption("test1") },
+        { label: "Select option with ref", action: () => log.sync(() => dropdownRef?.selectOption("test1")) },
         { label: "Disable dropdown", action: () => setDisabled(true) },
         { label: "Disable option", action: () => setBtnDisabled(true) },
         { label: "Enable Overflow", action: () => setOptions([...dropdownOptions, ...dropdownOptions, ...dropdownOptions, ...dropdownOptions]) },
@@ -46,24 +49,34 @@ const DropdownTest = () => {
         dropdownRef?.deselectAll();
         multipleRef?.deselectAll();
         multipleRef?.toggle(false);
+        flush();
+        log.clear();
+        multipleLog.clear();
     };
 
     const isReactive = createMemo(() => selected() === 'test1');
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
-    const selectOptionMultiple = () => multipleRef?.selectOption("test0");
-    const deselectOptionMultiple = () => multipleRef?.deselectOption("test0");
+    const selectOptionMultiple = () => multipleLog.sync(() => multipleRef?.selectOption("test0"));
+    const deselectOptionMultiple = () => multipleLog.sync(() => multipleRef?.deselectOption("test0"));
+    // Events, not scenario buttons: more buttons push the page down and change the overflow tests' layout.
+    const deselectAllSingle = () => log.sync(() => dropdownRef?.deselectAll());
+    const deselectNotSelectedSingle = () => log.sync(() => dropdownRef?.deselectOption('test2'));
 
     onSettled(() => {
         document.addEventListener('reset', reset)
         document.addEventListener('selectOptionMultiple', selectOptionMultiple)
         document.addEventListener('deselectOptionMultiple', deselectOptionMultiple)
+        document.addEventListener('deselectAllSingle', deselectAllSingle)
+        document.addEventListener('deselectNotSelectedSingle', deselectNotSelectedSingle)
     })
     onCleanup(() => {
         document.removeEventListener('reset', reset)
         document.removeEventListener('selectOptionMultiple', selectOptionMultiple)
         document.removeEventListener('deselectOptionMultiple', deselectOptionMultiple)
+        document.removeEventListener('deselectAllSingle', deselectAllSingle)
+        document.removeEventListener('deselectNotSelectedSingle', deselectNotSelectedSingle)
     })
 
     return (
@@ -83,7 +96,7 @@ const DropdownTest = () => {
             <Dropdown
                 ref={dropdownRef}
                 value={selected()}
-                onChange={(value) => setSelected(value as string)}
+                onChange={(value) => { log.record(value); setSelected(value as string); }}
                 disabled={disabled()}
                 class-disabled={`${selectors.base}-disabled`}
                 style={reactiveStyle()}
@@ -119,7 +132,7 @@ const DropdownTest = () => {
                 ref={multipleRef}
                 multiple
                 value={multipleSelected()}
-                onChange={(value) => setMultipleSelected(value as string[]) }
+                onChange={(value) => { multipleLog.record(value); setMultipleSelected(value as string[]); }}
                 class={`${selectors.multiple}`}>
                 <Dropdown.Options class={`${selectors.multipleOptions}`}>
                     <For each={options()}>

@@ -57,9 +57,41 @@ async function childNodesInfo(el) {
     return info;
 }
 
+// onChange calls a test view recorded with createOnChangeLog (tests/src/components/onChangeLog.ts):
+// every call since the last reset. A callback with several arguments is an array.
+async function onChangeCalls(name) {
+    const calls = await gf.executeScript((n) => {
+        const log = window.__onChangeLogs && window.__onChangeLogs[n];
+        return log ? log.calls.slice() : null;
+    }, name);
+
+    if (!calls) throw new Error(`onChangeCalls: no onChange log named "${name}" (createOnChangeLog in the test view)`);
+    return calls;
+}
+
+// The calls made synchronously by the view's last `log.sync()` action (null when none ran).
+// A late (effect-based) onChange is missing here even when onChangeCalls shows it later.
+async function onChangeSyncCalls(name) {
+    return await gf.executeScript((n) => {
+        const log = window.__onChangeLogs && window.__onChangeLogs[n];
+        return log && log.sync ? log.sync.slice() : null;
+    }, name);
+}
+
+// Asserts that, once things settle, exactly `expected` calls were recorded since the last reset.
+// Waits a little first, so a duplicate that arrives late (from an effect or a frame) is caught.
+async function expectOnChangeCalls(name, expected, message) {
+    const assert = require('assert');
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    assert.deepEqual(await onChangeCalls(name), expected, message);
+}
+
 module.exports = {
     navigateToPage,
     clickEventButton,
     elementChildren,
-    childNodesInfo
+    childNodesInfo,
+    onChangeCalls,
+    onChangeSyncCalls,
+    expectOnChangeCalls,
 }

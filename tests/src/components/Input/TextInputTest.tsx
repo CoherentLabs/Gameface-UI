@@ -1,11 +1,13 @@
 import { createMemo, createSignal, For, onCleanup, onSettled, flush } from "solid-js";
 import selectors from "../../../shared/input-selectors.json";
+import createOnChangeLog from "../onChangeLog";
 import TextInput from "@components/Basic/Input/TextInput/TextInput";
 import { TextInputRef } from "@components/Basic/Input/shared/types";
 import './input.css';
 
 const TextInputTest = () => {
     let inputRef!: TextInputRef;
+    const log = createOnChangeLog('text-input');
     const [value, setValue] = createSignal("");
     const [disabled, setDisabled] = createSignal(false);
     const [readonly, setReadonly] = createSignal(false);
@@ -14,7 +16,7 @@ const TextInputTest = () => {
     const [externalValue, setExternalValue] = createSignal('');
 
     const scenarios = [
-        { label: "Change input value with ref", action: () => inputRef?.changeValue("100") },
+        { label: "Change input value with ref", action: () => log.sync(() => inputRef?.changeValue("100")) },
         { label: "Disable input", action: () => setDisabled(true) },
         { label: "Set readonly", action: () => setReadonly(true) },
         { label: "Change styles", action: () => setTest(true) },
@@ -32,6 +34,8 @@ const TextInputTest = () => {
         // Solid 2 stages writes: apply them before the ref call reads the new props.
         flush();
         inputRef?.clear();
+        flush();
+        log.clear();
     };
 
     const isReactive = createMemo(() => test() === true);
@@ -55,7 +59,7 @@ const TextInputTest = () => {
 
             <div style={{'display': 'flex'}}>
                 <TextInput
-                    onChange={(value) => setValue(value)}
+                    onChange={(value) => { log.record(value); setValue(value); }}
                     disabled={disabled()}
                     class-disabled={selectors.inputDisabled}
                     ref={inputRef}

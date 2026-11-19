@@ -1,10 +1,12 @@
 import { createMemo, createSignal, For, onCleanup, onSettled, flush } from "solid-js";
 import selectors from "../../../shared/input-selectors.json";
+import createOnChangeLog from "../onChangeLog";
 import './input.css';
 import NumberInput, { NumberInputRef } from "@components/Basic/Input/NumberInput/NumberInput";
 
 const NumberInputTest = () => {
     let inputRef!: NumberInputRef;
+    const log = createOnChangeLog('number-input');
     const [value, setValue] = createSignal<number | string>("");
     const [disabled, setDisabled] = createSignal(false);
     const [readonly, setReadonly] = createSignal(false);
@@ -14,12 +16,12 @@ const NumberInputTest = () => {
     const [externalValue, setExternalValue] = createSignal<number | string>('');
 
     const scenarios = [
-        { label: "Change input value with ref", action: () => inputRef?.changeValue(100) },
+        { label: "Change input value with ref", action: () => log.sync(() => inputRef?.changeValue(100)) },
         { label: "Disable input", action: () => setDisabled(true) },
         { label: "Set readonly", action: () => setReadonly(true) },
         { label: "Change styles", action: () => setTest(true) },
-        { label: "Increase", action: () => inputRef.increaseValue() },
-        { label: "Decrease", action: () => inputRef.decreaseValue() },
+        { label: "Increase", action: () => log.sync(() => inputRef.increaseValue()) },
+        { label: "Decrease", action: () => log.sync(() => inputRef.decreaseValue()) },
         { label: "Enable custom button", action: () => setCustomBtn('Custom icon') },
         { label: "Enable delay", action: () => setDelay(250) },
         { label: "Change external value", action: () => setExternalValue(200) },
@@ -37,6 +39,8 @@ const NumberInputTest = () => {
         // Solid 2 stages writes: apply them before the ref call reads the new props.
         flush();
         inputRef?.clear();
+        flush();
+        log.clear();
     };
 
     const isReactive = createMemo(() => test() === true);
@@ -60,7 +64,7 @@ const NumberInputTest = () => {
 
             <div style={{'display': 'flex'}}>
                 <NumberInput
-                    onChange={(value) => setValue(value)}
+                    onChange={(value) => { log.record(value); setValue(value); }}
                     disabled={disabled()}
                     class-disabled={selectors.inputDisabled}
                     ref={inputRef}

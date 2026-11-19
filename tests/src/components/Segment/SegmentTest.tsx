@@ -2,12 +2,14 @@ import { createSignal, onCleanup, onSettled, flush } from "solid-js";
 import Segment, { SegmentRef } from "@components/Basic/Segment/Segment";
 import './segment.css';
 import selectors from "../../../shared/segment-selectors.json";
+import createOnChangeLog from "../onChangeLog";
 
 const SegmentTest = () => {
     let segmentRef!: SegmentRef;
     const [selected, setSelected] = createSignal("");
     const [disabled, setDisabled] = createSignal(false);
     const [disabledBtn, setDisabledBtn] = createSignal(false);
+    const log = createOnChangeLog('segment');
 
     const resetSegment = () => {
         setDisabled(false);
@@ -15,10 +17,12 @@ const SegmentTest = () => {
         // Solid 2 stages writes: apply them before the ref call reads the new props.
         flush();
         segmentRef?.selectOption('test1');
+        flush();
+        log.clear();
     };
 
     const changeOption = () => {
-        segmentRef?.selectOption('test3');
+        log.sync(() => segmentRef?.selectOption('test3'));
     }
 
     onSettled(() => {
@@ -38,7 +42,7 @@ const SegmentTest = () => {
             <button onClick={() => setDisabledBtn(true)} class={selectors.disableSegmentBtn}>Disable Segment button</button>
 
             <Segment 
-                onChange={(selected) => setSelected(selected)} 
+                onChange={(selected) => { log.record(selected); setSelected(selected); }} 
                 disabled={disabled()} 
                 class-disabled={selectors.segmentDisabled} 
                 ref={segmentRef}

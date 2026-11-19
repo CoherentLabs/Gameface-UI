@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require('../shared/radio-selectors.json');
-const { navigateToPage, elementChildren, childNodesInfo } = require('../shared/utils');
+const { navigateToPage, elementChildren, childNodesInfo, onChangeSyncCalls, expectOnChangeCalls } = require('../shared/utils');
 
 describe('Radio', function () {
     this.beforeAll(async () => {
@@ -9,6 +9,11 @@ describe('Radio', function () {
 
     this.afterEach(async () => {
         await gf.trigger('reset');
+    })
+
+    // First test: nothing has run yet, so the log only has what happened while mounting.
+    it('Should not call onChange on mount', async () => {
+        await expectOnChangeCalls('radio', [], 'The initially selected button is not reported');
     })
 
     it('Should render itself and it\'s children correctly', async () => {
@@ -99,5 +104,35 @@ describe('Radio Button', function () {
 
         assert.equal(children[0].nodeType, 3, 'The first child should be a text node');
         assert.equal(children[0].text, 'test1', 'The label should come before the control');
+    })
+});
+
+describe('Radio onChange calls', function () {
+    this.afterEach(async () => {
+        await gf.trigger('reset');
+    })
+
+    it('Should call onChange once per selection', async () => {
+        await gf.click(`.${selectors.radioButton}2`);
+        await expectOnChangeCalls('radio', ['test2'], 'One call for the new option');
+    })
+
+    it('Should not call onChange when the selected button is clicked again', async () => {
+        await gf.click(`.${selectors.radioButton}0`);
+        await expectOnChangeCalls('radio', [], 'test0 is already selected');
+    })
+
+    it('Should call onChange synchronously from the ref', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
+        assert.deepEqual(await onChangeSyncCalls('radio'), ['test2'], 'onChange fired before changeOption returned');
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
+        assert.deepEqual(await onChangeSyncCalls('radio'), [], 'changeOption with the selected option');
+        await expectOnChangeCalls('radio', ['test2'], 'No late duplicate');
+    })
+
+    it('Should not call onChange when disabled', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-1`);
+        await gf.click(`.${selectors.radioButton}1`);
+        await expectOnChangeCalls('radio', [], 'A click on a disabled radio');
     })
 });

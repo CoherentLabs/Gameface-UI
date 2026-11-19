@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require('../shared/carousel-selectors.json');
-const { navigateToPage } = require('../shared/utils');
+const { navigateToPage, onChangeSyncCalls, expectOnChangeCalls } = require('../shared/utils');
 
 describe('Carousel', function () {
     this.beforeAll(async () => {
@@ -10,6 +10,11 @@ describe('Carousel', function () {
     this.afterEach(async () => {
         await gf.trigger('reset');
     })
+
+    // First test: nothing has run yet, so the log only has what happened while mounting.
+    it('Should not call onActivePageChange on mount', async () => {
+        await expectOnChangeCalls('carousel', [], 'The initial page is not reported');
+    });
 
     it('Should render itself and its children correctly', async () => {
         const carousel = await gf.get(`.${selectors.carousel}`);
@@ -319,4 +324,52 @@ describe('Carousel', function () {
             });
         }
     });
+});
+describe('Carousel onActivePageChange calls', function () {
+    this.afterEach(async () => {
+        await gf.trigger('reset');
+    })
+
+    it('Should call onActivePageChange once per page click', async () => {
+        const pages = await gf.getAll(`.${selectors.carouselPages}`);
+        await pages.nth(2).click();
+        await expectOnChangeCalls('carousel', [2], 'One call for the new page');
+        await pages.nth(2).click();
+        await expectOnChangeCalls('carousel', [2], 'No call for the current page');
+    })
+
+    it('Should call onActivePageChange once per arrow step', async () => {
+        const controls = await gf.getAll(`.${selectors.carouselControl}`);
+        await controls.last().click();
+        await controls.last().click();
+        await controls.first().click();
+        await controls.first().click();
+        await controls.first().click();
+        await expectOnChangeCalls('carousel', [1, 2, 1, 0], 'One call per step, none before the first page');
+    })
+
+    it('Should call onActivePageChange synchronously from the ref', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-10`);
+        assert.deepEqual(await onChangeSyncCalls('carousel'), [1], 'next() reported before it returned');
+        await gf.click(`.${selectors.scenarioBtn}.scenario-12`);
+        assert.deepEqual(await onChangeSyncCalls('carousel'), [2], 'scrollTo(2) reported before it returned');
+        await gf.click(`.${selectors.scenarioBtn}.scenario-12`);
+        assert.deepEqual(await onChangeSyncCalls('carousel'), [], 'scrollTo the current page');
+        await expectOnChangeCalls('carousel', [1, 2], 'No late duplicates (the pagination echo is not reported)');
+    })
+
+    it('Should not call onActivePageChange when items change but the active index stays', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-6`);
+        await expectOnChangeCalls('carousel', [], 'Adding an item at the back keeps page 0 (1.x reported 0 again)');
+    })
+
+    it('Should call onActivePageChange once when items change the active index', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-4`);
+        await expectOnChangeCalls('carousel', [1], 'Adding an item at the front moves the active item to index 1');
+    })
+
+    it('Should call onActivePageChange once when a new item is added and selected', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-7`);
+        await expectOnChangeCalls('carousel', [10], 'The new last item (index 10) is selected');
+    })
 });

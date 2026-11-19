@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require('../shared/stepper-selectors.json');
-const { navigateToPage, elementChildren } = require('../shared/utils');
+const { navigateToPage, elementChildren, onChangeSyncCalls, expectOnChangeCalls } = require('../shared/utils');
 
 describe('Stepper', function () {
     this.beforeAll(async () => {
@@ -9,6 +9,11 @@ describe('Stepper', function () {
 
     this.afterEach(async () => {
         await gf.trigger('reset');
+    })
+
+    // First test: nothing has run yet, so the log only has what happened while mounting.
+    it('Should not call onChange on mount', async () => {
+        await expectOnChangeCalls('stepper', [], 'The initially selected item is not reported');
     })
 
     it('Should render itself and it\'s children correctly', async () => {
@@ -143,5 +148,41 @@ describe('Stepper Control', function () {
 
         assert.equal(controlClasses.includes(selectors.controlHidden), true, "Control should have custom class when hidden");
         assert.equal(controlStyles['background-color'], 'rgba(255, 0, 0, 1)', "Custom class should apply different styles");
+    })
+});
+
+describe('Stepper onChange calls', function () {
+    this.afterEach(async () => {
+        await gf.trigger('reset');
+    })
+
+    it('Should call onChange once per step', async () => {
+        const [, next] = await gf.getAll(`.${selectors.stepperControl}`);
+        await next.click();
+        await next.click();
+        await expectOnChangeCalls('stepper', ['test1', 'test2'], 'One call per step');
+        await next.click();
+        await expectOnChangeCalls('stepper', ['test1', 'test2'], 'No call past the last item (no loop)');
+    })
+
+    it('Should not call onChange before the first item (no loop)', async () => {
+        const [previous] = await gf.getAll(`.${selectors.stepperControl}`);
+        await previous.click();
+        await expectOnChangeCalls('stepper', [], 'Already on the first item');
+    })
+
+    it('Should call onChange synchronously from the ref', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
+        assert.deepEqual(await onChangeSyncCalls('stepper'), ['test1'], 'onChange fired before setOption returned');
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
+        assert.deepEqual(await onChangeSyncCalls('stepper'), [], 'setOption with the selected option');
+        await expectOnChangeCalls('stepper', ['test1'], 'No late duplicate');
+    })
+
+    it('Should not call onChange when disabled', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-1`);
+        const [, next] = await gf.getAll(`.${selectors.stepperControl}`);
+        await next.click();
+        await expectOnChangeCalls('stepper', [], 'A step on a disabled stepper');
     })
 });

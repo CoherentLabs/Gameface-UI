@@ -8,6 +8,7 @@ import GAMEPAD_GLYPHS from "../../../shared/keybinds/glyph-mappings.json";
 import OVERRIDES from "../../../shared/keybinds/overrides.json";
 import Flex from "@components/Layout/Flex/Flex";
 import Navigation, { NavigationRef } from "@components/Utility/Navigation/Navigation";
+import createOnChangeLog from "../onChangeLog";
 
 const KeybindsTest = () => {
     let keybindsRef!: KeybindsRef;
@@ -20,13 +21,14 @@ const KeybindsTest = () => {
     const [listeningText, setListeningText] = createSignal<string | undefined>(undefined)
     const [placeholder, setPlaceholder] = createSignal('Unbound')
     const [actionTest, setActionTest] = createSignal('test');
+    const log = createOnChangeLog('keybinds');
 
     const scenarios = [
         { label: "Change policy - replace-existing", action: () => { setPolicy('replace-existing') } },
         { label: "Change policy - allow-duplicates", action: () => { setPolicy('allow-duplicates') } },
         { label: "Change policy - swap", action: () => { setPolicy('swap') } },
-        { label: "Rebind action", action: () => { keybindsRef.bind(TEST_KEYS[0].action, 'Z') } },
-        { label: "Unbind key", action: () => { keybindsRef.unbindKey('W') } },
+        { label: "Rebind action", action: () => log.sync(() => keybindsRef.bind(TEST_KEYS[0].action, 'Z')) },
+        { label: "Unbind key", action: () => log.sync(() => keybindsRef.unbindKey('W')) },
         { label: "Clear all bindings", action: () => { keybindsRef.clearAll() } },
         { label: "Reset defaults", action: () => { keybindsRef.reset() } },
         { label: "Apply alternative bindings", action: () => { keybindsRef.mapBindings(ALTERNATE_KEYS) } },
@@ -47,6 +49,8 @@ const KeybindsTest = () => {
         // Solid 2 stages writes: apply them before the ref call reads the new props.
         flush();
         keybindsRef?.reset();
+        flush();
+        log.clear();
     };
 
     const testComponent = () => <div>down</div>;
@@ -74,7 +78,7 @@ const KeybindsTest = () => {
 
             <Flex direction="row" wrap="wrap" class={selectors.keybindsContainer}>
                 <Keybinds
-                    onChange={(prev, next, action) => setLastChanged({ prev: prev as string, next: next as string, action })}
+                    onChange={(prev, next, action) => { log.record(prev, next, action); setLastChanged({ prev: prev as string, next: next as string, action }); }}
                     onConflict={() => setHasConflict(true)}
                     ref={keybindsRef}
                     conflictPolicy={policy()}

@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require("../shared/checkbox-selectors.json");
-const { navigateToPage } = require('../shared/utils');
+const { navigateToPage, onChangeSyncCalls, expectOnChangeCalls } = require('../shared/utils');
 
 describe('Checkbox', function () {
     this.beforeAll(async () => {
@@ -12,6 +12,11 @@ describe('Checkbox', function () {
         await gf.retryIfFails(async () => {
             assert.equal(await gf.isVisible(`.${selectors.indicator}`), false, "Checkbox should reset")
         })
+    })
+
+    // First test: nothing has run yet, so the log only has what happened while mounting.
+    it('Should not call onChange on mount', async () => {
+        await expectOnChangeCalls('checkbox', [], 'No onChange for the initial value');
     })
 
     it('Should render itself and it\'s slots correctly', async () => {
@@ -91,4 +96,37 @@ describe('Checkbox', function () {
         await gf.mouseMove(position.x, position.y + 5);
         assert.equal(await gf.isVisible(`.${selectors.assertionElement}`), true)
     })
+
+    describe('onChange calls', () => {
+        it('Should call onChange once per click', async () => {
+            const checkbox = await gf.get(`.${selectors.base}`);
+            await checkbox.click();
+            await expectOnChangeCalls('checkbox', [true], 'One call after the first click (1.x called it twice)');
+            await checkbox.click();
+            await expectOnChangeCalls('checkbox', [true, false], 'One more call after the second click');
+        });
+
+        it('Should call onChange synchronously from the ref setter', async () => {
+            await gf.click(`.${selectors.scenarioBtn}.scenario-1`);
+            assert.deepEqual(await onChangeSyncCalls('checkbox'), [true], 'onChange fired before setChecked returned');
+            await expectOnChangeCalls('checkbox', [true], 'No late duplicate');
+        });
+
+        it('Should support the updater form of the ref setter', async () => {
+            await gf.click(`.${selectors.scenarioBtn}.scenario-3`);
+            assert.deepEqual(await onChangeSyncCalls('checkbox'), [true], 'setChecked(prev => !prev) reported the new value');
+        });
+
+        it('Should not call onChange when setting the same value', async () => {
+            await gf.click(`.${selectors.scenarioBtn}.scenario-2`);
+            assert.deepEqual(await onChangeSyncCalls('checkbox'), [], 'setChecked(false) on an unchecked checkbox');
+            await expectOnChangeCalls('checkbox', [], 'No call at all');
+        });
+
+        it('Should not call onChange when disabled', async () => {
+            await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
+            await (await gf.get(`.${selectors.base}`)).click();
+            await expectOnChangeCalls('checkbox', [], 'A click on a disabled checkbox');
+        });
+    });
 });

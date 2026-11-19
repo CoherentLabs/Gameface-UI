@@ -1,12 +1,14 @@
 import { createMemo, createSignal, For, onCleanup, onSettled, flush } from "solid-js";
 import './two-handle-slider.css';
 import selectors from "../../../shared/two-handle-slider-selectors.json";
+import createOnChangeLog from "../onChangeLog";
 import TwoHandleSlider, { TwoHandleSliderRef } from "@components/Basic/TwoHandleSlider/TwoHandleSlider";
 
 const initialRange = { start: 20, end: 60 };
 
 const TwoHandleSliderTest = () => {
     let sliderRef!: TwoHandleSliderRef;
+    const log = createOnChangeLog('two-handle-slider');
     const [controlled, setControlled] = createSignal(initialRange);
     const [start, setStart] = createSignal<number>(initialRange.start);
     const [end, setEnd] = createSignal<number>(initialRange.end);
@@ -15,14 +17,14 @@ const TwoHandleSliderTest = () => {
     const [test, setTest] = createSignal('red');
 
     const scenarios = [
-        { label: "Change value with ref", action: () => { sliderRef.changeValue({ start: 30, end: 70 }) } },
+        { label: "Change value with ref", action: () => log.sync(() => sliderRef.changeValue({ start: 30, end: 70 })) },
         { label: "Change styles", action: () => { setTest('blue') } },
-        { label: "Change start with ref", action: () => { sliderRef.changeStart(40) } },
-        { label: "Change end with ref", action: () => { sliderRef.changeEnd(80) } },
-        { label: "Step start up", action: () => { sliderRef.stepStart(1) } },
-        { label: "Step end down", action: () => { sliderRef.stepEnd(-1) } },
+        { label: "Change start with ref", action: () => log.sync(() => sliderRef.changeStart(40)) },
+        { label: "Change end with ref", action: () => log.sync(() => sliderRef.changeEnd(80)) },
+        { label: "Step start up", action: () => log.sync(() => sliderRef.stepStart(1)) },
+        { label: "Step end down", action: () => log.sync(() => sliderRef.stepEnd(-1)) },
         { label: "Set value via prop", action: () => { setControlled({ start: 10, end: 90 }) } },
-        { label: "Shift both handles past the previous end with ref", action: () => { sliderRef.changeValue({ start: 70, end: 90 }) } },
+        { label: "Shift both handles past the previous end with ref", action: () => log.sync(() => sliderRef.changeValue({ start: 70, end: 90 })) },
     ];
 
     const reset = () => {
@@ -35,14 +37,18 @@ const TwoHandleSliderTest = () => {
         // Solid 2 stages writes: apply them before the ref call reads the new props.
         flush();
         sliderRef?.changeValue(initialRange);
+        flush();
+        log.clear();
     };
 
     const isReactive = createMemo(() => test() === 'blue');
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
-    onSettled(() => { document.addEventListener('reset', reset); });
-    onCleanup(() => document.removeEventListener('reset', reset))
+    // Sets the current value again (an event, not a button, so the layout doesn't move).
+    const setSameValue = () => log.sync(() => sliderRef.changeValue(initialRange));
+    onSettled(() => { document.addEventListener('reset', reset); document.addEventListener('twoHandleSliderSameValue', setSameValue); });
+    onCleanup(() => { document.removeEventListener('reset', reset); document.removeEventListener('twoHandleSliderSameValue', setSameValue); })
 
     return (
         <>
@@ -61,7 +67,7 @@ const TwoHandleSliderTest = () => {
 
             <TwoHandleSlider
                 ref={sliderRef}
-                onChange={(value) => { setStart(value.start); setEnd(value.end); }}
+                onChange={(value) => { log.record(value); setStart(value.start); setEnd(value.end); }}
                 onChangeEnd={(value) => { setChangeEndStart(value.start); setChangeEndEnd(value.end); }}
                 min={0}
                 max={100}

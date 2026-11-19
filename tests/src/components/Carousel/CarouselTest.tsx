@@ -1,6 +1,7 @@
 import { createMemo, createSignal, createStore, flush, For, Show, onSettled } from "solid-js";
 import './carousel.css';
 import selectors from "../../../shared/carousel-selectors.json";
+import createOnChangeLog from "../onChangeLog";
 import Carousel, { CarouselRef } from "@components/Complex/Carousel/Carousel";
 
 const initialOptions = {
@@ -18,6 +19,7 @@ const CarouselTest = () => {
     const [test, setTest] = createSignal('red');
     const [items, setItems] = createSignal(initialItems);
     const [activePage, setActivePage] = createSignal(0);
+    const log = createOnChangeLog('carousel');
 
     const scenarios = [
         { label: "Change item width", action: () => { setCarouselOptions(o => { o.itemWidth = 20; }) } },
@@ -30,9 +32,9 @@ const CarouselTest = () => {
         { label: "Add item to back and select", action: () => { setItems((prev) => [...prev, { name: 'Back selected', selected: true }]) } },
         { label: "Remove last item", action: () => { setItems((prev) => [...prev.slice(0, prev.length - 1)]) } },
         { label: "Remove first item", action: () => { setItems((prev) => prev.slice(1)) } },
-        { label: "Move to next element", action: () => { carouselRef.next() } },
-        { label: "Move to prev element", action: () => { carouselRef.prev() } },
-        { label: "Move to third element", action: () => { carouselRef.scrollTo(2); } },
+        { label: "Move to next element", action: () => log.sync(() => carouselRef.next()) },
+        { label: "Move to prev element", action: () => log.sync(() => carouselRef.prev()) },
+        { label: "Move to third element", action: () => log.sync(() => carouselRef.scrollTo(2)) },
         { label: "Remove leading and trailing spaces", action: () => { setCarouselOptions(o => { o.leadingAndTrailingSpaces = false; }); setCarouselOptions(o => { o.itemGap = 0; }) } },
         { label: "Enable custom pagination controls", action: () => { setCarouselOptions(o => { o.paginationControlsDisabled = true; }) } },
         { label: "Add item at middle between first and selected", action: () => { setItems((prev) => [...prev.slice(0, 1), { name: 'Mid', selected: false }, ...prev.slice(1)]) } },
@@ -49,6 +51,8 @@ const CarouselTest = () => {
         flush();
         carouselRef?.scrollTo(0);
         setTest('red');
+        flush();
+        log.clear();
     };
 
     const isReactive = createMemo(() => test() === 'blue');
@@ -74,7 +78,7 @@ const CarouselTest = () => {
             </For>
 
             <Carousel
-                onActivePageChange={(page) => { setActivePage(page) }}
+                onActivePageChange={(page) => { log.record(page); setActivePage(page); }}
                 itemWidth={carouselOptions.itemWidth}
                 itemGap={carouselOptions.itemGap}
                 itemsAlignment={carouselOptions.itemsAlignment as 'center' | 'start' | 'end'}

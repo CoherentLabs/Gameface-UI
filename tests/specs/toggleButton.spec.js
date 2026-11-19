@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require('../shared/toggle-button-selectors.json');
-const { navigateToPage, elementChildren, childNodesInfo } = require('../shared/utils');
+const { navigateToPage, elementChildren, childNodesInfo, onChangeSyncCalls, expectOnChangeCalls } = require('../shared/utils');
 
 describe('ToggleButton', function () {
     this.beforeAll(async () => {
@@ -9,6 +9,53 @@ describe('ToggleButton', function () {
 
     this.afterEach(async () => {
         await gf.trigger('reset');
+    });
+
+    // First test: nothing has run yet, so the log only has what happened while mounting.
+    it('Should not call onChange on mount', async () => {
+        await expectOnChangeCalls('toggle-button', [], 'No onChange for the initial value');
+        await expectOnChangeCalls('toggle-button-controlled', [], 'No onChange for the initial value (controlled)');
+    });
+
+    describe('onChange calls', () => {
+        it('Should call onChange once per click', async () => {
+            const toggle = await gf.get(`.${selectors.base}`);
+            await toggle.click();
+            await expectOnChangeCalls('toggle-button', [true], 'One call after the first click');
+            await toggle.click();
+            await expectOnChangeCalls('toggle-button', [true, false], 'One more call after the second click');
+        });
+
+        it('Should call onChange synchronously from the ref setter', async () => {
+            await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
+            assert.deepEqual(await onChangeSyncCalls('toggle-button'), [true], 'onChange fired before setChecked returned');
+            await expectOnChangeCalls('toggle-button', [true], 'No late duplicate');
+        });
+
+        it('Should support the updater form of the ref setter', async () => {
+            await gf.click(`.${selectors.scenarioBtn}.scenario-4`);
+            assert.deepEqual(await onChangeSyncCalls('toggle-button'), [true], 'setChecked(prev => !prev) reported the new value');
+        });
+
+        it('Should not call onChange when setting the same value', async () => {
+            await gf.click(`.${selectors.scenarioBtn}.scenario-3`);
+            assert.deepEqual(await onChangeSyncCalls('toggle-button'), [], 'setChecked(false) on an unchecked toggle');
+            await expectOnChangeCalls('toggle-button', [], 'No call at all');
+        });
+
+        it('Should not call onChange when disabled', async () => {
+            await gf.click(`.${selectors.scenarioBtn}.scenario-1`);
+            await (await gf.get(`.${selectors.base}`)).click();
+            await expectOnChangeCalls('toggle-button', [], 'A click on a disabled toggle');
+        });
+
+        it('Should call onChange once per click when controlled', async () => {
+            const toggle = await gf.get(`.${selectors.controlled}`);
+            await toggle.click();
+            await expectOnChangeCalls('toggle-button-controlled', [true], 'The echo through the checked prop is not reported');
+            await toggle.click();
+            await expectOnChangeCalls('toggle-button-controlled', [true, false], 'One more call after the second click');
+        });
     });
 
     it('Should render itself correctly', async () => {

@@ -1,10 +1,21 @@
 const assert = require('assert');
 const selectors = require('../shared/tutorial/tutorial-selectors.json');
 const events = require('../shared/tutorial/tutorial-events.json');
-const { navigateToPage } = require('../shared/utils');
+const { navigateToPage, onChangeSyncCalls, expectOnChangeCalls } = require('../shared/utils');
 // Resolve element keys in steps.json using selectors.json so we can reference selector names instead of hardcoding full class strings.
 const steps = require('../shared/tutorial/tutorial-steps.json')
     .map(step => ({ ...step, element: selectors[step.element.slice(1)] }));
+
+// Its own describe, before the main one: that one starts the tour in beforeEach.
+describe('Tutorial mount', function () {
+    this.beforeAll(async () => {
+        await navigateToPage('.tutorial-link');
+    });
+
+    it('Should not call onChange on mount', async () => {
+        await expectOnChangeCalls('tutorial', [], 'No onChange before a tour starts');
+    });
+});
 
 describe('Tutorial', function () {
     this.beforeAll(async () => {
@@ -189,5 +200,49 @@ describe('Tutorial', function () {
             assert.equal(styles['background-color'], 'rgba(0, 0, 255, 1)', 'styles update');
             assert.ok(classes.includes(selectors.reactive), 'class "reactive" applied');
         });
+    })
+});
+
+describe('Tutorial onChange calls', function () {
+    this.afterEach(async () => {
+        await gf.trigger('reset');
+    })
+
+    it('Should call onChange once, synchronously, when a tour starts', async () => {
+        await gf.trigger(events.start);
+        assert.deepEqual(await onChangeSyncCalls('tutorial'), [1], 'tour() reported step 1 before it returned');
+        // 1.x reported the step again after the highlight was measured (a few frames later): that must not happen.
+        await expectOnChangeCalls('tutorial', [1], 'No second call after the highlight is measured');
+    })
+
+    it('Should call onChange once per step with next / previous', async () => {
+        await gf.trigger(events.start);
+        await gf.click(`.${selectors['tooltip-next']}`);
+        await gf.click(`.${selectors['tooltip-prev']}`);
+        await expectOnChangeCalls('tutorial', [1, 2, 1], 'One call per step change');
+        await gf.click(`.${selectors['tooltip-prev']}`);
+        await expectOnChangeCalls('tutorial', [1, 2, 1], 'No call below step 1');
+    })
+
+    it('Should call onChange synchronously from changeStep, and not for the current step', async () => {
+        await gf.trigger(events.start);
+        await gf.trigger(events['change-step'], { step: 3 });
+        assert.deepEqual(await onChangeSyncCalls('tutorial'), [3], 'changeStep(3) reported before it returned');
+        await gf.trigger(events['change-step'], { step: 3 });
+        assert.deepEqual(await onChangeSyncCalls('tutorial'), [], 'changeStep to the current step');
+        await expectOnChangeCalls('tutorial', [1, 3], 'No late duplicates');
+    })
+
+    it('Should report step 0 once on exit and pause', async () => {
+        await gf.trigger(events.start);
+        await gf.trigger(events.pause);
+        assert.deepEqual(await onChangeSyncCalls('tutorial'), [0], 'pause() reported 0');
+        await gf.trigger(events.resume);
+        assert.deepEqual(await onChangeSyncCalls('tutorial'), [1], 'resume() reported the paused step');
+        await gf.trigger(events.end);
+        assert.deepEqual(await onChangeSyncCalls('tutorial'), [0], 'exit() reported 0');
+        await gf.trigger(events.end);
+        assert.deepEqual(await onChangeSyncCalls('tutorial'), [], 'exit() when no tour is running');
+        await expectOnChangeCalls('tutorial', [1, 0, 1, 0], 'No late duplicates');
     })
 });

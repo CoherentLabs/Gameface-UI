@@ -1,5 +1,6 @@
 import { createMemo, createSignal, For, onCleanup, onSettled, Show, flush } from "solid-js";
 import selectors from '../../../shared/accordion-selectors.json';
+import createOnChangeLog from '../onChangeLog';
 import Accordion, { AccordionRef } from "@components/Basic/Accordion/Accordion";
 import './accordion.css';
 
@@ -11,6 +12,7 @@ const accordionPanels = [
 
 const AccordionTest = () => {
     let accordionRef!: AccordionRef;
+    const log = createOnChangeLog('accordion');
     const [expanded, setExpanded] = createSignal(''); 
     const [multiple, setMultiple] = createSignal(false);
     const [disabled, setDisabled] = createSignal(false);
@@ -23,10 +25,10 @@ const AccordionTest = () => {
         { label: "Disable accordion", action: () => setDisabled(true) },
         { label: "Disable accordion panel", action: () => setPanelDisabled(true) },
         { label: "Enable reactive styles", action: () => setReactive(true) },
-        { label: "Expand a panel programatically", action: () => accordionRef?.expand('test1') },
-        { label: "Expand all panels programatically", action: () => accordionRef?.expandAll() },
-        { label: "Collapse a panel programatically", action: () => accordionRef?.collapse('test1') },
-        { label: "Collapse all panels programatically", action: () => accordionRef?.collapseAll() },
+        { label: "Expand a panel programatically", action: () => log.sync(() => accordionRef?.expand('test1')) },
+        { label: "Expand all panels programatically", action: () => log.sync(() => accordionRef?.expandAll()) },
+        { label: "Collapse a panel programatically", action: () => log.sync(() => accordionRef?.collapse('test1')) },
+        { label: "Collapse all panels programatically", action: () => log.sync(() => accordionRef?.collapseAll()) },
         { label: "Render custom icon", action: () => setCustomIcon(true) },
     ];
 
@@ -39,6 +41,8 @@ const AccordionTest = () => {
         // Solid 2 stages writes: apply them before the ref call reads the new props.
         flush();
         accordionRef?.collapseAll();
+        flush();
+        log.clear();
     };
 
     const isReactive = createMemo(() => reactive() === true);
@@ -64,7 +68,7 @@ const AccordionTest = () => {
                 ref={accordionRef}
                 class={`${selectors.base} ${reactiveClass()}`}
                 style={reactiveStyle()}
-                onChange={(expanded) => setExpanded(expanded)} 
+                onChange={(expanded) => { log.record(expanded); setExpanded(expanded); }} 
                 multiple={multiple()}
                 disabled={disabled()}
                 class-disabled={selectors.accordionDisabled} >

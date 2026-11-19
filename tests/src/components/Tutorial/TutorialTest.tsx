@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onSettled, Show } from "solid-js";
+import { createMemo, createSignal, flush, For, onSettled, Show } from "solid-js";
 import selectors from "../../../shared/tutorial/tutorial-selectors.json";
 import events from '../../../shared/tutorial/tutorial-events.json';
 import steps from '../../../shared/tutorial/tutorial-steps.json';
@@ -9,6 +9,7 @@ import GamefaceUIImage from './coherent-gameface-ui.png';
 import { TooltipType } from "@components/Complex/Tutorial/TutorialTooltip";
 import './tutorial.css'
 import Progress from "@components/Feedback/Progress/Progress";
+import createOnChangeLog from "../onChangeLog";
 
 const TestTooltip: TooltipType = (props) => {
     return (
@@ -31,13 +32,14 @@ const TutorialTest = () => {
     const [test, setTest] = createSignal('red');
     const [dynamicElement, setDynamicElement] = createSignal(false);
     const [currentStep, setCurrentStep] = createSignal(0);
+    const log = createOnChangeLog('tutorial');
 
     const scenarios = [
-        { label: events.start, action: () => tutorialRef?.tour() },
-        { label: events.end, action: () => tutorialRef?.exit() },
-        { label: events.pause, action: () => tutorialRef?.pause() },
-        { label: events.resume, action: () => tutorialRef?.resume() },
-        { label: events['resume-from-next'], action: () => tutorialRef?.resume(true) },
+        { label: events.start, action: () => log.sync(() => tutorialRef?.tour()) },
+        { label: events.end, action: () => log.sync(() => tutorialRef?.exit()) },
+        { label: events.pause, action: () => log.sync(() => tutorialRef?.pause()) },
+        { label: events.resume, action: () => log.sync(() => tutorialRef?.resume()) },
+        { label: events['resume-from-next'], action: () => log.sync(() => tutorialRef?.resume(true)) },
         { label: events['dynamic-element'], action: () => setDynamicElement(true) },
         { label: events['change-styles'], action: () => setTest('blue') },
     ];
@@ -47,10 +49,12 @@ const TutorialTest = () => {
         setDynamicElement(false);
         setCurrentStep(0);
         tutorialRef?.exit();
+        flush();
+        log.clear();
     };
 
     const handleChangeStep = (event: CustomEvent<{step: number}>) => {
-        tutorialRef?.changeStep(event.detail.step);
+        log.sync(() => tutorialRef?.changeStep(event.detail.step));
     } 
 
     const isReactive = createMemo(() => test() === 'blue');
@@ -94,7 +98,7 @@ const TutorialTest = () => {
                 outset={0}
                 class={`${selectors.tutorial} ${reactiveClass()}`}
                 style={reactiveStyle()}
-                onChange={(step) => setCurrentStep(step)}
+                onChange={(step) => { log.record(step); setCurrentStep(step); }}
                 tooltip={TestTooltip}>
                 <div class={selectors["card-wrapper"]}>
                     <Tutorial.Step order={steps[0].order} title={steps[0].title} content={steps[0].content}>

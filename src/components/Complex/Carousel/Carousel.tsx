@@ -229,12 +229,18 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
         itemsContainer.style.transform = `translateX(${scrollOffset}px)`;
     }
 
+    // The page last reported through onActivePageChange. A forced scroll (the items changed) re-positions the
+    // container but reports only when the active index really changed (1.x reported it on every items change).
+    let reportedPage = 0;
     const scrollTo = (page: number, force = false) => {
         if (!itemsContainer || page < 0 || page >= pagesCount() || (!force && activePage() === page)) return;
 
         setActivePage(page);
         translateItemsContainer();
-        props.onActivePageChange?.(page);
+        if (page !== reportedPage) {
+            reportedPage = page;
+            props.onActivePageChange?.(page);
+        }
         paginationRef?.changeIndex(page + 1);
     }
 

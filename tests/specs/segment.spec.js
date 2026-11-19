@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require('../shared/segment-selectors.json');
-const { navigateToPage, elementChildren } = require('../shared/utils');
+const { navigateToPage, elementChildren, onChangeSyncCalls, expectOnChangeCalls } = require('../shared/utils');
 
 describe('Segment', function () {
     this.beforeAll(async () => {
@@ -9,6 +9,11 @@ describe('Segment', function () {
 
     this.afterEach(async () => {
         await gf.trigger('reset');
+    })
+
+    // First test: nothing has run yet, so the log only has what happened while mounting.
+    it('Should not call onChange on mount', async () => {
+        await expectOnChangeCalls('segment', [], 'The initially selected button is not reported');
     })
 
     it('Should render itself and it\'s slots correctly', async () => {
@@ -82,5 +87,35 @@ describe('Segment', function () {
 
         assert.equal(btnStyles['background-color'], 'rgba(0, 128, 0, 1)');
         assert.equal(isReactive, true);
+    })
+});
+
+describe('Segment onChange calls', function () {
+    this.afterEach(async () => {
+        await gf.trigger('reset');
+    })
+
+    it('Should call onChange once per selection', async () => {
+        await gf.click(`.${selectors.segmentButton2}`);
+        await expectOnChangeCalls('segment', ['test2'], 'One call for the new option');
+    })
+
+    it('Should not call onChange when the selected button is clicked again', async () => {
+        await gf.click(`.${selectors.segmentButton1}`);
+        await expectOnChangeCalls('segment', [], 'test1 is already selected');
+    })
+
+    it('Should call onChange synchronously from the ref', async () => {
+        await gf.trigger('selectSegmentOption');
+        await gf.retryIfFails(async () => {
+            assert.deepEqual(await onChangeSyncCalls('segment'), ['test3'], 'onChange fired before selectOption returned');
+        })
+        await expectOnChangeCalls('segment', ['test3'], 'No late duplicate');
+    })
+
+    it('Should not call onChange when disabled', async () => {
+        await gf.click(`.${selectors.disableSegment}`);
+        await gf.click(`.${selectors.segmentButton2}`);
+        await expectOnChangeCalls('segment', [], 'A click on a disabled segment');
     })
 });

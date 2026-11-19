@@ -1,17 +1,19 @@
 import { createMemo, createSignal, For, onCleanup, onSettled, flush } from "solid-js";
 import './text-slider.css';
 import selectors from "../../../shared/slider-selectors.json";
+import createOnChangeLog from "../onChangeLog";
 import TextSlider, { TextSliderRef } from "@components/Basic/TextSlider/TextSlider";
 
 const initialValue = 'Easy';
 const TextSliderTest = () => {
     let sliderRef!: TextSliderRef;
+    const log = createOnChangeLog('text-slider');
     const [value, setValue] = createSignal(initialValue);
     const [controlled, setControlled] = createSignal<string>(initialValue);
     const [test, setTest] = createSignal('red');
 
     const scenarios = [
-        { label: "Change value with ref", action: () => { sliderRef.changeValue('Medium') } },
+        { label: "Change value with ref", action: () => log.sync(() => sliderRef.changeValue('Medium')) },
         { label: "Change styles", action: () => { setTest('blue') } },
         { label: "Set value via prop", action: () => { setControlled('Hard') } },
     ];
@@ -23,14 +25,18 @@ const TextSliderTest = () => {
         // Solid 2 stages writes: apply them before the ref call reads the new props.
         flush();
         sliderRef?.changeValue(initialValue);
+        flush();
+        log.clear();
     };
 
     const isReactive = createMemo(() => test() === 'blue');
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
-    onSettled(() => { document.addEventListener('reset', reset); });
-    onCleanup(() => document.removeEventListener('reset', reset))
+    // Sets the current value again (an event, not a button, so the layout doesn't move).
+    const setSameValue = () => log.sync(() => sliderRef.changeValue(initialValue));
+    onSettled(() => { document.addEventListener('reset', reset); document.addEventListener('textSliderSameValue', setSameValue); });
+    onCleanup(() => { document.removeEventListener('reset', reset); document.removeEventListener('textSliderSameValue', setSameValue); })
 
     return (
         <>
@@ -46,7 +52,7 @@ const TextSliderTest = () => {
 
             <TextSlider
                 ref={sliderRef}
-                onChange={(value) => setValue(value)}
+                onChange={(value) => { log.record(value); setValue(value); }}
                 values={['Easy', 'Medium', 'Hard', 'Extreme']}
                 value={controlled()}
                 style={reactiveStyle()}

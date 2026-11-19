@@ -1,20 +1,27 @@
 import Checkbox, { CheckboxRef } from "@components/Basic/Checkbox/Checkbox";
-import { createSignal, For, onCleanup, onSettled } from "solid-js";
+import { createSignal, flush, For, onCleanup, onSettled } from "solid-js";
 import selectors from '../../../shared/checkbox-selectors.json';
+import createOnChangeLog from "../onChangeLog";
 import './checkbox.css';
 
 const CheckboxTest = () => {
     const [checked, setChecked] = createSignal(false);
     const [disabled, setDisabled] = createSignal(false);
     let checkboxRef!: CheckboxRef;
+    const log = createOnChangeLog('checkbox');
 
     const scenarios = [
-        { label: "Disable Checkbox", action: () => setDisabled(true) }
+        { label: "Disable Checkbox", action: () => setDisabled(true) },
+        { label: "Check via ref", action: () => log.sync(() => checkboxRef.setChecked(true)) },
+        { label: "Set the same value via ref", action: () => log.sync(() => checkboxRef.setChecked(false)) },
+        { label: "Toggle via ref updater", action: () => log.sync(() => checkboxRef.setChecked((prev) => !prev)) },
     ];
 
     const resetCheckbox = () => {
         checkboxRef?.setChecked(false);
         setDisabled(false);
+        flush();
+        log.clear();
     };
 
     onSettled(() => {
@@ -36,7 +43,7 @@ const CheckboxTest = () => {
             <Checkbox 
                 disabled={disabled()}
                 checked={false}
-                onChange={(checked) => setChecked(checked)}
+                onChange={(checked) => { log.record(checked); setChecked(checked); }}
                 mouseenter={() => setChecked(true)}                
                 ref={checkboxRef} 
                 class={`${selectors.base} ${checked() ? 'reactive' : ''}`}

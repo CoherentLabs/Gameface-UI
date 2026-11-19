@@ -2,26 +2,36 @@ import { createMemo, createSignal, For, onCleanup, onSettled, flush } from "soli
 import ToggleButton, { ToggleButtonRef } from "@components/Basic/ToggleButton/ToggleButton";
 import './toggleButton.css';
 import selectors from "../../../shared/toggle-button-selectors.json";
+import createOnChangeLog from "../onChangeLog";
 
 const ToggleButtonTest = () => {
     let toggleRef!: ToggleButtonRef;
     const [checked, setChecked] = createSignal(false);
     const [disabled, setDisabled] = createSignal(false);
     const [reactive, setReactive] = createSignal(false);
+    const [controlled, setControlled] = createSignal(false);
+    const log = createOnChangeLog('toggle-button');
+    const controlledLog = createOnChangeLog('toggle-button-controlled');
 
     const scenarios = [
-        { label: "Check programatically", action: () => toggleRef?.setChecked(true) },
+        { label: "Check programatically", action: () => log.sync(() => toggleRef?.setChecked(true)) },
         { label: "Disable toggle button", action: () => setDisabled(true) },
         { label: "Enable reactive styles", action: () => setReactive(true) },
+        { label: "Set the same value via ref", action: () => log.sync(() => toggleRef?.setChecked(false)) },
+        { label: "Toggle via ref updater", action: () => log.sync(() => toggleRef?.setChecked((prev) => !prev)) },
     ];
 
     const resetToggle = () => {
         setDisabled(false);
         setChecked(false);
         setReactive(false);
+        setControlled(false);
         // Solid 2 stages writes: apply them before the ref call reads the new props.
         flush();
         toggleRef?.setChecked(false);
+        flush();
+        log.clear();
+        controlledLog.clear();
     };
 
     const isReactive = createMemo(() => reactive() === true);
@@ -49,7 +59,7 @@ const ToggleButtonTest = () => {
                 class-checked={selectors['base-checked']}
                 class-disabled={selectors['base-disabled']}
                 checked={false}
-                onChange={(checked) => setChecked(checked)}
+                onChange={(checked) => { log.record(checked); setChecked(checked); }}
                 class={`${selectors.base} ${reactiveClass()}`}
                 style={reactiveStyle()}>
                 <ToggleButton.LabelLeft>Off</ToggleButton.LabelLeft>
@@ -64,6 +74,13 @@ const ToggleButtonTest = () => {
                 </ToggleButton.Control>
             </ToggleButton>
 
+            {/* Controlled: `checked` follows onChange. A click must report once (the echo through the prop is skipped). */}
+            <ToggleButton
+                class={selectors.controlled}
+                checked={controlled()}
+                onChange={(checked) => { controlledLog.record(checked); setControlled(checked); }}>
+                <ToggleButton.Control />
+            </ToggleButton>
         </>
     )
 }

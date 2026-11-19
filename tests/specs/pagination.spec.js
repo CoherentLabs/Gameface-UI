@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require('../shared/pagination-selectors.json');
-const { navigateToPage } = require('../shared/utils');
+const { navigateToPage, onChangeSyncCalls, expectOnChangeCalls } = require('../shared/utils');
 
 describe('Pagination', function () {
     this.beforeAll(async () => {
@@ -9,6 +9,11 @@ describe('Pagination', function () {
 
     this.afterEach(async () => {
         await gf.trigger('reset');
+    })
+
+    // First test: nothing has run yet, so the log only has what happened while mounting.
+    it('Should not call onChange on mount', async () => {
+        await expectOnChangeCalls('pagination', [], 'The initial page is not reported');
     })
 
     it('Should render itself and it\'s children correctly', async () => {
@@ -188,5 +193,41 @@ describe('Pagination Control', function () {
 
         assert.equal(controlClasses.includes(selectors.controlHidden), true, "Control should have custom class when hidden");
         assert.equal(controlStyles['background-color'], 'rgba(255, 0, 0, 1)', "Custom class should apply different styles");
+    })
+});
+
+describe('Pagination onChange calls', function () {
+    this.afterEach(async () => {
+        await gf.trigger('reset');
+    })
+
+    it('Should call onChange once per page change', async () => {
+        const [, next] = await gf.getAll(`.${selectors.paginationControl}`);
+        await next.click();
+        await expectOnChangeCalls('pagination', [2], 'One call per page change');
+    })
+
+    it('Should not call onChange before the first page (no loop)', async () => {
+        const [previous] = await gf.getAll(`.${selectors.paginationControl}`);
+        await previous.click();
+        await expectOnChangeCalls('pagination', [], 'Already on the first page');
+    })
+
+    it('Should not call onChange when the current page is clicked', async () => {
+        const items = await gf.getAll(`.${selectors.paginationItem}`);
+        await items[0].click();
+        await expectOnChangeCalls('pagination', [], 'Page 1 is already the current page');
+    })
+
+    it('Should call onChange synchronously from the ref', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
+        assert.deepEqual(await onChangeSyncCalls('pagination'), [3], 'onChange fired before changeIndex returned');
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
+        assert.deepEqual(await onChangeSyncCalls('pagination'), [], 'changeIndex with the current page');
+        await gf.click(`.${selectors.scenarioBtn}.scenario-1`);
+        assert.deepEqual(await onChangeSyncCalls('pagination'), [4], 'nextPage');
+        await gf.click(`.${selectors.scenarioBtn}.scenario-2`);
+        assert.deepEqual(await onChangeSyncCalls('pagination'), [3], 'previousPage');
+        await expectOnChangeCalls('pagination', [3, 4, 3], 'No late duplicates');
     })
 });

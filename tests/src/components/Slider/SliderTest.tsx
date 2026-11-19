@@ -2,17 +2,19 @@ import { createMemo, createSignal, For, onCleanup, onSettled, flush } from "soli
 import Slider, { SliderRef } from "@components/Basic/Slider/Slider";
 import './slider.css';
 import selectors from "../../../shared/slider-selectors.json";
+import createOnChangeLog from "../onChangeLog";
 
 const initialValue = 10;
 const SliderTest = () => {
     let sliderRef!: SliderRef;
+    const log = createOnChangeLog('slider');
     const [value, setValue] = createSignal(initialValue);
     const [controlled, setControlled] = createSignal(initialValue);
     const [endValue, setEndValue] = createSignal<number | string>('none');
     const [test, setTest] = createSignal('red');
 
     const scenarios = [
-        { label: "Change value with ref", action: () => {sliderRef.changeValue(20)}},
+        { label: "Change value with ref", action: () => log.sync(() => sliderRef.changeValue(20)) },
         { label: "Change styles", action: () => {setTest('blue')}},
         { label: "Set value via prop", action: () => {setControlled(80)}},
     ];
@@ -25,14 +27,18 @@ const SliderTest = () => {
         // Solid 2 stages writes: apply them before the ref call reads the new props.
         flush();
         sliderRef?.changeValue(initialValue);
+        flush();
+        log.clear();
     };
 
     const isReactive = createMemo(() => test() === 'blue');
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
-    onSettled(() => { document.addEventListener('reset', reset); });
-    onCleanup(() => document.removeEventListener('reset', reset)) 
+    // Sets the current value again (an event, not a button, so the layout doesn't move).
+    const setSameValue = () => log.sync(() => sliderRef.changeValue(initialValue));
+    onSettled(() => { document.addEventListener('reset', reset); document.addEventListener('sliderSameValue', setSameValue); });
+    onCleanup(() => { document.removeEventListener('reset', reset); document.removeEventListener('sliderSameValue', setSameValue); }) 
 
     return (
         <>
@@ -49,7 +55,7 @@ const SliderTest = () => {
 
             <Slider
                 ref={sliderRef}
-                onChange={(value) => setValue(value)}
+                onChange={(value) => { log.record(value); setValue(value); }}
                 onChangeEnd={(value) => setEndValue(value)}
                 min={0}
                 max={100}

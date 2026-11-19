@@ -1,7 +1,8 @@
-import { createMemo, createSignal, For, onCleanup, onSettled, Show } from "solid-js";
+import { createMemo, createSignal, flush, For, onCleanup, onSettled, Show } from "solid-js";
 import selectors from "../../../shared/pagination-selectors.json";
 import Pagination, { PaginationRef } from "@components/Basic/Pagination/Pagination";
 import "./pagination.css" 
+import createOnChangeLog from "../onChangeLog";
 
 const PaginationTest = () => {
     let paginationRef!: PaginationRef;
@@ -11,11 +12,12 @@ const PaginationTest = () => {
     const [hasNumber, setHasNumbers] = createSignal(true);
     const [shouldLoop, setShouldLoop] = createSignal(false);
     const [customBtn, setCustomBtn] = createSignal(false);
+    const log = createOnChangeLog('pagination');
 
     const scenarios = [
-        { label: "Select option with ref", action: () => paginationRef?.changeIndex(3) },
-        { label: "Next page with ref", action: () => paginationRef?.nextPage() },
-        { label: "Previous page with ref", action: () => paginationRef?.previousPage() },
+        { label: "Select option with ref", action: () => log.sync(() => paginationRef?.changeIndex(3)) },
+        { label: "Next page with ref", action: () => log.sync(() => paginationRef?.nextPage()) },
+        { label: "Previous page with ref", action: () => log.sync(() => paginationRef?.previousPage()) },
         { label: "Change page size", action: () => setSize(10)},
         { label: "Remove numbers", action: () => setHasNumbers(false)},
         { label: "Enable loop", action: () => setShouldLoop(true) },
@@ -30,6 +32,8 @@ const PaginationTest = () => {
         setSize(5);
         setShouldLoop(false);
         setCustomBtn(false);
+        flush();
+        log.clear();
     };
 
     const isReactive = createMemo(() => reactivity() === true);
@@ -53,7 +57,7 @@ const PaginationTest = () => {
 
             <Pagination 
                 ref={paginationRef}
-                onChange={(value) => setIndex(value)} 
+                onChange={(value) => { log.record(value); setIndex(value); }} 
                 loop={shouldLoop()}
                 pageIndex={index()}
                 pageSize={size()}

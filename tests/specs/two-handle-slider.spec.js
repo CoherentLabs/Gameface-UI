@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require('../shared/two-handle-slider-selectors.json');
-const { navigateToPage } = require('../shared/utils');
+const { navigateToPage, onChangeCalls, onChangeSyncCalls, expectOnChangeCalls } = require('../shared/utils');
 
 describe('TwoHandleSlider', function () {
     this.beforeAll(async () => {
@@ -9,6 +9,11 @@ describe('TwoHandleSlider', function () {
 
     this.afterEach(async () => {
         await gf.trigger('reset');
+    })
+
+    // First test: nothing has run yet, so the log only has what happened while mounting.
+    it('Should not call onChange on mount', async () => {
+        await expectOnChangeCalls('two-handle-slider', [], 'No onChange for the initial range');
     })
 
     it('Should render itself and its children correctly', async () => {
@@ -198,4 +203,55 @@ describe('TwoHandleSlider', function () {
             });
         }
     });
+});
+
+// A drag reports every new value once: the same value twice in a row is a duplicate call.
+function assertNoRepeatedValues(calls, message) {
+    for (let i = 1; i < calls.length; i++) {
+        assert.notDeepEqual(calls[i], calls[i - 1], `${message}: call ${i} repeats the previous value ${JSON.stringify(calls[i])}`);
+    }
+}
+
+describe('TwoHandleSlider onChange calls', function () {
+    this.afterEach(async () => {
+        await gf.trigger('reset');
+    })
+
+    it('Should report every new range once while dragging', async () => {
+        const handles = await (await gf.get(`.${selectors.slider}`)).findAll(`.${selectors.sliderHandle}`);
+        await handles[1].dragBy(1000, 0);
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        const calls = await onChangeCalls('two-handle-slider');
+        assert.ok(calls.length > 0, 'The drag reported at least one range');
+        assertNoRepeatedValues(calls, 'Drag');
+    })
+
+    it('Should call onChange once, synchronously, for each ref method', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
+        assert.deepEqual(await onChangeSyncCalls('two-handle-slider'), [{ start: 30, end: 70 }], 'changeValue moves both handles: one call');
+        await gf.click(`.${selectors.scenarioBtn}.scenario-2`);
+        assert.deepEqual(await onChangeSyncCalls('two-handle-slider'), [{ start: 40, end: 70 }], 'changeStart');
+        await gf.click(`.${selectors.scenarioBtn}.scenario-3`);
+        assert.deepEqual(await onChangeSyncCalls('two-handle-slider'), [{ start: 40, end: 80 }], 'changeEnd');
+        await gf.click(`.${selectors.scenarioBtn}.scenario-4`);
+        assert.equal((await onChangeSyncCalls('two-handle-slider')).length, 1, 'stepStart');
+        await gf.click(`.${selectors.scenarioBtn}.scenario-5`);
+        assert.equal((await onChangeSyncCalls('two-handle-slider')).length, 1, 'stepEnd');
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        assert.equal((await onChangeCalls('two-handle-slider')).length, 5, 'No late duplicates');
+    })
+
+    it('Should not call onChange when setting the same range', async () => {
+        await gf.trigger('twoHandleSliderSameValue');
+        await gf.retryIfFails(async () => {
+            assert.deepEqual(await onChangeSyncCalls('two-handle-slider'), [], 'changeValue with the current range');
+        })
+        await expectOnChangeCalls('two-handle-slider', [], 'No call at all');
+    })
+
+    // Behavior as on master: a change through the `value` prop is reported once (TASKS 13 may change this).
+    it('Should call onChange once when the value prop changes', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-6`);
+        await expectOnChangeCalls('two-handle-slider', [{ start: 10, end: 90 }], 'value prop { start: 10, end: 90 }');
+    })
 });

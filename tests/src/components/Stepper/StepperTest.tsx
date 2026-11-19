@@ -2,6 +2,7 @@ import { createMemo, createSignal, For, onCleanup, onSettled, Show, flush } from
 import Stepper, { StepperRef } from "@components/Basic/Stepper/Stepper";
 import './stepper.css';
 import selectors from "../../../shared/stepper-selectors.json";
+import createOnChangeLog from "../onChangeLog";
 
 const stepperOptions = [
     { value: 'test0', selected: true, isBefore: false},
@@ -16,9 +17,10 @@ const StepperTest = () => {
     const [shouldLoop, setShouldLoop] = createSignal(false);
     const [position, setPosition] = createSignal<"before" | "after" | undefined>(undefined);
     const [customBtn, setCustomBtn] = createSignal(false);
+    const log = createOnChangeLog('stepper');
 
     const scenarios = [
-        { label: "Select option with ref", action: () => stepperRef?.setOption("test1") },
+        { label: "Select option with ref", action: () => log.sync(() => stepperRef?.setOption("test1")) },
         { label: "Disable entire stepper", action: () => setDisabled(true) },
         { label: "Enable loop", action: () => setShouldLoop(true) },
         { label: "Cycle through control position options", action: () => {
@@ -38,6 +40,8 @@ const StepperTest = () => {
         // Solid 2 stages writes: apply them before the ref call reads the new props.
         flush();
         stepperRef?.setOption('test0')
+        flush();
+        log.clear();
     };
 
     const isReactive = createMemo(() => selected() === 'test1');
@@ -61,7 +65,7 @@ const StepperTest = () => {
 
             <Stepper 
                 ref={stepperRef}
-                onChange={(value) => setSelected(value)} 
+                onChange={(value) => { log.record(value); setSelected(value); }} 
                 disabled={disabled()}
                 loop={shouldLoop()}
                 controls-position={position()}

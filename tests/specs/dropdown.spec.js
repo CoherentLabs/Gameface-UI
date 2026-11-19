@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require("../shared/dropdown-selectors.json");
-const { navigateToPage, elementChildren } = require('../shared/utils');
+const { navigateToPage, elementChildren, onChangeSyncCalls, expectOnChangeCalls } = require('../shared/utils');
 
 describe('Dropdown', function () {
     this.beforeAll(async () => {
@@ -9,6 +9,12 @@ describe('Dropdown', function () {
 
     this.afterEach(async () => {
         await gf.trigger('reset');
+    })
+
+    // First test: nothing has run yet, so the logs only have what happened while mounting.
+    it('Should not call onChange on mount', async () => {
+        await expectOnChangeCalls('dropdown', [], 'No onChange for the initial (empty) value');
+        await expectOnChangeCalls('dropdown-multiple', [], 'No onChange for the initial value prop [test0, test1]');
     })
 
     it('Should render itself and its children correctly', async () => {
@@ -435,5 +441,76 @@ describe('Dropdown two-way binding', function () {
             assert.equal(await assertionEl.text(), 'test0,test2', 'Signal should hold the externally set array');
             assert.ok((await option2.classes()).includes('option-selected'), 'UI should reflect the externally set array');
         });
+    })
+});
+describe('Dropdown onChange calls', function () {
+    this.afterEach(async () => {
+        await gf.trigger('reset');
+    })
+
+    const openAndPick = async (triggerSelector, optionSelector) => {
+        await gf.click(`.${triggerSelector}`);
+        await gf.click(`.${optionSelector}`);
+    }
+
+    it('Should call onChange once per selection', async () => {
+        await openAndPick(selectors.trigger, `${selectors.option}2`);
+        await expectOnChangeCalls('dropdown', ['test2'], 'One call for the new option (the controlled echo is not reported)');
+    })
+
+    it('Should not call onChange when the selected option is picked again', async () => {
+        await openAndPick(selectors.trigger, `${selectors.option}2`);
+        await openAndPick(selectors.trigger, `${selectors.option}2`);
+        await expectOnChangeCalls('dropdown', ['test2'], 'Still one call');
+    })
+
+    it('Should call onChange synchronously from the ref', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
+        assert.deepEqual(await onChangeSyncCalls('dropdown'), ['test1'], 'onChange fired before selectOption returned');
+        await expectOnChangeCalls('dropdown', ['test1'], 'No late duplicate');
+    })
+
+    it('Should not call onChange for ref calls that change nothing', async () => {
+        await gf.executeScript(() => document.dispatchEvent(new Event('deselectNotSelectedSingle')));
+        assert.deepEqual(await onChangeSyncCalls('dropdown'), [], 'deselectOption of an option that is not selected');
+        await gf.executeScript(() => document.dispatchEvent(new Event('deselectAllSingle')));
+        assert.deepEqual(await onChangeSyncCalls('dropdown'), [], 'deselectAll on an empty dropdown');
+        await expectOnChangeCalls('dropdown', [], 'No call at all');
+    })
+
+    it('Should call onChange once for deselectAll', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
+        await gf.executeScript(() => document.dispatchEvent(new Event('deselectAllSingle')));
+        assert.deepEqual(await onChangeSyncCalls('dropdown'), [''], 'deselectAll reported the empty value');
+        await expectOnChangeCalls('dropdown', ['test1', ''], 'One call per change');
+    })
+
+    // Behavior as on master: a change through the `value` prop is reported once (TASKS 13 may change this).
+    it('Should call onChange once when the value prop changes', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-6`);
+        await expectOnChangeCalls('dropdown', ['test2'], 'value prop "test2"');
+    })
+
+    it('Should not call onChange when the value prop has no matching option', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-7`);
+        await expectOnChangeCalls('dropdown', [], 'An unknown value leaves the (empty) selection unchanged');
+    })
+
+    it('Should call onChange once per selection (multiple)', async () => {
+        await gf.click(`.${selectors.multipleTrigger}`);
+        await gf.click(`.${selectors.multipleOption}0`);
+        await gf.click(`.${selectors.multipleOption}1`);
+        await gf.click(`.${selectors.multipleOption}0`);
+        await expectOnChangeCalls('dropdown-multiple', [['test0'], ['test0', 'test1'], ['test1']], 'One call per toggled option');
+    })
+
+    it('Should call onChange synchronously from the ref (multiple)', async () => {
+        await gf.executeScript(() => document.dispatchEvent(new Event('selectOptionMultiple')));
+        assert.deepEqual(await onChangeSyncCalls('dropdown-multiple'), [['test0']], 'onChange fired before selectOption returned');
+        await gf.executeScript(() => document.dispatchEvent(new Event('deselectOptionMultiple')));
+        assert.deepEqual(await onChangeSyncCalls('dropdown-multiple'), [[]], 'onChange fired before deselectOption returned');
+        await gf.executeScript(() => document.dispatchEvent(new Event('deselectOptionMultiple')));
+        assert.deepEqual(await onChangeSyncCalls('dropdown-multiple'), [], 'Deselecting an option that is not selected');
+        await expectOnChangeCalls('dropdown-multiple', [['test0'], []], 'No late duplicates');
     })
 });

@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require('../shared/accordion-selectors.json');
-const { navigateToPage, elementChildren } = require('../shared/utils');
+const { navigateToPage, elementChildren, onChangeSyncCalls, expectOnChangeCalls } = require('../shared/utils');
 
 describe('Accordion', function () {
     this.beforeAll(async () => {
@@ -10,6 +10,11 @@ describe('Accordion', function () {
     this.afterEach(async () => {
         await gf.trigger('reset');
     });
+
+    // First test: nothing has run yet, so the log only has what happened while mounting.
+    it('Should not call onChange on mount', async () => {
+        await expectOnChangeCalls('accordion', [], 'No onChange for the initially expanded panels');
+    })
 
     it('Should render itself correctly', async () => {
         const accordion = await gf.get(`.${selectors.base}`);
@@ -177,4 +182,45 @@ describe('Accordion', function () {
             });
         };
     });
+});
+
+describe('Accordion onChange calls', function () {
+    this.afterEach(async () => {
+        await gf.trigger('reset');
+    });
+
+    it('Should call onChange once per heading click', async () => {
+        const headings = await gf.getAll(`.${selectors.accordionHeading}`);
+        await headings[0].click();
+        await expectOnChangeCalls('accordion', ['test1'], 'Expanding reports the panel');
+        await headings[0].click();
+        await expectOnChangeCalls('accordion', ['test1', 'test1'], 'Collapsing reports the panel again');
+    })
+
+    it('Should call onChange once from expand/collapse, and not for no-ops', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-4`);
+        assert.deepEqual(await onChangeSyncCalls('accordion'), ['test1'], 'expand reported the panel synchronously');
+        await gf.click(`.${selectors.scenarioBtn}.scenario-4`);
+        assert.deepEqual(await onChangeSyncCalls('accordion'), [], 'expand of an expanded panel does nothing');
+        await gf.click(`.${selectors.scenarioBtn}.scenario-6`);
+        assert.deepEqual(await onChangeSyncCalls('accordion'), ['test1'], 'collapse reported the panel synchronously');
+        await gf.click(`.${selectors.scenarioBtn}.scenario-6`);
+        assert.deepEqual(await onChangeSyncCalls('accordion'), [], 'collapse of a collapsed panel does nothing');
+        await expectOnChangeCalls('accordion', ['test1', 'test1'], 'No late duplicates');
+    })
+
+    it('Should not call onChange for expandAll / collapseAll', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
+        await gf.click(`.${selectors.scenarioBtn}.scenario-5`);
+        assert.deepEqual(await onChangeSyncCalls('accordion'), [], 'expandAll (as in 1.x)');
+        await gf.click(`.${selectors.scenarioBtn}.scenario-7`);
+        assert.deepEqual(await onChangeSyncCalls('accordion'), [], 'collapseAll (as in 1.x)');
+        await expectOnChangeCalls('accordion', [], 'No call at all');
+    })
+
+    it('Should not call onChange when disabled', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-1`);
+        await (await gf.getAll(`.${selectors.accordionHeading}`))[0].click();
+        await expectOnChangeCalls('accordion', [], 'A click on a disabled accordion');
+    })
 });

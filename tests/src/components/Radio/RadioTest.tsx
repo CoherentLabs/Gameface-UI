@@ -2,6 +2,7 @@ import { createMemo, createSignal, For, onCleanup, onSettled, flush } from "soli
 import Radio, { RadioRef } from "@components/Basic/RadioGroup/Radio";
 import './radio.css';
 import selectors from "../../../shared/radio-selectors.json";
+import createOnChangeLog from "../onChangeLog";
 
 const radioButtons = [
     { value: 'test', selected: true, isBefore: false},
@@ -14,9 +15,10 @@ const RadioTest = () => {
     const [selected, setSelected] = createSignal("");
     const [disabled, setDisabled] = createSignal(false);
     const [disabledBtn, setDisabledBtn] = createSignal(false);
+    const log = createOnChangeLog('radio');
 
     const scenarios = [
-        { label: "Select option with ref", action: () => radioRef?.changeOption("test2") },
+        { label: "Select option with ref", action: () => log.sync(() => radioRef?.changeOption("test2")) },
         { label: "Disable entire radio", action: () => setDisabled(true) },
         { label: "Disable buttons", action: () => setDisabledBtn(true) },
     ];
@@ -27,6 +29,8 @@ const RadioTest = () => {
         // Solid 2 stages writes: apply them before the ref call reads the new props.
         flush();
         radioRef?.changeOption('test0')
+        flush();
+        log.clear();
     };
 
     const isReactive = createMemo(() => selected() === 'test1');
@@ -49,7 +53,7 @@ const RadioTest = () => {
             </For>
 
             <Radio 
-                onChange={(selected) => setSelected(selected)} 
+                onChange={(selected) => { log.record(selected); setSelected(selected); }} 
                 disabled={disabled()} 
                 class-disabled={selectors.radioDisabled}
                 ref={radioRef}

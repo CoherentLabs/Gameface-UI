@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require('../../shared/input-selectors.json');
-const { navigateToPage } = require('../../shared/utils');
+const { navigateToPage, onChangeCalls, onChangeSyncCalls, expectOnChangeCalls } = require('../../shared/utils');
 
 describe('TextInput', function () {
     this.beforeAll(async () => {
@@ -9,6 +9,11 @@ describe('TextInput', function () {
 
     this.afterEach(async () => {
         await gf.trigger('reset');
+    })
+
+    // First test: nothing has run yet, so the log only has what happened while mounting.
+    it('Should not call onChange on mount', async () => {
+        await expectOnChangeCalls('text-input', [], 'No onChange for the initial value');
     })
 
     it('Should render itself and it\'s children correctly', async () => {
@@ -87,4 +92,33 @@ describe('TextInput', function () {
             });
         }
     });
+});
+describe('TextInput onChange calls', function () {
+    this.afterEach(async () => {
+        await gf.trigger('reset');
+    })
+
+    it('Should call onChange once per typed character', async () => {
+        await (await gf.get(`.${selectors.input}`)).type('ab');
+        await expectOnChangeCalls('text-input', ['a', 'ab'], 'One call per keystroke');
+    })
+
+    it('Should call onChange synchronously from the ref', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
+        assert.deepEqual(await onChangeSyncCalls('text-input'), ['100'], 'onChange fired before changeValue returned');
+        await expectOnChangeCalls('text-input', ['100'], 'No late duplicate');
+    })
+
+    it('Should call onChange once after the delay when debounced', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-4`);
+        await (await gf.get(`.${selectors.input}`)).type('test');
+        await new Promise((resolve) => setTimeout(resolve, 400));
+        await expectOnChangeCalls('text-input', ['test'], 'One debounced call with the final value');
+    })
+
+    // Behavior as on master: a change through the `value` prop is not reported (TASKS 13 may change this).
+    it('Should not call onChange when the value prop changes', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-5`);
+        await expectOnChangeCalls('text-input', [], 'value prop "hello"');
+    })
 });

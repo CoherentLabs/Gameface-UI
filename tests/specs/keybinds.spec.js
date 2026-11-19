@@ -4,7 +4,7 @@ const DEFAULT_MAPPINGS = require('../shared/keybinds/default-mappings.json');
 const ALTERNATE_MAPPINGS = require('../shared/keybinds/alternate-mappings.json');
 const GAMEPAD_GLYPHS = require ("../shared/keybinds/glyph-mappings.json");
 const OVERRIDES = require('../shared/keybinds/overrides.json');
-const { navigateToPage } = require('../shared/utils');
+const { navigateToPage, onChangeSyncCalls, expectOnChangeCalls } = require('../shared/utils');
 
 describe('Keybinds', function () {
     this.beforeAll(async () => {
@@ -13,6 +13,11 @@ describe('Keybinds', function () {
 
     this.afterEach(async () => {
         await gf.trigger('reset');
+    })
+
+    // First test: nothing has run yet, so the log only has what happened while mounting.
+    it('Should not call onChange on mount', async () => {
+        await expectOnChangeCalls('keybinds', [], 'Registering the default bindings is not reported');
     })
 
     it('Should render all keybind components correctly', async () => {
@@ -340,5 +345,52 @@ describe('Keybinds', function () {
                 idx++;
             }
         })
+    })
+});
+describe('Keybinds onChange calls', function () {
+    this.afterEach(async () => {
+        await gf.trigger('reset');
+    })
+
+    const [forward, backward] = DEFAULT_MAPPINGS; // W moveForward, S moveBackward
+
+    it('Should call onChange once per rebind', async () => {
+        const keybinds = await gf.getAll(`.${selectors.keybind}`);
+        await keybinds[0].click();
+        await gf.keyPress('Z');
+        await expectOnChangeCalls('keybinds', [[forward.key, 'Z', forward.action]], 'One call: [prev, next, action]');
+    })
+
+    it('Should not call onChange when the rebind is blocked', async () => {
+        const keybinds = await gf.getAll(`.${selectors.keybind}`);
+        await keybinds[0].click();
+        await gf.keyPress(backward.key);
+        await expectOnChangeCalls('keybinds', [], 'S is taken (block policy)');
+    })
+
+    for (const [scenario, policy] of [[0, 'replace-existing'], [1, 'allow-duplicates'], [2, 'swap']]) {
+        it(`Should call onChange once for the rebound action (${policy})`, async () => {
+            await gf.click(`.${selectors.scenarioBtn}.scenario-${scenario}`);
+            const keybinds = await gf.getAll(`.${selectors.keybind}`);
+            await keybinds[0].click();
+            await gf.keyPress(backward.key);
+            // The other action's change is reported through onConflict, not onChange (as in 1.x).
+            await expectOnChangeCalls('keybinds', [[forward.key, backward.key, forward.action]], 'One call for moveForward');
+        })
+    }
+
+    it('Should call onChange synchronously from the ref', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-3`);
+        assert.deepEqual(await onChangeSyncCalls('keybinds'), [[forward.key, 'Z', forward.action]], 'bind() reported before it returned');
+        await gf.click(`.${selectors.scenarioBtn}.scenario-3`);
+        assert.deepEqual(await onChangeSyncCalls('keybinds'), [], 'bind() to the key it already has');
+        await expectOnChangeCalls('keybinds', [[forward.key, 'Z', forward.action]], 'No late duplicate');
+    })
+
+    it('Should call onChange once when a key is unbound', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-4`);
+        assert.deepEqual(await onChangeSyncCalls('keybinds'), [[forward.key, null, forward.action]], 'unbindKey("W") reported before it returned');
+        await gf.click(`.${selectors.scenarioBtn}.scenario-4`);
+        assert.deepEqual(await onChangeSyncCalls('keybinds'), [], 'W is no longer bound');
     })
 });

@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require('../shared/slider-selectors.json');
-const { navigateToPage } = require('../shared/utils');
+const { navigateToPage, onChangeCalls, onChangeSyncCalls, expectOnChangeCalls } = require('../shared/utils');
 
 describe('Slider', function () {
     this.beforeAll(async () => {
@@ -9,6 +9,11 @@ describe('Slider', function () {
 
     this.afterEach(async () => {
         await gf.trigger('reset');
+    })
+
+    // First test: nothing has run yet, so the log only has what happened while mounting.
+    it('Should not call onChange on mount', async () => {
+        await expectOnChangeCalls('slider', [], 'No onChange for the initial value');
     })
 
     it('Should render itself and its children correctly', async () => {
@@ -104,4 +109,46 @@ describe('Slider', function () {
             });
         }
     });
+});
+
+// A drag reports every new value once: the same value twice in a row is a duplicate call.
+function assertNoRepeatedValues(calls, message) {
+    for (let i = 1; i < calls.length; i++) {
+        assert.notDeepEqual(calls[i], calls[i - 1], `${message}: call ${i} repeats the previous value ${JSON.stringify(calls[i])}`);
+    }
+}
+
+describe('Slider onChange calls', function () {
+    this.afterEach(async () => {
+        await gf.trigger('reset');
+    })
+
+    it('Should report every new value once while dragging', async () => {
+        await (await gf.get(`.${selectors.sliderHandle}`)).dragBy(1000, 0);
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        const calls = await onChangeCalls('slider');
+        assert.ok(calls.length > 0, 'The drag reported at least one value');
+        assert.equal(calls[calls.length - 1], 100, 'The last reported value is the end of the drag');
+        assertNoRepeatedValues(calls, 'Drag');
+    })
+
+    it('Should call onChange synchronously from the ref', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
+        assert.deepEqual(await onChangeSyncCalls('slider'), [20], 'onChange fired before changeValue returned');
+        await expectOnChangeCalls('slider', [20], 'No late duplicate');
+    })
+
+    it('Should not call onChange when setting the same value', async () => {
+        await gf.trigger('sliderSameValue');
+        await gf.retryIfFails(async () => {
+            assert.deepEqual(await onChangeSyncCalls('slider'), [], 'changeValue with the current value');
+        })
+        await expectOnChangeCalls('slider', [], 'No call at all');
+    })
+
+    // Behavior as on master: a change through the `value` prop is reported once (TASKS 13 may change this).
+    it('Should call onChange once when the value prop changes', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-2`);
+        await expectOnChangeCalls('slider', [80], 'value prop 80');
+    })
 });

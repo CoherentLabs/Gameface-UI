@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require('../../shared/input-selectors.json');
-const { navigateToPage, elementChildren } = require('../../shared/utils');
+const { navigateToPage, elementChildren, onChangeCalls, onChangeSyncCalls, expectOnChangeCalls } = require('../../shared/utils');
 
 describe('NumberInput', function () {
     this.beforeAll(async () => {
@@ -9,6 +9,11 @@ describe('NumberInput', function () {
 
     this.afterEach(async () => {
         await gf.trigger('reset');
+    })
+
+    // First test: nothing has run yet, so the log only has what happened while mounting.
+    it('Should not call onChange on mount', async () => {
+        await expectOnChangeCalls('number-input', [], 'No onChange for the initial value');
     })
 
     it('Should render itself and it\'s children correctly', async () => {
@@ -172,4 +177,43 @@ describe('NumberInput', function () {
             });
         }
     });
+});
+describe('NumberInput onChange calls', function () {
+    this.afterEach(async () => {
+        await gf.trigger('reset');
+    })
+
+    it('Should call onChange once per typed character', async () => {
+        await (await gf.get(`.${selectors.input}`)).type('50');
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        const calls = await onChangeCalls('number-input');
+        assert.equal(calls.length, 2, `One call per keystroke, got ${JSON.stringify(calls)}`);
+        assert.equal(String(calls[1]), '50', 'The last call has the typed value');
+    })
+
+    it('Should call onChange synchronously from the ref', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
+        assert.equal((await onChangeSyncCalls('number-input')).length, 1, 'changeValue reported before it returned');
+        await gf.click(`.${selectors.scenarioBtn}.scenario-4`);
+        assert.equal((await onChangeSyncCalls('number-input')).length, 1, 'increaseValue reported before it returned');
+        await gf.click(`.${selectors.scenarioBtn}.scenario-5`);
+        assert.equal((await onChangeSyncCalls('number-input')).length, 1, 'decreaseValue reported before it returned');
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        assert.equal((await onChangeCalls('number-input')).length, 3, 'No late duplicates');
+    })
+
+    it('Should call onChange once after the delay when debounced', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-7`);
+        await (await gf.get(`.${selectors.input}`)).type('50');
+        await new Promise((resolve) => setTimeout(resolve, 400));
+        const calls = await onChangeCalls('number-input');
+        assert.equal(calls.length, 1, `One debounced call, got ${JSON.stringify(calls)}`);
+        assert.equal(String(calls[0]), '50', 'With the final value');
+    })
+
+    // Behavior as on master: a change through the `value` prop is not reported (TASKS 13 may change this).
+    it('Should not call onChange when the value prop changes', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-8`);
+        await expectOnChangeCalls('number-input', [], 'value prop 200');
+    })
 });
