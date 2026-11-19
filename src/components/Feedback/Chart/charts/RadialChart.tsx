@@ -1,5 +1,6 @@
 import { arc, pie } from 'd3-shape';
-import { createMemo, Index, JSX, ParentComponent, ParentProps, Show } from 'solid-js';
+import { createMemo, For, ParentComponent, ParentProps, Show } from 'solid-js';
+import type { JSX } from '@solidjs/web';
 import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
 import styles from '../Chart.module.scss';
 import { BaseChartProps, ChartHit, LegendEntry } from '../types';
@@ -122,7 +123,7 @@ export const createRadialChart = (config: RadialChartConfig): ParentComponent<Ra
         : () => null;
 
     const [size, observePlot] = useChartSize();
-    const model = useChartData(() => props.data, props.onSeriesToggle);
+    const model = useChartData(() => props.data, (index, visible) => props.onSeriesToggle?.(index, visible));
     const frame = useChartTween(model.normalised, () => props.animation);
 
     let plotElement: HTMLDivElement | undefined;
@@ -378,13 +379,11 @@ export const createRadialChart = (config: RadialChartConfig): ParentComponent<Ra
         return `translate(${Math.sin(midAngle) * offset} ${-Math.cos(midAngle) * offset})`;
     };
 
-    const sliceClasses = (pointIndex: number) => {
-        const list = [styles.slice];
-        if (hover.isHovered(geometry()?.seriesIndex ?? -1, pointIndex)) list.push(styles['is-hovered']);
-        if (sliceToken()?.class) list.push(sliceToken()!.class!);
-
-        return list.join(' ');
-    };
+    const sliceClasses = (pointIndex: number) => [
+        styles.slice,
+        hover.isHovered(geometry()?.seriesIndex ?? -1, pointIndex) && styles['is-hovered'],
+        sliceToken()?.class,
+    ];
 
     /**
      * The Hole slot styles the container. When the content comes from
@@ -393,9 +392,7 @@ export const createRadialChart = (config: RadialChartConfig): ParentComponent<Ra
      */
     const holeLabels = () => (placement() === 'hole' ? labelsToken() : null);
 
-    const holeClasses = () => [styles.hole, holeToken()?.class, holeLabels()?.class]
-        .filter(Boolean)
-        .join(' ');
+    const holeClasses = () => [styles.hole, holeToken()?.class, holeLabels()?.class];
 
     const holeStyles = (): JSX.CSSProperties => {
         const current = geometry();
@@ -436,13 +433,13 @@ export const createRadialChart = (config: RadialChartConfig): ParentComponent<Ra
                 <Show when={geometry()}>
                     <g transform={`translate(${geometry()!.centre.x} ${geometry()!.centre.y})`}>
                         {/*
-                          * Index, not For. A tween rebuilds the arc objects on
-                          * every frame, and For is keyed by reference — it would
+                          * keyed={false}, not the default For. A tween rebuilds the arc objects on
+                          * every frame, and the default For is keyed by reference — it would
                           * tear down and recreate every <path> 60 times a
-                          * second. Index keys by position, so the elements
+                          * second. keyed={false} keys by position, so the elements
                           * persist and only their attributes update.
                           */}
-                        <Index each={geometry()!.arcs}>{(entry) => {
+                        <For each={geometry()!.arcs} keyed={false}>{(entry) => {
                             // Built once per position; the handlers read the
                             // current indices when an event actually fires.
                             const marks = hover.markProps(
@@ -460,13 +457,13 @@ export const createRadialChart = (config: RadialChartConfig): ParentComponent<Ra
                                     {...marks}
                                 />
                             );
-                        }}</Index>
+                        }}</For>
 
                         {/* Drawn after the slices so a connector is never
                             buried under the mark it points away from. */}
-                        <Index each={leaderLines()}>{(leader) => (
+                        <For each={leaderLines()} keyed={false}>{(leader) => (
                             <polyline points={leader().points} class={styles['leader-line']} />
-                        )}</Index>
+                        )}</For>
                     </g>
                 </Show>
             </svg>

@@ -1,4 +1,4 @@
-import { createMemo, Index, ParentComponent, Show } from 'solid-js';
+import { createMemo, For, ParentComponent, Show } from 'solid-js';
 import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
 import styles from '../Chart.module.scss';
 import { BaseChartProps, ChartHit, LegendEntry } from '../types';
@@ -90,7 +90,7 @@ const SpiderChart: ParentComponent<SpiderProps> = (props) => {
     const axisToken = useToken(Axis, () => props.children);
 
     const [size, observePlot] = useChartSize();
-    const model = useChartData(() => props.data, props.onSeriesToggle);
+    const model = useChartData(() => props.data, (index, visible) => props.onSeriesToggle?.(index, visible));
     const frame = useChartTween(model.normalised, () => props.animation);
 
     let plotElement: HTMLDivElement | undefined;
@@ -269,13 +269,11 @@ const SpiderChart: ParentComponent<SpiderProps> = (props) => {
         }, []));
     });
 
-    const shapeClasses = (seriesIndex: number) => {
-        const list = [styles['spider-shape']];
-        if (hover.hovered()?.seriesIndex === seriesIndex) list.push(styles['is-hovered']);
-        if (shapeToken()?.class) list.push(shapeToken()!.class!);
-
-        return list.join(' ');
-    };
+    const shapeClasses = (seriesIndex: number) => [
+        styles['spider-shape'],
+        hover.hovered()?.seriesIndex === seriesIndex && styles['is-hovered'],
+        shapeToken()?.class,
+    ];
 
     const pointRadius = () => resolveLength(shapeToken()?.pointRadius ?? DEFAULT_POINT_RADIUS, 0);
 
@@ -301,7 +299,7 @@ const SpiderChart: ParentComponent<SpiderProps> = (props) => {
                 <Show when={geometry()}>
                     <g transform={`translate(${geometry()!.centre.x} ${geometry()!.centre.y})`}>
                         <Show when={webToken()}>
-                            <Index each={geometry()!.rings}>{(ring) => (
+                            <For each={geometry()!.rings} keyed={false}>{(ring) => (
                                 <Show
                                     when={webToken()?.shape !== 'circle'}
                                     fallback={
@@ -309,34 +307,34 @@ const SpiderChart: ParentComponent<SpiderProps> = (props) => {
                                             cx={0}
                                             cy={0}
                                             r={ring().radius}
-                                            class={[styles['spider-web'], webToken()?.class].filter(Boolean).join(' ')}
+                                            class={[styles['spider-web'], webToken()?.class]}
                                             style={webToken()?.style}
                                         />
                                     }
                                 >
                                     <path
                                         d={ring().d}
-                                        class={[styles['spider-web'], webToken()?.class].filter(Boolean).join(' ')}
+                                        class={[styles['spider-web'], webToken()?.class]}
                                         style={webToken()?.style}
                                     />
                                 </Show>
-                            )}</Index>
+                            )}</For>
                         </Show>
 
                         <Show when={axisToken() && axisToken()!.line !== false}>
-                            <Index each={geometry()!.spokes}>{(spoke) => (
+                            <For each={geometry()!.spokes} keyed={false}>{(spoke) => (
                                 <line
                                     x1={0}
                                     y1={0}
                                     x2={spoke().x}
                                     y2={spoke().y}
-                                    class={[styles['spider-spoke'], axisToken()?.class].filter(Boolean).join(' ')}
+                                    class={[styles['spider-spoke'], axisToken()?.class]}
                                     style={axisToken()?.style}
                                 />
-                            )}</Index>
+                            )}</For>
                         </Show>
 
-                        <Index each={geometry()!.series}>{(series) => (
+                        <For each={geometry()!.series} keyed={false}>{(series) => (
                             <>
                                 <path
                                     d={series().d}
@@ -349,7 +347,7 @@ const SpiderChart: ParentComponent<SpiderProps> = (props) => {
                                 />
 
                                 <Show when={pointRadius() > 0}>
-                                    <Index each={series().vertices}>{(vertex) => (
+                                    <For each={series().vertices} keyed={false}>{(vertex) => (
                                         <circle
                                             cx={vertex().x}
                                             cy={vertex().y}
@@ -357,10 +355,10 @@ const SpiderChart: ParentComponent<SpiderProps> = (props) => {
                                             fill={series().color}
                                             class={styles['series-point']}
                                         />
-                                    )}</Index>
+                                    )}</For>
                                 </Show>
                             </>
-                        )}</Index>
+                        )}</For>
                     </g>
                 </Show>
             </svg>

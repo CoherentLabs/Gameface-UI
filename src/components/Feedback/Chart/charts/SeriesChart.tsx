@@ -1,5 +1,5 @@
 import { area, curveLinear, curveMonotoneX, curveStep, curveStepAfter, curveStepBefore, line } from 'd3-shape';
-import { createMemo, Index, ParentComponent, Show } from 'solid-js';
+import { createMemo, For, ParentComponent, Show } from 'solid-js';
 import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
 import styles from '../Chart.module.scss';
 import { BaseChartProps, ChartHit, LegendEntry } from '../types';
@@ -108,7 +108,7 @@ export const createSeriesChart = (config: SeriesChartConfig): ParentComponent<Se
     const gridToken = useToken(Grid, () => props.children);
 
     const [size, observePlot] = useChartSize();
-    const model = useChartData(() => props.data, props.onSeriesToggle);
+    const model = useChartData(() => props.data, (index, visible) => props.onSeriesToggle?.(index, visible));
     const frame = useChartTween(model.normalised, () => props.animation);
 
     let plotElement: HTMLDivElement | undefined;
@@ -365,14 +365,14 @@ export const createSeriesChart = (config: SeriesChartConfig): ParentComponent<Se
                     />
 
                     <g transform={`translate(${geometry()!.margin.left} ${geometry()!.margin.top})`}>
-                        <Index each={geometry()!.series}>{(series) => (
+                        <For each={geometry()!.series} keyed={false}>{(series) => (
                             <>
                                 <Show when={isArea()}>
                                     <path
                                         d={series().fill}
                                         fill={series().color}
                                         opacity={fillToken()?.opacity ?? DEFAULT_AREA_OPACITY}
-                                        class={[styles['area-fill'], fillToken()?.class].filter(Boolean).join(' ')}
+                                        class={[styles['area-fill'], fillToken()?.class]}
                                         style={fillToken()?.style}
                                     />
                                 </Show>
@@ -382,25 +382,25 @@ export const createSeriesChart = (config: SeriesChartConfig): ParentComponent<Se
                                     fill="none"
                                     stroke={series().color}
                                     stroke-width={strokeWidth()}
-                                    class={[styles['series-stroke'], strokeToken()?.class].filter(Boolean).join(' ')}
+                                    class={[styles['series-stroke'], strokeToken()?.class]}
                                     style={strokeToken()?.style}
                                     {...revealProps(series().stroke)}
                                 />
 
-                                <Index each={series().vertices}>{(vertex) => (
+                                <For each={series().vertices} keyed={false}>{(vertex) => (
                                     <Show when={vertex().defined && showPoint(series().seriesIndex, vertex().categoryIndex)}>
                                         <circle
                                             cx={vertex().x}
                                             cy={vertex().y}
                                             r={pointRadius()}
                                             fill={series().color}
-                                            class={[styles['series-point'], pointToken()?.class].filter(Boolean).join(' ')}
+                                            class={[styles['series-point'], pointToken()?.class]}
                                             style={pointToken()?.style}
                                         />
                                     </Show>
-                                )}</Index>
+                                )}</For>
                             </>
-                        )}</Index>
+                        )}</For>
                     </g>
                 </Show>
             </svg>

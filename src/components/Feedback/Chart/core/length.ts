@@ -17,23 +17,26 @@ const readViewport = (): Viewport => ({
     height: window.innerHeight,
 });
 
-let listening = false;
-const [viewport, setViewport] = createSignal<Viewport>({ rem: 16, width: 0, height: 0 });
+let initialViewport: Viewport | undefined;
+const [viewport, setViewport] = createSignal<Viewport | undefined>(undefined);
 
 /**
  * Cached because geometry resolves lengths on every animation frame, and
  * `getComputedStyle` there would force a style recalculation each time. A
  * signal rather than a plain value, so that a root font size in viewport units
  * (this project's default) re-resolves every length when the window resizes.
+ *
+ * The first read happens while rendering, where Solid 2 does not allow signal
+ * writes, so the first value is kept in a plain variable and only the resize
+ * listener writes the signal.
  */
-const currentViewport = () => {
-    if (!listening) {
-        listening = true;
-        setViewport(readViewport());
+const currentViewport = (): Viewport => {
+    if (!initialViewport) {
+        initialViewport = readViewport();
         window.addEventListener('resize', () => setViewport(readViewport()));
     }
 
-    return viewport();
+    return viewport() ?? initialViewport;
 };
 
 /**

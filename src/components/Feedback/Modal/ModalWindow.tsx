@@ -1,4 +1,4 @@
-import { ParentComponent, createMemo } from "solid-js";
+import { ParentComponent } from "solid-js";
 import { TokenComponentProps } from "../../types/ComponentProps";
 import styles from './Modal.module.scss';
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
@@ -9,14 +9,8 @@ export const Window = createTokenComponent<TokenBase>();
 const ModalWindow: ParentComponent<TokenComponentProps> = (props) => {
     const WindowToken = useToken(Window, () => props.parentChildren);
 
-    const modalWindowClasses = createMemo(() => {
-        const classes = [styles['modal-window']];
-        if (WindowToken?.()?.class) classes.push(WindowToken?.()?.class as string);
-        return classes.join(' ');
-    });
-
     return (
-        <div class={modalWindowClasses()} style={WindowToken?.()?.style}>
+        <div class={[styles['modal-window'], WindowToken()?.class]} style={WindowToken()?.style}>
             <Layout>
                 {WindowToken?.()?.children}
             </Layout>

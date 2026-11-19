@@ -1,5 +1,7 @@
-import { JSX, ParentComponent, Show } from 'solid-js';
+import { ParentComponent, Show } from 'solid-js';
+import type { JSX } from '@solidjs/web';
 import baseComponent from '@components/BaseComponent/BaseComponent';
+import exposeRef from '@components/utils/exposeRef';
 import styles from '../Chart.module.scss';
 import { BaseChartProps, ChartPointEvent, LegendEntry } from '../types';
 import { LegendTokenProps, TooltipTokenProps } from '../slots';
@@ -7,7 +9,7 @@ import ChartLegend from './ChartLegend';
 import ChartTooltip from './ChartTooltip';
 
 interface ChartRootProps {
-    /** The consumer's props, forwarded to the baseComponent directive. */
+    /** The consumer's props: class, style and ref for the root, plus baseComponent's attributes and events. */
     componentProps: BaseChartProps;
     /** The chart type's own root class, merged with the shared chart class. */
     componentClass: string;
@@ -33,17 +35,11 @@ interface ChartRootProps {
 const ChartRoot: ParentComponent<ChartRootProps> = (props) => {
     const legendPosition = () => props.legend?.position ?? 'bottom';
 
-    const rootClasses = () => {
-        const list = [styles.chart, styles[`chart-${legendPosition()}`], props.componentClass];
-        return list.filter(Boolean).join(' ');
-    };
-
-    props.componentProps.componentClasses = () => rootClasses();
-
     return (
         <div
-            ref={props.componentProps.ref as HTMLDivElement}
-            use:baseComponent={props.componentProps}
+            class={[styles.chart, styles[`chart-${legendPosition()}`], props.componentClass, props.componentProps.class]}
+            style={props.componentProps.style}
+            ref={[exposeRef(props.componentProps), baseComponent(props.componentProps)]}
         >
             <Show when={props.legend}>
                 <ChartLegend token={props.legend!} entries={props.entries} onToggle={props.onToggle} />

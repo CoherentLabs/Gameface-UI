@@ -1,4 +1,4 @@
-import { onMount, onCleanup } from 'solid-js';
+import { onSettled } from 'solid-js';
 import useToast from '@components/Feedback/Toast/toast';
 import './ToastTest.css';
 
@@ -47,12 +47,9 @@ const ToasterTest = () => {
         });
     };
 
-    onMount(() => {
+    onSettled(() => {
         document.addEventListener('create-toast', setupToast as EventListener);
-    });
-
-    onCleanup(() => {
-        document.removeEventListener('create-toast', setupToast as EventListener);
+        return () => document.removeEventListener('create-toast', setupToast as EventListener);
     });
 
     return <Toaster />;

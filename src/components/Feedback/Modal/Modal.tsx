@@ -1,11 +1,12 @@
-import { ParentComponent, Show, createContext, createMemo, createSignal, onMount } from "solid-js";
+import { ParentComponent, Show, createContext, createSignal, untrack } from "solid-js";
 import { ComponentProps } from "../../types/ComponentProps";
-import { Portal } from "solid-js/web"
+import { Portal } from "@solidjs/web"
 import styles from './Modal.module.scss';
 import ModalWindow, { Window } from "./ModalWindow";
 import ModalCloseButton from "./ModalCloseButton";
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
+import exposeRef from "@components/utils/exposeRef";
 
 export interface ModalProps extends ComponentProps {
     open?: boolean;
@@ -17,7 +18,8 @@ interface ModalContextProps {
     close: () => void;
 }
 
-export const ModalContext = createContext<ModalContextProps>();
+// `null` default: Modal.Close reads it optionally (pattern 1.3.o).
+export const ModalContext = createContext<ModalContextProps | null>(null);
 
 export interface ModalRef {
     element: HTMLDivElement;
@@ -29,30 +31,11 @@ export interface ModalRef {
 export const Overlay = createTokenComponent<TokenBase>();
 
 const Modal: ParentComponent<ModalProps> = (props) => {
-    let element!: HTMLDivElement;
     const OverlayToken = useToken(Overlay, () => props.children);
 
-    const [isOpen, setIsOpen] = createSignal(props.open);
+    // Initial value only, as in 1.x.
+    const [isOpen, setIsOpen] = createSignal(untrack(() => props.open ?? false));
 
-    const modalClasses = createMemo(() => {
-        const classes = [styles['modal']];
-
-        if (isOpen()) {
-            classes.push(styles['modal-open']);
-        }
-
-        return classes.join(' ');
-    });
-
-    const modalOverlayClasses = createMemo(() => {
-        const classes = [styles['modal-overlay']];
-
-        if (OverlayToken?.()?.class) classes.push(OverlayToken?.()?.class as string);
-
-        return classes.join(' ');
-    });
-
-    props.componentClasses = () => modalClasses();
     const stealMouseEvents = (e: Event) => {
         e.stopPropagation();
         e.preventDefault();
@@ -75,39 +58,32 @@ const Modal: ParentComponent<ModalProps> = (props) => {
         props.onClose?.();
     }
 
-    onMount(() => {
-        if (!props.ref || !element) return;
-
-        (props.ref as unknown as (ref: any) => void)({
-            element,
-            close,
-            open,
-            isOpen
-        });
-    });
-
     return (
-        <ModalContext.Provider value={{ close }}>
+        <ModalContext value={{ close }}>
             <Portal>
                 <div
-                    ref={element}
-                    use:baseComponent={props}
-                    use:navigationActions={{anchor: props.anchor, ...props.onAction }}>
+                    class={[styles['modal'], isOpen() && styles['modal-open'], props.class]}
+                    style={props.style}
+                    ref={[
+                        exposeRef<Omit<ModalRef, 'element'>>(props, { close, open, isOpen }),
+                        baseComponent(props),
+                        navigationActions({ anchor: props.anchor, ...props.onAction }),
+                    ]}>
                     <Show when={isOpen()}>
-                        {OverlayToken?.() && (
-                            <div 
+                        <Show when={OverlayToken()}>
+                            <div
                                 onMouseDown={stealMouseEvents}
                                 onMouseMove={stealMouseEvents}
                                 onMouseUp={stealMouseEvents}
-                                onClick={close} 
-                                class={modalOverlayClasses()} 
-                                style={OverlayToken?.()?.style}></div>
-                        )}
+                                onClick={close}
+                                class={[styles['modal-overlay'], OverlayToken()?.class]}
+                                style={OverlayToken()?.style}></div>
+                        </Show>
                         <ModalWindow parentChildren={props.children}></ModalWindow>
                     </Show>
                 </div>
             </Portal>
-        </ModalContext.Provider>
+        </ModalContext>
     )
 }
 

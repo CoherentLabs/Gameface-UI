@@ -1,4 +1,4 @@
-import { JSX } from 'solid-js';
+import type { JSX } from '@solidjs/web';
 import { ComponentProps } from '@components/types/ComponentProps';
 
 /** A single data point. `type` is the category key and is the identity used to match points across data changes. */

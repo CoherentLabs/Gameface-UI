@@ -1,4 +1,5 @@
-import { Component, Index, JSX, Show } from 'solid-js';
+import { Component, For, Show } from 'solid-js';
+import type { JSX } from '@solidjs/web';
 import styles from '../Chart.module.scss';
 import { AxisTokenProps, GridTokenProps } from '../slots';
 import { ChartMargin } from '../types';
@@ -43,7 +44,7 @@ export interface ChartGridLinesProps extends AxisGeometry {
 
 /** SVG half of the axes: gridlines and the zero baseline. Goes inside the `<svg>`. */
 export const ChartGridLines: Component<ChartGridLinesProps> = (props) => {
-    const gridClasses = () => [styles.gridline, props.grid?.class].filter(Boolean).join(' ');
+    const gridClasses = () => [styles.gridline, props.grid?.class];
     const showHorizontal = () => props.grid && props.grid.horizontal !== false;
     const showVertical = () => props.grid?.vertical === true;
     const showBaseline = () => !!props.valueAxis && !props.valueAxis.hide && props.valueAxis.line !== false;
@@ -51,15 +52,15 @@ export const ChartGridLines: Component<ChartGridLinesProps> = (props) => {
     return (
         <g transform={`translate(${props.margin.left} ${props.margin.top})`}>
             <Show when={showHorizontal()}>
-                <Index each={props.valueTicks}>{(tick) => (
+                <For each={props.valueTicks} keyed={false}>{(tick) => (
                     <line {...valueLine(props, tick().position)} class={gridClasses()} style={props.grid?.style} />
-                )}</Index>
+                )}</For>
             </Show>
 
             <Show when={showVertical()}>
-                <Index each={props.categoryTicks}>{(tick) => (
+                <For each={props.categoryTicks} keyed={false}>{(tick) => (
                     <line {...categoryLine(props, tick().position)} class={gridClasses()} style={props.grid?.style} />
-                )}</Index>
+                )}</For>
             </Show>
 
             {/* Drawn last so the baseline reads above the grid. */}
@@ -83,25 +84,25 @@ export const ChartAxisLabels: Component<AxisGeometry> = (props) => {
     return (
         <div class={styles.labels}>
             <Show when={props.valueAxis && !props.valueAxis.hide}>
-                <Index each={props.valueTicks}>{(tick) => (
+                <For each={props.valueTicks} keyed={false}>{(tick) => (
                     <div
-                        class={[styles['axis-label'], props.valueAxis?.class].filter(Boolean).join(' ')}
+                        class={[styles['axis-label'], props.valueAxis?.class]}
                         style={{ ...valueLabelStyle(tick().position), ...props.valueAxis?.style }}
                     >
                         {tick().label}
                     </div>
-                )}</Index>
+                )}</For>
             </Show>
 
             <Show when={props.categoryAxis && !props.categoryAxis.hide}>
-                <Index each={props.categoryTicks}>{(tick) => (
+                <For each={props.categoryTicks} keyed={false}>{(tick) => (
                     <div
-                        class={[styles['axis-label'], props.categoryAxis?.class].filter(Boolean).join(' ')}
+                        class={[styles['axis-label'], props.categoryAxis?.class]}
                         style={{ ...categoryLabelStyle(tick().position), ...props.categoryAxis?.style }}
                     >
                         {tick().label}
                     </div>
-                )}</Index>
+                )}</For>
             </Show>
         </div>
     );

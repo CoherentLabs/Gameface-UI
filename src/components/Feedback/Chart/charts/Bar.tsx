@@ -1,4 +1,4 @@
-import { createMemo, Index, ParentComponent, Show } from 'solid-js';
+import { createMemo, For, ParentComponent, Show } from 'solid-js';
 import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
 import styles from '../Chart.module.scss';
 import { BaseChartProps, ChartHit, LegendEntry } from '../types';
@@ -82,7 +82,7 @@ const BarChart: ParentComponent<BarProps> = (props) => {
     const gridToken = useToken(Grid, () => props.children);
 
     const [size, observePlot] = useChartSize();
-    const model = useChartData(() => props.data, props.onSeriesToggle);
+    const model = useChartData(() => props.data, (index, visible) => props.onSeriesToggle?.(index, visible));
     const frame = useChartTween(model.normalised, () => props.animation);
 
     let plotElement: HTMLDivElement | undefined;
@@ -313,13 +313,11 @@ const BarChart: ParentComponent<BarProps> = (props) => {
         }, []);
     });
 
-    const barClasses = (seriesIndex: number, categoryIndex: number) => {
-        const list = [styles['bar-mark']];
-        if (hover.isHovered(seriesIndex, categoryIndex)) list.push(styles['is-hovered']);
-        if (fillToken()?.class) list.push(fillToken()!.class!);
-
-        return list.join(' ');
-    };
+    const barClasses = (seriesIndex: number, categoryIndex: number) => [
+        styles['bar-mark'],
+        hover.isHovered(seriesIndex, categoryIndex) && styles['is-hovered'],
+        fillToken()?.class,
+    ];
 
     return (
         <ChartRoot
@@ -355,7 +353,7 @@ const BarChart: ParentComponent<BarProps> = (props) => {
                     />
 
                     <g transform={`translate(${geometry()!.margin.left} ${geometry()!.margin.top})`}>
-                        <Index each={geometry()!.bars}>{(bar) => {
+                        <For each={geometry()!.bars} keyed={false}>{(bar) => {
                             const marks = hover.markProps(
                                 () => bar().seriesIndex,
                                 () => bar().categoryIndex,
@@ -370,7 +368,7 @@ const BarChart: ParentComponent<BarProps> = (props) => {
                                     {...marks}
                                 />
                             );
-                        }}</Index>
+                        }}</For>
                     </g>
                 </Show>
             </svg>

@@ -1,4 +1,4 @@
-import { JSX } from 'solid-js';
+import type { JSX } from '@solidjs/web';
 import { createTokenComponent, TokenBase } from '@components/utils/tokenComponents';
 import { ChartPoint, ChartPointEvent, ChartSeries, LegendEntry } from './types';
 import { ChartLength } from './core/length';

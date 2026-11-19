@@ -1,5 +1,5 @@
-import { Portal } from 'solid-js/web';
-import { createSignal, createUniqueId, For, JSX, ParentComponent, Signal } from 'solid-js';
+import { Portal, type JSX } from '@solidjs/web';
+import { createSignal, createUniqueId, For, ParentComponent, Signal } from 'solid-js';
 import GridTile from '@components/Layout/GridTile/GridTile';
 import Grid from '@components/Layout/Grid/Grid';
 import Flex from '@components/Layout/Flex/Flex';

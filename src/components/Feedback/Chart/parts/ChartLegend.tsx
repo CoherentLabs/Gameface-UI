@@ -1,4 +1,4 @@
-import { Component, Index, Show } from 'solid-js';
+import { Component, For, Show } from 'solid-js';
 import styles from '../Chart.module.scss';
 import { LegendEntry } from '../types';
 import { LegendTokenProps } from '../slots';
@@ -16,25 +16,13 @@ interface ChartLegendProps {
 const ChartLegend: Component<ChartLegendProps> = (props) => {
     const isInteractive = () => props.token.interactive !== false;
 
-    const classes = () => {
-        const list = [styles.legend, styles[`legend-${props.token.position ?? 'bottom'}`]];
-        if (props.token.class) list.push(props.token.class);
-
-        return list.join(' ');
-    };
-
-    const entryClasses = (entry: LegendEntry) => {
-        const list = [styles['legend-entry']];
-        if (!entry.visible) list.push(styles['legend-entry-hidden']);
-
-        return list.join(' ');
-    };
+    const entryClasses = (entry: LegendEntry) => [styles['legend-entry'], !entry.visible && styles['legend-entry-hidden']];
 
     return (
-        <div class={classes()} style={props.token.style}>
-            {/* Index, not For: the entry objects are rebuilt whenever the chart
+        <div class={[styles.legend, styles[`legend-${props.token.position ?? 'bottom'}`], props.token.class]} style={props.token.style}>
+            {/* keyed={false}, not the default For: the entry objects are rebuilt whenever the chart
                 re-renders, including on every animation frame. */}
-            <Index each={props.entries}>{(entry) => (
+            <For each={props.entries} keyed={false}>{(entry) => (
                 <div
                     class={entryClasses(entry())}
                     tabindex={isInteractive() ? 0 : undefined}
@@ -49,7 +37,7 @@ const ChartLegend: Component<ChartLegendProps> = (props) => {
                         {props.token.content!(entry())}
                     </Show>
                 </div>
-            )}</Index>
+            )}</For>
         </div>
     );
 };

@@ -1,4 +1,4 @@
-import { Accessor, createEffect, createSignal, onCleanup } from 'solid-js';
+import { Accessor, createEffect, createSignal, onCleanup, untrack } from 'solid-js';
 import { ChartAnimation } from '../types';
 
 /**
@@ -23,12 +23,12 @@ export const useDrawOn = (
 
     onCleanup(() => cancelAnimationFrame(handle));
 
-    createEffect(() => {
-        if (started || !ready()) return;
+    createEffect(() => ready(), (isReady) => {
+        if (started || !isReady) return;
 
         started = true;
 
-        const config = animation();
+        const config = untrack(animation);
         const duration = config?.duration ?? 300;
         if (!config || duration <= 0) return;
 

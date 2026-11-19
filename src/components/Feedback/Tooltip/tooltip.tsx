@@ -1,9 +1,11 @@
-import { createMemo, createSignal, JSX, onCleanup, onMount, ParentComponent, Show, splitProps } from "solid-js";
+import { createMemo, createSignal, omit, onSettled, ParentComponent, Show } from "solid-js";
+import type { JSX } from "@solidjs/web";
 import styles from './Tooltip.module.scss';
 import { BaseComponentRef, ComponentProps } from "@components/types/ComponentProps";
 import { getSafePosition } from "@components/utils/getSafePosition";
 import { navigationActions } from "@components/BaseComponent/BaseComponent";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
+import exposeRef from "@components/utils/exposeRef";
 
 export interface TooltipRef extends BaseComponentRef {
     show: () => void,
@@ -17,7 +19,7 @@ interface TooltipOptions<T extends Record<string, any> = { message: string }> ex
 }
 
 const DEFAULT_TIP_POSITION = 'bottom';
-const createTooltip = <T extends Record<string, any> = { message: string }>(options: TooltipOptions<T> = {}): ParentComponent<T & { style?: JSX.CSSProperties, class?: string, ref?: TooltipRef}> => {
+const createTooltip = <T extends Record<string, any> = { message: string }>(options: TooltipOptions<T> = {}): ParentComponent<T & { style?: JSX.CSSProperties, class?: JSX.ClassValue, ref?: TooltipRef}> => {
     const defaultOptions: TooltipOptions<T> = {
         content: (props) => <div class={styles['tooltip-message']}>{props.message}</div>,
         position: DEFAULT_TIP_POSITION,
@@ -30,8 +32,7 @@ const createTooltip = <T extends Record<string, any> = { message: string }>(opti
         const [visible, setVisible] = createSignal(false);
         let tooltipChildrenRef!: HTMLDivElement;
         let tooltipRef!: HTMLDivElement;
-        let wrapperRef: HTMLDivElement | undefined;
-        const [others, contentProps] = splitProps(props, ['style', 'class', 'ref']);
+        const contentProps = omit(props, 'style', 'class', 'ref');
 
         const toggleEventListeners = (on = true) => {
             const method = on ? 'addEventListener' : 'removeEventListener';
@@ -50,21 +51,10 @@ const createTooltip = <T extends Record<string, any> = { message: string }>(opti
             }
         }
 
-        onMount(() => {
+        onSettled(() => {
             toggleEventListeners(true);
-
-            if (!others.ref || !wrapperRef) return;
-
-            (others.ref as (ref: TooltipRef) => void)({
-                element: wrapperRef,
-                show: showTooltip,
-                hide: hideTooltip,
-            });
+            return () => toggleEventListeners(false);
         });
-
-        onCleanup(() => {
-            toggleEventListeners(false);
-        })
 
         const toggleTooltip = () => {
             if (visible()) hideTooltip();
@@ -99,32 +89,23 @@ const createTooltip = <T extends Record<string, any> = { message: string }>(opti
             return options.position || DEFAULT_TIP_POSITION;
         });
 
-        const tooltipClasses = createMemo(() => {
-            const classes = [styles['tooltip']];
-
-            if (visible()) classes.push(styles['tooltip-visible']);
-            classes.push(styles[`tooltip-${tooltipPosition()}`]);
-            return classes.join(' ');
-        });
-
-        const tooltipWrapperClasses = createMemo(() => {
-            const classes = [styles['tooltip-wrapper']];
-            if (others.class) classes.push(others.class);
-            return classes.join(' ');
-        });
-
         return (
-            <div class={tooltipWrapperClasses()} style={others.style} ref={wrapperRef}>
+            <div
+                class={[styles['tooltip-wrapper'], props.class]}
+                style={props.style}
+                ref={exposeRef<Omit<TooltipRef, 'element'>>(props, { show: showTooltip, hide: hideTooltip })}>
                 <Show when={options.action !== 'none'} fallback={props.children}>
-                    <div 
-                        ref={tooltipChildrenRef}
-                        use:navigationActions={mergeNavigationActions(options as ComponentProps, {
-                            'back': () => visible() && hideTooltip()
-                        })}>
+                    <div
+                        ref={[
+                            (el: HTMLDivElement) => { tooltipChildrenRef = el; },
+                            navigationActions(mergeNavigationActions(options as ComponentProps, {
+                                'back': () => visible() && hideTooltip()
+                            })),
+                        ]}>
                         {props.children}
                     </div>
                 </Show>
-                <div ref={tooltipRef} class={tooltipClasses()}>
+                <div ref={tooltipRef} class={[styles['tooltip'], visible() && styles['tooltip-visible'], styles[`tooltip-${tooltipPosition()}`]]}>
                     {options.content?.(contentProps as T)}
                 </div>
             </div>

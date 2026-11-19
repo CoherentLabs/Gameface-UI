@@ -1,5 +1,5 @@
 import Tab from '@components/Layout/Tab/Tab';
-import { createSignal, For, onCleanup, onMount } from 'solid-js';
+import { createSignal, For, onSettled } from 'solid-js';
 import selectors from '../../../shared/chart-selectors.json';
 import styles from './Chart.module.scss';
 import Chart from '@components/Feedback/Chart/Chart';
@@ -196,8 +196,10 @@ const ChartTest = () => {
         </>
     );
 
-    onMount(() => document.addEventListener('reset', reset));
-    onCleanup(() => document.removeEventListener('reset', reset));
+    onSettled(() => {
+        document.addEventListener('reset', reset);
+        return () => document.removeEventListener('reset', reset);
+    });
 
     return (
         <>

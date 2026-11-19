@@ -1,4 +1,5 @@
-import { createSignal, JSX, onCleanup, onMount } from "solid-js";
+import { createSignal, onSettled } from "solid-js";
+import { dynamic, type JSX } from "@solidjs/web";
 import './tooltip.css';
 import selectors from "../../../shared/tooltip-selectors.json";
 import createTooltip from "@components/Feedback/Tooltip/tooltip";
@@ -24,18 +25,21 @@ const TooltipTest = () => {
         })
     };
 
-    onMount(() => document.addEventListener('create-tooltip', setupTooltip as EventListener));
-    onCleanup(() => document.removeEventListener('create-tooltip', setupTooltip as EventListener));
+    onSettled(() => {
+        document.addEventListener('create-tooltip', setupTooltip as EventListener);
+        return () => document.removeEventListener('create-tooltip', setupTooltip as EventListener);
+    });
+
+    // Remounts with a fresh tooltip whenever `create-tooltip` swaps in a new one.
+    const TipWrapper = dynamic(() => Tooltip().TipWrapper);
 
     return (
-        <>
-            {Tooltip().TipWrapper({
-                children: <div tabIndex={1} class={selectors.element}>Test</div>,
-                message: Tooltip().tipMessage ? Tooltip().tipMessage : 'Tooltip message',
-                style: Tooltip().wrapperStyle,
-                class: selectors.tooltipWrapper
-            })}
-        </>
+        <TipWrapper
+            message={Tooltip().tipMessage ? Tooltip().tipMessage : 'Tooltip message'}
+            style={Tooltip().wrapperStyle}
+            class={selectors.tooltipWrapper}>
+            <div tabindex={1} class={selectors.element}>Test</div>
+        </TipWrapper>
     );
 }
 

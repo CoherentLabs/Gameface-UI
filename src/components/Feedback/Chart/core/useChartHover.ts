@@ -1,4 +1,5 @@
-import { Accessor, createEffect, createSignal, JSX } from 'solid-js';
+import { Accessor, createEffect, createSignal } from 'solid-js';
+import type { JSX } from '@solidjs/web';
 import { ChartHit, ChartHitResolver, ChartInteractive, ChartPointEvent, ChartSize } from '../types';
 
 export type HoverMode = 'none' | 'svg' | 'overlay';
@@ -46,7 +47,7 @@ export interface ChartHoverApi {
      * Spread onto a mark element. Empty unless the mode is `svg`.
      *
      * Takes accessors rather than values so the returned object is stable for
-     * the life of the element: marks are rendered with `Index`, whose children
+     * the life of the element: marks are rendered with `<For keyed={false}>`, whose children
      * run once per position, and the indices behind a position can change as
      * slices come and go.
      */
@@ -72,10 +73,7 @@ export const useChartHover = (options: UseChartHoverOptions): ChartHoverApi => {
         plotRect = options.plotElement()?.getBoundingClientRect();
     };
 
-    createEffect(() => {
-        options.size();
-        refreshRect();
-    });
+    createEffect(() => options.size(), () => { refreshRect(); });
 
     // Resizing is not the only thing that moves the plot — scrolling an
     // ancestor does too, and that fires no resize. Re-measuring on entry keeps

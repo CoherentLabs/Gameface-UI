@@ -1,10 +1,11 @@
-import { JSX, ParentComponent, Show, createMemo, useContext } from "solid-js";
+import { ParentComponent, useContext } from "solid-js";
+import type { JSX } from "@solidjs/web";
 import styles from './Modal.module.scss';
 import { ModalContext } from "./Modal";
 
 interface ModalCloseButtonProps {
     style?: JSX.CSSProperties,
-    class?: string,
+    class?: JSX.ClassValue,
 }
 
 const ModalCloseButton: ParentComponent<ModalCloseButtonProps> = (props) => {
@@ -15,14 +16,8 @@ const ModalCloseButton: ParentComponent<ModalCloseButtonProps> = (props) => {
         return null;
     }
 
-    const modalCloseButtonClasses = createMemo(() => {
-        const classes = [styles['modal-close-button']];
-        if (props.class) classes.push(props.class as string);
-        return classes.join(' ');
-    });
-
     return (
-        <div onClick={modalContext?.close} class={modalCloseButtonClasses()} style={props.style}>
+        <div onClick={modalContext.close} class={[styles['modal-close-button'], props.class]} style={props.style}>
             {props.children}
         </div>
     )

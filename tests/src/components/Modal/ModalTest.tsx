@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
+import { createMemo, createSignal, For, onSettled } from "solid-js";
 import selectors from "../../../shared/modal-selectors.json";
 import Modal, { ModalRef } from "@components/Feedback/Modal/Modal";
 import ModalCloseIcon from "@components/Feedback/Modal/ModalCloseIcon.svg?component-solid";
@@ -30,8 +30,10 @@ const ModalTest = () => {
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
-    onMount(() => document.addEventListener('reset', reset))
-    onCleanup(() => document.removeEventListener('reset', reset))
+    onSettled(() => {
+        document.addEventListener('reset', reset);
+        return () => document.removeEventListener('reset', reset);
+    });
 
     return (
         <>
