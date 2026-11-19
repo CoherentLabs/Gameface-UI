@@ -1,13 +1,14 @@
-import { Accessor, createContext, createEffect, createMemo, createSignal, JSX, onMount, Setter, Show } from "solid-js";
+import { Accessor, createContext, createEffect, createMemo, createSignal, Setter, Show, untrack } from "solid-js";
+import { Portal, type JSX } from "@solidjs/web";
 import { ComponentProps } from "@components/types/ComponentProps";
 import Step from "./Step";
 import styles from './Tutorial.module.scss';
-import { Portal } from "solid-js/web";
 import TutorialTooltip, { ToolTipData, TooltipType } from "./TutorialTooltip";
 import { clamp } from "@components/utils/clamp";
 import getScrollableParent from "@components/utils/getScrollableParent";
 import { waitForFrames } from "@components/utils/waitForFrames";
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
+import exposeRef from "@components/utils/exposeRef";
 
 export type HighlightRect = Omit<DOMRect, 'bottom' | 'right' | 'x' | 'y' | 'toJSON'>;
 
@@ -32,7 +33,8 @@ interface TutorialContextType {
     setOutset: Setter<number | null>,
     progress: Accessor<number>,
 }
-export const TutorialContext = createContext<TutorialContextType>();
+// Null default: Solid 2 throws when a context without a default is read outside its provider.
+export const TutorialContext = createContext<TutorialContextType | null>(null);
 
 export interface TutorialRef {
     element: HTMLDivElement;
@@ -49,14 +51,13 @@ export interface TutorialRef {
 }
 
 function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): JSX.Element {
-    let element: HTMLDivElement | undefined;
-    const initialOutset = props.outset ?? 0
+    // The initial outset (read once, as in 1.x); steps can override it with their own `outset`.
+    const initialOutset = untrack(() => props.outset ?? 0)
     const [currentStep, setCurrentStep] = createSignal<number>(0);
     const [outset, setOutset] = createSignal<number | null>(initialOutset)
     const [pausedAt, setPausedAt] = createSignal<number | null>(null);
     const [initialRender, setInitialRender] = createSignal(true);
     const [targetElement, setTargetElement] = createSignal<HTMLElement | null>(null);
-    const [highlightRect, setHighlightRect] = createSignal<HighlightRect | null>(null);
     const [tutorialStyles, setTutorialStyles] = createSignal<JSX.CSSProperties>({});
     const [tooltipData, setTooltipData] = createSignal<ToolTipData>({});
     const [count, setCount] = createSignal(0);
@@ -66,7 +67,7 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
         if (currentStep() !== 0) {
             return console.warn("Trying to start a new tour while another one is already in progress.");
         }
-        setCurrentStep(changeStep(from || 1))
+        changeStep(from || 1);
         props.onStart?.();
     };
 
@@ -75,6 +76,8 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
         setCurrentStep(0);
         setTargetElement(null);
         setPausedAt(null);
+        // 1.x reported step 0 as a side effect (the highlight effect re-ran before the target was cleared).
+        props.onChange?.(0);
         props.onEnd?.();
     }
 
@@ -87,6 +90,7 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
         setCurrentStep(0);
         setTargetElement(null);
         setPausedAt(current);
+        props.onChange?.(0);
     }
 
     const resume = (next: boolean = false) => {
@@ -102,7 +106,7 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
         }
 
         setPausedAt(null);
-        setCurrentStep(changeStep(next ? resumeStep + 1 : resumeStep))
+        changeStep(next ? resumeStep + 1 : resumeStep);
     }
 
     // Clamps provided step to valid range (1 to total step count)
@@ -128,8 +132,7 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
         return Number((currentStep() / steps * 100).toFixed(2))
     })
 
-    createEffect(() => {
-        const target = targetElement();
+    createEffect(() => targetElement(), (target) => {
         if (!target) return;
 
         const elementHasLoaded = target.offsetHeight && target.offsetWidth;
@@ -161,55 +164,25 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
                 if (dispatchScroll) scrollableParent.dispatchEvent(new CustomEvent('property-scroll'));
             }
 
-            const rectOutset = outset() ?? initialOutset;
+            // Current values, read on purpose without tracking (this can run inside the effect when no frames are awaited).
+            const rectOutset = untrack(outset) ?? initialOutset;
 
-            setHighlightRect({
+            const nextRect: HighlightRect = {
                 top: finalTop - rectOutset,
                 left: rect.left - rectOutset,
                 width: rect.width + rectOutset * 2,
                 height: finalHeight + rectOutset * 2,
-            })
-
-            setTutorialStyles(() => {
-                const { left, top, width, height } = highlightRect()!;
-                return {
-                    left: `${left}px`,
-                    top: `${top}px`,
-                    width: `${width}px`,
-                    height: `${height}px`
-                }
+            };
+            const { left, top, width, height } = nextRect;
+            setTutorialStyles({
+                left: `${left}px`,
+                top: `${top}px`,
+                width: `${width}px`,
+                height: `${height}px`
             });
 
-            props.onChange?.(currentStep())
+            props.onChange?.(untrack(currentStep))
         }, !elementHasLoaded ? 3 : 0)
-    })
-
-    const tutorialClasses = createMemo(() => {
-        const classes = [styles.tutorial];
-        targetElement() && classes.push(styles['tutorial-visible'])
-
-        return classes.join(" ");
-    })
-
-    props.componentClasses = tutorialClasses;
-    props.componentStyles = tutorialStyles;
-
-    onMount(() => {
-        if (!props.ref || !element) return;
-
-        (props.ref as (ref: TutorialRef) => void)({
-            element,
-            progress,
-            current: currentStep,
-            target: targetElement,
-            tour,
-            exit,
-            pause,
-            resume,
-            next: nextStep,
-            previous: previousStep,
-            changeStep: changeStep
-        });
     });
 
     const ctxObject: TutorialContextType = {
@@ -227,16 +200,31 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
     }
 
     return (
-        <TutorialContext.Provider value={ctxObject}>
+        <TutorialContext value={ctxObject}>
             {props.children}
             <Portal>
                 <div
-                    ref={element}
-                    use:baseComponent={props}
-                    use:navigationActions={{
-                        anchor: props.anchor,
-                        ...props.onAction,
-                    }}>
+                    class={[styles.tutorial, targetElement() && styles['tutorial-visible'], props.class]}
+                    style={{ ...tutorialStyles(), ...props.style }}
+                    ref={[
+                        exposeRef<Omit<TutorialRef, 'element'>>(props, {
+                            progress,
+                            current: currentStep,
+                            target: targetElement,
+                            tour,
+                            exit,
+                            pause,
+                            resume,
+                            next: nextStep,
+                            previous: previousStep,
+                            changeStep: changeStep
+                        }),
+                        baseComponent(props),
+                        navigationActions({
+                            anchor: props.anchor,
+                            ...props.onAction,
+                        }),
+                    ]}>
                 </div>
                 <Show when={targetElement()}>
                     <div class={styles.overlay}></div>
@@ -248,7 +236,7 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
                         progress={progress} />
                 </div>
             </Portal>
-        </TutorialContext.Provider>
+        </TutorialContext>
     );
 };
 

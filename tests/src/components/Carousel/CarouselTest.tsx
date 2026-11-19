@@ -1,8 +1,7 @@
-import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { createMemo, createSignal, createStore, flush, For, Show, onSettled } from "solid-js";
 import './carousel.css';
 import selectors from "../../../shared/carousel-selectors.json";
 import Carousel, { CarouselRef } from "@components/Complex/Carousel/Carousel";
-import { createStore } from "solid-js/store"
 
 const initialOptions = {
     itemWidth: 50,
@@ -21,10 +20,10 @@ const CarouselTest = () => {
     const [activePage, setActivePage] = createSignal(0);
 
     const scenarios = [
-        { label: "Change item width", action: () => { setCarouselOptions('itemWidth', 20) } },
-        { label: "Change item gap", action: () => { setCarouselOptions('itemGap', 30) } },
-        { label: "Change item alignment to end", action: () => { setCarouselOptions('itemsAlignment', 'end'); setCarouselOptions('itemGap', 0) } },
-        { label: "Group items", action: () => { setCarouselOptions('groupItems', true) } },
+        { label: "Change item width", action: () => { setCarouselOptions(o => { o.itemWidth = 20; }) } },
+        { label: "Change item gap", action: () => { setCarouselOptions(o => { o.itemGap = 30; }) } },
+        { label: "Change item alignment to end", action: () => { setCarouselOptions(o => { o.itemsAlignment = 'end'; }); setCarouselOptions(o => { o.itemGap = 0; }) } },
+        { label: "Group items", action: () => { setCarouselOptions(o => { o.groupItems = true; }) } },
         { label: "Add item to front", action: () => { setItems((prev) => [{ name: 'Front', selected: false }, ...prev]) } },
         { label: "Add item to front and select", action: () => { setItems((prev) => [{ name: 'Front selected', selected: true }, ...prev]) } },
         { label: "Add item to back", action: () => { setItems((prev) => [...prev, { name: 'Back', selected: false }]) } },
@@ -34,8 +33,8 @@ const CarouselTest = () => {
         { label: "Move to next element", action: () => { carouselRef.next() } },
         { label: "Move to prev element", action: () => { carouselRef.prev() } },
         { label: "Move to third element", action: () => { carouselRef.scrollTo(2); } },
-        { label: "Remove leading and trailing spaces", action: () => { setCarouselOptions('leadingAndTrailingSpaces', false); setCarouselOptions('itemGap', 0) } },
-        { label: "Enable custom pagination controls", action: () => { setCarouselOptions('paginationControlsDisabled', true) } },
+        { label: "Remove leading and trailing spaces", action: () => { setCarouselOptions(o => { o.leadingAndTrailingSpaces = false; }); setCarouselOptions(o => { o.itemGap = 0; }) } },
+        { label: "Enable custom pagination controls", action: () => { setCarouselOptions(o => { o.paginationControlsDisabled = true; }) } },
         { label: "Add item at middle between first and selected", action: () => { setItems((prev) => [...prev.slice(0, 1), { name: 'Mid', selected: false }, ...prev.slice(1)]) } },
         { label: "Add item at middle between first and selected and select it", action: () => { setItems((prev) => [...prev.slice(0, 1), { name: 'Mid selected', selected: true }, ...prev.slice(1)]) } },
         { label: "Remove second item", action: () => { setItems((prev) => [...prev.slice(0, 1), ...prev.slice(2)]) } },
@@ -43,8 +42,11 @@ const CarouselTest = () => {
     ];
 
     const reset = () => {
-        setCarouselOptions(JSON.parse(JSON.stringify(initialOptions)));
+        setCarouselOptions(o => { Object.assign(o, JSON.parse(JSON.stringify(initialOptions))); });
         setItems(initialItems);
+        // Apply the new items first: Carousel re-resolves the active item in an effect, which in Solid 2
+        // would otherwise run after scrollTo(0) and move the selection back.
+        flush();
         carouselRef?.scrollTo(0);
         setTest('red');
     };
@@ -54,8 +56,10 @@ const CarouselTest = () => {
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
     const reactiveStyleBG = createMemo(() => isReactive() ? { 'background-image': 'linear-gradient(to right bottom,rgb(255, 0, 0), #b9b9b9, #777777, #3b3b3b, #000000)' } : {});
 
-    onMount(() => document.addEventListener('reset', reset))
-    onCleanup(() => document.removeEventListener('reset', reset))
+    onSettled(() => {
+        document.addEventListener('reset', reset);
+        return () => document.removeEventListener('reset', reset);
+    });
 
     return (
         <>

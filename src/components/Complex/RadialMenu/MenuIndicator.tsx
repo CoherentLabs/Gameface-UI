@@ -1,4 +1,5 @@
-import { createMemo, JSX, ParentComponent, Show, useContext } from "solid-js";
+import { createMemo, ParentComponent, Show, useContext } from "solid-js";
+import type { JSX } from "@solidjs/web";
 import { TokenComponentProps } from "@components/types/ComponentProps";
 import { Icon, Indicator, RadialMenuContext } from "./RadialMenu";
 import { useToken } from "@components/utils/tokenComponents";
@@ -14,13 +15,6 @@ const MenuIndicator: ParentComponent<TokenComponentProps> = (props) => {
         console.error('RadialMenu.Indicator must be used inside a RadialMenu component');
         return null;
     }
-
-    const IndicatorClasses = createMemo(() => {
-        const classes = [styles['menu-indicator']];
-        classes.push(IndicatorToken()?.class ?? "");
-
-        return classes.join(' ');
-    })
 
     const IndicatorStyles = createMemo(() => {
         const styles: JSX.CSSProperties = {
@@ -39,7 +33,7 @@ const MenuIndicator: ParentComponent<TokenComponentProps> = (props) => {
             {/* Wrapper around the center that rotates with the mouse */}
             <div class={styles['menu-indicator-wrapper']} style={{transform: `rotate(${context.rotation()}deg)`}}>
                 {/* The indicator */}
-                <div class={IndicatorClasses()} style={IndicatorStyles()}></div>
+                <div class={[styles['menu-indicator'], IndicatorToken()?.class]} style={IndicatorStyles()}></div>
                 {/* The icon inside the indicator */}
                 <Show when={IconToken()}>
                     {IconToken()?.children ? (
@@ -53,7 +47,7 @@ const MenuIndicator: ParentComponent<TokenComponentProps> = (props) => {
                     ) : (
                         // No children, just render default Icon.
                         <div
-                            class={`${IconToken()?.class ?? ""} ${styles['menu-indicator-icon']}`}
+                            class={[IconToken()?.class, styles['menu-indicator-icon']]}
                             style={IconToken()?.style}
                         />
                     )}

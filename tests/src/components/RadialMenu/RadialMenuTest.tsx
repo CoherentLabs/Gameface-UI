@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
+import { createMemo, createSignal, For, onSettled } from "solid-js";
 import Image from "@components/Media/Image/Image";
 import Weapon1 from "@assets/wheel/weapon1.png";
 import Weapon2 from "@assets/wheel/weapon2.png";
@@ -58,8 +58,10 @@ const RadialMenuTest = () => {
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
-    onMount(() => document.addEventListener('reset', reset))
-    onCleanup(() => document.removeEventListener('reset', reset))
+    onSettled(() => {
+        document.addEventListener('reset', reset);
+        return () => document.removeEventListener('reset', reset);
+    });
 
     return (
         <>

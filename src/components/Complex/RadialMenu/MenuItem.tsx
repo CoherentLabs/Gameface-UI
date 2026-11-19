@@ -1,4 +1,5 @@
-import { Accessor, JSX, ParentComponent, ParentProps, createEffect, createMemo,on, useContext } from "solid-js";
+import { Accessor, ParentComponent, ParentProps, createEffect, createMemo, useContext } from "solid-js";
+import type { JSX } from "@solidjs/web";
 import { useToken } from "@components/utils/tokenComponents";
 import { TokenComponentProps } from "@components/types/ComponentProps";
 import { ItemTokenProps, Selector, RadialMenuContext } from "./RadialMenu";
@@ -22,20 +23,12 @@ export const MenuItem: ParentComponent<MenuItemComponentProps> = (props) => {
     const offset = createMemo(() => props.item.offset ?? '1rem');
 
     // Subscribe to isSelected changes to trigger onChange when new item becomes selected
-    createEffect(on(isSelected, (selected) => {
+    createEffect(() => isSelected(), (selected) => {
         if (selected && context.onChange) {
             const id = props.item.id || props.index()
             context.onChange(id);
-        } 
-    }, { defer: true }))
-
-    const wrapperClasses = createMemo(() => {
-        const classes = [styles['menu-item-wrapper']];
-        classes.push(props.item.class ?? "");
-        isSelected() && classes.push(props.item["class-selected"] ?? "");
-        
-        return classes.join(' ');
-    });
+        }
+    }, { defer: true });
 
     const wrapperStyles = createMemo(() => {
         const styles: JSX.CSSProperties = {};
@@ -43,19 +36,6 @@ export const MenuItem: ParentComponent<MenuItemComponentProps> = (props) => {
         isSelected() && Object.assign(styles, props.item["style-selected"] ?? {});
 
         return styles;
-    });
-
-    const selectorClasses = createMemo(() => {
-        const classes = [styles['menu-item-selector']];
-        classes.push(SelectorToken()?.class ?? "");
-        if(isSelected()) {
-            // Default behavior for selected state
-            classes.push(styles['menu-item-selected'])
-            // Custom behavior for selected state
-            classes.push(SelectorToken()?.["class-selected"] ?? "");
-        }
-        
-        return classes.join(' ');
     });
 
     const selectorStyles = createMemo(() => {
@@ -77,9 +57,17 @@ export const MenuItem: ParentComponent<MenuItemComponentProps> = (props) => {
 
     return (
         // Wrapper of the item content and the clipped selector
-        <div class={wrapperClasses()} style={wrapperStyles()}>
+        <div class={[styles['menu-item-wrapper'], props.item.class, isSelected() && props.item["class-selected"]]} style={wrapperStyles()}>
             {/* Colored part of the menu */}
-            <div class={selectorClasses()} style={selectorStyles()}></div>
+            <div
+                class={[
+                    styles['menu-item-selector'],
+                    SelectorToken()?.class,
+                    // Default and custom behavior for the selected state
+                    isSelected() && styles['menu-item-selected'],
+                    isSelected() && SelectorToken()?.["class-selected"],
+                ]}
+                style={selectorStyles()}></div>
             {/* Item content goes here */}
             <div class={styles['menu-item-content']} style={{transform: `rotate(${rotation()}deg)`, "padding-top": offset() }}>
                 {/* Rotated negatively to cancel out menu rotation */}

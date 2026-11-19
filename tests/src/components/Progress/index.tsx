@@ -1,5 +1,5 @@
 import Tab from "@components/Layout/Tab/Tab";
-import { createMemo, createSignal, For, onCleanup, onMount, useContext } from "solid-js";
+import { createMemo, createSignal, For, useContext, onSettled } from "solid-js";
 import selectors from "../../../shared/progress-selectors.json";
 import Progress from "@components/Feedback/Progress/Progress";
 import { TabsContext } from "@components/Layout/Tabs/Tabs";
@@ -53,8 +53,10 @@ const ProgressTest = () => {
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
-    onMount(() => document.addEventListener('reset', reset))
-    onCleanup(() => document.removeEventListener('reset', reset))
+    onSettled(() => {
+        document.addEventListener('reset', reset);
+        return () => document.removeEventListener('reset', reset);
+    });
 
     return (
         <>

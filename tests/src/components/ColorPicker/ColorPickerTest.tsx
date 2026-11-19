@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
+import { createMemo, createSignal, For, onSettled } from "solid-js";
 import selectors from "../../../shared/color-picker-selectors.json";
 import ColorPicker, { ColorPickerRef } from "@components/Complex/ColorPicker/ColorPicker";
 import { parseHSVAColor } from "@components/Complex/ColorPicker/colorPickerUtils";
@@ -24,8 +24,10 @@ const ColorPickerTest = () => {
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
-    onMount(() => document.addEventListener('reset', reset))
-    onCleanup(() => document.removeEventListener('reset', reset))
+    onSettled(() => {
+        document.addEventListener('reset', reset);
+        return () => document.removeEventListener('reset', reset);
+    });
 
     return (
         <>

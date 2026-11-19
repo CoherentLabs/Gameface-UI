@@ -1,5 +1,5 @@
 import { PaginationRef } from "@components/Basic/Pagination/Pagination";
-import { createContext, createEffect, createMemo, createSignal, on, onCleanup, onMount, ParentComponent, ParentProps, Setter } from "solid-js";
+import { createContext, createEffect, createMemo, createSignal, onSettled, ParentComponent, ParentProps, Setter } from "solid-js";
 import CarouselItems, { CarouselItemTokenProps, Item } from "./CarouselItems";
 import CarouselPagination from "./CarouselPagination";
 import { CarouselNext } from "./CarouselNext";
@@ -8,6 +8,7 @@ import { waitForFrames } from "@components/utils/waitForFrames";
 import { ComponentProps } from "@components/types/ComponentProps";
 import styles from './Carousel.module.scss';
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
+import exposeRef from "@components/utils/exposeRef";
 
 export interface CarouselRef {
     element: HTMLDivElement;
@@ -29,10 +30,12 @@ interface CarouselProps extends ComponentProps {
     onActivePageChange?: (page: number) => void;
 }
 
+type CarouselItemData = ParentProps<CarouselItemTokenProps & { _id: string }>;
+
 interface CarouselContextType {
     itemWidth: () => number;
     itemGap: () => number;
-    setActivePage: Setter<number>;
+    setActivePage: (page: number) => void;
     setItemsWrapper: (el: HTMLDivElement) => void
     setItemsContainer: (el: HTMLDivElement) => void
     setPaginationRef: (el: PaginationRef) => void
@@ -45,33 +48,43 @@ interface CarouselContextType {
     setItems: Setter<any[]>;
 }
 
-export const CarouselContext = createContext<CarouselContextType>();
+// Null default: Solid 2 throws when a context without a default is read outside its provider.
+export const CarouselContext = createContext<CarouselContextType | null>(null);
 
 const Carousel: ParentComponent<CarouselProps> = (props) => {
-    let resizeObserver!: ResizeObserver;
     let itemsWrapper!: HTMLDivElement;
     let itemsContainer!: HTMLDivElement;
     let paginationRef!: PaginationRef;
     let carouselRef!: HTMLDivElement;
 
-    const [items, setItems] = createSignal<ParentProps<CarouselItemTokenProps & { _id: string }>[]>([]);
-    const [pagesCount, setPagesCount] = createSignal(0);
-    const [activePage, setActivePage] = createSignal(props.groupItems ? 0 : 0);
+    const [items, setItems] = createSignal<CarouselItemData[]>([]);
+
+    // Solid 2 stages writes: a signal read right after its write still returns the old value until the
+    // next flush. The page logic below (and the ref API: next/prev/scrollTo) writes and then reads in the
+    // same step, so each value also lives in a plain, always-current copy (the navigationState.ts pattern):
+    // writes go to both, reads subscribe to the signal and return the copy.
+    let activePageNow = 0;
+    let pagesCountNow = 0;
+    const [activePageSignal, setActivePageSignal] = createSignal(0);
+    const [pagesCountSignal, setPagesCountSignal] = createSignal(0);
+    const activePage = () => { activePageSignal(); return activePageNow; };
+    const pagesCount = () => { pagesCountSignal(); return pagesCountNow; };
+    const setActivePage = (page: number) => { activePageNow = page; setActivePageSignal(page); };
+    const setPagesCount = (count: number) => { pagesCountNow = count; setPagesCountSignal(count); };
+
     const itemWidth = createMemo(() => props.itemWidth || 100);
     const itemGap = createMemo(() => props.itemGap || 0);
     const itemsAlignment = createMemo(() => props.itemsAlignment || 'start');
     const groupItems = createMemo(() => !!props.groupItems);
     const leadingAndTrailingSpaces = createMemo(() => props.leadingAndTrailingSpaces === false ? false : true);
 
-    createEffect(
-        on([itemWidth, itemGap, groupItems], () => {
-            updatePagesCount();
-        }, { defer: true })
-    );
+    createEffect(() => [itemWidth(), itemGap(), groupItems()], () => {
+        updatePagesCount();
+    }, { defer: true });
 
     const resolveActivePageIndex = (
-        currentItems: ParentProps<CarouselItemTokenProps & { _id: string }>[],
-        previousItems: ParentProps<CarouselItemTokenProps & { _id: string }>[] | undefined,
+        currentItems: CarouselItemData[],
+        previousItems: CarouselItemData[] | undefined,
         previousActivePage: number
     ): number => {
         if (!previousItems) return previousActivePage;
@@ -88,65 +101,48 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
         return newIndex >= 0 ? newIndex : previousActivePage;
     };
 
-    createEffect(
-        on(
-            items,
-            (currentItems, previousItems) => {
-                // Check if a new item was just added with `selected`
-                const newlySelectedIndex = currentItems.findIndex((item) => {
-                    const existedBefore = previousItems?.some(
-                        (prevItem) => prevItem._id === item._id
-                    );
-                    return item.selected && !existedBefore;
-                });
+    // The items as of the previous run (1.x `on(items, (current, previous) => …)` semantics).
+    let previousItems: CarouselItemData[] = [];
+    createEffect(() => items(), (currentItems) => {
+        const prevItems = previousItems;
+        previousItems = currentItems;
 
-                let nextActivePage: number;
+        // Check if a new item was just added with `selected`
+        const newlySelectedIndex = currentItems.findIndex((item) => {
+            const existedBefore = prevItems.some(
+                (prevItem) => prevItem._id === item._id
+            );
+            return item.selected && !existedBefore;
+        });
 
-                if (newlySelectedIndex >= 0) {
-                    // Prioritize explicitly selected new items
-                    nextActivePage = newlySelectedIndex;
-                    setActivePage(nextActivePage);
-                } else {
-                    // Otherwise, keep the previous active item if it still exists
-                    nextActivePage = groupItems()
-                        ? activePage()
-                        : resolveActivePageIndex(currentItems, previousItems, activePage());
-                }
+        let nextActivePage: number;
 
-                updatePagesCount();
-                scrollTo(nextActivePage, true);
-            },
-            { defer: true }
-        )
-    );
+        if (newlySelectedIndex >= 0) {
+            // Prioritize explicitly selected new items
+            nextActivePage = newlySelectedIndex;
+            setActivePage(nextActivePage);
+        } else {
+            // Otherwise, keep the previous active item if it still exists
+            nextActivePage = groupItems()
+                ? activePage()
+                : resolveActivePageIndex(currentItems, prevItems, activePage());
+        }
 
-    createEffect(
-        on([itemsAlignment, leadingAndTrailingSpaces], () => waitForFrames(translateItemsContainer), { defer: true })
-    );
+        updatePagesCount();
+        scrollTo(nextActivePage, true);
+    }, { defer: true });
 
-    onMount(() => {
+    createEffect(() => [itemsAlignment(), leadingAndTrailingSpaces()], () => {
+        waitForFrames(translateItemsContainer);
+    }, { defer: true });
+
+    onSettled(() => {
         waitForFrames(translateItemsContainer);
 
-        resizeObserver = new ResizeObserver(translateItemsContainer);
+        const resizeObserver = new ResizeObserver(translateItemsContainer);
+        if (carouselRef) resizeObserver.observe(carouselRef);
 
-        if (carouselRef!) resizeObserver.observe(carouselRef);
-
-        if (!props.ref || !carouselRef) return;
-
-        (props.ref as unknown as (ref: any) => void)({
-            element: carouselRef,
-            itemsContainer: itemsContainer,
-            next,
-            prev,
-            scrollTo,
-            activePage,
-            pagesCount,
-            translateItemsContainer
-        });
-    });
-
-    onCleanup(() => {
-        if (resizeObserver) resizeObserver.disconnect();
+        return () => resizeObserver.disconnect();
     });
 
     const fixLastItemSelection = () => {
@@ -268,9 +264,7 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
         paginationRef = el;
     }
 
-    props.componentClasses = () => styles['carousel'];
-
-    return <CarouselContext.Provider value={{
+    return <CarouselContext value={{
         setActivePage,
         itemWidth,
         itemGap,
@@ -285,15 +279,30 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
         groupItems,
         setItemsWrapper
     }}>
-        <div ref={carouselRef}
-            use:baseComponent={props}
-            use:navigationActions={{
-                anchor: props.anchor,
-                ...props.onAction,
-            }}>
+        <div
+            class={[styles['carousel'], props.class]}
+            style={props.style}
+            ref={[
+                (el: HTMLDivElement) => { carouselRef = el; },
+                exposeRef<Omit<CarouselRef, 'element'>>(props, {
+                    // A getter: Carousel.Items sets the container after this ref runs.
+                    get itemsContainer() { return itemsContainer; },
+                    next,
+                    prev,
+                    scrollTo,
+                    activePage,
+                    pagesCount,
+                    translateItemsContainer,
+                }),
+                baseComponent(props),
+                navigationActions({
+                    anchor: props.anchor,
+                    ...props.onAction,
+                }),
+            ]}>
             {props.children}
         </div>
-    </CarouselContext.Provider>
+    </CarouselContext>
 }
 
 export default Object.assign(Carousel, { Items: CarouselItems, Item, Pagination: CarouselPagination, Next: CarouselNext, Prev: CarouselPrev });

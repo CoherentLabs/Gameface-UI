@@ -44,8 +44,10 @@ const TextSlider: ParentComponent<TextSliderProps> = (props) => {
     // Always-current plain copy for the logic (Solid 2 stages signal writes).
     let current = initialValue;
     const writeValue = (newValue: string) => {
+        if (newValue === current) return;
         current = newValue;
         setValue(newValue);
+        props.onChange?.(newValue);
     };
 
     // purely for navigation state
@@ -70,9 +72,6 @@ const TextSlider: ParentComponent<TextSliderProps> = (props) => {
     let geometry: TrackGeometry;
 
     const ThumbSlot = useToken(Thumb, () => props.children)
-
-    // On change subscription (block body: an apply function's return value is its cleanup)
-    createEffect(() => value(), (v) => { props.onChange?.(v); }, { defer: true });
 
     // Two Way Binding
     createEffect(() => props.value, (v) => {

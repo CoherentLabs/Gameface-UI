@@ -1,4 +1,5 @@
-import { Accessor, JSX, ParentComponent, ParentProps, Show, createMemo, onCleanup, onMount, useContext } from "solid-js";
+import { Accessor, ParentComponent, ParentProps, createMemo, useContext } from "solid-js";
+import type { JSX } from "@solidjs/web";
 import styles from './Carousel.module.scss';
 import { CarouselContext } from "./Carousel";
 import { CarouselItemTokenProps } from "./CarouselItems";
@@ -29,16 +30,6 @@ const CarouselItem: ParentComponent<CarouselItemProps> = (props) => {
         return carouselContext.activePage() === props.index()
     });
 
-    const itemClasses = createMemo(() => {
-        const classes = [styles['carousel-item']];
-        if (props.item.class) classes.push(props.item.class as string);
-        if (itemSelected()) {
-            classes.push(styles['carousel-item-selected']);
-            if (props.item["class-selected"]) classes.push(props.item["class-selected"]);
-        }
-        return classes.join(' ');
-    });
-
     const itemStyles = createMemo(() => {
         const styles: JSX.CSSProperties = {
             width: width() + '%',
@@ -55,7 +46,14 @@ const CarouselItem: ParentComponent<CarouselItemProps> = (props) => {
     });
 
     return (
-        <div class={itemClasses()} style={itemStyles()}>
+        <div
+            class={[
+                styles['carousel-item'],
+                props.item.class,
+                itemSelected() && styles['carousel-item-selected'],
+                itemSelected() && props.item['class-selected'],
+            ]}
+            style={itemStyles()}>
             {props.item.children}
         </div>
     )

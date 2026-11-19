@@ -1,6 +1,6 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, Component, createEffect, createMemo, createSignal, JSX, on, useContext } from "solid-js";
-import { Dynamic } from "solid-js/web";
+import { Accessor, Component, createEffect, createMemo, createSignal, useContext } from "solid-js";
+import { dynamic, type JSX } from "@solidjs/web";
 import { TutorialContext } from "./Tutorial";
 import Controls from "./Controls";
 import Progress from "@components/Feedback/Progress/Progress";
@@ -78,7 +78,7 @@ const TutorialTooltip = <T extends Record<string, any> = {}>(props: TutorialTool
         }
     }
 
-    createEffect(on(ctx.current, (current) => {
+    createEffect(() => ctx.current(), (current) => {
         setVisible(false);
 
         if (visibleTO) clearTimeout(visibleTO);
@@ -86,9 +86,9 @@ const TutorialTooltip = <T extends Record<string, any> = {}>(props: TutorialTool
             if (current === 0) return;
             setVisible(true)
         }, 500)
-    }, {defer: true}))
+    }, { defer: true });
 
-    const position = createMemo((prev) => {
+    const position = createMemo((prev: TooltipPosition | undefined) => {
         const currentPosition = prev || DEFAULT_POSITION;
         if (!visible() || !elementRef) return currentPosition;
 
@@ -101,19 +101,14 @@ const TutorialTooltip = <T extends Record<string, any> = {}>(props: TutorialTool
         return suggested || currentPosition;
     })
 
-    const tooltipClasses = createMemo(() => {
-        const classes = [styles['tooltip-wrapper']];
-
-        if (visible()) classes.push(styles['tooltip-visible']);
-        classes.push(styles[`tooltip-${position()}`]);
-        return classes.join(' ');
-    });
-
-    const ComponentToRender = () => (props.userTooltip ?? DefaultTooltip) as TooltipType<T>;
+    // The user's tooltip component, or the default one.
+    const TooltipComponent = dynamic(() => (props.userTooltip ?? DefaultTooltip) as TooltipType<T>);
 
     return (
-        <div ref={elementRef} class={tooltipClasses()}>
-            <Dynamic component={ComponentToRender()} {...(providedTooltipProps() as ProvidedProps & Partial<T> & DefaultProps)} />
+        <div
+            ref={(el: HTMLDivElement) => { elementRef = el; }}
+            class={[styles['tooltip-wrapper'], visible() && styles['tooltip-visible'], styles[`tooltip-${position()}`]]}>
+            <TooltipComponent {...(providedTooltipProps() as ProvidedProps & Partial<T> & DefaultProps)} />
         </div>
     )
 }

@@ -1,9 +1,10 @@
-import { createMemo, createSignal, onMount, ParentComponent } from "solid-js";
+import { createMemo, createSignal, ParentComponent, untrack } from "solid-js";
 import XYSlider, { XYSliderRef, XYSliderValue } from "@components/Basic/XYSlider/XYSlider";
 import Slider, { SliderRef } from "@components/Basic/Slider/Slider";
 import Segment from "@components/Basic/Segment/Segment";
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
 import { ComponentProps } from "@components/types/ComponentProps";
+import exposeRef from "@components/utils/exposeRef";
 import { parseHSVAColor, RGBAOrHEXToHSVA } from "./colorPickerUtils";
 import TextInput from "@components/Basic/Input/TextInput/TextInput";
 import styles from './ColorPicker.module.scss';
@@ -28,22 +29,21 @@ interface ColorPickerProps extends ComponentProps {
 }
 
 const ColorPicker: ParentComponent<ColorPickerProps> = (props) => {
-    let element!: HTMLDivElement;
     let xySliderRef!: XYSliderRef;
     let hueSliderRef!: SliderRef;
     let alphaSliderRef!: SliderRef;
     let changingColorFromRef = false;
 
-    const initialValue = RGBAOrHEXToHSVA(props.value ?? 'rgba(255, 0, 0, 1)');
+    // `value` is the initial color (read once, as in 1.x); later changes go through the ref's changeColor.
+    const initialValue = untrack(() => RGBAOrHEXToHSVA(props.value ?? 'rgba(255, 0, 0, 1)'));
     const [color, setColor] = createSignal(initialValue);
     const [selectedFormat, setSelectedFormat] = createSignal("hex");
 
     const updateColor = (updates: Partial<ColorData>) => {
-        setColor((prev) => {
-            const newColor = { ...prev, ...updates };
-            props.onChange?.(newColor);
-            return newColor;
-        });
+        // Built from the latest (possibly not yet applied) value, so two updates in one tick both land.
+        let newColor!: ColorData;
+        setColor((prev) => (newColor = { ...prev, ...updates }));
+        props.onChange?.(newColor);
     }
 
     const handleXYChange = ({ x, y }: XYSliderValue) => {
@@ -80,13 +80,6 @@ const ColorPicker: ParentComponent<ColorPickerProps> = (props) => {
         return selectedFormat() === "hex" ? hex : rgba;
     });
 
-    const colorPickerClasses = createMemo(() => {
-        const classes = [styles['color-picker']];
-        const sizeClass = styles[`size-${(props.size ?? 'L').toLowerCase()}`];
-        if (sizeClass) classes.push(sizeClass);
-        return classes.join(' ');
-    });
-
     const changeColor = (newColor: string) => {
         const parsedColor = RGBAOrHEXToHSVA(newColor);
 
@@ -99,25 +92,21 @@ const ColorPicker: ParentComponent<ColorPickerProps> = (props) => {
         changingColorFromRef = false;
     }
 
-    props.componentClasses = () => colorPickerClasses();
-
-    onMount(() => {
-        if (!props.ref || !element) return;
-
-        (props.ref as unknown as (ref: any) => void)({
-            value: () => parseHSVAColor(color()),
-            changeColor,
-            element,
-        });
-    });
-
     return (
-        <div ref={element}
-            use:baseComponent={props}
-            use:navigationActions={{
-                anchor: props.anchor,
-                ...props.onAction,
-            }}
+        <div
+            class={[styles['color-picker'], styles[`size-${(props.size ?? 'L').toLowerCase()}`], props.class]}
+            style={props.style}
+            ref={[
+                exposeRef<Omit<ColorPickerRef, 'element'>>(props, {
+                    value: () => parseHSVAColor(color()),
+                    changeColor,
+                }),
+                baseComponent(props),
+                navigationActions({
+                    anchor: props.anchor,
+                    ...props.onAction,
+                }),
+            ]}
         >
             {/**
              * XYSlider component is used for selecting color based on saturation and value.

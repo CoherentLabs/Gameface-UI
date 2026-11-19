@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { createMemo, createSignal, For, onSettled, Show } from "solid-js";
 import selectors from "../../../shared/tutorial/tutorial-selectors.json";
 import events from '../../../shared/tutorial/tutorial-events.json';
 import steps from '../../../shared/tutorial/tutorial-steps.json';
@@ -57,7 +57,7 @@ const TutorialTest = () => {
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
-    onMount(() => {
+    onSettled(() => {
         document.addEventListener('reset', reset);
         document.addEventListener(events['change-step'], handleChangeStep as EventListener)
 
@@ -66,12 +66,12 @@ const TutorialTest = () => {
             document.addEventListener(label, action);
         });
 
-        onCleanup(() => {
+        return () => {
             document.removeEventListener('reset', reset);
             scenarios.forEach(({ label, action }) => {
                 document.removeEventListener(label, action);
             });
-        });
+        };
     });
 
 

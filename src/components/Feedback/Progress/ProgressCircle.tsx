@@ -1,8 +1,9 @@
-import { createMemo, ParentComponent, ParentProps, Show } from "solid-js";
+import { ParentComponent, ParentProps, Show } from "solid-js";
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
 import { clampProgress, ProgressProps } from "./Progress";
 import styles from './Progress.module.scss';
 import baseComponent from "@components/BaseComponent/BaseComponent";
+import exposeRef from "@components/utils/exposeRef";
 
 interface FillTokenProps extends TokenBase { shape?: 'square' | 'round', }
 interface TextTokenProps extends TokenBase, ParentProps { }
@@ -17,39 +18,17 @@ const ProgressCircle: ParentComponent<ProgressProps> = (props) => {
     const outlineToken = useToken(Outline, () => props.children)
     const textToken = useToken(Text, () => props.children)
 
-    const outlineClasses = createMemo(() => {
-        const classes = [styles['circle-outline']];
-        classes.push(outlineToken()?.class || "");
-
-        return classes.join(' ');
-    });
-
-    const fillClasses = createMemo(() => {
-        const classes = [styles['circle-fill']];
-        classes.push(fillToken()?.class || "");
-
-        return classes.join(' ');
-    });
-
-    const textClasses = createMemo(() => {
-        const classes = [styles['circle-text']];
-        classes.push(textToken()?.class || "");
-
-        return classes.join(' ');
-    });
-
-    props.componentClasses = () => styles.circle;
-
     return (
         <div
-            ref={props.ref as HTMLDivElement}
-            use:baseComponent={props}
+            class={[styles.circle, props.class]}
+            style={props.style}
+            ref={[exposeRef(props), baseComponent(props)]}
         >
             <svg class={styles['circle-svg']} viewBox="0 0 120 120">
-                <path d={PATH_DATA} class={outlineClasses()} style={outlineToken()?.style} />
+                <path d={PATH_DATA} class={[styles['circle-outline'], outlineToken()?.class]} style={outlineToken()?.style} />
                 <path
                     d={PATH_DATA}
-                    class={fillClasses()}
+                    class={[styles['circle-fill'], fillToken()?.class]}
                     style={fillToken()?.style}
                     pathLength="100"
                     stroke-dasharray="100"
@@ -58,7 +37,7 @@ const ProgressCircle: ParentComponent<ProgressProps> = (props) => {
                 />
             </svg>
             <Show when={textToken()}>
-                <div class={textClasses()} style={textToken()?.style}>
+                <div class={[styles['circle-text'], textToken()?.class]} style={textToken()?.style}>
                     {textToken()?.children}
                 </div>
             </Show>

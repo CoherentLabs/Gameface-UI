@@ -44,8 +44,10 @@ const Slider: ParentComponent<SliderProps> = (props) => {
     // uses `current`, the always-up-to-date plain copy. `value` drives rendering.
     let current = initialValue;
     const writeValue = (newValue: number) => {
+        if (newValue === current) return;
         current = newValue;
         setValue(newValue);
+        props.onChange?.(newValue);
     };
 
     // purely for navigation state
@@ -60,9 +62,6 @@ const Slider: ParentComponent<SliderProps> = (props) => {
 
     const ThumbSlot = useToken(Thumb, () => props.children)
     const GridSlot = useToken(Grid, () => props.children)
-
-    // On change subscription (block body: an apply function's return value is its cleanup)
-    createEffect(() => value(), (v) => { props.onChange?.(v); }, { defer: true });
 
     // Two Way Binding
     createEffect(() => props.value, (v) => {

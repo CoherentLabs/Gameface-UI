@@ -54,8 +54,16 @@ const TwoHandleSlider: ParentComponent<SliderProps> = (props) => {
     // signals drive rendering.
     let curStart = initialStart;
     let curEnd = initialEnd;
-    const writeStart = (value: number) => { curStart = value; setStartValue(value); };
-    const writeEnd = (value: number) => { curEnd = value; setEndValue(value); };
+    const writeValues = (start: number, end: number) => {
+        if (start === curStart && end === curEnd) return;
+        curStart = start;
+        curEnd = end;
+        setStartValue(start);
+        setEndValue(end);
+        props.onChange?.({ start, end });
+    };
+    const writeStart = (value: number) => writeValues(value, curEnd);
+    const writeEnd = (value: number) => writeValues(curStart, value);
 
     const [activeHandle, setActiveHandle] = createSignal<'start' | 'end'>('start');
     // purely for navigation state
@@ -76,13 +84,6 @@ const TwoHandleSlider: ParentComponent<SliderProps> = (props) => {
     const ThumbSlot = useToken(Thumb, () => props.children)
     const GridSlot = useToken(Grid, () => props.children)
 
-    // Fires once per change of either handle (block body: an apply function's
-    // return value is its cleanup).
-    createEffect(
-        () => ({ start: startValue(), end: endValue() }),
-        (value) => { props.onChange?.(value); },
-        { defer: true }
-    );
     // Two Way Binding
     createEffect(() => props.value, (newValue) => {
         if (newValue) changeValue(newValue);
@@ -179,8 +180,7 @@ const TwoHandleSlider: ParentComponent<SliderProps> = (props) => {
         const start = Math.min(newValue.start, newValue.end - step());
         const end = Math.max(newValue.end, newValue.start + step());
 
-        writeStart(snapValue(start));
-        writeEnd(snapValue(end));
+        writeValues(snapValue(start), snapValue(end));
     }
 
     /** Sets the start handle, snapped to step and capped one step below the end handle. */

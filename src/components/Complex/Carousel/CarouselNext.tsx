@@ -4,6 +4,7 @@ import styles from './Carousel.module.scss';
 import CarouselArrow from './CarouselArrow.svg?component-solid';
 import { ComponentProps } from "@components/types/ComponentProps";
 import baseComponent from "@components/BaseComponent/BaseComponent";
+import exposeRef from "@components/utils/exposeRef";
 
 interface CarouselNextProps extends ComponentProps {
     'class-disabled'?: string;
@@ -16,27 +17,23 @@ export const CarouselNext: ParentComponent<CarouselNextProps> = (props) => {
         return null;
     }
 
-    const nextArrowClasses = createMemo(() => {
-        const classes = [styles['carousel-arrow-next']];
-        if (carouselContext.activePage() === carouselContext.pagesCount() - 1) {
-            classes.push(styles['carousel-arrow-disabled']);
-            if (props['class-disabled']) classes.push(props['class-disabled']);
-        }
-        return classes.join(' ');
-    })
-
-    props.componentClasses = () => nextArrowClasses();
+    const disabled = createMemo(() => carouselContext.activePage() === carouselContext.pagesCount() - 1);
 
     return (
         <div
-            use:baseComponent={props}
-            onClick={(event) => props.click ? props.click(event) : carouselContext.next()}
+            class={[
+                styles['carousel-arrow-next'],
+                disabled() && styles['carousel-arrow-disabled'],
+                disabled() && props['class-disabled'],
+                props.class,
+            ]}
+            style={props.style}
+            ref={[exposeRef(props), baseComponent(props)]}
+            // A `click` prop replaces the default action; baseComponent already attaches it as a listener.
+            onClick={() => { if (!props.click) carouselContext.next(); }}
         >
-            <Show when={props.children}>
+            <Show when={props.children} fallback={<CarouselArrow />}>
                 {props.children}
-            </Show>
-            <Show when={!props.children}>
-                <CarouselArrow />
             </Show>
         </div>
     )

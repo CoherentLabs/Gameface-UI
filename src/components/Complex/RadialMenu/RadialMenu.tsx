@@ -1,11 +1,13 @@
 import { createTokenComponent, TokenBase, useTokens } from '@components/utils/tokenComponents';
 import styles from './RadialMenu.module.scss';
 import { ComponentProps } from '@components/types/ComponentProps';
-import { Accessor, createContext, createEffect, createMemo, createSignal, For, JSX, on, onCleanup, onMount, ParentComponent, Setter } from 'solid-js';
+import { Accessor, createContext, createEffect, createMemo, createSignal, For, onCleanup, ParentComponent, Setter, untrack } from 'solid-js';
+import type { JSX } from '@solidjs/web';
 import MenuItem from './MenuItem';
 import MenuCenter from './MenuCenter';
 import { angleToSlice, mouseToStick, Stick, stickToPolar } from './utils';
 import baseComponent, { navigationActions } from '@components/BaseComponent/BaseComponent';
+import exposeRef from '@components/utils/exposeRef';
 
 export interface ItemTokenProps extends TokenBase {
     id?: string,
@@ -26,7 +28,8 @@ interface RadialMenuContextType {
     rotation: Accessor<number>,
     onChange?: (id: string | number) => void;
 }
-export const RadialMenuContext = createContext<RadialMenuContextType>();
+// Null default: Solid 2 throws when a context without a default is read outside its provider.
+export const RadialMenuContext = createContext<RadialMenuContextType | null>(null);
 
 export interface RadialMenuRef {
     element: HTMLDivElement,
@@ -52,10 +55,12 @@ const RadialMenu: ParentComponent<RadialMenuProps> = (props) => {
     let element: HTMLDivElement | undefined;
     let eventAttached = false;
 
-    const [selected, setSelected] = createSignal(props.selected ?? 0);
+    // `selected`, `opened` and `gap` are initial values (read once, as in 1.x); later changes go through the ref.
+    const initial = untrack(() => ({ selected: props.selected ?? 0, opened: props.opened ?? false, gap: props.gap ?? 0 }));
+    const [selected, setSelected] = createSignal(initial.selected);
     const [rotation, setRotation] = createSignal(0);
-    const [isOpen, setIsOpen] = createSignal(props.opened ?? false);
-    const [gap, setGap] = createSignal(props.gap ?? 0);
+    const [isOpen, setIsOpen] = createSignal(initial.opened);
+    const [gap, setGap] = createSignal(initial.gap);
     const [ignoreMouseMove, setIgnoreMouseMove] = createSignal(false);
 
     const length = createMemo(() => ItemTokens()?.length ?? 1);
@@ -120,23 +125,16 @@ const RadialMenu: ParentComponent<RadialMenuProps> = (props) => {
         setTimeout(() => setIgnoreMouseMove(false), 100);
     }
 
-    const radialMenuClasses = createMemo(() => {
-        const classes = [styles.menu];
-        if (isOpen()) classes.push(styles["menu-open"]);
-
-        return classes.join(' ');
-    })
-
     // Subscribe to isOpen changes to add/remove event listeners
-    createEffect(on(isOpen, (isOpened) => {
+    createEffect(() => isOpen(), (isOpened) => {
         if (isOpened) addEventListeners();
         else removeEventListeners();
-    }))
+    });
 
     // Subscribe to length changes to trigger onItemChanged
-    createEffect(on(length, () => {
+    createEffect(() => length(), () => {
         props.onItemChanged && props.onItemChanged()
-    }, { defer: true }))
+    }, { defer: true });
 
     const addEventListeners = () => {
         eventAttached = true;
@@ -150,41 +148,38 @@ const RadialMenu: ParentComponent<RadialMenuProps> = (props) => {
         window.removeEventListener('mousemove', mouseMoveHandler)
     }
 
-    onMount(() => {
-        if (!props.ref || !element) return;
-
-        (props.ref as unknown as (ref: any) => void)({
-            element: element,
-            open: () => setIsOpen(true),
-            close: () => setIsOpen(false),
-            opened: () => isOpen(),
-            changeGap: setGap,
-            selectByIndex,
-            selectByVector
-        });
-    })
-
     onCleanup(() => removeEventListeners());
-
-    props.componentClasses = () => radialMenuClasses();
 
     const ContextObj = {
         clipPathValue,
         degreesPerSlice,
         selected,
         rotation,
-        onChange: props.onChange
+        // Reads the current prop each call (1.x captured it once at setup).
+        onChange: (id: string | number) => props.onChange?.(id),
     }
 
     return (
-        <RadialMenuContext.Provider value={ContextObj}>
+        <RadialMenuContext value={ContextObj}>
             <div
-                ref={element!}
-                use:baseComponent={props}
-                use:navigationActions={{
-                    anchor: props.anchor,
-                    ...props.onAction,
-                }}
+                class={[styles.menu, isOpen() && styles["menu-open"], props.class]}
+                style={props.style}
+                ref={[
+                    (el: HTMLDivElement) => { element = el; },
+                    exposeRef<Omit<RadialMenuRef, 'element'>>(props, {
+                        open: () => setIsOpen(true),
+                        close: () => setIsOpen(false),
+                        opened: () => isOpen(),
+                        changeGap: setGap,
+                        selectByIndex,
+                        selectByVector
+                    }),
+                    baseComponent(props),
+                    navigationActions({
+                        anchor: props.anchor,
+                        ...props.onAction,
+                    }),
+                ]}
             >
                 {/* Content */}
                 <MenuCenter parentChildren={props.children} />
@@ -193,7 +188,7 @@ const RadialMenu: ParentComponent<RadialMenuProps> = (props) => {
                     {(token, index) => <MenuItem index={index} item={token} parentChildren={props.children}></MenuItem>}
                 </For>
             </div>
-        </RadialMenuContext.Provider>
+        </RadialMenuContext>
     )
 }
 

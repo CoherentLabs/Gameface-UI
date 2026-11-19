@@ -1,4 +1,4 @@
-import { children, createEffect, createMemo, onCleanup, onMount, ParentComponent, useContext } from "solid-js"
+import { children, createEffect, createMemo, onSettled, ParentComponent, untrack, useContext } from "solid-js"
 import { TutorialContext } from "./Tutorial";
 import { waitForFrames } from "@components/utils/waitForFrames";
 import { TooltipPosition } from "./TutorialTooltip";
@@ -18,24 +18,28 @@ const Step: ParentComponent<StepProps> = (props) => {
     const storedChildren = children(() => props.children)
     const isCurrent = createMemo(() => ctx.current() === props.order);
 
-    createEffect(() => {
-        if (!isCurrent()) return;
+    createEffect(
+        // `initialRender` is only tracked while this step is the current one (as in 1.x).
+        () => isCurrent() ? ctx.initialRender() : null,
+        (isInitial) => {
+            if (isInitial === null) return;
 
-        const isInitial = ctx.initialRender();
-        waitForFrames(() => {
-            if (isInitial) ctx.setInitialRender(false);
-            updateTargetElement()
-            updateTooltipContent()
-        }, !isInitial ? 0 : 3)
-    })
+            waitForFrames(() => {
+                if (isInitial) ctx.setInitialRender(false);
+                updateTargetElement()
+                updateTooltipContent()
+            }, !isInitial ? 0 : 3)
+        }
+    );
 
     const updateTargetElement = () => {
-        let children = storedChildren();
+        // Current value, read on purpose without tracking (runs inside the effect when no frames are awaited).
+        let children = untrack(storedChildren);
         if (Array.isArray(children)) {
             const htmlElement = children.find((child) => child instanceof HTMLElement)
             children = htmlElement?.parentElement
         }
-        
+
         if (children && children instanceof HTMLElement) {
             ctx.setTarget(children)
         } else console.warn(
@@ -54,10 +58,12 @@ const Step: ParentComponent<StepProps> = (props) => {
         })
     }
 
-    onMount(() => ctx.setCount(prev => prev + 1))
-    onCleanup(() => ctx.setCount(prev => prev - 1))
+    onSettled(() => {
+        ctx.setCount(prev => prev + 1);
+        return () => ctx.setCount(prev => prev - 1);
+    });
 
-    return storedChildren()
+    return <>{storedChildren()}</>
 }
 
 export default Step;

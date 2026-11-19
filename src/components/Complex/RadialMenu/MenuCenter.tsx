@@ -1,4 +1,4 @@
-import { ParentComponent, createMemo, useContext } from "solid-js";
+import { ParentComponent, useContext } from "solid-js";
 import { useToken } from "@components/utils/tokenComponents";
 import { TokenComponentProps } from "@components/types/ComponentProps";
 import { Content, RadialMenuContext } from "./RadialMenu";
@@ -13,15 +13,8 @@ export const MenuCenter: ParentComponent<TokenComponentProps> = (props) => {
         return null;
     }
 
-    const menuCenterClasses = createMemo(() => {
-        const classes = [styles['menu-content']];
-        classes.push(contentToken()?.class ?? "");
-        
-        return classes.join(' ');
-    });
-
     return (
-        <div class={menuCenterClasses()} style={contentToken()?.style}>
+        <div class={[styles['menu-content'], contentToken()?.class]} style={contentToken()?.style}>
             {/* Content JSX goes here */}
             {contentToken()?.children}
             {/* The indicator that points to the selected item */}
