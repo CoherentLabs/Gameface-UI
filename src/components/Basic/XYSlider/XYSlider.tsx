@@ -74,12 +74,25 @@ const XYSlider: ParentComponent<XYSliderProps> = (props) => {
     const [isDragging, setIsDragging] = createSignal(false);
     const [hasTransition, setHasTransition] = createSignal(true);
 
+    // Always-current plain copy of the value (Solid 2 stages signal writes). Every change goes through
+    // writeValue, which reports onChange at the write, once per change; equal values are skipped, so a
+    // controlled `value` that follows onChange doesn't report the same value a second time.
+    let current = untrack(clampedValue);
+    const writeValue = (value: XYSliderValue) => {
+        if (value.x === current.x && value.y === current.y) return;
+        current = value;
+        setPosition(calculatePercentPosition(value));
+        props.onChange?.(value);
+    };
+
+    // Follow `value` and the bounds (a new range re-clamps the value).
     createEffect(
         () => [props.value?.x, props.value?.y, minX(), maxX(), minY(), maxY()],
         () => {
             const value = clampedValue();
+            // The bounds changed but the value didn't: the handle still has to move.
             setPosition(calculatePercentPosition(value));
-            props.onChange?.(value);
+            writeValue(value);
         },
         { defer: true }
     );
@@ -95,9 +108,7 @@ const XYSlider: ParentComponent<XYSliderProps> = (props) => {
     };
 
     const handleDrag = (e: MouseEvent) => {
-        const newPosition = calculatePositionFromMouse(e);
-        setPosition(calculatePercentPosition(newPosition));
-        props.onChange?.(newPosition);
+        writeValue(calculatePositionFromMouse(e));
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -129,8 +140,7 @@ const XYSlider: ParentComponent<XYSliderProps> = (props) => {
     const changeValue = (newValue: XYSliderValue) => {
         const x = clamp(newValue.x, minX(), maxX());
         const y = clamp(newValue.y, minY(), maxY());
-        setPosition(calculatePercentPosition({ x, y }));
-        props.onChange?.({ x, y });
+        writeValue({ x, y });
     }
 
     onSettled(() => {

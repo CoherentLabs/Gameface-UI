@@ -72,7 +72,9 @@ const Pagination: ParentComponent<PaginationProps> = (props) => {
         changeIndex(isFirstIndex ? length() : current - 1)
     }
 
+    // onChange is reported at the write, once per change (the current page is skipped).
     const changeIndex = (newIndex: number) => {
+        if (newIndex === current) return;
         current = newIndex;
         setIndex(newIndex);
         props.onChange?.(newIndex);

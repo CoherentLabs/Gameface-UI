@@ -62,9 +62,20 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
     const [tooltipData, setTooltipData] = createSignal<ToolTipData>({});
     const [count, setCount] = createSignal(0);
 
+    // Always-current plain copy of the step (Solid 2 stages signal writes). onChange is reported here,
+    // at the write, once per step change (0 = not running). 1.x reported it from the highlight effect,
+    // after the target was measured (up to 3 frames later) and again whenever the target changed.
+    let current = 0;
+    const writeStep = (step: number) => {
+        if (step === current) return;
+        current = step;
+        setCurrentStep(step);
+        props.onChange?.(step);
+    };
+
     // Starts the tour from the specified step (defaults to step 1)
     const tour = (from?: number) => {
-        if (currentStep() !== 0) {
+        if (current !== 0) {
             return console.warn("Trying to start a new tour while another one is already in progress.");
         }
         changeStep(from || 1);
@@ -73,24 +84,21 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
 
     // Cancels the tour and resets to initial state
     const exit = () => {
-        setCurrentStep(0);
+        writeStep(0);
         setTargetElement(null);
         setPausedAt(null);
-        // 1.x reported step 0 as a side effect (the highlight effect re-ran before the target was cleared).
-        props.onChange?.(0);
         props.onEnd?.();
     }
 
     const pause = () => {
-        const current = currentStep();
-        if (current === 0) {
+        const step = current;
+        if (step === 0) {
             return console.warn("First start the tutorial in order to pause it.");
         }
 
-        setCurrentStep(0);
+        writeStep(0);
         setTargetElement(null);
-        setPausedAt(current);
-        props.onChange?.(0);
+        setPausedAt(step);
     }
 
     const resume = (next: boolean = false) => {
@@ -113,16 +121,16 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
     const constraintStep = (step: number) => clamp(step, 1, count());
 
     // Sets the current step after constraining it to valid range
-    const changeStep = (step: number) => setCurrentStep(constraintStep(step));
+    const changeStep = (step: number) => writeStep(constraintStep(step));
 
     // Advances to the next step in the tour
     const nextStep = () => {
-        setCurrentStep(prev => constraintStep(prev + 1));
+        writeStep(constraintStep(current + 1));
     }
 
     // Returns to the previous step in the tour
     const previousStep = () => {
-        setCurrentStep(prev => constraintStep(prev - 1));
+        writeStep(constraintStep(current - 1));
     }
 
     // Current progress as a percentage (0-100)
@@ -180,8 +188,6 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
                 width: `${width}px`,
                 height: `${height}px`
             });
-
-            props.onChange?.(untrack(currentStep))
         }, !elementHasLoaded ? 3 : 0)
     });
 

@@ -1,4 +1,4 @@
-import { Accessor, ParentComponent, ParentProps, createEffect, createMemo, useContext } from "solid-js";
+import { Accessor, ParentComponent, ParentProps, createMemo, useContext } from "solid-js";
 import type { JSX } from "@solidjs/web";
 import { useToken } from "@components/utils/tokenComponents";
 import { TokenComponentProps } from "@components/types/ComponentProps";
@@ -21,14 +21,6 @@ export const MenuItem: ParentComponent<MenuItemComponentProps> = (props) => {
     const rotation = createMemo(() => context.degreesPerSlice() * props.index())
     const isSelected = createMemo(() => context.selected() === props.index());
     const offset = createMemo(() => props.item.offset ?? '1rem');
-
-    // Subscribe to isSelected changes to trigger onChange when new item becomes selected
-    createEffect(() => isSelected(), (selected) => {
-        if (selected && context.onChange) {
-            const id = props.item.id || props.index()
-            context.onChange(id);
-        }
-    }, { defer: true });
 
     const wrapperStyles = createMemo(() => {
         const styles: JSX.CSSProperties = {};

@@ -1,5 +1,5 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, Setter, createSignal, ParentComponent, Show, createContext, createMemo, createEffect, untrack } from "solid-js";
+import { Accessor, Setter, createSignal, ParentComponent, Show, createContext, createMemo, untrack } from "solid-js";
 import styles from './Checkbox.module.scss';
 import { Control, CheckboxControl } from "./CheckboxControl";
 import { Indicator } from "./CheckboxIndicator";
@@ -34,25 +34,32 @@ const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
     const LabelToken = useToken(Label, () => props.children);
 
     // Initial value only, as in 1.x.
-    const [checked, setChecked] = createSignal(untrack(() => props.checked ?? false));
+    const initialChecked = untrack(() => props.checked ?? false);
+    const [checked, setCheckedSignal] = createSignal(initialChecked);
     const isBefore = createMemo(() => LabelToken()?.before);
+
+    // `current` is the always-up-to-date plain copy (Solid 2 stages signal writes).
+    // onChange is reported here, at the write: once per change (click, navigation
+    // `select` or the ref's setChecked), and before the caller's function returns.
+    // 1.x called it twice per click (directly and from an effect).
+    let current = initialChecked;
+    const writeChecked = (next: boolean) => {
+        if (next === current) return;
+        current = next;
+        setCheckedSignal(next);
+        props.onChange?.(next);
+    };
+    // The ref's setChecked: accepts a value or an updater, like a signal setter.
+    function setChecked(next: boolean | ((prev: boolean) => boolean)) {
+        writeChecked(typeof next === 'function' ? next(current) : next);
+        return current;
+    }
 
     const toggle = () => {
         if (props.disabled) return;
 
-        setChecked(prev => !prev);
+        writeChecked(!current);
     }
-
-    // onChange fires once per change (click, navigation `select` or the ref's
-    // setChecked). The 1.x toggle also called it directly, right after
-    // setChecked; in Solid 2 that read would return the old value.
-    createEffect(
-        () => checked(),
-        // Block body: whatever an effect's apply function returns is treated
-        // as its cleanup, so a user onChange returning a value would halt Solid.
-        (v) => { props.onChange?.(v); },
-        { defer: true }
-    );
 
     return (
         <CheckboxContext value={{ checked }}>
@@ -68,7 +75,7 @@ const Checkbox: ParentComponent<CheckBoxProps> = (props) => {
                 ref={[
                     exposeRef<Omit<CheckboxRef, 'element'>>(props, {
                         checked,
-                        setChecked,
+                        setChecked: setChecked as Setter<boolean>,
                         get value() { return props.value; },
                     }),
                     baseComponent(props),

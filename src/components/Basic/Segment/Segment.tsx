@@ -59,7 +59,8 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
             orderedOptions.push(value); 
         }
 
-        if (selected) selectOption(value);
+        // The initial selection: applied even when disabled, and not reported through onChange.
+        if (selected) applySelection(value, false);
     };
 
     const unregisterOption = (value: string) => {
@@ -69,15 +70,26 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
         if (idx !== -1) orderedOptions.splice(idx, 1)
     };
 
+    // Always-current plain copy (Solid 2 stages signal writes).
+    let current = '';
+
     const selectOption = (newOption: string) => {
         if (props.disabled) return;
 
+        applySelection(newOption, true);
+    }
+
+    // onChange is reported at the write, once per change (re-selecting the selected option is skipped).
+    // 1.x tied it to the first-render flag below, so with no preselected option the first selection wasn't reported.
+    const applySelection = (newOption: string, report: boolean) => {
         if (!options.has(newOption)) {
             if (DEV) console.warn(`Cannot select "${newOption}" as it is not a valid option in the segment.`);
             return;
         }
+        if (newOption === current) return;
 
-        const oldOption = selected();
+        const oldOption = current;
+        current = newOption;
         // Track "first render" locally: Solid 2 stages writes, so reading
         // firstRender() right after setFirstRender(false) would still return true.
         let isFirstRender = firstRender();
@@ -111,11 +123,11 @@ const Segment: ParentComponent<SegmentProps> = (props) => {
             });
         }, 50);
 
-        if (!isFirstRender) props.onChange?.(newOption);
+        if (report) props.onChange?.(newOption);
     }
 
     const changeSelected = (direction: 'prev' | 'next') => {
-        const curIdx = orderedOptions.indexOf(selected());
+        const curIdx = orderedOptions.indexOf(current);
         const targetIdx = direction === 'prev' ? curIdx - 1 : curIdx + 1;
 
         if (targetIdx >= 0 && targetIdx < orderedOptions.length) {

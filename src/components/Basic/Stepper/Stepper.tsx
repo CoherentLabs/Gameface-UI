@@ -75,6 +75,13 @@ const Stepper: ParentComponent<StepperProps> = (props) => {
         if (curIndex === index) select(index - 1);
     }
 
+    // A user/ref change: reported at the write, once per change (selecting the current option is skipped).
+    const change = (index: number) => {
+        if (index === curIndex) return;
+        select(index);
+        props.onChange?.(curValue);
+    }
+
     const changeSelected = (direction: 'next' | 'prev') => {
         if (props.disabled) return;
 
@@ -84,11 +91,10 @@ const Stepper: ParentComponent<StepperProps> = (props) => {
         }
 
         if (direction === 'next') {
-            select((curIndex + 1) % options.length);
+            change((curIndex + 1) % options.length);
         } else if (direction === 'prev') {
-            select((curIndex - 1 + options.length) % options.length);
+            change((curIndex - 1 + options.length) % options.length);
         }
-        props.onChange?.(curValue);
     }
 
     const setOption = (value: string) => {
@@ -96,8 +102,7 @@ const Stepper: ParentComponent<StepperProps> = (props) => {
 
         const index = options.indexOf(value);
         if (index !== -1) {
-            select(index);
-            props.onChange?.(curValue);
+            change(index);
             return;
         }
 

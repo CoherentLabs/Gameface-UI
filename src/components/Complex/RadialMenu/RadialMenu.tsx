@@ -26,7 +26,6 @@ interface RadialMenuContextType {
     degreesPerSlice: Accessor<number>,
     selected: Accessor<number>,
     rotation: Accessor<number>,
-    onChange?: (id: string | number) => void;
 }
 // Null default: Solid 2 throws when a context without a default is read outside its provider.
 export const RadialMenuContext = createContext<RadialMenuContextType | null>(null);
@@ -57,7 +56,17 @@ const RadialMenu: ParentComponent<RadialMenuProps> = (props) => {
 
     // `selected`, `opened` and `gap` are initial values (read once, as in 1.x); later changes go through the ref.
     const initial = untrack(() => ({ selected: props.selected ?? 0, opened: props.opened ?? false, gap: props.gap ?? 0 }));
-    const [selected, setSelected] = createSignal(initial.selected);
+    const [selected, setSelectedSignal] = createSignal(initial.selected);
+    // Always-current plain copy (Solid 2 stages signal writes). onChange is reported here, at the write,
+    // once per change of the selected item (the mouse/stick re-selects the same item on every move).
+    // 1.x reported it from an effect in each MenuItem.
+    let currentSelected = initial.selected;
+    const setSelected = (index: number) => {
+        if (index === currentSelected) return;
+        currentSelected = index;
+        setSelectedSignal(index);
+        props.onChange?.(ItemTokens()?.[index]?.id || index);
+    };
     const [rotation, setRotation] = createSignal(0);
     const [isOpen, setIsOpen] = createSignal(initial.opened);
     const [gap, setGap] = createSignal(initial.gap);
@@ -155,8 +164,6 @@ const RadialMenu: ParentComponent<RadialMenuProps> = (props) => {
         degreesPerSlice,
         selected,
         rotation,
-        // Reads the current prop each call (1.x captured it once at setup).
-        onChange: (id: string | number) => props.onChange?.(id),
     }
 
     return (

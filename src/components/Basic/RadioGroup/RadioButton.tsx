@@ -33,9 +33,10 @@ export const RadioButton: ParentComponent<{ button: RadioButtonProps }> = (props
     const LabelToken = useToken(ButtonLabel, () => props.button.children);
     const radio = useContext(RadioContext);
 
-    // Initial selection, read once (Radio's signal allows this write during setup).
+    // Initial selection, read once (Radio's signal allows this write during setup). Not reported
+    // through onChange, like the initial value of the other components (1.x reported it).
     untrack(() => {
-        if (props.button.selected) radio?.changeOption(props.button.value);
+        if (props.button.selected) radio?.selectInitial(props.button.value);
     });
 
     const isSelected = () => radio?.selected() === props.button.value;

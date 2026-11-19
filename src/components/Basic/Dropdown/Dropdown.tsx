@@ -57,7 +57,7 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
     const [selectedValues, setSelectedValues] = createSignal<string[]>([]);
     const [open, setOpen] = createSignal(false);
     const [isInverted, setIsInverted] = createSignal(false);
-    // Plain flag (not a signal): only read inside the onChange effect below.
+    // Plain flag: the initial selection (option `selected`, initial `value`) isn't reported, as in 1.x.
     let ready = false;
 
     const nav = useNavigation();
@@ -66,12 +66,23 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
 
     const options = new Map<string, {label: string | JSX.Element, element: HTMLElement}>();
 
-    // Block body: an apply function's return value is its cleanup.
-    createEffect(
-        () => props.multiple ? selectedValues() : selected(),
-        (next) => { if (ready) props.onChange?.(next); },
-        { defer: true }
-    );
+    // Always-up-to-date plain copies (Solid 2 stages signal writes); the signals drive rendering.
+    // onChange is reported here, at the write: once per change, skipping equal values, before the
+    // caller's function returns (1.x's effect ran synchronously after the write).
+    let current = '';
+    let currentValues: string[] = [];
+    const writeSelected = (value: string) => {
+        if (value === current) return;
+        current = value;
+        setSelected(value);
+        if (ready) props.onChange?.(value);
+    };
+    const writeSelectedValues = (values: string[]) => {
+        if (values.length === currentValues.length && values.every((v, i) => v === currentValues[i])) return;
+        currentValues = values;
+        setSelectedValues(values);
+        if (ready) props.onChange?.(values);
+    };
 
     const applyValue = (next: string | string[] | undefined) => {
         if (next === undefined) return;
@@ -82,16 +93,12 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
                 return;
             }
 
-            setSelectedValues((prev) => {
-                if (prev.length === next.length && prev.every((v, i) => v === next[i])) return prev;
-
-                return next.filter(v => options.has(v));
-            })
+            writeSelectedValues(next.filter(v => options.has(v)));
             return;
         }
 
         const value = next as string;
-        setSelected(options.has(value) ? value : '');
+        writeSelected(options.has(value) ? value : '');
     };
 
     createEffect(() => props.value, (value) => { applyValue(value); }, { defer: true });
@@ -111,35 +118,31 @@ const Dropdown: ParentComponent<DropdownProps> = (props) => {
         }
 
         if (props.multiple) {
-            setSelectedValues(prev =>
-                prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]
+            writeSelectedValues(
+                currentValues.includes(value) ? currentValues.filter(v => v !== value) : [...currentValues, value]
             );
             return;
         }
 
-        setSelected(value);
+        writeSelected(value);
     }
 
     const deselectOption = (value: string) => {
         if (props.multiple) {
-            setSelectedValues(prev => prev.filter(v => v !== value));
+            writeSelectedValues(currentValues.filter(v => v !== value));
             return;
         }
 
-        if (selected() === value) {
-            setSelected('');
-        }
+        if (current === value) writeSelected('');
     }
 
     const deselectAll = () => {
         if (props.multiple) {
-            if (selectedValues().length === 0) return;
-            setSelectedValues([]);
+            writeSelectedValues([]);
             return;
         }
 
-        if (selected() === '') return;
-        setSelected('');
+        writeSelected('');
     }
 
     const isSelected = (value: string) =>

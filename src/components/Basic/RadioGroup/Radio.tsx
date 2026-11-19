@@ -24,6 +24,8 @@ export interface RadioRef extends BaseComponentRef {
 interface RadioContextValue {
     selected: Accessor<string>,
     changeOption: changeOptionMethod,
+    /** A button's initial `selected`: applied even when disabled, and not reported through onChange. */
+    selectInitial: changeOptionMethod,
     radioOptions: string[],
 }
 
@@ -38,16 +40,25 @@ const Radio: ParentComponent<RadioProps> = (props) => {
     // so this signal accepts writes from that setup (ownedWrite).
     const [selected, setSelected] = createSignal('', { ownedWrite: true });
     const radioOptions: string[] = [];
+    // Always-current plain copy (Solid 2 stages signal writes).
+    let current = '';
 
+    const selectInitial = (option: string) => {
+        current = option;
+        setSelected(option);
+    }
+
+    // onChange is reported at the write, once per change (re-selecting the selected option is skipped).
     const changeOption = (newOption: string) => {
-        if (props.disabled) return;
+        if (props.disabled || newOption === current) return;
 
+        current = newOption;
         setSelected(newOption);
         props.onChange?.(newOption);
     }
 
     const changeSelected = (direction: 'prev' | 'next') => {
-        const idx = radioOptions.indexOf(selected());
+        const idx = radioOptions.indexOf(current);
         const targetIdx = direction === 'prev' ? idx - 1 : idx + 1;
 
         if (targetIdx >= 0 && targetIdx < radioOptions.length) {
@@ -61,7 +72,7 @@ const Radio: ParentComponent<RadioProps> = (props) => {
     }
 
     return (
-        <RadioContext value={{ selected, changeOption, radioOptions }}>
+        <RadioContext value={{ selected, changeOption, selectInitial, radioOptions }}>
             <div
                 class={[styles.radio, props.disabled && styles.disabled, props.disabled && props['class-disabled'], props.class]}
                 style={props.style}

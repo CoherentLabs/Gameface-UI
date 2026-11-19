@@ -34,26 +34,37 @@ const ToggleButton: ParentComponent<ToggleButtonProps> = (props) => {
     const LabelLeftToken = useToken(LabelLeft, () => props.children);
     const LabelRightToken = useToken(LabelRight, () => props.children);
 
-    const [checked, setChecked] = createSignal(untrack(() => props.checked ?? false));
+    const initialChecked = untrack(() => props.checked ?? false);
+    const [checked, setCheckedSignal] = createSignal(initialChecked);
+
+    // `current` is the always-up-to-date plain copy (Solid 2 stages signal writes).
+    // onChange is reported here, at the write: once per change (click, navigation
+    // `select`, the ref's setChecked or the `checked` prop), before the caller's
+    // function returns.
+    let current = initialChecked;
+    const writeChecked = (next: boolean) => {
+        if (next === current) return;
+        current = next;
+        setCheckedSignal(next);
+        props.onChange?.(next);
+    };
+    // The ref's setChecked: accepts a value or an updater, like a signal setter.
+    function setChecked(next: boolean | ((prev: boolean) => boolean)) {
+        writeChecked(typeof next === 'function' ? next(current) : next);
+        return current;
+    }
 
     // Controlled mode: follow the `checked` prop when it is set.
     createEffect(
         () => props.checked,
-        (value) => { if (value !== undefined) setChecked(value); }
+        (value) => { if (value !== undefined) writeChecked(value); }
     );
 
     const toggle = () => {
         if (props.disabled) return;
 
-        setChecked(prev => !prev);
+        writeChecked(!current);
     }
-
-    createEffect(
-        () => checked(),
-        // Block body: the apply function's return value is its cleanup.
-        (v) => { props.onChange?.(v); },
-        { defer: true }
-    );
 
     return (
         <ToggleButtonContext value={{ checked }}>
@@ -67,7 +78,7 @@ const ToggleButton: ParentComponent<ToggleButtonProps> = (props) => {
                 ]}
                 style={props.style}
                 ref={[
-                    exposeRef<Omit<ToggleButtonRef, 'element'>>(props, { checked, setChecked }),
+                    exposeRef<Omit<ToggleButtonRef, 'element'>>(props, { checked, setChecked: setChecked as Setter<boolean> }),
                     baseComponent(props),
                     navigationActions(mergeNavigationActions(props, {'select': toggle})),
                 ]}

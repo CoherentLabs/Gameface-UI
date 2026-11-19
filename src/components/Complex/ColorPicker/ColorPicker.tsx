@@ -39,10 +39,15 @@ const ColorPicker: ParentComponent<ColorPickerProps> = (props) => {
     const [color, setColor] = createSignal(initialValue);
     const [selectedFormat, setSelectedFormat] = createSignal("hex");
 
+    // Always-current plain copy (Solid 2 stages signal writes), so two updates in one tick both land.
+    let current = initialValue;
+    // onChange is reported at the write, once per change (the same color is skipped).
     const updateColor = (updates: Partial<ColorData>) => {
-        // Built from the latest (possibly not yet applied) value, so two updates in one tick both land.
-        let newColor!: ColorData;
-        setColor((prev) => (newColor = { ...prev, ...updates }));
+        const newColor = { ...current, ...updates };
+        if (newColor.h === current.h && newColor.s === current.s && newColor.v === current.v && newColor.a === current.a) return;
+
+        current = newColor;
+        setColor(newColor);
         props.onChange?.(newColor);
     }
 

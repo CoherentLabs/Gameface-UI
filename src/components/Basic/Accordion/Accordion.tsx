@@ -62,18 +62,22 @@ const Accordion: ParentComponent<AccordionProps> = (props) => {
     );
 
     // Initially expanded panels, read once as in 1.x.
-    const [expandedPanels, setExpandedPanels] = createSignal<string[]>(untrack(() => initPanels(panelData() ?? [], props.multiple)));
+    const initialPanels = untrack(() => initPanels(panelData() ?? [], props.multiple));
+    const [expandedPanels, setExpandedPanelsSignal] = createSignal<string[]>(initialPanels);
+    // Always-current plain copy (Solid 2 stages signal writes).
+    let current = initialPanels;
+    const setExpandedPanels = (next: string[]) => {
+        current = next;
+        setExpandedPanelsSignal(next);
+    };
 
+    // onChange reports the toggled panel at the write, once per toggle.
     const toggle = (id: string) => {
-        setExpandedPanels(prev => {
-            if (!props.multiple) {
-                return prev[0] === id ? [] : [id]
-            };
-
-            return prev.includes(id)
-                ? prev.filter(i => i !== id)
-                : [...prev, id];
-        })
+        if (!props.multiple) {
+            setExpandedPanels(current[0] === id ? [] : [id]);
+        } else {
+            setExpandedPanels(current.includes(id) ? current.filter(i => i !== id) : [...current, id]);
+        }
 
         props.onChange?.(id);
     }
@@ -113,6 +117,9 @@ const Accordion: ParentComponent<AccordionProps> = (props) => {
             return console.error(`There is no panel with title: ${title}`);
         }
 
+        // Already expanded: nothing to do (1.x toggled it, so expand() collapsed an open panel).
+        if (current.includes(title)) return;
+
         toggle(title);
     }
 
@@ -127,11 +134,10 @@ const Accordion: ParentComponent<AccordionProps> = (props) => {
             return console.error(`There is no panel with title: ${title}`);
         }
 
-        setExpandedPanels(prev => {
-            if (!props.multiple) return [];
+        // Not expanded: nothing to do (1.x reported it anyway, and in single mode collapsed whichever panel was open).
+        if (!current.includes(title)) return;
 
-            return prev.filter(id => id !== title);
-        })
+        setExpandedPanels(current.filter(id => id !== title));
 
         props.onChange?.(title);
     }
