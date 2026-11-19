@@ -192,7 +192,7 @@ const RadialMenu: ParentComponent<RadialMenuProps> = (props) => {
                 <MenuCenter parentChildren={props.children} />
                 {/* Items */}
                 <For each={ItemTokens()}>
-                    {(token, index) => <MenuItem index={index} item={token} parentChildren={props.children}></MenuItem>}
+                    {(token, index) => <MenuItem index={index} item={token} parentChildren={props.children} />}
                 </For>
             </div>
         </RadialMenuContext>

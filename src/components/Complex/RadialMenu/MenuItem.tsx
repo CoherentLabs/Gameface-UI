@@ -59,7 +59,7 @@ export const MenuItem: ParentComponent<MenuItemComponentProps> = (props) => {
                     isSelected() && styles['menu-item-selected'],
                     isSelected() && SelectorToken()?.["class-selected"],
                 ]}
-                style={selectorStyles()}></div>
+                style={selectorStyles()} />
             {/* Item content goes here */}
             <div class={styles['menu-item-content']} style={{transform: `rotate(${rotation()}deg)`, "padding-top": offset() }}>
                 {/* Rotated negatively to cancel out menu rotation */}

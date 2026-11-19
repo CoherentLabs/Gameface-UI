@@ -32,9 +32,9 @@ const CustomSlider = (props: CustomSliderProps) => {
                 value={value()}
                 anchor={`#${props.id}`}
                 class={style.slider}>
-                    <Slider.Handle class={style['slider-handle']}></Slider.Handle>
-                    <Slider.Fill class={style['slider-fill']}></Slider.Fill>
-                    <Slider.Track class={style['slider-track']}></Slider.Track>
+                    <Slider.Handle class={style['slider-handle']} />
+                    <Slider.Fill class={style['slider-fill']} />
+                    <Slider.Track class={style['slider-track']} />
             </Slider>
         </Flex>
     )

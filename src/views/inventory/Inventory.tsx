@@ -94,7 +94,7 @@ const Inventory = () => {
 
 							<Flex direction="column" align-items="center" gap="0.5rem">
 								<h3 class={styles['item-name']}>Iron Broadsword</h3>
-								<div class={styles.separator}></div>
+								<div class={styles.separator} />
 							</Flex>
 
 							<Flex direction="column" align-items="center" gap="0.5rem" >
@@ -120,7 +120,7 @@ const Inventory = () => {
 							
 							</Flex>
 
-							<div class={styles.separator} style={{"margin-top": '2rem'}}></div>
+							<div class={styles.separator} style={{"margin-top": '2rem'}} />
 
 							<Flex gap="1rem">
 								<Button class={styles['item-button']}>Equip</Button>

@@ -107,16 +107,16 @@ const MenuColorPicker: ParentComponent<ColorPickerProps> = (props) => {
         >
             <XYSlider ref={xySliderRef} value={{ x: initialValue.s, y: 100 - initialValue.v }} class={styles.XYSlider} onChange={handleXYChange}>
                 <XYSlider.Background style={XYSliderBackground()} />
-                <XYSlider.Handle class={styles['XYSlider-handle']} style={{ "background-color": selectedColorNonTransparent() }}></XYSlider.Handle>
+                <XYSlider.Handle class={styles['XYSlider-handle']} style={{ "background-color": selectedColorNonTransparent() }} />
             </XYSlider>
             <Slider ref={hueSliderRef} min={0} max={360} value={initialValue.h} onChange={handleHueChange} class={styles['hue-slider']}>
                 <Slider.Track class={styles['hue-slider-track']} />
-                <Slider.Fill class={styles['slider-fill']}></Slider.Fill>
+                <Slider.Fill class={styles['slider-fill']} />
                 <Slider.Handle class={styles['slider-handle']} style={{ background: selectedColorHue() }} />
             </Slider>
             <Slider ref={alphaSliderRef} value={initialValue.a * 100} onChange={handleAlphaChange} class={styles['alpha-slider']}>
                 <Slider.Track class={styles['alpha-slider-track']} style={{ 'background-image': `linear-gradient(to right,transparent 0% , ${selectedColorNonTransparent()} 100% )` }} />
-                <Slider.Fill class={styles['slider-fill']}></Slider.Fill>
+                <Slider.Fill class={styles['slider-fill']} />
                 <Slider.Handle class={styles['slider-handle']} style={{ background: selectedColor() }} />
             </Slider>
         </div >

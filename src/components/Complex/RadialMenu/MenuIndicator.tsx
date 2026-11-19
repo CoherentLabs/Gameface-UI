@@ -33,7 +33,7 @@ const MenuIndicator: ParentComponent<TokenComponentProps> = (props) => {
             {/* Wrapper around the center that rotates with the mouse */}
             <div class={styles['menu-indicator-wrapper']} style={{transform: `rotate(${context.rotation()}deg)`}}>
                 {/* The indicator */}
-                <div class={[styles['menu-indicator'], IndicatorToken()?.class]} style={IndicatorStyles()}></div>
+                <div class={[styles['menu-indicator'], IndicatorToken()?.class]} style={IndicatorStyles()} />
                 {/* The icon inside the indicator */}
                 <Show when={IconToken()}>
                     {IconToken()?.children ? (

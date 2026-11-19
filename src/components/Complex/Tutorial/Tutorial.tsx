@@ -230,10 +230,9 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
                             anchor: props.anchor,
                             ...props.onAction,
                         }),
-                    ]}>
-                </div>
+                    ]} />
                 <Show when={targetElement()}>
-                    <div class={styles.overlay}></div>
+                    <div class={styles.overlay} />
                 </Show>
                 <div class={styles['tooltip-reference']} style={tutorialStyles()}>
                     <TutorialTooltip

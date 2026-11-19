@@ -94,7 +94,7 @@ const Hud = () => {
 
             <Row style={{ height: '33%' }}>
                 <Column4>
-                    <Block class={styles.miniMap}></Block>
+                    <Block class={styles.miniMap} />
                 </Column4>
                 <Column4>
                     <TopBar />
@@ -104,19 +104,19 @@ const Hud = () => {
                 </Column4>
             </Row>
             <Row style={{ height: '33%' }}>
-                <Column4></Column4>
+                <Column4 />
                 <Column4>
                     <Flex style={{ width: '100%', height: '100%' }} align-items="center" justify-content="center">
                         <Image.icons.hud.crosshair style={{ width: '7vh', height: '7vh' }} />
                     </Flex>
                 </Column4>
-                <Column4></Column4>
+                <Column4 />
             </Row>
             <Row style={{ height: '33%' }}>
                 <Column4>
                     <StatusBar />
                 </Column4>
-                <Column4></Column4>
+                <Column4 />
                 <Column4>
                     <Weapons />
                 </Column4>

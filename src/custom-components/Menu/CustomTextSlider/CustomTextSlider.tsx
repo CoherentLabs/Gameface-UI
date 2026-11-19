@@ -21,10 +21,10 @@ const CustomTextSlider = (props: CustomSliderProps) => {
             class={style.slider}
             values={props.values} 
             value={props.value}>
-                <TextSlider.Handle class={style['slider-handle']}></TextSlider.Handle>
-                <TextSlider.Fill class={style['slider-fill']}></TextSlider.Fill>
-                <TextSlider.Track class={style['slider-track']}></TextSlider.Track>
-                <TextSlider.Pol class={style['slider-pol']}></TextSlider.Pol>
+                <TextSlider.Handle class={style['slider-handle']} />
+                <TextSlider.Fill class={style['slider-fill']} />
+                <TextSlider.Track class={style['slider-track']} />
+                <TextSlider.Pol class={style['slider-pol']} />
         </TextSlider>
     )
 }

@@ -34,7 +34,7 @@ const SidePanel: ParentComponent<SidePanelProps> = (props) => {
         <Flex class={`${style['side-panel']}`} direction="column" >
             <h3>{content()![props.option].title}</h3>
             <div class={style['side-panel-content']}>{content()![props.option].content}</div>
-            <div class="extra-content"></div>
+            <div class="extra-content" />
         </Flex>
     )
 }

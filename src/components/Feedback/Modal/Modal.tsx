@@ -77,9 +77,9 @@ const Modal: ParentComponent<ModalProps> = (props) => {
                                 onMouseUp={stealMouseEvents}
                                 onClick={close}
                                 class={[styles['modal-overlay'], OverlayToken()?.class]}
-                                style={OverlayToken()?.style}></div>
+                                style={OverlayToken()?.style} />
                         </Show>
-                        <ModalWindow parentChildren={props.children}></ModalWindow>
+                        <ModalWindow parentChildren={props.children} />
                     </Show>
                 </div>
             </Portal>

@@ -8,7 +8,7 @@ const badges = Array.from({ length: 5 }, (_, i) => i);
 
 const TopBar = () => {
     return <Flex style={{ width: '100%', height: '100%' }} align-items="center" direction="column">
-        <Block class={styles.topBar}></Block>
+        <Block class={styles.topBar} />
         <Flex justify-content="space-between" style={{ margin: '3vh 0' }}>
             <For each={badges}>
                 {() => {

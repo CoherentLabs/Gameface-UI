@@ -22,7 +22,7 @@ const StatusBar = () => {
                                     'background-color': fill,
                                     'margin-left': '1vh',
                                 }}
-                            ></Block>
+                             />
                         }}
                     </For>
                 </Flex>
@@ -34,7 +34,7 @@ const StatusBar = () => {
                         'margin-left': '1vh',
                         'margin-top': '1vh',
                     }}
-                ></Block>
+                 />
             </Block>
         </Flex>
     </Absolute>

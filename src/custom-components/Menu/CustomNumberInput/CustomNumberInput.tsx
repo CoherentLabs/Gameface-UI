@@ -12,8 +12,8 @@ interface CustomInputProps {
 const CustomNumberInput = (props: CustomInputProps) => {
     return (
         <NumberInput anchor={`#${props.id}`} onChange={emitChange} class={style.input} min={props.min} max={props.max} value={props.value} >
-            <NumberInput.IncreaseControl class={style['input-button']}></NumberInput.IncreaseControl>
-            <NumberInput.DecreaseControl class={style['input-button']}></NumberInput.DecreaseControl>
+            <NumberInput.IncreaseControl class={style['input-button']} />
+            <NumberInput.DecreaseControl class={style['input-button']} />
             <NumberInput.Input class={style['input-element']} />
         </NumberInput>
     )

@@ -120,7 +120,7 @@ const ColorPicker: ParentComponent<ColorPickerProps> = (props) => {
              */}
             <XYSlider ref={xySliderRef} value={{ x: initialValue.s, y: 100 - initialValue.v }} class={styles.XYSlider} onChange={handleXYChange}>
                 <XYSlider.Background style={XYSliderBackground()} />
-                <XYSlider.Handle class={styles['XYSlider-handle']} style={{ "background-color": selectedColorNonTransparent() }}></XYSlider.Handle>
+                <XYSlider.Handle class={styles['XYSlider-handle']} style={{ "background-color": selectedColorNonTransparent() }} />
             </XYSlider>
             {/**
              * Here the slider component is used for selecting hue and alpha values.
@@ -129,7 +129,7 @@ const ColorPicker: ParentComponent<ColorPickerProps> = (props) => {
              */}
             <Slider ref={hueSliderRef} min={0} max={360} value={initialValue.h} onChange={handleHueChange} class={styles['hue-slider']}>
                 <Slider.Track class={styles['hue-slider-track']} />
-                <Slider.Fill class={styles['slider-fill']}></Slider.Fill>
+                <Slider.Fill class={styles['slider-fill']} />
                 <Slider.Handle class={styles['slider-handle']} style={{ background: selectedColorHue() }} />
             </Slider>
             {/**
@@ -139,7 +139,7 @@ const ColorPicker: ParentComponent<ColorPickerProps> = (props) => {
              */}
             <Slider ref={alphaSliderRef} value={initialValue.a * 100} onChange={handleAlphaChange} class={styles['alpha-slider']}>
                 <Slider.Track class={styles['alpha-slider-track']} style={{ 'background-image': `linear-gradient(to right,transparent 0% , ${selectedColorNonTransparent()} 100% )` }} />
-                <Slider.Fill class={styles['slider-fill']}></Slider.Fill>
+                <Slider.Fill class={styles['slider-fill']} />
                 <Slider.Handle class={styles['slider-handle']} style={{ background: selectedColor() }} />
             </Slider>
             {/**
@@ -148,13 +148,13 @@ const ColorPicker: ParentComponent<ColorPickerProps> = (props) => {
              * For more information about how you can customize it you can check the Segment documentation - https://gameface-ui.coherent-labs.com/components/basic/segment/.
              */}
             <Segment class={styles.segment} onChange={(value) => setSelectedFormat(value)}>
-                <Segment.Indicator class={styles['segment-indicator']}></Segment.Indicator>
+                <Segment.Indicator class={styles['segment-indicator']} />
                 <Segment.Button class={styles['segment-button']} selected value="hex">HEX</Segment.Button>
                 <Segment.Button class={styles['segment-button']} value="rgba">RGBA</Segment.Button>
             </Segment>
             <div class={styles['color-preview-wrapper']}>
                 <div class={styles['color-preview']}>
-                    <div class={styles['color-preview-box']} style={{ 'background-color': selectedColor() }}></div>
+                    <div class={styles['color-preview-box']} style={{ 'background-color': selectedColor() }} />
                 </div>
                 <TextInput class={styles['color-preview-text']} readonly value={colorTextValue()} />
             </div>
