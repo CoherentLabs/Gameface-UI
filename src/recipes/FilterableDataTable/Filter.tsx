@@ -1,6 +1,5 @@
 import Flex from "@components/Layout/Flex/Flex";
-import { Component, createSignal, For } from "solid-js";
-import { createStore } from "solid-js/store";
+import { Component, createSignal, createStore, For } from "solid-js";
 import { PlayerPosition, POSITIONS } from "./types";
 import styles from './FilterableDataTable.module.scss';
 import filterIcon from './assets/filter.svg';
@@ -32,8 +31,9 @@ const Filter: Component<FilterProps> = (props) => {
     const toggle = () => setOpen(prev => !prev);
 
     const updateFilter = <K extends keyof PlayerFilters>(key: K, value: PlayerFilters[K]) => {
-        setDraft(key as any, value as any);
-        setHasChanged(!isDefaultFilters(draft));
+        const nextFilters = { ...draft, [key]: value };
+        setDraft((d) => { d[key] = value; });
+        setHasChanged(!isDefaultFilters(nextFilters));
     };
 
     const setNumericFilter = (name: 'condition' | 'appearances' | 'goals' | 'assists', v: number) =>
@@ -69,7 +69,7 @@ const Filter: Component<FilterProps> = (props) => {
     const resetFilters = () => {
         if (!hasApplied() && !hasChanged()) return;
 
-        setDraft({ ...DEFAULT_FILTERS });
+        setDraft(() => ({ ...DEFAULT_FILTERS }));
         props.setAppliedFilters({ ...DEFAULT_FILTERS });
         setHasChanged(false);
         setHasApplied(false);

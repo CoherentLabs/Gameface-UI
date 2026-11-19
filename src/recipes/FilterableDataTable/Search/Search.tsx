@@ -9,9 +9,9 @@ interface SearchProps {
     onChange: (value: string) => void
 }
 
-const Search: Component<SearchProps> = ({ inputValue, onChange }) => {
+const Search: Component<SearchProps> = (props) => {
     return (
-        <TextInput class={styles.search} onChange={onChange} value={inputValue} delay>
+        <TextInput class={styles.search} onChange={props.onChange} value={props.inputValue} delay>
             <TextInput.Input class={styles['search-input']} />
             <TextInput.Before>
                 <Image src={searchIcon} class={styles['search-icon']} options={{ size: 'contain', position: 'center' }} />

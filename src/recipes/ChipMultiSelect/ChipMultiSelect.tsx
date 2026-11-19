@@ -1,4 +1,4 @@
-import { Component, createEffect, createSignal, For, on, Show } from "solid-js";
+import { Component, For, Show } from "solid-js";
 import { countries } from "./utils/countriesList";
 import Dropdown, { DropdownRef } from "@components/Basic/Dropdown/Dropdown";
 import Flex from "@components/Layout/Flex/Flex";

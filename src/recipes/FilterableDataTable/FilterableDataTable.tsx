@@ -1,5 +1,5 @@
 import './fonts.css';
-import { Component, createEffect, createMemo, createSignal, Index, on } from "solid-js";
+import { Component, createEffect, createMemo, createSignal, For } from "solid-js";
 import { PaginationRef } from "@components/Basic/Pagination/Pagination";
 import Flex from '@components/Layout/Flex/Flex';
 import TableHeader from './TableHeader';
@@ -21,9 +21,9 @@ const FilterableDataTable: Component = () => {
     let paginationRef: PaginationRef | undefined;
 
     // Keeps page state in sync with the filters.
-    createEffect(on([appliedFilters, inputValue], () => {
+    createEffect(() => [appliedFilters(), inputValue()], () => {
         paginationRef?.changeIndex(1);
-    }, { defer: true }));
+    }, { defer: true });
 
     const filteredPlayers = createMemo(() => {
         const filters = appliedFilters();
@@ -62,9 +62,9 @@ const FilterableDataTable: Component = () => {
 
             <TableHeader />
             <div class={styles.body}>
-                <Index each={visibleItems()}>{(player, index) => (
+                <For each={visibleItems()} keyed={false}>{(player, index) => (
                     <TableRow data={player} index={index} />
-                )}</Index>
+                )}</For>
             </div>
 
             <div class={styles.footer}>

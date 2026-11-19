@@ -1,10 +1,9 @@
 import Column from "@components/Layout/Column/Column";
 import Row from "@components/Layout/Row/Row";
-import { createMemo, createSignal, For, onMount } from "solid-js";
+import { createMemo, createSignal, For, onSettled } from "solid-js";
 import { player, POSITIONS, sortType } from "./types";
 import styles from './FilterableDataTable.module.scss';
 import { setPlayersState } from "./store/playersStore";
-import { produce } from "solid-js/store";
 import HeaderColumnButton from "./HeaderColumnButton";
 import Relative from "@components/Layout/Relative/Relative";
 import Absolute from "@components/Layout/Absolute/Absolute";
@@ -20,29 +19,30 @@ const TableHeader = () => {
     const [currPosition, setCurrentPosition] = createSignal<player['position'] | undefined>(undefined);
 
     const handleSort = (key: sortType) => {
-        if (currentSort() === key) setAsc(prev => !prev);
-        sortPlayers(key);
+        const ascending = currentSort() === key ? !asc() : asc();
+        setAsc(ascending);
+        sortPlayers(key, ascending);
         setCurrentSort(key);
         setCurrentPosition(undefined);
     }
-    
-    const sortPlayers = (key: sortType) => {
-        setPlayersState(produce((players) => {
+
+    const sortPlayers = (key: sortType, ascending: boolean) => {
+        setPlayersState((players) => {
             players.sort((a, b) => {
                 const aValue = a[key] ?? 0;
                 const bValue = b[key] ?? 0;
-    
+
                 if (key !== 'name' && key !== 'nationality') {
-                    return asc() ? 
+                    return ascending ?
                         (aValue as number) - (bValue as number) :
                         (bValue as number) - (aValue as number);
                 } else {
-                    return asc() ?
+                    return ascending ?
                         String(aValue).localeCompare(String(bValue)) :
                         String(bValue).localeCompare(String(aValue))
                 }
             });
-        }))
+        })
     }
 
     const cyclePosition = () => {
@@ -52,9 +52,9 @@ const TableHeader = () => {
         }
 
         setCurrentPosition(positions[0]);
-        setPlayersState(produce((players) => {
+        setPlayersState((players) => {
             players.sort((a, b) => positions.indexOf(a.position) - positions.indexOf(b.position));
-        }))
+        })
         setCurrentSort('position')
     }
 
@@ -89,7 +89,9 @@ const TableHeader = () => {
         }
     }
 
-    onMount(() => sortPlayers(DEFAULT_SORT_KEY))
+    onSettled(() => {
+        sortPlayers(DEFAULT_SORT_KEY, asc());
+    })
 
     return (
         <Row class={styles.header}>

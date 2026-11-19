@@ -1,5 +1,5 @@
 import DropdownBase, { DropdownRef } from "@components/Basic/Dropdown/Dropdown";
-import { Component, createEffect, createSignal, For, on, Show } from "solid-js";
+import { Component, For, Show } from "solid-js";
 import { countries } from "../store/playersStore";
 import Flex from "@components/Layout/Flex/Flex";
 import styles from "./Dropdown.module.scss";

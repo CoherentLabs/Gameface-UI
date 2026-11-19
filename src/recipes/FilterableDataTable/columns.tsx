@@ -1,4 +1,5 @@
-import { Accessor, JSX } from "solid-js";
+import { Accessor } from "solid-js";
+import type { JSX } from "@solidjs/web";
 import { player, sortType } from "./types";
 import styles from './FilterableDataTable.module.scss';
 import Flex from "@components/Layout/Flex/Flex";

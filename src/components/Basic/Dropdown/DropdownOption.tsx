@@ -23,8 +23,11 @@ export const DropdownOption: ParentComponent<{ option: ParentProps<OptionTokenPr
         if (!dropdown?.multiple()) dropdown?.toggle(false);
     }
 
+    // Resolved here, not in onSettled: markup children create reactive nodes, which onSettled forbids.
+    const label = untrack(() => props.option.children);
+
     onSettled(() => {
-        untrack(() => dropdown?.registerOption(props.option.value, props.option.children, element!, props.option.selected));
+        untrack(() => dropdown?.registerOption(props.option.value, label, element!, props.option.selected));
     })
 
     onCleanup(() => {

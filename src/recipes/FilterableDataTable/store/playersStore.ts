@@ -1,5 +1,4 @@
-import { createStore } from "solid-js/store";
-import { createMemo, createRoot } from "solid-js";
+import { createMemo, createRoot, createStore } from "solid-js";
 import { player } from "../types";
 import players from "../utils/mockPlayers";
 
