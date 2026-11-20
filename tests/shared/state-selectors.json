@@ -1,0 +1,9 @@
+{
+    "state": "state-test",
+    "assertionElement": "state-assertion",
+    "scenarioBtn": "state-scenario-btn",
+    "stateOne": "state-one",
+    "stateTwo": "state-two",
+    "stateThree": "state-three",
+    "stateFallback": "state-fallback"
+}

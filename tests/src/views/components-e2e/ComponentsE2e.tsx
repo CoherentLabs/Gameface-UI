@@ -39,6 +39,7 @@ import RadialMenuTest from '../../components/RadialMenu/RadialMenuTest';
 import TutorialTest from '../../components/Tutorial/TutorialTest';
 import TrackersTest from '../../components/Trackers/TrackersTest';
 import ChartTest from '../../components/Chart';
+import StateTest from '../../components/State/StateTest';
 
 const Main = () => {
     const components = [
@@ -60,6 +61,7 @@ const Main = () => {
         "text-input",
         "password-input",
         "number-input",
+        "state",
 
         //Feedback components
         'modal',
@@ -153,6 +155,7 @@ const Main = () => {
                 <Tab location='tooltip'><TooltipTest /></Tab>
                 <Tab location='toaster'><ToasterTest /></Tab>
                 <Tab location='keybinds'><KeybindsTest /></Tab>
+                <Tab location='state'><StateTest /></Tab>
                 {/* ProgressTest renders its own progress-bar/progress-circle <Tab>s
                     internally - it shares one signal set across both locations, so
                     it can't be hoisted 1:1 like the others. */}

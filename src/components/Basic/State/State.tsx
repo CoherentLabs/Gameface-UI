@@ -46,6 +46,9 @@ const State: ParentComponent<StateProps> = (props) => {
     let element: HTMLDivElement | undefined;
     const statesMap: StatesMap = {};
     const [currentState, setCurrentState] = createSignal('');
+    // Always-current plain copy: Solid 2 stages signal writes, so currentState() still returns the old state
+    // until they are applied. Two changes in one tick must each see the previous one.
+    let current = '';
     // The <Match> children are read once at creation, as in 1.x.
     const resolved = untrack(() => children(() => props.children).toArray());
 
@@ -59,7 +62,7 @@ const State: ParentComponent<StateProps> = (props) => {
     }
 
     const changeState: ChangeStateMethodType = (value) => {
-        const currentStateValue = currentState();
+        const currentStateValue = current;
         const currentStateElement = statesMap[currentStateValue] as Node || fallbackElement;
         const nextStateValue = typeof value === 'function' ? value(currentStateValue) : value;
         if (currentStateValue === nextStateValue) return;
@@ -73,7 +76,9 @@ const State: ParentComponent<StateProps> = (props) => {
         if (currentStateElement && element.children.length) element.removeChild(currentStateElement);
         element.appendChild(nextStateElement);
 
-        setCurrentState(value);
+        current = nextStateValue;
+        // The resolved name, not `value`: a function would be re-run by the setter against the staged state.
+        setCurrentState(nextStateValue);
 
         if (props.onStateChanged) {
             props.onStateChanged(nextStateValue, currentStateValue, nextStateElement);
