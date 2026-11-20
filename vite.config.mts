@@ -8,7 +8,7 @@ import solidGameface from './migration-plugins/vite-gameface/src/index.ts';
 import eslint from 'vite-plugin-eslint';
 import gamefaceViews from './scripts/vite/views-plugin.mts';
 import gamefaceImages from './scripts/vite/images-plugin.mts';
-import styleTomPlugin from './scripts/babel/style-tom-plugin.mts';
+import styleTomPlugin, { styleTomModuleCheck } from './scripts/babel/style-tom-plugin.mts';
 import { styleTomReport } from './scripts/babel/style-tom-report.mts';
 
 export default defineConfig(({ mode }) => {
@@ -41,6 +41,8 @@ export default defineConfig(({ mode }) => {
           omitLastClosingTag: false
         }
       }),
+      // Checks Solid's compiled style calls go to the style runtime above (the Style TOM plugin's output needs it).
+      styleTomModuleCheck(),
       solidSvg({
         defaultAsComponent: false,
         svgo: { enabled: false }

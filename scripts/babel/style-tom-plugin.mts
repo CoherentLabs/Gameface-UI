@@ -2,9 +2,11 @@
 // Solid style authoring into the `{ value, unit }` / `TransformStyle` shapes
 // that runtime already understands, so the CSS Typed OM fast path applies
 // without the author having to write `unit(...)` by hand. Registered via
-// `solidPlugin({ babel: { plugins: [styleTomPlugin] } })` in vite.config.mts -
-// Babel always runs plugins before presets, so this sees the raw JSX before
-// babel-preset-solid rewrites it into template/effect calls.
+// `solidPlugin({ babel: { plugins: [styleTomPlugin] } })` in vite.config.mts.
+// Solid 2's @solidjs/vite-plugin runs these Babel plugins on the JSX source
+// first and only then compiles it natively, so this sees the raw JSX. (With
+// `compiler: "babel"` it's one Babel pass, where plugins run before presets.)
+// Pair it with styleTomModuleCheck() (below) in `plugins`.
 //
 // Scope, deliberately: only rewrites what it can prove is safe.
 //  - Per-property numeric values: a template literal or `+`-concatenation
@@ -31,15 +33,22 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { PluginObj, PluginPass } from '@babel/core';
+import type { Plugin } from 'vite';
 import type { Binding, NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import { beginFile, endFile, recordStyle, setDisabledReason } from './style-tom-report.mts';
 
 // --- Runtime check ---------------------------------------------------------
 // The rewritten values only work with the style runtime that ships inside
-// BaseComponent, and with BaseComponent using it. Before rewriting anything,
-// check that the matching runtime is there; if not, rewrite nothing (the
-// build is then exactly what it would be without this plugin) and warn once.
+// BaseComponent (gameface-dom.ts), and only when Solid's compiled `style`
+// calls go to it (vite.config.mts: solid.moduleName, checked by
+// styleTomModuleCheck() below). Before rewriting anything, check that the
+// matching runtime is there; if not, rewrite nothing (the build is then
+// exactly what it would be without this plugin) and warn once.
+// (Until 1.3.x this also required BaseComponent.tsx to import the runtime,
+// because BaseComponent applied component styles itself. Component styles are
+// native `style` on the root element now, so they go through the same compiled
+// `style` calls; that check had switched the plugin off for every build.)
 
 // Must match STYLE_TOM_FORMAT in gameface-dom.ts.
 const STYLE_TOM_FORMAT = 2;
@@ -47,7 +56,6 @@ const STYLE_TOM_FORMAT = 2;
 // this spot relative to this file.
 const RUNTIME_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../src/components/BaseComponent');
 const RUNTIME_FILE = path.join(RUNTIME_DIR, 'gameface-dom.ts');
-const BASE_COMPONENT_FILE = path.join(RUNTIME_DIR, 'BaseComponent.tsx');
 const UPDATE_HINT = 'Run `gameface-cli update` to install the updated BaseComponent.';
 
 function findRuntimeProblem(): string | null {
@@ -56,10 +64,6 @@ function findRuntimeProblem(): string | null {
   const format = /STYLE_TOM_FORMAT\s*=\s*(\d+)/.exec(fs.readFileSync(RUNTIME_FILE, 'utf8'))?.[1];
   if (Number(format) !== STYLE_TOM_FORMAT) {
     return `the style runtime is a different version (format ${format ?? 'unknown'}, this plugin needs ${STYLE_TOM_FORMAT}). ${UPDATE_HINT}`;
-  }
-
-  if (!fs.existsSync(BASE_COMPONENT_FILE) || !/from\s+['"]\.\/gameface-dom['"]/.test(fs.readFileSync(BASE_COMPONENT_FILE, 'utf8'))) {
-    return `BaseComponent doesn't use the style runtime, so styles passed to components would break. ${UPDATE_HINT}`;
   }
   return null;
 }
@@ -82,29 +86,48 @@ function checkRuntime(): boolean {
 }
 
 // Solid's compiled code must import its style helpers from that same runtime
-// (vite.config.mts: solid.moduleName). Babel hides preset options from
-// plugins, so this is checked on Solid's output once the file is compiled.
+// (vite.config.mts: solid.moduleName). With Solid 2's native compiler, Babel
+// plugins run *before* the JSX is compiled, so a Babel hook can't see those
+// imports. styleTomModuleCheck() is a Vite plugin that runs after Solid's
+// transform (enforce: 'post'), before Vite rewrites import paths, and checks them.
 const STYLE_HELPERS = new Set(['style', 'setStyleProperty']);
+const IMPORT_RE = /import\s*\{([^}]*)\}\s*from\s*["']([^"']+)["']/g;
 
-function checkModuleName(file: { ast: t.File; opts: { filename?: string | null } }): void {
-  for (const node of file.ast.program.body) {
-    if (!t.isImportDeclaration(node)) continue;
-    // Only imports Solid's compiler generated (named `_$style` etc.), not ones
-    // written by hand - BaseComponent itself imports from './gameface-dom'.
-    const importsStyle = node.specifiers.some((s) =>
-      t.isImportSpecifier(s) && s.local.name.startsWith('_$') &&
-      t.isIdentifier(s.imported) && STYLE_HELPERS.has(s.imported.name));
+/** The source of a compiler-generated style-helper import (`style as _$style`) that isn't the runtime, or null. */
+export function findWrongStyleImport(code: string, filename: string): string | null {
+  for (const match of code.matchAll(IMPORT_RE)) {
+    const [, specifiers, source] = match;
+    // Only imports Solid's compiler generated (`style as _$style`), not ones written by hand.
+    const importsStyle = specifiers.split(',').some((spec) => {
+      const [imported, local] = spec.trim().split(/\s+as\s+/);
+      return STYLE_HELPERS.has(imported) && local?.startsWith('_$');
+    });
     if (!importsStyle) continue;
-    const source = node.source.value.startsWith('.') && file.opts.filename
-      ? path.resolve(path.dirname(file.opts.filename), node.source.value)
-      : node.source.value;
-    if (samePath(source, RUNTIME_FILE)) continue;
-    throw new Error(
-      `[style-tom] ${file.opts.filename}: Solid imports its style helpers from "${node.source.value}", ` +
-      `so the styles this plugin rewrote won't work. Set the style runtime as Solid's moduleName in vite.config.mts:\n` +
-      `  solidPlugin({ solid: { moduleName: path.resolve(__dirname, './src/components/BaseComponent/gameface-dom.ts') } })`
-    );
+    const resolved = source.startsWith('.') ? path.resolve(path.dirname(filename), source) : source;
+    if (!samePath(resolved, RUNTIME_FILE)) return source;
   }
+  return null;
+}
+
+/** Vite plugin: fails the build when Solid's style helpers don't come from the style runtime. Add it to `plugins` next to solidPlugin(). */
+export function styleTomModuleCheck(): Plugin {
+  return {
+    name: 'gameface-style-tom-module-check',
+    enforce: 'post',
+    transform(code, id) {
+      const filename = id.replace(/\?.*$/, '');
+      if (!/\.[jt]sx$/.test(filename) || !checkRuntime()) return null;
+      const source = findWrongStyleImport(code, filename);
+      if (source) {
+        this.error(
+          `[style-tom] ${filename}: Solid imports its style helpers from "${source}", ` +
+          `so the styles this plugin rewrote won't work. Set the style runtime as Solid's moduleName in vite.config.mts:\n` +
+          `  solidPlugin({ solid: { moduleName: path.resolve(import.meta.dirname, './src/components/BaseComponent/gameface-dom.ts') } })`
+        );
+      }
+      return null;
+    },
+  };
 }
 
 // Vite may hand over the module with or without its .ts extension.
@@ -549,7 +572,7 @@ export default function styleTomPlugin(): PluginObj<StyleTomPass> {
       if (file.opts.filename) beginFile(file.opts.filename);
     },
     post(file) {
-      if (this.enabled) checkModuleName(file as unknown as Parameters<typeof checkModuleName>[0]);
+      // The moduleName check runs after Solid's compile, in styleTomModuleCheck().
       if (file.opts.filename) endFile(file.opts.filename);
     },
     visitor: {
