@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require('../../shared/chart-selectors.json');
-const { navigateToPage } = require('../../shared/utils');
+const { navigateToPage, expectOnChangeCalls } = require('../../shared/utils');
 
 const count = async (selector) => {
     try {
@@ -40,6 +40,11 @@ describe('Chart.Bar', function () {
 
     this.afterEach(async () => {
         await gf.trigger('reset');
+    });
+
+    // First test: nothing has run yet, so the log only has what happened while mounting.
+    it('Should not call onSeriesToggle on mount', async () => {
+        await expectOnChangeCalls('chart-series-toggle', [], 'No toggle reported for the initial series');
     });
 
     it('Should render one bar per series per category', async () => {
@@ -136,5 +141,22 @@ describe('Chart.Bar', function () {
 
         assert.equal(await count(`.${selectors.barTooltip}`), 1, 'Tooltip should appear');
         assert.equal(await gf.text(`.${selectors.barTooltip}`), 'strength13');
+    });
+});
+
+describe('Chart.Bar onSeriesToggle calls', function () {
+    this.afterEach(async () => {
+        await gf.trigger('reset');
+    });
+
+    it('Should call onSeriesToggle once per legend click, with the new visibility', async () => {
+        const entry = async (i) => (await gf.getAll(`.${selectors.barLegend} > div`))[i];
+
+        await (await entry(1)).click();
+        await expectOnChangeCalls('chart-series-toggle', [[1, false]], 'Hiding series 1');
+
+        // Legend visibility is component state and survives `reset`, so show the series again here.
+        await (await entry(1)).click();
+        await expectOnChangeCalls('chart-series-toggle', [[1, false], [1, true]], 'Showing series 1 again');
     });
 });

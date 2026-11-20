@@ -9,6 +9,7 @@ const initialRange = { start: 20, end: 60 };
 const TwoHandleSliderTest = () => {
     let sliderRef!: TwoHandleSliderRef;
     const log = createOnChangeLog('two-handle-slider');
+    const endLog = createOnChangeLog('two-handle-slider-end');
     const [controlled, setControlled] = createSignal(initialRange);
     const [start, setStart] = createSignal<number>(initialRange.start);
     const [end, setEnd] = createSignal<number>(initialRange.end);
@@ -39,6 +40,7 @@ const TwoHandleSliderTest = () => {
         sliderRef?.changeValue(initialRange);
         flush();
         log.clear();
+        endLog.clear();
     };
 
     const isReactive = createMemo(() => test() === 'blue');
@@ -68,7 +70,7 @@ const TwoHandleSliderTest = () => {
             <TwoHandleSlider
                 ref={sliderRef}
                 onChange={(value) => { log.record(value); setStart(value.start); setEnd(value.end); }}
-                onChangeEnd={(value) => { setChangeEndStart(value.start); setChangeEndEnd(value.end); }}
+                onChangeEnd={(value) => { endLog.record(value); setChangeEndStart(value.start); setChangeEndEnd(value.end); }}
                 min={0}
                 max={100}
                 step={10}

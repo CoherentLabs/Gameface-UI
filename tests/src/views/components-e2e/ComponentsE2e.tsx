@@ -40,6 +40,7 @@ import TutorialTest from '../../components/Tutorial/TutorialTest';
 import TrackersTest from '../../components/Trackers/TrackersTest';
 import ChartTest from '../../components/Chart';
 import StateTest from '../../components/State/StateTest';
+import TabsTest from '../../components/Tabs/TabsTest';
 
 const Main = () => {
     const components = [
@@ -91,6 +92,7 @@ const Main = () => {
         "transform",
         "scroll",
         "list",
+        "tabs",
 
         // Media
         'media',
@@ -151,6 +153,7 @@ const Main = () => {
                 <Tab location='pagination'><PaginationTest /></Tab>
                 <Tab location='modal'><ModalTest /></Tab>
                 <Tab location='list'><ListTest /></Tab>
+                <Tab location='tabs'><TabsTest /></Tab>
                 <Tab location='carousel'><CarouselTest /></Tab>
                 <Tab location='tooltip'><TooltipTest /></Tab>
                 <Tab location='toaster'><ToasterTest /></Tab>

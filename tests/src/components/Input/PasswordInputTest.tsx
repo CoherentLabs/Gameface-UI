@@ -2,10 +2,12 @@ import { createMemo, createSignal, For, onCleanup, onSettled, flush } from "soli
 import selectors from "../../../shared/input-selectors.json";
 import PasswordInput, { PasswordInputRef } from "@components/Basic/Input/PasswordInput/PasswordInput";
 import { Placeholder } from "@components/Basic/Input/shared/tokens";
+import createOnChangeLog from "../onChangeLog";
 import './input.css';
 
 const PasswordInputTest = () => {
     let inputRef!: PasswordInputRef;
+    const log = createOnChangeLog('password-input');
     const [value, setValue] = createSignal("");
     const [disabled, setDisabled] = createSignal(false);
     const [readonly, setReadonly] = createSignal(false);
@@ -15,7 +17,7 @@ const PasswordInputTest = () => {
     const [externalValue, setExternalValue] = createSignal('');
 
     const scenarios = [
-        { label: "Change input value with ref", action: () => inputRef?.changeValue("100") },
+        { label: "Change input value with ref", action: () => log.sync(() => inputRef?.changeValue("100")) },
         { label: "Disable input", action: () => setDisabled(true) },
         { label: "Set readonly", action: () => setReadonly(true) },
         { label: "Change styles", action: () => setTest(true) },
@@ -38,6 +40,8 @@ const PasswordInputTest = () => {
         flush();
         inputRef?.clear();
         inputRef?.hide();
+        flush();
+        log.clear();
     };
 
     const isReactive = createMemo(() => test() === true);
@@ -61,7 +65,7 @@ const PasswordInputTest = () => {
 
             <div style={{'display': 'flex'}}>
                 <PasswordInput
-                    onChange={(value) => setValue(value)}
+                    onChange={(value) => { log.record(value); setValue(value); }}
                     disabled={disabled()}
                     class-disabled={selectors.inputDisabled}
                     ref={inputRef}

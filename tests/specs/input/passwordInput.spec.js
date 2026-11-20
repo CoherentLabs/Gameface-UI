@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require('../../shared/input-selectors.json');
-const { navigateToPage, elementChildren } = require('../../shared/utils');
+const { navigateToPage, elementChildren, onChangeSyncCalls, expectOnChangeCalls } = require('../../shared/utils');
 
 describe('PasswordInput', function () {
     this.beforeAll(async () => {
@@ -9,6 +9,11 @@ describe('PasswordInput', function () {
 
     this.afterEach(async () => {
         await gf.trigger('reset');
+    })
+
+    // First test: nothing has run yet, so the log only has what happened while mounting.
+    it('Should not call onChange on mount', async () => {
+        await expectOnChangeCalls('password-input', [], 'No onChange for the initial value');
     })
 
     it('Should render itself and it\'s children correctly', async () => {
@@ -113,4 +118,40 @@ describe('PasswordInput', function () {
             });
         }
     });
+});
+
+describe('PasswordInput onChange calls', function () {
+    this.afterEach(async () => {
+        await gf.trigger('reset');
+    })
+
+    it('Should call onChange once per typed character', async () => {
+        await (await gf.get(`.${selectors.input}`)).type('ab');
+        await expectOnChangeCalls('password-input', ['a', 'ab'], 'One call per keystroke');
+    })
+
+    it('Should call onChange synchronously from the ref', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
+        assert.deepEqual(await onChangeSyncCalls('password-input'), ['100'], 'onChange fired before changeValue returned');
+        await expectOnChangeCalls('password-input', ['100'], 'No late duplicate');
+    })
+
+    it('Should call onChange once after the delay when debounced', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-7`);
+        await (await gf.get(`.${selectors.input}`)).type('test');
+        await new Promise((resolve) => setTimeout(resolve, 400));
+        await expectOnChangeCalls('password-input', ['test'], 'One debounced call with the final value');
+    })
+
+    it('Should not call onChange when the password is shown or hidden', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-4`);
+        await gf.click(`.${selectors.scenarioBtn}.scenario-5`);
+        await expectOnChangeCalls('password-input', [], 'Visibility is not a value change');
+    })
+
+    // Behavior as on master: a change through the `value` prop is not reported (TASKS 13 may change this).
+    it('Should not call onChange when the value prop changes', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-8`);
+        await expectOnChangeCalls('password-input', [], 'value prop "hello"');
+    })
 });

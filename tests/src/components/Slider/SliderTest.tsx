@@ -8,6 +8,7 @@ const initialValue = 10;
 const SliderTest = () => {
     let sliderRef!: SliderRef;
     const log = createOnChangeLog('slider');
+    const endLog = createOnChangeLog('slider-end');
     const [value, setValue] = createSignal(initialValue);
     const [controlled, setControlled] = createSignal(initialValue);
     const [endValue, setEndValue] = createSignal<number | string>('none');
@@ -29,6 +30,7 @@ const SliderTest = () => {
         sliderRef?.changeValue(initialValue);
         flush();
         log.clear();
+        endLog.clear();
     };
 
     const isReactive = createMemo(() => test() === 'blue');
@@ -56,7 +58,7 @@ const SliderTest = () => {
             <Slider
                 ref={sliderRef}
                 onChange={(value) => { log.record(value); setValue(value); }}
-                onChangeEnd={(value) => setEndValue(value)}
+                onChangeEnd={(value) => { endLog.record(value); setEndValue(value); }}
                 min={0}
                 max={100}
                 step={10}

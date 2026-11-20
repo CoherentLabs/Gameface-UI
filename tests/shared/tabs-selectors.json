@@ -1,0 +1,7 @@
+{
+    "tabs": "tabs-test",
+    "scenarioBtn": "tabs-scenario-btn",
+    "tabLink": "tabs-test-link",
+    "activeLink": "tabs-test-link-active",
+    "content": "tabs-test-content"
+}

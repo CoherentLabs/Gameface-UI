@@ -2,7 +2,7 @@ const assert = require('assert');
 const events = require('../shared/radialMenu/radial-menu-events.json');
 const selectors = require('../shared/radialMenu/radial-menu-selectors.json');
 const items = require('../shared/radialMenu/radial-menu-item-ids.json');
-const { navigateToPage, clickEventButton, elementChildren } = require('../shared/utils');
+const { navigateToPage, clickEventButton, elementChildren, onChangeSyncCalls, expectOnChangeCalls } = require('../shared/utils');
 
 describe('Radial Menu', function () {
     this.beforeAll(async () => {
@@ -11,6 +11,11 @@ describe('Radial Menu', function () {
 
     this.afterEach(async () => {
         await gf.trigger('reset');
+    })
+
+    // First test: nothing has run yet, so the log only has what happened while mounting.
+    it('Should not call onChange on mount', async () => {
+        await expectOnChangeCalls('radial-menu', [], 'The initial selection is not reported');
     })
 
     it('Should render itself and it\'s children correctly', async () => {
@@ -188,4 +193,67 @@ describe('Radial Menu', function () {
             });
         }
     });
+});
+
+describe('RadialMenu onChange calls', function () {
+    this.afterEach(async () => {
+        await gf.trigger('reset');
+    })
+
+    it('Should call onChange synchronously from the ref (by index)', async () => {
+        await clickEventButton(events["select-item"]);
+        assert.deepEqual(await onChangeSyncCalls('radial-menu'), [items[1]], 'onChange fired before selectByIndex returned');
+        await expectOnChangeCalls('radial-menu', [items[1]], 'No late duplicate');
+    })
+
+    it('Should call onChange synchronously from the ref (by vector)', async () => {
+        await clickEventButton(events["select-by-vector"]);
+        assert.deepEqual(await onChangeSyncCalls('radial-menu'), [items[1]], 'onChange fired before selectByVector returned');
+        await expectOnChangeCalls('radial-menu', [items[1]], 'No late duplicate');
+    })
+
+    it('Should not call onChange when selecting the selected item', async () => {
+        await gf.trigger('radialMenuSelectSame');
+        await gf.retryIfFails(async () => {
+            assert.deepEqual(await onChangeSyncCalls('radial-menu'), [], 'selectByIndex with the current index');
+        })
+        await expectOnChangeCalls('radial-menu', [], 'No call at all');
+    })
+
+    it('Should call onChange once when the same item is selected twice', async () => {
+        await gf.trigger('radialMenuSelectTwice');
+        await gf.retryIfFails(async () => {
+            assert.deepEqual(await onChangeSyncCalls('radial-menu'), [items[2]], 'selectByIndex(2) twice');
+        })
+        await expectOnChangeCalls('radial-menu', [items[2]], 'One call');
+    })
+
+    it('Should not call onChange for an index out of range', async () => {
+        await gf.trigger('radialMenuSelectOutOfRange');
+        await gf.retryIfFails(async () => {
+            assert.deepEqual(await onChangeSyncCalls('radial-menu'), [], 'The action ran and reported nothing');
+        })
+        await expectOnChangeCalls('radial-menu', [], 'selectByIndex(99) is ignored');
+    })
+
+    it('Should call onChange once while the mouse moves over the same item', async () => {
+        // reset's selectByIndex ignores the mouse for 100 ms
+        await new Promise((resolve) => setTimeout(resolve, 150));
+        await gf.mouseMove(1000, 100);
+        await gf.mouseMove(1005, 100);
+        await gf.mouseMove(1000, 105);
+        await expectOnChangeCalls('radial-menu', [items[1]], 'Moves inside one item report it once');
+    })
+
+    it('Should not call onChange when the menu is closed', async () => {
+        await clickEventButton(events["close-menu"]);
+        await clickEventButton(events["select-item"]);
+        await clickEventButton(events["select-by-vector"]);
+        await expectOnChangeCalls('radial-menu', [], 'A closed menu ignores selection');
+    })
+
+    it('Should not call onChange when the items change', async () => {
+        await clickEventButton(events["change-items"]);
+        await expectOnChangeCalls('radial-menu', [], 'onItemChanged is called instead');
+    })
 });

@@ -152,3 +152,24 @@ describe('Slider onChange calls', function () {
         await expectOnChangeCalls('slider', [80], 'value prop 80');
     })
 });
+
+describe('Slider onChangeEnd calls', function () {
+    this.afterEach(async () => {
+        await gf.trigger('reset');
+    })
+
+    it('Should call onChangeEnd once per drag, with the final value', async () => {
+        await (await gf.get(`.${selectors.sliderHandle}`)).dragBy(200, 0);
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        const changes = await onChangeCalls('slider');
+        assert.ok(changes.length > 0, 'The drag changed the value');
+        await expectOnChangeCalls('slider-end', [changes[changes.length - 1]], 'One onChangeEnd, on release, with the last onChange value');
+    })
+
+    it('Should not call onChangeEnd for a ref change', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
+        // the gamepad commit is debounced by 250 ms, so wait past it
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        await expectOnChangeCalls('slider-end', [], 'onChangeEnd is only for user drags and gamepad steps');
+    })
+});

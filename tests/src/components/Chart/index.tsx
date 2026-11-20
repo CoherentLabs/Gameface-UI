@@ -4,6 +4,7 @@ import selectors from '../../../shared/chart-selectors.json';
 import styles from './Chart.module.scss';
 import Chart from '@components/Feedback/Chart/Chart';
 import { ChartAnimation, ChartSeries } from '@components/Feedback/Chart/types';
+import createOnChangeLog from '../onChangeLog';
 
 const INITIAL_DATA: ChartSeries[] = [
     {
@@ -177,7 +178,10 @@ const ChartTest = () => {
         },
     ];
 
+    const seriesToggleLog = createOnChangeLog('chart-series-toggle');
+
     const reset = () => {
+        seriesToggleLog.clear();
         setData(INITIAL_DATA);
         setAnimation(undefined);
         setAnimationState('idle');
@@ -283,6 +287,7 @@ const ChartTest = () => {
                     data={multiSeries()}
                     animation={animation()}
                     interactive
+                    onSeriesToggle={(index, visible) => seriesToggleLog.record(index, visible)}
                 >
                     <Chart.Bar.Fill class={selectors.barMark} />
                     <Chart.YAxis class={selectors.barValueLabel} />

@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onSettled } from "solid-js";
+import { createMemo, createSignal, flush, For, onSettled } from "solid-js";
 import Image from "@components/Media/Image/Image";
 import Weapon1 from "@assets/wheel/weapon1.png";
 import Weapon2 from "@assets/wheel/weapon2.png";
@@ -13,6 +13,7 @@ import items from '../../../shared/radialMenu/radial-menu-item-ids.json'
 import './radial-menu-styles.css'
 import Flex from "@components/Layout/Flex/Flex";
 import RadialMenu, { RadialMenuRef } from "@components/Complex/RadialMenu/RadialMenu";
+import createOnChangeLog from "../onChangeLog";
 
 const menuItems = [
     { id: items[0], img: Weapon1 },
@@ -25,6 +26,7 @@ const menuItems = [
 
 const RadialMenuTest = () => {
     let radialMenuRef!: RadialMenuRef;
+    const log = createOnChangeLog('radial-menu');
     const [test, setTest] = createSignal('red');
     const [selected, setSelected] = createSignal(menuItems[0].id);
     const [items, setItems] = createSignal(menuItems);
@@ -35,8 +37,8 @@ const RadialMenuTest = () => {
         { label: events["open-menu"], action: () => { radialMenuRef.open() } },
         { label: events["close-menu"], action: () => { radialMenuRef.close() } },
         { label: events["change-gap"], action: () => { radialMenuRef.changeGap(5) } },
-        { label: events["select-item"], action: () => { radialMenuRef.selectByIndex(1) } },
-        { label: events["select-by-vector"], action: () => { radialMenuRef.selectByVector(1, -1) } },
+        { label: events["select-item"], action: () => { log.sync(() => radialMenuRef.selectByIndex(1)) } },
+        { label: events["select-by-vector"], action: () => { log.sync(() => radialMenuRef.selectByVector(1, -1)) } },
         { label: events["change-items"], action: () => { setItems(menuItems.slice(0, menuItems.length - 2)) } },
         { label: events["change-item-offset"], action: () => { setItemOffset("2vmax") } },
         { label: events["set-custom-icon"], action: () => { setCustomIcon(true) } },
@@ -46,21 +48,36 @@ const RadialMenuTest = () => {
     const reset = () => {
         setTest('red');
         radialMenuRef?.open();
+        // Solid 2 stages writes: apply the open state before selectByIndex reads it (it ignores a closed menu).
+        flush();
         setSelected(menuItems[0].id);
         setItems(menuItems);
         setItemOffset('1vmax');
         setCustomIcon(false);
         radialMenuRef?.selectByIndex(0);
         radialMenuRef?.changeGap(0);
+        flush();
+        log.clear();
     };
+
+    // onChange scenarios (events, not buttons: more buttons would move the menu, and the mouse tests use fixed coordinates).
+    const selectSame = () => log.sync(() => radialMenuRef.selectByIndex(0));
+    const selectOutOfRange = () => log.sync(() => radialMenuRef.selectByIndex(99));
+    const selectTwice = () => log.sync(() => { radialMenuRef.selectByIndex(2); radialMenuRef.selectByIndex(2); });
 
     const isReactive = createMemo(() => test() === 'blue');
     const reactiveClass = createMemo(() => isReactive() ? 'reactive' : '');
     const reactiveStyle = createMemo(() => isReactive() ? { 'background-color': 'blue' } : {});
 
     onSettled(() => {
-        document.addEventListener('reset', reset);
-        return () => document.removeEventListener('reset', reset);
+        const handlers: Record<string, () => void> = {
+            reset,
+            radialMenuSelectSame: selectSame,
+            radialMenuSelectOutOfRange: selectOutOfRange,
+            radialMenuSelectTwice: selectTwice,
+        };
+        for (const [name, fn] of Object.entries(handlers)) document.addEventListener(name, fn);
+        return () => { for (const [name, fn] of Object.entries(handlers)) document.removeEventListener(name, fn); };
     });
 
     return (
@@ -81,7 +98,7 @@ const RadialMenuTest = () => {
                 ref={radialMenuRef!} 
                 opened
                 gap={0}
-                onChange={(id) => {setSelected(id as string)}}
+                onChange={(id) => { log.record(id); setSelected(id as string); }}
                 onItemChanged={() => {setSelected("item-changed")}}
                 style={reactiveStyle()}
                 class={`${selectors.radialMenu} ${reactiveClass()}`}>

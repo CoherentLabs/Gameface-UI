@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require('../shared/color-picker-selectors.json');
-const { navigateToPage, elementChildren } = require('../shared/utils');
+const { navigateToPage, elementChildren, onChangeCalls, onChangeSyncCalls, expectOnChangeCalls } = require('../shared/utils');
 /** @typedef {import('gameface-e2e/dist/commands/dom-element').DOMElement} DOMElement*/
 
 const colorDragPositions = {
@@ -30,6 +30,11 @@ describe('Color Picker', function () {
 
     this.afterEach(async () => {
         await gf.trigger('reset');
+    })
+
+    // First test: nothing has run yet, so the log only has what happened while mounting.
+    it('Should not call onChange on mount', async () => {
+        await expectOnChangeCalls('color-picker', [], 'The initial color is not reported');
     })
 
     it('Should render itself and its children correctly', async () => {
@@ -112,4 +117,68 @@ describe('Color Picker', function () {
             assert.ok(classes.includes(selectors.reactive), 'class "reactive" applied');
         });
     });
+});
+
+// A drag reports every new value once: the same value twice in a row is a duplicate call.
+function assertNoRepeatedValues(calls, message) {
+    for (let i = 1; i < calls.length; i++) {
+        assert.notDeepEqual(calls[i], calls[i - 1], `${message}: call ${i} repeats the previous value ${JSON.stringify(calls[i])}`);
+    }
+}
+
+// The handle to drag for each of the color picker's sliders, and how far to drag it.
+const dragTargets = {
+    'xy slider': {
+        handle: async (pickerEls) => (await elementChildren(await pickerEls.first())).last(),
+        by: colorDragPositions['#FFB8B8FF'],
+    },
+    'hue slider': {
+        handle: async (pickerEls) => (await elementChildren((await elementChildren(await pickerEls.nth(1))).first())).first(),
+        by: colorDragPositions['#37FF00FF'],
+    },
+    'alpha slider': {
+        handle: async (pickerEls) => (await elementChildren((await elementChildren(await pickerEls.nth(2))).first())).first(),
+        by: colorDragPositions['#FF000080'],
+    },
+};
+
+describe('ColorPicker onChange calls', function () {
+    this.afterEach(async () => {
+        await gf.trigger('reset');
+    })
+
+    for (const [name, target] of Object.entries(dragTargets)) {
+        it(`Should report every new color once while dragging the ${name}`, async () => {
+            const pickerEls = await elementChildren(await gf.get(`.${selectors.colorPicker}`));
+            await (await target.handle(pickerEls)).dragBy(target.by.x, target.by.y);
+            await new Promise((resolve) => setTimeout(resolve, 100));
+
+            const calls = await onChangeCalls('color-picker');
+            assert.ok(calls.length > 0, 'The drag reported at least one color');
+            assertNoRepeatedValues(calls, 'Drag');
+            const assertionEl = await gf.get(`.${selectors.assertionElement}`);
+            assert.equal(calls[calls.length - 1], await assertionEl.text(), 'The last call has the final color');
+        })
+    }
+
+    it('Should call onChange once, synchronously, from the ref', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-0`);
+        assert.deepEqual(await onChangeSyncCalls('color-picker'), ['rgba(128, 117, 64, 1)'], 'onChange fired before changeColor returned');
+        // changeColor also moves the three sliders; their own onChange must not report the color again
+        await expectOnChangeCalls('color-picker', ['rgba(128, 117, 64, 1)'], 'No late or duplicate call');
+    })
+
+    it('Should not call onChange when setting the same color', async () => {
+        await gf.trigger('colorPickerSameColor');
+        await gf.retryIfFails(async () => {
+            assert.deepEqual(await onChangeSyncCalls('color-picker'), [], 'changeColor with the current color');
+        })
+        await expectOnChangeCalls('color-picker', [], 'No call at all');
+    })
+
+    it('Should not call onChange when the text format changes', async () => {
+        const pickerEls = await elementChildren(await gf.get(`.${selectors.colorPicker}`));
+        await ((await elementChildren(await pickerEls.nth(3)))[1]).click();
+        await expectOnChangeCalls('color-picker', [], 'hex → rgba only changes the preview text');
+    })
 });
