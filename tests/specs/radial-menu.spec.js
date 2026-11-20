@@ -2,7 +2,7 @@ const assert = require('assert');
 const events = require('../shared/radialMenu/radial-menu-events.json');
 const selectors = require('../shared/radialMenu/radial-menu-selectors.json');
 const items = require('../shared/radialMenu/radial-menu-item-ids.json');
-const { navigateToPage, clickEventButton } = require('../shared/utils');
+const { navigateToPage, clickEventButton, elementChildren } = require('../shared/utils');
 
 describe('Radial Menu', function () {
     this.beforeAll(async () => {
@@ -78,7 +78,7 @@ describe('Radial Menu', function () {
 
     it('Should correctly rotate the indicator', async () => {
         const menuContent = await gf.get(`.${selectors.menuContent}`);
-        const children = await menuContent.children();
+        const children = await elementChildren(menuContent);
         const indicatorWrapper = children[children.length - 1]; // The element that is rotated
 
         await clickEventButton(events["change-items"]); // Change items to 4 to have a clear 90 degree rotation
@@ -98,7 +98,7 @@ describe('Radial Menu', function () {
 
     it('Should change item\'s offset', async () => {
         const menuItem = await gf.get(`.${selectors.menuItem}`)
-        const children = await menuItem.children();
+        const children = await elementChildren(menuItem);
         await clickEventButton(events["change-item-offset"]);
         
         const itemContentWrapper = children[children.length - 1]; // offset is applied to this element

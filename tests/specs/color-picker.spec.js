@@ -1,6 +1,6 @@
 const assert = require('assert');
 const selectors = require('../shared/color-picker-selectors.json');
-const { navigateToPage } = require('../shared/utils');
+const { navigateToPage, elementChildren } = require('../shared/utils');
 /** @typedef {import('gameface-e2e/dist/commands/dom-element').DOMElement} DOMElement*/
 
 const colorDragPositions = {
@@ -33,64 +33,64 @@ describe('Color Picker', function () {
     })
 
     it('Should render itself and its children correctly', async () => {
-        const colorPickerElements = await (await gf.get(`.${selectors.colorPicker}`)).children();
+        const colorPickerElements = await elementChildren(await gf.get(`.${selectors.colorPicker}`));
         assert.equal(colorPickerElements.length, 5, 'Color Picker should have 5 children: xySlider, hueSlider, alphaSlider, segment and color preview');
     })
 
     it('Should change color with dragging the xy slider', async () => {
-        const colorPickerElements = await (await gf.get(`.${selectors.colorPicker}`)).children();
+        const colorPickerElements = await elementChildren(await gf.get(`.${selectors.colorPicker}`));
 
         const assertionEl = await colorPickerElements.last().find('input');
-        const xySliderHandle = (await (await colorPickerElements.first()).children()).last();
+        const xySliderHandle = (await elementChildren(await colorPickerElements.first())).last();
 
         await testColorPickerDrag('#FFB8B8FF', xySliderHandle, assertionEl, true);
     })
 
     it('Should change color with dragging the hue slider', async () => {
-        const colorPickerElements = await (await gf.get(`.${selectors.colorPicker}`)).children();
+        const colorPickerElements = await elementChildren(await gf.get(`.${selectors.colorPicker}`));
 
         const assertionEl = await colorPickerElements.last().find('input');
         const hueSliderEl = await colorPickerElements.nth(1);
-        const hueSliderTrackEl = (await hueSliderEl.children()).first();
-        const hueSliderHandle = (await hueSliderTrackEl.children()).first();
+        const hueSliderTrackEl = (await elementChildren(hueSliderEl)).first();
+        const hueSliderHandle = (await elementChildren(hueSliderTrackEl)).first();
 
         await testColorPickerDrag('#37FF00FF', hueSliderHandle, assertionEl);
     })
 
     it('Should change color with dragging the alpha slider', async () => {
-        const colorPickerElements = await (await gf.get(`.${selectors.colorPicker}`)).children();
+        const colorPickerElements = await elementChildren(await gf.get(`.${selectors.colorPicker}`));
 
         const assertionEl = await colorPickerElements.last().find('input');
         const alphaSliderEl = await colorPickerElements.nth(2);
-        const alphaSliderTrackEl = (await alphaSliderEl.children()).first();
-        const alphaSliderHandleEl = (await alphaSliderTrackEl.children()).first();
+        const alphaSliderTrackEl = (await elementChildren(alphaSliderEl)).first();
+        const alphaSliderHandleEl = (await elementChildren(alphaSliderTrackEl)).first();
 
         await testColorPickerDrag('#FF000080', alphaSliderHandleEl, assertionEl);
     })
 
     it('Should change alpha and check the color preview element', async () => {
-        const colorPickerElements = await (await gf.get(`.${selectors.colorPicker}`)).children();
+        const colorPickerElements = await elementChildren(await gf.get(`.${selectors.colorPicker}`));
 
         const assertionEl = await colorPickerElements.last().find('input');
         const alphaSliderEl = await colorPickerElements.nth(2);
-        const alphaSliderTrackEl = (await alphaSliderEl.children()).first();
-        const alphaSliderHandleEl = (await alphaSliderTrackEl.children()).first();
+        const alphaSliderTrackEl = (await elementChildren(alphaSliderEl)).first();
+        const alphaSliderHandleEl = (await elementChildren(alphaSliderTrackEl)).first();
 
         await testColorPickerDrag('#FF000080', alphaSliderHandleEl, assertionEl);
 
         const colorPreviewWrapperEl = await colorPickerElements.last();
-        const colorPreviewEl = (await colorPreviewWrapperEl.children()).first();
-        const colorPreviewBoxEl = (await colorPreviewEl.children()).first();
+        const colorPreviewEl = (await elementChildren(colorPreviewWrapperEl)).first();
+        const colorPreviewBoxEl = (await elementChildren(colorPreviewEl)).first();
         const colorPreviewStyles = await colorPreviewBoxEl.styles();
         assert.equal(colorPreviewStyles['background-color'], 'rgba(255, 0, 0, 0.5)', 'Color preview element should have rgba(255, 0, 0, 0.5) as background color');
     })
 
     it('Should change color preview value to rgba instead of hex', async () => {
-        const colorPickerElements = await (await gf.get(`.${selectors.colorPicker}`)).children();
+        const colorPickerElements = await elementChildren(await gf.get(`.${selectors.colorPicker}`));
 
         const assertionEl = await colorPickerElements.last().find('input');
-        const segment = colorPickerElements.nth(3);
-        await ((await segment.children())[1]).click();
+        const segment = await colorPickerElements.nth(3);
+        await ((await elementChildren(segment))[1]).click();
 
         assert.equal(await assertionEl.getValue(), 'rgba(255, 0, 0, 1)', 'Slider\'s value should change to \'rgba(255, 0, 0, 1)\'');
     })
