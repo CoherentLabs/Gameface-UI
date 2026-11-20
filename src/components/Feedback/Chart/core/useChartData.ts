@@ -118,6 +118,7 @@ export const useChartData = (
     const isPointVisible = (seriesIndex: number, pointIndex: number, data?: NormalisedData) =>
         isSeriesVisible(seriesIndex, data) && !hidden().has(keyOf(seriesIndex, pointIndex, data)!);
 
+    // eslint-disable-next-line solid/reactivity -- a helper; its callers (memos and JSX) are the tracked scopes
     const visibleIn = (data: NormalisedData) => data.seriesKeys.reduce<number[]>((acc, key, index) => {
         if (!hidden().has(key)) acc.push(index);
         return acc;

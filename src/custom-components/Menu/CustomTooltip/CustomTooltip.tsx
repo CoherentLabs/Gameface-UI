@@ -71,15 +71,17 @@ const CustomTooltip: TooltipType<CustomTooltipProps> = (props) => {
             <Show when={shouldShowButtons()}>
                 <Flex>
                     <props.Prev 
-                        class={`${styles['tooltip-control']} 
-                        ${styles['tooltip-control-first']} 
-                        ${props.step() === 1 ? styles['tooltip-control-disabled'] : ''}`}>
+                        class={[
+                            styles['tooltip-control'],
+                            styles['tooltip-control-first'],
+                            props.step() === 1 && styles['tooltip-control-disabled'],
+                        ]}>
                         <CustomButton text={"Prev"} variation="back" />
                     </props.Prev>
                     <NextButton />
                 </Flex>
             </Show>
-            <div class={styles['tooltip-exit']} onClick={props.exit}>x</div>
+            <div class={styles['tooltip-exit']} onClick={() => props.exit?.()}>x</div>
         </div>
     )
 }

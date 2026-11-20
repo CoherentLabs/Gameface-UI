@@ -14,6 +14,8 @@ import { Badge } from '@astrojs/starlight/components'
 
 <Badge text="Feature" variant="success" size="small" /> Supports Solid 2's object and array `class` forms. On native elements, when a dynamic `class` is combined with static styles, the generated class is now added as an array entry (`class={[yourClass, "_div_…"]}`) instead of being concatenated as a string. So `class={{ active: on() }}` and `class={["base", { active: on() }]}` keep working. On components, a dynamic `class` is checked at runtime: a string stays a string (so components that treat `props.class` as text keep working), and an array or object gets the generated class as an array entry.
 
+<Badge text="Fix" variant="danger" size="small" /> The "`style` attribute along with a spread operator" warning is now shown only when the style object has static values (string or number literals) that can't be moved to a class because of the spread. An element like `<Comp {...props} style={{ width: props.width, ...props.style }} />` has nothing to move, so it no longer warns.
+
 ## 1.0.3
 
 <Badge text="Fix" variant="danger" size="small" /> Resolved Vite warnings related to the plugin when building with source maps enabled by regenerating the source maps after transforming the code.

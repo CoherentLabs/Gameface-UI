@@ -443,7 +443,9 @@ export const createRadialChart = (config: RadialChartConfig): ParentComponent<Ra
                             // Built once per position; the handlers read the
                             // current indices when an event actually fires.
                             const marks = hover.markProps(
+                                // eslint-disable-next-line solid/reactivity -- read by the mark's event handlers when an event fires (see useChartHover markProps), not in a tracked scope
                                 () => geometry()?.seriesIndex ?? -1,
+                                // eslint-disable-next-line solid/reactivity -- read by the mark's event handlers when an event fires (see useChartHover markProps), not in a tracked scope
                                 () => entry().pointIndex,
                             );
 

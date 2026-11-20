@@ -1,7 +1,7 @@
 import Slider from "@components/Basic/Slider/Slider"
 import Block from "@components/Layout/Block/Block";
 import style from './CustomSlider.module.scss';
-import { createSignal } from "solid-js";
+import { createSignal, untrack } from "solid-js";
 import Flex from "@components/Layout/Flex/Flex";
 import { emitChange } from "../../../views/menu/util";
 
@@ -15,7 +15,8 @@ interface CustomSliderProps {
 }
 
 const CustomSlider = (props: CustomSliderProps) => {
-    const [value, setValue] = createSignal(props.value);
+    // `value` is the initial value (read once, as in 1.x); the slider owns it after that.
+    const [value, setValue] = createSignal(untrack(() => props.value));
     const handleChange = (newValue: number) => {
         setValue(newValue)
         emitChange()

@@ -160,6 +160,7 @@ const Carousel: ParentComponent<CarouselProps> = (props) => {
             return;
         }
 
+        // eslint-disable-next-line solid/reactivity -- runs once a few frames later and reads the current sizes; nothing should re-run it
         waitForFrames(() => {
             const { width } = itemsWrapper.getBoundingClientRect();
             const itemWidthPx = width * itemWidth() / 100;

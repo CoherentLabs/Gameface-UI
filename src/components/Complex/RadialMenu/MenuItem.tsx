@@ -15,6 +15,7 @@ export const MenuItem: ParentComponent<MenuItemComponentProps> = (props) => {
     const context = useContext(RadialMenuContext);
     if (!context) {
         console.error('RadialMenu.Item must be used inside a RadialMenu component');
+        // eslint-disable-next-line solid/components-return-once -- misuse guard: the context is fixed for the component's lifetime, so render nothing
         return null;
     }
 

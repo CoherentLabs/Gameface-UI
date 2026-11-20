@@ -25,6 +25,7 @@ const CarouselItems: ParentComponent<CarouselItemsProps> = (props) => {
     const carouselContext = useContext(CarouselContext);
     if (!carouselContext) {
         console.error('Carousel.Items must be used inside a Carousel component');
+        // eslint-disable-next-line solid/components-return-once -- misuse guard: the context is fixed for the component's lifetime, so render nothing
         return null;
     }
 

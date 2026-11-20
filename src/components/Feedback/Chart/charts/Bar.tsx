@@ -355,7 +355,9 @@ const BarChart: ParentComponent<BarProps> = (props) => {
                     <g transform={`translate(${geometry()!.margin.left} ${geometry()!.margin.top})`}>
                         <For each={geometry()!.bars} keyed={false}>{(bar) => {
                             const marks = hover.markProps(
+                                // eslint-disable-next-line solid/reactivity -- read by the mark's event handlers when an event fires (see useChartHover markProps), not in a tracked scope
                                 () => bar().seriesIndex,
+                                // eslint-disable-next-line solid/reactivity -- read by the mark's event handlers when an event fires (see useChartHover markProps), not in a tracked scope
                                 () => bar().categoryIndex,
                             );
 

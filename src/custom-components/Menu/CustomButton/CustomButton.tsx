@@ -13,7 +13,8 @@ interface CustomButtonProps {
 const CustomButton = (props: CustomButtonProps) => {
     const menuContext = useContext(MenuContext)
 
-    const IconComponent = props.variation === 'select' 
+    // A function, so the icon follows `variation` (it was read once at creation).
+    const IconComponent = () => props.variation === 'select' 
         ? <Image.icons.gamepad.xbox.a class={styles['button-icon']} />
         : <Image.icons.gamepad.xbox.b class={styles['button-icon']} />
 
@@ -21,7 +22,7 @@ const CustomButton = (props: CustomButtonProps) => {
 
     return (
         <Flex direction="row" align-items="center" class={styles.button} click={props.handler}>
-            {menuContext?.inputType() === 'gamepad' ? IconComponent : KeyComponent}
+            {menuContext?.inputType() === 'gamepad' ? IconComponent() : KeyComponent}
             <div>{props.text}</div>
         </Flex>
     )

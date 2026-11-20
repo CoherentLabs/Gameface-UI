@@ -13,6 +13,7 @@ interface StepProps {
 
 const Step: ParentComponent<StepProps> = (props) => {
     const ctx = useContext(TutorialContext)
+    // eslint-disable-next-line solid/components-return-once -- misuse guard: the context is fixed for the component's lifetime, so render nothing
     if (!ctx) return null;
 
     const storedChildren = children(() => props.children)

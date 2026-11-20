@@ -59,6 +59,7 @@ const DEFAULT_POSITION = "bottom"
 
 const TutorialTooltip = <T extends Record<string, any> = {}>(props: TutorialTooltipProps<T>) => {
     const ctx = useContext(TutorialContext);
+    // eslint-disable-next-line solid/components-return-once -- misuse guard: the context is fixed for the component's lifetime, so render nothing
     if (!ctx) return;
 
     const [visible, setVisible] = createSignal(false);

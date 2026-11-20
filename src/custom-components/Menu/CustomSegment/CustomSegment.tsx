@@ -19,7 +19,7 @@ export function CustomSegment<V extends readonly string[]>(props: CustomSegmentP
     };
 
     return (
-        <Segment anchor={`#${props.id}`} ref={props.ref} onChange={handleChange} class={`${style.segment} ${props["custom-class"] ?? null}`} >
+        <Segment anchor={`#${props.id}`} ref={props.ref} onChange={handleChange} class={[style.segment, props["custom-class"]]} >
             <For each={props.values}>
                 {(v) => <Segment.Button 
                     class={style['segment-button']}

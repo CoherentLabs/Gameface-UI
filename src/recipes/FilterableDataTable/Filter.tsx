@@ -87,7 +87,7 @@ const Filter: Component<FilterProps> = (props) => {
             {/* Panel */}
             <div
                 onMouseDown={captureMouse}
-                class={`${styles['filter-panel']} ${open() ? styles['filter-panel-open'] : ''}`}>
+                class={[styles['filter-panel'], open() && styles['filter-panel-open']]}>
                 <Flex direction="column" class={styles['filter-row']}>
                     <div class={styles['filter-row-heading']}>Position</div>
                     <Flex direction="row" justify-content="space-between" align-items="center" >
@@ -158,10 +158,10 @@ const Filter: Component<FilterProps> = (props) => {
                 <div class={styles['filter-row']}>
                     <Flex direction="row" justify-content="space-between" align-items="center" gap="0.5rem">
                         <div
-                            class={`${styles['panel-btn']} ${!hasChanged() ? styles['panel-btn-disabled'] : ''}`}
+                            class={[styles['panel-btn'], !hasChanged() && styles['panel-btn-disabled']]}
                             onClick={applyFilters}>Apply Filters</div>
                         <div
-                            class={`${styles['panel-btn']} ${styles['panel-btn-danger']} ${!(hasApplied() || hasChanged()) ? styles['panel-btn-disabled'] : ''}`}
+                            class={[styles['panel-btn'], styles['panel-btn-danger'], !(hasApplied() || hasChanged()) && styles['panel-btn-disabled']]}
                             onClick={resetFilters}>Reset</div>
                     </Flex>
                 </div>

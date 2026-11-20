@@ -13,6 +13,7 @@ const ModalCloseButton: ParentComponent<ModalCloseButtonProps> = (props) => {
 
     if (!modalContext) {
         console.error('Modal.CloseButton must be used inside a Modal component');
+        // eslint-disable-next-line solid/components-return-once -- misuse guard: the context is fixed for the component's lifetime, so render nothing
         return null;
     }
 

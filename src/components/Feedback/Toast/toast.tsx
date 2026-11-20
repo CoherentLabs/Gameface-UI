@@ -40,7 +40,10 @@ interface ToastItem {
 const useToast = (): [ParentComponent, (options: ToastOptions) => void] => {
     
     const grid: Record<Position, Signal<ToastItem[]>> = Object.fromEntries(
-        positions.map((pos) => [pos, createSignal<ToastItem[]>([])])
+        positions.map((pos) => {
+            const [items, setItems] = createSignal<ToastItem[]>([]);
+            return [pos, [items, setItems]];
+        })
     ) as any;
 
     const [timers, setTimers] = createSignal<Record<string, number>>({});

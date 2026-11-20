@@ -7,7 +7,7 @@ import { ROSTER_COLUMNS } from "./columns";
 
 const TableRow = (props: { data: Accessor<player>, index: number }) => {
     return (
-        <Row class={`${styles.row} ${props.index === 0 ? styles['row-active'] : ''}`}>
+        <Row class={[styles.row, props.index === 0 && styles['row-active']]}>
             <For each={ROSTER_COLUMNS}>{(col) => {
                 const Col = col.span === 2 ? Column.Two : Column.One;
                 return (

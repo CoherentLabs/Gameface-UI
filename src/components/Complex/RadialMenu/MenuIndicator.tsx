@@ -13,6 +13,7 @@ const MenuIndicator: ParentComponent<TokenComponentProps> = (props) => {
     const context = useContext(RadialMenuContext);
     if (!context) {
         console.error('RadialMenu.Indicator must be used inside a RadialMenu component');
+        // eslint-disable-next-line solid/components-return-once -- misuse guard: the context is fixed for the component's lifetime, so render nothing
         return null;
     }
 

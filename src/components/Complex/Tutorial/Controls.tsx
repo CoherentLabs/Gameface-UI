@@ -10,6 +10,7 @@ interface ControlsProps extends ComponentProps {
 
 const Controls = (props: ControlsProps) => {
     const ctx = useContext(TutorialContext);
+    // eslint-disable-next-line solid/components-return-once -- misuse guard: the context is fixed for the component's lifetime, so render nothing
     if (!ctx) return;
 
     // A `click` prop is attached as a listener by baseComponent, so it isn't called here as well.

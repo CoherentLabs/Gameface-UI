@@ -35,7 +35,7 @@ const MenuItem: ParentComponent<MenuItemsProps> = (props) => {
         <Block 
             attr:id={props.id} 
             ref={ref!}
-            class={`${styles['item-container']} ${isActive() ? styles.active : ''} menu-item`} 
+            class={[styles['item-container'], isActive() && styles.active, 'menu-item']} 
             focus={handleFocus} 
             mouseenter={handleMouseEnter} 
             click={handleClick}>

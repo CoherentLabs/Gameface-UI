@@ -63,6 +63,12 @@ function getCSSStyleKey(prop: ObjectProperty) {
  * console.log(styles); // Output: "background-color:red;font-size:16;"
  * ```
  */
+/** Whether the style object has a value filterStylePropsAndGenerateStyles would move to a class. */
+function hasStaticStyleValues(expression: JSXExpressionContainer['expression']) {
+    return expression.type === "ObjectExpression" && expression.properties.some((prop) =>
+        prop.type === 'ObjectProperty' && (prop.value.type === "StringLiteral" || prop.value.type === "NumericLiteral"));
+}
+
 function filterStylePropsAndGenerateStyles(expression: JSXExpressionContainer['expression'], isBuild = false) {
     if (expression.type !== "ObjectExpression") return '';
 
@@ -283,6 +289,10 @@ function transformInlinedStyles(filePath: string, code: string, isBuild = false)
 
             const spreadAttr = attributes.find((attr) => attr.type === "JSXSpreadAttribute");
             if (spreadAttr) {
+                // Only static values (string/number literals) would be moved to a class. Without any, there's
+                // nothing to transform, so nothing is lost: e.g. `<LayoutBase {...props} style={{ width: props.width, ...props.style }} />`.
+                if (!hasStaticStyleValues(styleExpr.expression)) return;
+
                 warn(
                     `The JSX element <${nodeName}> contains a "style" attribute along with a spread operator ({...${generate(spreadAttr.argument).code}}). ` +
                     `This combination is not supported, so the styles for this element will not be transformed. ${locationInfo}`

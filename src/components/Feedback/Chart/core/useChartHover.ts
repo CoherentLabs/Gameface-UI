@@ -122,11 +122,14 @@ export const useChartHover = (options: UseChartHoverOptions): ChartHoverApi => {
         return {
             // mouseenter/mouseleave do not bubble, so these are per-mark
             // listeners. Above ~100 marks prefer interactive="overlay".
+            // eslint-disable-next-line solid/reactivity -- whenSvg only wraps an event handler, which is bound as onMouse*/onClick
             onMouseEnter: whenSvg((event: MouseEvent) => {
                 onEnter();
                 publish(eventFor(event));
             }),
+            // eslint-disable-next-line solid/reactivity -- whenSvg only wraps an event handler, which is bound as onMouse*/onClick
             onMouseMove: whenSvg((event: MouseEvent) => publish(eventFor(event))),
+            // eslint-disable-next-line solid/reactivity -- whenSvg only wraps an event handler, which is bound as onMouse*/onClick
             onMouseLeave: whenSvg(() => publish(null)),
             onClick: whenSvg((event: MouseEvent) => {
                 const next = eventFor(event);
