@@ -58,7 +58,10 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
     const [pausedAt, setPausedAt] = createSignal<number | null>(null);
     const [initialRender, setInitialRender] = createSignal(true);
     const [targetElement, setTargetElement] = createSignal<HTMLElement | null>(null);
-    const [tutorialStyles, setTutorialStyles] = createSignal<JSX.CSSProperties>({});
+    // The highlighted target and its measured rect, written together by the effect below, so the highlight
+    // never shows a new target with the previous target's rect (Solid 2 EFFECT_RELAY_TEAR). On exit the last
+    // rect is kept, so the highlight fades out in place, as in 1.x.
+    const [highlight, setHighlight] = createSignal<{ target: HTMLElement | null, styles: JSX.CSSProperties }>({ target: null, styles: {} });
     const [tooltipData, setTooltipData] = createSignal<ToolTipData>({});
     const [count, setCount] = createSignal(0);
 
@@ -141,7 +144,10 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
     })
 
     createEffect(() => targetElement(), (target) => {
-        if (!target) return;
+        if (!target) {
+            setHighlight((prev) => ({ target: null, styles: prev.styles }));
+            return;
+        }
 
         const elementHasLoaded = target.offsetHeight && target.offsetWidth;
         waitForFrames(() => {
@@ -182,11 +188,14 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
                 height: finalHeight + rectOutset * 2,
             };
             const { left, top, width, height } = nextRect;
-            setTutorialStyles({
-                left: `${left}px`,
-                top: `${top}px`,
-                width: `${width}px`,
-                height: `${height}px`
+            setHighlight({
+                target,
+                styles: {
+                    left: `${left}px`,
+                    top: `${top}px`,
+                    width: `${width}px`,
+                    height: `${height}px`
+                }
             });
         }, !elementHasLoaded ? 3 : 0)
     });
@@ -210,8 +219,8 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
             {props.children}
             <Portal>
                 <div
-                    class={[styles.tutorial, targetElement() && styles['tutorial-visible'], props.class]}
-                    style={{ ...tutorialStyles(), ...props.style }}
+                    class={[styles.tutorial, highlight().target && styles['tutorial-visible'], props.class]}
+                    style={{ ...highlight().styles, ...props.style }}
                     ref={[
                         exposeRef<Omit<TutorialRef, 'element'>>(props, {
                             progress,
@@ -234,7 +243,7 @@ function Tutorial<T extends Record<string, any> = {}>(props: TutorialProps<T>): 
                 <Show when={targetElement()}>
                     <div class={styles.overlay} />
                 </Show>
-                <div class={styles['tooltip-reference']} style={tutorialStyles()}>
+                <div class={styles['tooltip-reference']} style={highlight().styles}>
                     <TutorialTooltip
                         userTooltip={props.tooltip}
                         tooltipData={tooltipData}

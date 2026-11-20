@@ -66,19 +66,6 @@ const TutorialTooltip = <T extends Record<string, any> = {}>(props: TutorialTool
     let elementRef: HTMLDivElement | undefined;
     let visibleTO: NodeJS.Timeout | undefined;
 
-    const providedTooltipProps = (): ProvidedProps => {
-        const data = props.tooltipData();
-
-        return {
-            title: data.title,
-            content: data.content,
-            step: ctx.current,
-            Next,
-            Prev,
-            progress: props.progress,
-        }
-    }
-
     createEffect(() => ctx.current(), (current) => {
         setVisible(false);
 
@@ -103,13 +90,22 @@ const TutorialTooltip = <T extends Record<string, any> = {}>(props: TutorialTool
     })
 
     // The user's tooltip component, or the default one.
-    const TooltipComponent = dynamic(() => (props.userTooltip ?? DefaultTooltip) as TooltipType<T>);
+    // Typed without the extra `T` props: the Tutorial only ever passes ProvidedProps.
+    const TooltipComponent = dynamic(() => (props.userTooltip ?? DefaultTooltip) as TooltipType);
 
     return (
         <div
             ref={(el: HTMLDivElement) => { elementRef = el; }}
             class={[styles['tooltip-wrapper'], visible() && styles['tooltip-visible'], styles[`tooltip-${position()}`]]}>
-            <TooltipComponent {...(providedTooltipProps() as ProvidedProps & Partial<T> & DefaultProps)} />
+            {/* One prop each (not a spread of providedTooltipProps()): with the spread, reading any prop (e.g. progress)
+                also read tooltipData, so a step change rendered once with the new step and the old data (EFFECT_RELAY_TEAR). */}
+            <TooltipComponent
+                title={props.tooltipData().title}
+                content={props.tooltipData().content}
+                step={ctx.current}
+                Next={Next}
+                Prev={Prev}
+                progress={props.progress} />
         </div>
     )
 }
