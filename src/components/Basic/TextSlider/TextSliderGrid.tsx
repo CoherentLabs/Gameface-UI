@@ -1,7 +1,7 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import styles from '@components/Basic/Slider/Slider.module.scss';
 import { For, useContext } from 'solid-js';
-import { useToken } from '@components/utils/tokenComponents';
+import { tokenAttrs, useToken } from '@components/utils/tokenComponents';
 import { TextSliderContext } from './TextSlider';
 import TextSliderPol, { Pol } from '@components/Basic/TextSlider/TextSliderPol';
 
@@ -14,6 +14,7 @@ export const TextSliderGrid = (props: TokenComponentProps) => {
             <For each={sliderContext?.values()}>
                 {(pol) => (
                     <TextSliderPol
+                        {...tokenAttrs(PolToken())}
                         class={PolToken()?.class}
                         style={PolToken()?.style}
                         text-class={PolToken()?.['text-class']}

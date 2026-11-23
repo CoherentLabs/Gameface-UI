@@ -4,6 +4,7 @@ import { TokenComponentProps } from "@components/types/ComponentProps";
 import { Content, RadialMenuContext } from "./RadialMenu";
 import styles from './RadialMenu.module.scss';
 import MenuIndicator from "./MenuIndicator";
+import { forwardAttrs } from "@components/BaseComponent/BaseComponent";
 
 export const MenuCenter: ParentComponent<TokenComponentProps> = (props) => {
     const contentToken = useToken(Content, props.parentChildren)
@@ -21,7 +22,7 @@ export const MenuCenter: ParentComponent<TokenComponentProps> = (props) => {
     });
 
     return (
-        <div class={menuCenterClasses()} style={contentToken()?.style}>
+        <div class={menuCenterClasses()} style={contentToken()?.style} use:forwardAttrs={contentToken()}>
             {/* Content JSX goes here */}
             {contentToken()?.children}
             {/* The indicator that points to the selected item */}

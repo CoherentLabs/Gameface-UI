@@ -3,6 +3,7 @@ import { useToken } from "@components/utils/tokenComponents";
 import { TokenComponentProps } from "@components/types/ComponentProps";
 import { Item, PaginationContext } from "./Pagination";
 import styles from './Pagination.module.scss';
+import { forwardAttrs } from "@components/BaseComponent/BaseComponent";
 
 interface PaginationItemComponentProps extends TokenComponentProps {
     index: number,
@@ -37,7 +38,8 @@ const PaginationItem: Component<PaginationItemComponentProps> = (props) => {
         <div
             onclick={() => pagination!.changePage(props.index)}
             style={itemToken()?.style}
-            class={paginationItemClasses()}>
+            class={paginationItemClasses()}
+            use:forwardAttrs={itemToken()}>
                 <Show when={props.hasNumbers}>{props.index}</Show>
         </div>
     )

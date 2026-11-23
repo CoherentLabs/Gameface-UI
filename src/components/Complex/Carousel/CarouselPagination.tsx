@@ -1,5 +1,5 @@
 import Pagination, { Item } from "@components/Basic/Pagination/Pagination";
-import { ParentComponent, useContext } from "solid-js";
+import { ParentComponent, splitProps, useContext } from "solid-js";
 import { CarouselContext } from "./Carousel";
 import { Control } from "@components/Basic/Pagination/PaginationControl";
 import { ComponentProps } from "@components/types/ComponentProps";
@@ -11,7 +11,12 @@ const CarouselPagination: ParentComponent<ComponentProps> = (props) => {
         return null;
     }
 
+    // splitProps, not {...tokenAttrs(props)}: spreading a call makes Pagination's props a proxy that ignores its `props.componentClasses = …`.
+    const attrKeys = Object.keys(props).filter((key) => key.startsWith('attr:')) as (keyof typeof props)[];
+    const [attrs] = splitProps(props, attrKeys);
+
     return <Pagination
+        {...attrs}
         ref={carouselContext.setPaginationRef}
         pageSize={carouselContext.pagesCount()}
         pageIndex={carouselContext.activePage() + 1}

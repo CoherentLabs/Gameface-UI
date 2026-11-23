@@ -1,10 +1,11 @@
 import { createMemo, JSX, ParentComponent, useContext } from "solid-js";
 import styles from './Scroll.module.scss';
-import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
+import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
+import { forwardAttrs } from "@components/BaseComponent/BaseComponent";
 import { ScrollContext } from "./Scroll";
 import { TokenComponentProps } from "@components/types/ComponentProps";
 
-export interface HandleTokenProps {
+export interface HandleTokenProps extends TokenBase {
     style?: JSX.CSSProperties | undefined
     class?: string
 }
@@ -33,7 +34,8 @@ export const ScrollHandle: ParentComponent<TokenComponentProps> = (props) => {
         <div
             onMouseDown={scrollContext?.onHandleMouseDown}
             class={scrollHandleClasses()}
-            style={handleStyles()}>
+            style={handleStyles()}
+            use:forwardAttrs={HandleToken()}>
             {HandleToken()?.children}
         </div>
     );

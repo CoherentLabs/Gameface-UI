@@ -1,8 +1,10 @@
 import { JSX, ParentComponent, Show, createMemo, useContext } from "solid-js";
 import styles from './Modal.module.scss';
 import { ModalContext } from "./Modal";
+import { AttrProps } from "@components/types/ComponentProps";
+import { forwardAttrs } from "@components/BaseComponent/BaseComponent";
 
-interface ModalCloseButtonProps {
+interface ModalCloseButtonProps extends AttrProps {
     style?: JSX.CSSProperties,
     class?: string,
 }
@@ -22,7 +24,7 @@ const ModalCloseButton: ParentComponent<ModalCloseButtonProps> = (props) => {
     });
 
     return (
-        <div onClick={modalContext?.close} class={modalCloseButtonClasses()} style={props.style}>
+        <div onClick={modalContext?.close} class={modalCloseButtonClasses()} style={props.style} use:forwardAttrs={props}>
             {props.children}
         </div>
     )

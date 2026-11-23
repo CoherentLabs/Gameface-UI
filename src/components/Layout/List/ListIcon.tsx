@@ -3,6 +3,7 @@ import { TokenComponentProps } from "../../types/ComponentProps";
 import styles from './List.module.scss';
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
 import { ListContext } from "./List";
+import { forwardAttrs } from "@components/BaseComponent/BaseComponent";
 
 interface ListIconComponent extends TokenComponentProps, TokenBase {
     isNested: boolean,
@@ -41,12 +42,12 @@ const ListIcon: ParentComponent<ListIconComponent> = (props) => {
     return (
         <>
             <Show when={IconToken()?.children}>
-                <div style={IconStyle()} class={`${IconToken()?.class ?? ""} ${styles.icon} ${listContext?.bulletClass() ?? ''}`}>
+                <div style={IconStyle()} class={`${IconToken()?.class ?? ""} ${styles.icon} ${listContext?.bulletClass() ?? ''}`} use:forwardAttrs={IconToken()}>
                     {IconToken()?.children}
                 </div>
             </Show>
             <Show when={!IconToken()?.children}>
-                <div style={IconStyle()} class={IconClasses()}>
+                <div style={IconStyle()} class={IconClasses()} use:forwardAttrs={IconToken()}>
                     {listContext?.isOrdered() && ((props.index + 1) + '.')}
                 </div>
             </Show>

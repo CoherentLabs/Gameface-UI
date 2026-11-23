@@ -1,8 +1,9 @@
 import { createMemo, JSX } from 'solid-js';
 import styles from '@components/Basic/Slider/Slider.module.scss';
-import { createTokenComponent } from '@components/utils/tokenComponents';
+import { createTokenComponent, TokenBase } from '@components/utils/tokenComponents';
+import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 
-interface PolProps {
+interface PolProps extends TokenBase {
     value?: number | string,
     style?: JSX.CSSProperties,
     class?: string
@@ -30,7 +31,7 @@ const TextSliderPol = (props: PolProps) => {
     })
 
     return (
-        <div style={props.style} class={polClasses()}>
+        <div style={props.style} class={polClasses()} use:forwardAttrs={props}>
             <div class={styles['grid-pol']}></div>
             <div style={props['text-style']} class={polValueClasses()}>{props.value}</div>
         </div>

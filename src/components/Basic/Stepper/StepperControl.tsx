@@ -1,13 +1,14 @@
 import { Accessor, createMemo, JSX, ParentComponent, ParentProps, Show, useContext } from "solid-js";
 import styles from './Stepper.module.scss';
 import { TokenComponentProps } from '@components/types/ComponentProps';
-import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
+import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
+import { forwardAttrs } from "@components/BaseComponent/BaseComponent";
 import StepperArrow from './StepperArrow.svg?component-solid';
 import { StepperContext } from "./Stepper";
 import Flex from "@components/Layout/Flex/Flex";
 import Transform from "@components/Layout/Transform/Transform";
 
-interface ControlTokenProps {
+interface ControlTokenProps extends TokenBase {
     style?: JSX.CSSProperties,
     class?: string,
     'hidden-class'?: string
@@ -54,6 +55,7 @@ export const StepperControl: ParentComponent<StepperControlProps> = (props) => {
         <>
             <div class={controlContainerClasses()}
                 style={ControlToken()?.style || {}}
+                use:forwardAttrs={ControlToken()}
                 onClick={() => stepperContext?.changeSelected(props.direction)}>
                 <Show when={props.direction === 'prev'}>
                     <ControlComponent ControlToken={ControlToken} />

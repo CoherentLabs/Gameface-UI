@@ -1,7 +1,8 @@
 
 import { createMemo, JSX, onCleanup, onMount, ParentComponent, useContext } from 'solid-js';
 import styles from './Scroll.module.scss';
-import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
+import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
+import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { ScrollContext } from './Scroll';
 
@@ -9,7 +10,7 @@ interface ScrollContentProps extends TokenComponentProps {
     ref: HTMLDivElement
 }
 
-interface ContentProps {
+interface ContentProps extends TokenBase {
     style?: JSX.CSSProperties | undefined
     class?: string
     ref?: HTMLDivElement
@@ -55,7 +56,7 @@ export const ScrollContent: ParentComponent<ScrollContentProps> = (props) => {
         if (resizeObserver) resizeObserver.disconnect();
     });
 
-    return <div ref={initContentRef} style={contentStyles()} class={contentClasses()}>
+    return <div ref={initContentRef} style={contentStyles()} class={contentClasses()} use:forwardAttrs={ContentToken()}>
         <div ref={contentRef}>
             {ContentToken()?.children}
         </div>

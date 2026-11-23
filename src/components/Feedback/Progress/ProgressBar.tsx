@@ -2,7 +2,7 @@ import { createEffect, createMemo, onMount, ParentComponent } from "solid-js";
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
 import { clampProgress, ProgressProps } from "./Progress";
 import styles from './Progress.module.scss';
-import baseComponent from "@components/BaseComponent/BaseComponent";
+import baseComponent, { forwardAttrs } from "@components/BaseComponent/BaseComponent";
 
 const Fill = createTokenComponent<TokenBase>();
 const ProgressBar: ParentComponent<ProgressProps> = (props) => {
@@ -30,7 +30,8 @@ const ProgressBar: ParentComponent<ProgressProps> = (props) => {
             <div
                 ref={fillElement}
                 class={fillClasses()}
-                style={fillToken()?.style} />
+                style={fillToken()?.style}
+                use:forwardAttrs={fillToken()} />
         </div>
     )
 }

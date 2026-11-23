@@ -2,7 +2,7 @@ import { createMemo, ParentComponent, ParentProps, Show } from "solid-js";
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
 import { clampProgress, ProgressProps } from "./Progress";
 import styles from './Progress.module.scss';
-import baseComponent from "@components/BaseComponent/BaseComponent";
+import baseComponent, { forwardAttrs } from "@components/BaseComponent/BaseComponent";
 
 interface FillTokenProps extends TokenBase { shape?: 'square' | 'round', }
 interface TextTokenProps extends TokenBase, ParentProps { }
@@ -46,11 +46,12 @@ const ProgressCircle: ParentComponent<ProgressProps> = (props) => {
             use:baseComponent={props}
         >
             <svg class={styles['circle-svg']} viewBox="0 0 120 120">
-                <path d={PATH_DATA} class={outlineClasses()} style={outlineToken()?.style} />
+                <path d={PATH_DATA} class={outlineClasses()} style={outlineToken()?.style} use:forwardAttrs={outlineToken()} />
                 <path
                     d={PATH_DATA}
                     class={fillClasses()}
                     style={fillToken()?.style}
+                    use:forwardAttrs={fillToken()}
                     pathLength="100"
                     stroke-dasharray="100"
                     stroke-linecap={fillToken()?.shape === "round" ? 'round' : 'square'}
@@ -58,7 +59,7 @@ const ProgressCircle: ParentComponent<ProgressProps> = (props) => {
                 />
             </svg>
             <Show when={textToken()}>
-                <div class={textClasses()} style={textToken()?.style}>
+                <div class={textClasses()} style={textToken()?.style} use:forwardAttrs={textToken()}>
                     {textToken()?.children}
                 </div>
             </Show>
