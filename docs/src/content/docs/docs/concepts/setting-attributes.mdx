@@ -35,3 +35,27 @@ const App = () => {
 
 export default App;
 ```
+
+`attr:*` also works on slots:
+
+```tsx
+<Dropdown>
+    <Dropdown.Trigger attr:data-custom="some data" />
+</Dropdown>
+```
+
+:::caution
+Don't spread a call or an expression onto a GamefaceUI component. Many components lose their default classes and styles when you do.
+
+```tsx del="{...getAttrs()}" del="{...(active() ? activeAttrs : idleAttrs)}"
+<Button {...getAttrs()}>Play</Button>
+<Button {...(active() ? activeAttrs : idleAttrs)}>Play</Button>
+```
+
+Make each value reactive instead, or spread a plain object:
+
+```tsx
+<Button attr:data-state={active() ? 'active' : 'idle'}>Play</Button>
+<Button {...attrs}>Play</Button>
+```
+:::

@@ -76,8 +76,8 @@ const App = () => {
 
 | Prop Name  | Type                             | Default     | Description                                                                                                                                                 |
 | ---------- | ------------------------         | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `style`    | `JSX.CSSProperties`              | `{}`        | Inline styles to apply directly to the radial menu's root element.                                                                                              |
-| `class`    | `string`                         | `""`        | Additional CSS classes to apply to the radial menu's root element.                                                                                              |
+| `style`    | `JSX.CSSProperties`              | `{}`        | Inline styles to apply to the tutorial's root element, the wrapper around the spotlight, overlay and tooltip.                                                   |
+| `class`    | `string`                         | `""`        | Additional CSS classes to apply to the tutorial's root element, the wrapper around the spotlight, overlay and tooltip.                                           |
 | `ref`      | [`TutorialRef`](#ref-api) \| `undefined`       | `undefined` | A reference to the component, providing access to its methods and the underlying HTML element.                                                                  |
 | `outset`   | `number`                         | `0`         | Extra offset (in px) applied between the tooltip/highlight and the target element. Useful when the target has shadows/borders or sits inside tight layouts. |
 | `tooltip`  | [`TooltipType<T>`](#provided-props)                 | `undefined` | Custom tooltip component to render instead of the default one. Receives the provided tutorial props (title, content, step, controls).                       |
@@ -86,6 +86,18 @@ const App = () => {
 | `onEnd` | `() => void`         | `undefined` | Fired whenever the tutorial ends.                                                         |
 | `onAction` | `Record<string, (scope?: string, ...args: any[]) => void>` | `undefined` | Allows you to add custom navigation action handlers to the tutorial. See the [Navigation component documentation](/components/utility/navigation#extending-component-navigation-actions) for details. |
 | `anchor`    | `string \| HTMLElement` | `undefined` | Links navigation to another element. When the anchor element is focused, the tutorial's actions will execute. Can be a CSS selector or HTMLElement. |
+
+:::caution[Migrating to 6.0.0]
+`class`, `style` and event handlers on `<Tutorial>` used to land on the highlight frame. They now land on the root wrapper. To keep styling or listening to the highlight frame, move them to [`Tutorial.Spotlight`](#tutorialspotlight):
+
+```diff lang="tsx"
+-<Tutorial ref={ref} class="my-highlight" click={onClick}>
++<Tutorial ref={ref}>
++    <Tutorial.Spotlight class="my-highlight" click={onClick} />
+     {/* Steps go here */}
+</Tutorial>
+```
+:::
 
 ## Ref API
 
@@ -118,6 +130,8 @@ This interface provides access to the component's root element and exposes metho
 The `Tutorial` component exposes:
 
 - [**Tutorial.Step**](#tutorialstep) - defines one step of the tutorial and marks the wrapped UI as the current target.
+- [**Tutorial.Spotlight**](#tutorialspotlight) - the highlight frame around the current step's target.
+- [**Tutorial.Overlay**](#tutorialoverlay) - the transparent layer that blocks clicks on the page while a step is active.
 - [**Custom Tooltip** (via tooltip prop)](#custom-tooltip) - lets you fully replace the default tooltip UI.
 
 ### Tutorial.Step
@@ -157,6 +171,50 @@ If a step is repeated, it may cause unexpected behavior.
 | `content`  | `string` \| `undefined`          | "" | Tooltip content. If omitted, an empty string is used for the step.      |
 | `outset`   | `number`          | 0   | Per-step offset. Overrides the `Tutorial`'s `outset` for this step only. |
 | `position` | `top` \| `left` \| `right` \| `bottom` | `auto`   | Tooltip placement relative to the target.                                |
+
+### Tutorial.Spotlight
+
+The highlight frame around the current step's target. It also dims the rest of the page, through its `box-shadow`. Rendered by default; add the slot to style it or listen to its events.
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the spotlight. |
+| `class`   | `string` | `""` | Additional CSS classes to style the spotlight. |
+
+#### Usage
+
+```diff lang="tsx"
+<Tutorial ref={ref}>
++    <Tutorial.Spotlight style={{ 'border-color': 'gold' }} />
+    {/* Steps go here */}
+</Tutorial>
+```
+
+### Tutorial.Overlay
+
+A transparent full-screen layer that blocks clicks on the page while a step is active. Rendered by default; add the slot to style it or listen to its events.
+
+:::caution
+The overlay is invisible and doesn't dim the page. The dimming around the target is the box-shadow of [`Tutorial.Spotlight`](#tutorialspotlight); style that slot to change it.
+:::
+
+#### Properties
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply directly to the overlay. |
+| `class`   | `string` | `""` | Additional CSS classes to style the overlay. |
+
+#### Usage
+
+```diff lang="tsx"
+<Tutorial ref={ref}>
++    <Tutorial.Overlay style={{ cursor: 'default' }} />
+    {/* Steps go here */}
+</Tutorial>
+```
 
 ### Custom Tooltip
 
