@@ -20,7 +20,7 @@ describe('Tutorial', function () {
     })
 
     it('Should start a tour', async () => {
-        const tutorial = await gf.get(`.${selectors.tutorial}`);
+        const tutorial = await gf.get(`.${selectors.spotlight}`);
         const tooltip = await gf.get(`.${selectors.tooltip}`);
         const assertionEl = await gf.get(`.${selectors.assertionElement}`);
         assert.ok(await tutorial.isVisible(), 'Tutorial element should be visible');
@@ -48,7 +48,7 @@ describe('Tutorial', function () {
         await gf.trigger(events.pause);
 
         assert.equal(await gf.text(`.${selectors.assertionElement}`), '0', 'Step should be 0');
-        assert.ok(await gf.isHidden(`.${selectors.tutorial}`), 'Tutorial element should be hidden');
+        assert.ok(await gf.isHidden(`.${selectors.spotlight}`), 'Tutorial element should be hidden');
     });
 
     it('Should Resume', async () => {
@@ -56,7 +56,7 @@ describe('Tutorial', function () {
         await gf.trigger(events.resume);
 
         assert.equal(await gf.text(`.${selectors.assertionElement}`), '1', 'Step should be 1');
-        assert.ok(await gf.isVisible(`.${selectors.tutorial}`), 'Tutorial element should be visible');
+        assert.ok(await gf.isVisible(`.${selectors.spotlight}`), 'Tutorial element should be visible');
     });
 
     it('Should Resume from next step', async () => {
@@ -64,7 +64,7 @@ describe('Tutorial', function () {
         await gf.trigger(events['resume-from-next']);
 
         assert.equal(await gf.text(`.${selectors.assertionElement}`), '2', 'Step should be 2');
-        assert.ok(await gf.isVisible(`.${selectors.tutorial}`), 'Tutorial element should be visible');
+        assert.ok(await gf.isVisible(`.${selectors.spotlight}`), 'Tutorial element should be visible');
     });
 
     it('Should prevent navigation to steps below 1', async () => {
@@ -161,7 +161,7 @@ describe('Tutorial', function () {
 
     describe("Rect", function () {
         it('Should match the wrapped element\'s dimensions', async () => {
-            const tutorial = await gf.get(`.${selectors.tutorial}`);
+            const tutorial = await gf.get(`.${selectors.spotlight}`);
             const isSameSize = (rect1, rect2) => rect1.x === rect2.x && rect1.y === rect2.y;
             const isSamePos = (rect1, rect2) => rect1.width === rect2.width && rect1.height === rect2.height;
 

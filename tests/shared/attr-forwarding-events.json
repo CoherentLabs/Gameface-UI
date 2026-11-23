@@ -1,0 +1,7 @@
+{
+  "tick": "attr-forwarding-tick",
+  "openModal": "attr-forwarding-open-modal",
+  "closeModal": "attr-forwarding-close-modal",
+  "startTutorial": "attr-forwarding-start-tutorial",
+  "exitTutorial": "attr-forwarding-exit-tutorial"
+}

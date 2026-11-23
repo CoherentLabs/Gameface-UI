@@ -2,6 +2,7 @@
   "assertionElement": "assertion-element",
   "scenarioBtn": "scenario-btn",
   "tutorial": "tutorial",
+  "spotlight": "tutorial-spotlight",
   "card-wrapper": "wrapper",
   "card": "tutorial-card",
   "card-image": "tutorial-card-image",
