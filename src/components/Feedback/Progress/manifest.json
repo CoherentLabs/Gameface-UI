@@ -1,5 +1,45 @@
 {
   "name": "Progress",
   "version": "1.1.2",
-  "description": "Progress bar and circular progress indicators"
+  "description": "Progress bar and circular progress indicators",
+  "editor": {
+    "icon": "progress",
+    "category": "Feedback",
+    "variants": [
+      {
+        "name": "Bar",
+        "token": "Progress.Bar",
+        "icon": "progress-bar",
+        "propsOrder": ["progress"],
+        "slots": [
+          {
+            "name": "Fill",
+            "token": "Progress.Bar.Fill"
+          }
+        ]
+      },
+      {
+        "name": "Circle",
+        "token": "Progress.Circle",
+        "icon": "progress-circle",
+        "propsOrder": ["progress"],
+        "slots": [
+          {
+            "name": "Outline",
+            "token": "Progress.Circle.Outline"
+          },
+          {
+            "name": "Fill",
+            "token": "Progress.Circle.Fill",
+            "propsOrder": ["shape"]
+          },
+          {
+            "name": "Text",
+            "token": "Progress.Circle.Text",
+            "acceptsChildren": true
+          }
+        ]
+      }
+    ]
+  }
 }

@@ -23,8 +23,10 @@ jobs:
         with:
           node-version: '22'
       - run: npm install --no-audit --no-fund
+      - name: Check editor metadata in manifests
+        run: npm run check-editor-meta
       - name: Regenerate registry
-        run: node scripts/registry/generate-registry.mts
+        run: node scripts/registry/generate-registry.mts --check
       - name: Check version bumps
         run: node scripts/registry/check-version-bumps.mts
         env:

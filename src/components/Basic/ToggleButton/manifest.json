@@ -1,5 +1,36 @@
 {
   "name": "ToggleButton",
   "version": "1.1.2",
-  "description": "On/off toggle switch"
+  "description": "On/off toggle switch",
+  "editor": {
+    "icon": "toggle",
+    "category": "Buttons",
+    "focusable": true,
+    "propsOrder": ["checked", "disabled"],
+    "hiddenProps": ["class-disabled", "class-checked"],
+    "slots": [
+      {
+        "name": "Label left",
+        "token": "ToggleButton.LabelLeft",
+        "textProp": "children"
+      },
+      {
+        "name": "Control",
+        "token": "ToggleButton.Control"
+      },
+      {
+        "name": "Indicator",
+        "token": "ToggleButton.Indicator"
+      },
+      {
+        "name": "Handle",
+        "token": "ToggleButton.Handle"
+      },
+      {
+        "name": "Label right",
+        "token": "ToggleButton.LabelRight",
+        "textProp": "children"
+      }
+    ]
+  }
 }

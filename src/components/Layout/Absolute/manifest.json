@@ -1,5 +1,13 @@
 {
   "name": "Absolute",
   "version": "1.1.2",
-  "description": "Absolutely positioned container"
+  "description": "Absolutely positioned container",
+  "editor": {
+    "icon": "position-absolute",
+    "category": "Layout",
+    "children": {
+      "accepts": ["*"]
+    },
+    "propsOrder": ["top", "left", "right", "bottom", "center"]
+  }
 }

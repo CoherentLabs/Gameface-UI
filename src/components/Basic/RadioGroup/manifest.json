@@ -1,5 +1,39 @@
 {
   "name": "RadioGroup",
   "version": "1.1.2",
-  "description": "Group of mutually exclusive radio options"
+  "description": "Group of mutually exclusive radio options",
+  "editor": {
+    "icon": "radio",
+    "category": "Inputs",
+    "entry": "Radio.tsx",
+    "propsOrder": ["disabled"],
+    "hiddenProps": ["class-disabled"],
+    "slots": [
+      {
+        "name": "Button",
+        "token": "Radio.Button",
+        "repeat": true,
+        "textProp": "children",
+        "propsOrder": ["value", "selected", "disabled"],
+        "hiddenProps": ["class-disabled", "class-selected"]
+      },
+      {
+        "name": "Label",
+        "token": "Radio.ButtonLabel",
+        "textProp": "children"
+      },
+      {
+        "name": "Control",
+        "token": "Radio.ButtonControl"
+      },
+      {
+        "name": "Indicator",
+        "token": "Radio.ButtonIndicator"
+      }
+    ],
+    "children": {
+      "accepts": ["Radio.Button"],
+      "addLabel": "Add option"
+    }
+  }
 }

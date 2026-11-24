@@ -1,5 +1,10 @@
 {
   "name": "TextBlock",
   "version": "1.1.2",
-  "description": "Block of text"
+  "description": "Block of text",
+  "editor": {
+    "icon": "text",
+    "category": "Text",
+    "textProp": "children"
+  }
 }

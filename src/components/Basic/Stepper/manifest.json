@@ -1,5 +1,37 @@
 {
   "name": "Stepper",
   "version": "1.1.2",
-  "description": "Numeric stepper with increment and decrement controls"
+  "description": "Numeric stepper with increment and decrement controls",
+  "editor": {
+    "icon": "stepper",
+    "category": "Inputs",
+    "focusable": true,
+    "propsOrder": ["loop", "controls-position", "disabled"],
+    "hiddenProps": ["class-disabled"],
+    "slots": [
+      {
+        "name": "Items",
+        "token": "Stepper.Items",
+        "slots": [
+          {
+            "name": "Item",
+            "token": "Stepper.Item",
+            "repeat": true,
+            "textProp": "children",
+            "propsOrder": ["value", "selected"]
+          }
+        ],
+        "children": {
+          "accepts": ["Stepper.Item"],
+          "addLabel": "Add item"
+        }
+      },
+      {
+        "name": "Control",
+        "token": "Stepper.Control",
+        "acceptsChildren": true,
+        "hiddenProps": ["hidden-class"]
+      }
+    ]
+  }
 }

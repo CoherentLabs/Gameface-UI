@@ -1,5 +1,31 @@
 {
   "name": "Modal",
   "version": "1.1.2",
-  "description": "Modal dialog window"
+  "description": "Modal dialog window",
+  "editor": {
+    "icon": "modal",
+    "category": "Feedback",
+    "wrapper": true,
+    "propsOrder": ["open"],
+    "slots": [
+      {
+        "name": "Overlay",
+        "token": "Modal.Overlay"
+      },
+      {
+        "name": "Window",
+        "token": "Modal.Window",
+        "acceptsChildren": true
+      },
+      {
+        "name": "Close",
+        "token": "Modal.Close",
+        "acceptsChildren": true,
+        "focusable": true
+      }
+    ],
+    "children": {
+      "accepts": ["Modal.Overlay", "Modal.Window"]
+    }
+  }
 }

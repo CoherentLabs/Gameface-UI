@@ -1,5 +1,31 @@
 {
   "name": "TextInput",
   "version": "1.1.2",
-  "description": "Single-line text input"
+  "description": "Single-line text input",
+  "editor": {
+    "icon": "input-text",
+    "category": "Inputs",
+    "focusable": true,
+    "slots": [
+      {
+        "name": "Before",
+        "token": "TextInput.Before",
+        "acceptsChildren": true
+      },
+      {
+        "name": "Input",
+        "token": "TextInput.Input"
+      },
+      {
+        "name": "Placeholder",
+        "token": "TextInput.Placeholder",
+        "textProp": "children"
+      },
+      {
+        "name": "After",
+        "token": "TextInput.After",
+        "acceptsChildren": true
+      }
+    ]
+  }
 }

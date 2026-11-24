@@ -1,5 +1,58 @@
 {
   "name": "Carousel",
   "version": "1.1.2",
-  "description": "Sliding carousel with items and pagination"
+  "description": "Sliding carousel with items and pagination",
+  "editor": {
+    "icon": "carousel",
+    "category": "Lists & menus",
+    "propsOrder": ["itemWidth", "itemGap", "itemsAlignment", "groupItems", "leadingAndTrailingSpaces"],
+    "slots": [
+      {
+        "name": "Items",
+        "token": "Carousel.Items",
+        "hiddenProps": ["itemsContainerStyle", "itemsContainerClass"],
+        "slots": [
+          {
+            "name": "Item",
+            "token": "Carousel.Item",
+            "repeat": true,
+            "acceptsChildren": true,
+            "propsOrder": ["selected"],
+            "hiddenProps": ["style-selected", "class-selected"]
+          }
+        ],
+        "children": {
+          "accepts": ["Carousel.Item"],
+          "addLabel": "Add item"
+        }
+      },
+      {
+        "name": "Pagination",
+        "token": "Carousel.Pagination",
+        "slots": [
+          {
+            "name": "Page",
+            "token": "Carousel.Pagination.Item"
+          },
+          {
+            "name": "Control",
+            "token": "Carousel.Pagination.Control",
+            "acceptsChildren": true
+          }
+        ]
+      },
+      {
+        "name": "Previous",
+        "token": "Carousel.Prev",
+        "acceptsChildren": true,
+        "hiddenProps": ["class-disabled"]
+      },
+      {
+        "name": "Next",
+        "token": "Carousel.Next",
+        "acceptsChildren": true,
+        "hiddenProps": ["class-disabled"]
+      }
+    ]
+  }
 }

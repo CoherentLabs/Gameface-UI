@@ -1,5 +1,25 @@
 {
   "name": "Navigation",
   "version": "1.1.0",
-  "description": "Directional (gamepad/keyboard) focus navigation for UI areas"
+  "description": "Directional (gamepad/keyboard) focus navigation for UI areas",
+  "editor": {
+    "icon": "navigation",
+    "category": "Navigation",
+    "wrapper": true,
+    "propsOrder": ["scope", "gamepad", "keyboard", "pollingInterval", "overlap"],
+    "hiddenProps": ["actions"],
+    "slots": [
+      {
+        "name": "Area",
+        "token": "Navigation.Area",
+        "repeat": true,
+        "wrapper": true,
+        "acceptsChildren": true,
+        "propsOrder": ["name", "focused", "selector"]
+      }
+    ],
+    "children": {
+      "accepts": ["*"]
+    }
+  }
 }

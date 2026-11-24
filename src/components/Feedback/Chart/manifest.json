@@ -1,5 +1,243 @@
 {
   "name": "Chart",
   "version": "1.1.2",
-  "description": "Pie, donut, bar, line, area and spider charts built for HUDs"
+  "description": "Pie, donut, bar, line, area and spider charts built for HUDs",
+  "editor": {
+    "icon": "chart",
+    "category": "Data",
+    "variants": [
+      {
+        "name": "Pie",
+        "token": "Chart.Pie",
+        "icon": "chart-pie",
+        "propsOrder": ["data", "palette", "animation", "interactive"],
+        "slots": [
+          {
+            "name": "Slice",
+            "token": "Chart.Pie.Slice"
+          },
+          {
+            "name": "Legend",
+            "token": "Chart.Legend",
+            "propsOrder": ["position", "interactive"]
+          },
+          {
+            "name": "Tooltip",
+            "token": "Chart.Tooltip",
+            "propsOrder": ["position", "offset"]
+          },
+          {
+            "name": "Labels",
+            "token": "Chart.Labels",
+            "propsOrder": ["placement", "show", "leaderLines"]
+          }
+        ]
+      },
+      {
+        "name": "Donut",
+        "token": "Chart.Donut",
+        "icon": "chart-donut",
+        "propsOrder": ["data", "palette", "animation", "interactive"],
+        "slots": [
+          {
+            "name": "Slice",
+            "token": "Chart.Donut.Slice"
+          },
+          {
+            "name": "Hole",
+            "token": "Chart.Donut.Hole",
+            "acceptsChildren": true
+          },
+          {
+            "name": "Legend",
+            "token": "Chart.Legend",
+            "propsOrder": ["position", "interactive"]
+          },
+          {
+            "name": "Tooltip",
+            "token": "Chart.Tooltip",
+            "propsOrder": ["position", "offset"]
+          },
+          {
+            "name": "Labels",
+            "token": "Chart.Labels",
+            "propsOrder": ["placement", "show", "leaderLines"]
+          }
+        ]
+      },
+      {
+        "name": "Bar",
+        "token": "Chart.Bar",
+        "icon": "chart-bar",
+        "propsOrder": ["data", "palette", "animation", "interactive"],
+        "slots": [
+          {
+            "name": "Fill",
+            "token": "Chart.Bar.Fill"
+          },
+          {
+            "name": "Legend",
+            "token": "Chart.Legend",
+            "propsOrder": ["position", "interactive"]
+          },
+          {
+            "name": "Tooltip",
+            "token": "Chart.Tooltip",
+            "propsOrder": ["position", "offset"]
+          },
+          {
+            "name": "Labels",
+            "token": "Chart.Labels",
+            "propsOrder": ["placement", "show", "leaderLines"]
+          },
+          {
+            "name": "X axis",
+            "token": "Chart.XAxis",
+            "propsOrder": ["ticks", "line", "hide"]
+          },
+          {
+            "name": "Y axis",
+            "token": "Chart.YAxis",
+            "propsOrder": ["ticks", "line", "hide"]
+          },
+          {
+            "name": "Grid",
+            "token": "Chart.Grid",
+            "propsOrder": ["horizontal", "vertical", "ticks"]
+          }
+        ]
+      },
+      {
+        "name": "Line",
+        "token": "Chart.Line",
+        "icon": "chart-line",
+        "propsOrder": ["data", "palette", "animation", "interactive"],
+        "slots": [
+          {
+            "name": "Stroke",
+            "token": "Chart.Line.Stroke"
+          },
+          {
+            "name": "Point",
+            "token": "Chart.Line.Point"
+          },
+          {
+            "name": "Legend",
+            "token": "Chart.Legend",
+            "propsOrder": ["position", "interactive"]
+          },
+          {
+            "name": "Tooltip",
+            "token": "Chart.Tooltip",
+            "propsOrder": ["position", "offset"]
+          },
+          {
+            "name": "Labels",
+            "token": "Chart.Labels",
+            "propsOrder": ["placement", "show", "leaderLines"]
+          },
+          {
+            "name": "X axis",
+            "token": "Chart.XAxis",
+            "propsOrder": ["ticks", "line", "hide"]
+          },
+          {
+            "name": "Y axis",
+            "token": "Chart.YAxis",
+            "propsOrder": ["ticks", "line", "hide"]
+          },
+          {
+            "name": "Grid",
+            "token": "Chart.Grid",
+            "propsOrder": ["horizontal", "vertical", "ticks"]
+          }
+        ]
+      },
+      {
+        "name": "Area",
+        "token": "Chart.Area",
+        "icon": "chart-area",
+        "propsOrder": ["data", "palette", "animation", "interactive"],
+        "slots": [
+          {
+            "name": "Fill",
+            "token": "Chart.Area.Fill"
+          },
+          {
+            "name": "Stroke",
+            "token": "Chart.Area.Stroke"
+          },
+          {
+            "name": "Point",
+            "token": "Chart.Area.Point"
+          },
+          {
+            "name": "Legend",
+            "token": "Chart.Legend",
+            "propsOrder": ["position", "interactive"]
+          },
+          {
+            "name": "Tooltip",
+            "token": "Chart.Tooltip",
+            "propsOrder": ["position", "offset"]
+          },
+          {
+            "name": "Labels",
+            "token": "Chart.Labels",
+            "propsOrder": ["placement", "show", "leaderLines"]
+          },
+          {
+            "name": "X axis",
+            "token": "Chart.XAxis",
+            "propsOrder": ["ticks", "line", "hide"]
+          },
+          {
+            "name": "Y axis",
+            "token": "Chart.YAxis",
+            "propsOrder": ["ticks", "line", "hide"]
+          },
+          {
+            "name": "Grid",
+            "token": "Chart.Grid",
+            "propsOrder": ["horizontal", "vertical", "ticks"]
+          }
+        ]
+      },
+      {
+        "name": "Spider",
+        "token": "Chart.Spider",
+        "icon": "chart-spider",
+        "propsOrder": ["data", "palette", "animation", "interactive"],
+        "slots": [
+          {
+            "name": "Shape",
+            "token": "Chart.Spider.Shape"
+          },
+          {
+            "name": "Web",
+            "token": "Chart.Spider.Web"
+          },
+          {
+            "name": "Axis",
+            "token": "Chart.Spider.Axis"
+          },
+          {
+            "name": "Legend",
+            "token": "Chart.Legend",
+            "propsOrder": ["position", "interactive"]
+          },
+          {
+            "name": "Tooltip",
+            "token": "Chart.Tooltip",
+            "propsOrder": ["position", "offset"]
+          },
+          {
+            "name": "Labels",
+            "token": "Chart.Labels",
+            "propsOrder": ["placement", "show", "leaderLines"]
+          }
+        ]
+      }
+    ]
+  }
 }

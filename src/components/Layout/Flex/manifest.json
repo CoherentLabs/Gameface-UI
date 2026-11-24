@@ -1,5 +1,13 @@
 {
   "name": "Flex",
   "version": "1.1.2",
-  "description": "Flexbox container"
+  "description": "Flexbox container",
+  "editor": {
+    "icon": "layout-flex",
+    "category": "Layout",
+    "children": {
+      "accepts": ["*"]
+    },
+    "propsOrder": ["direction", "justify-content", "align-items", "gap", "wrap", "align-content", "row-gap", "column-gap"]
+  }
 }

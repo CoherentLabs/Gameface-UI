@@ -1,5 +1,13 @@
 {
   "name": "Block",
   "version": "1.1.2",
-  "description": "Block-level container"
+  "description": "Block-level container",
+  "editor": {
+    "icon": "square",
+    "category": "Layout",
+    "children": {
+      "accepts": ["*"]
+    },
+    "hiddenProps": ["width", "height"]
+  }
 }

@@ -1,5 +1,62 @@
 {
   "name": "Column",
   "version": "1.1.2",
-  "description": "Vertical flex column"
+  "description": "Vertical flex column",
+  "editor": {
+    "icon": "layout-column",
+    "category": "Layout",
+    "children": {
+      "accepts": ["*"]
+    },
+    "variants": [
+      {
+        "name": "1/12 width",
+        "token": "Column.One"
+      },
+      {
+        "name": "2/12 width",
+        "token": "Column.Two"
+      },
+      {
+        "name": "3/12 width",
+        "token": "Column.Three"
+      },
+      {
+        "name": "4/12 width",
+        "token": "Column.Four"
+      },
+      {
+        "name": "5/12 width",
+        "token": "Column.Five"
+      },
+      {
+        "name": "6/12 width",
+        "token": "Column.Six"
+      },
+      {
+        "name": "7/12 width",
+        "token": "Column.Seven"
+      },
+      {
+        "name": "8/12 width",
+        "token": "Column.Eight"
+      },
+      {
+        "name": "9/12 width",
+        "token": "Column.Nine"
+      },
+      {
+        "name": "10/12 width",
+        "token": "Column.Ten"
+      },
+      {
+        "name": "11/12 width",
+        "token": "Column.Eleven"
+      },
+      {
+        "name": "12/12 width",
+        "token": "Column.Twelve"
+      }
+    ]
+  }
 }

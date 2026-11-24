@@ -1,5 +1,13 @@
 {
   "name": "Content",
   "version": "1.1.2",
-  "description": "Content container"
+  "description": "Content container",
+  "editor": {
+    "icon": "layout-content",
+    "category": "Layout",
+    "children": {
+      "accepts": ["*"]
+    },
+    "within": ["Layout"]
+  }
 }

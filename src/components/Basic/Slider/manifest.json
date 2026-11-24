@@ -1,5 +1,36 @@
 {
   "name": "Slider",
   "version": "1.1.2",
-  "description": "Draggable value slider"
+  "description": "Draggable value slider",
+  "editor": {
+    "icon": "slider",
+    "category": "Sliders",
+    "focusable": true,
+    "propsOrder": ["value", "min", "max", "step"],
+    "slots": [
+      {
+        "name": "Track",
+        "token": "Slider.Track"
+      },
+      {
+        "name": "Fill",
+        "token": "Slider.Fill"
+      },
+      {
+        "name": "Handle",
+        "token": "Slider.Handle",
+        "hiddenProps": ["classActive", "styleActive"]
+      },
+      {
+        "name": "Thumb",
+        "token": "Slider.Thumb"
+      },
+      {
+        "name": "Grid",
+        "token": "Slider.Grid",
+        "propsOrder": ["pols", "pols-without-text"],
+        "hiddenProps": ["pol-style", "pol-class", "pol-value-style", "pol-value-class"]
+      }
+    ]
+  }
 }

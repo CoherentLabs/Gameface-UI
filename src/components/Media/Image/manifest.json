@@ -1,5 +1,13 @@
 {
   "name": "Image",
   "version": "2.1.2",
-  "description": "Image element"
+  "description": "Image element",
+  "editor": {
+    "icon": "image",
+    "category": "Media",
+    "children": {
+      "accepts": ["*"]
+    },
+    "propsOrder": ["src", "fill", "options"]
+  }
 }

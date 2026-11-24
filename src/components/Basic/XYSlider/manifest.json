@@ -1,5 +1,21 @@
 {
   "name": "XYSlider",
   "version": "1.1.2",
-  "description": "Two-dimensional slider for picking an X/Y value"
+  "description": "Two-dimensional slider for picking an X/Y value",
+  "editor": {
+    "icon": "slider-xy",
+    "category": "Sliders",
+    "focusable": true,
+    "propsOrder": ["value", "minX", "maxX", "minY", "maxY", "step"],
+    "slots": [
+      {
+        "name": "Background",
+        "token": "XYSlider.Background"
+      },
+      {
+        "name": "Handle",
+        "token": "XYSlider.Handle"
+      }
+    ]
+  }
 }

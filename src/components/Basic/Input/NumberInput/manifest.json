@@ -1,5 +1,34 @@
 {
   "name": "NumberInput",
   "version": "1.1.2",
-  "description": "Numeric input with increment and decrement"
+  "description": "Numeric input with increment and decrement",
+  "editor": {
+    "icon": "input-number",
+    "category": "Inputs",
+    "focusable": true,
+    "propsOrder": ["value", "min", "max", "step"],
+    "slots": [
+      {
+        "name": "Input",
+        "token": "NumberInput.Input"
+      },
+      {
+        "name": "Placeholder",
+        "token": "NumberInput.Placeholder",
+        "textProp": "children"
+      },
+      {
+        "name": "Increase",
+        "token": "NumberInput.IncreaseControl",
+        "acceptsChildren": true,
+        "propsOrder": ["position"]
+      },
+      {
+        "name": "Decrease",
+        "token": "NumberInput.DecreaseControl",
+        "acceptsChildren": true,
+        "propsOrder": ["position"]
+      }
+    ]
+  }
 }

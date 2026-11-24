@@ -1,5 +1,29 @@
 {
   "name": "Checkbox",
   "version": "1.1.2",
-  "description": "Toggleable checkbox with a label"
+  "description": "Toggleable checkbox with a label",
+  "editor": {
+    "icon": "checkbox",
+    "category": "Inputs",
+    "focusable": true,
+    "textProp": "children",
+    "propsOrder": ["checked", "value", "disabled"],
+    "hiddenProps": ["class-disabled", "class-checked"],
+    "slots": [
+      {
+        "name": "Label",
+        "token": "Checkbox.Label",
+        "textProp": "children"
+      },
+      {
+        "name": "Control",
+        "token": "Checkbox.Control"
+      },
+      {
+        "name": "Indicator",
+        "token": "Checkbox.Indicator",
+        "acceptsChildren": true
+      }
+    ]
+  }
 }

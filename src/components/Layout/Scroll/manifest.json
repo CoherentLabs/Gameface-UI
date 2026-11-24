@@ -1,5 +1,27 @@
 {
   "name": "Scroll",
   "version": "1.1.3",
-  "description": "Scrollable container with a custom scrollbar"
+  "description": "Scrollable container with a custom scrollbar",
+  "editor": {
+    "icon": "scroll",
+    "category": "Layout",
+    "slots": [
+      {
+        "name": "Content",
+        "token": "Scroll.Content",
+        "acceptsChildren": true
+      },
+      {
+        "name": "Bar",
+        "token": "Scroll.Bar"
+      },
+      {
+        "name": "Handle",
+        "token": "Scroll.Handle"
+      }
+    ],
+    "children": {
+      "accepts": ["Scroll.Content", "Scroll.Bar", "Scroll.Handle"]
+    }
+  }
 }

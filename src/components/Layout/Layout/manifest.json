@@ -1,5 +1,29 @@
 {
   "name": "Layout",
   "version": "1.1.2",
-  "description": "Top-level layout container"
+  "description": "Top-level layout container",
+  "editor": {
+    "icon": "layout-page",
+    "category": "Layout",
+    "slots": [
+      {
+        "name": "Top",
+        "token": "Layout.Top",
+        "acceptsChildren": true
+      },
+      {
+        "name": "Content",
+        "token": "Layout.Content",
+        "acceptsChildren": true
+      },
+      {
+        "name": "Bottom",
+        "token": "Layout.Bottom",
+        "acceptsChildren": true
+      }
+    ],
+    "children": {
+      "accepts": ["Layout.Top", "Layout.Content", "Layout.Bottom", "Top", "Content", "Bottom"]
+    }
+  }
 }

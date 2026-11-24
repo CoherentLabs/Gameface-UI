@@ -1,5 +1,14 @@
 {
   "name": "Tabs",
   "version": "1.0.0",
-  "description": "Tabbed interface container"
+  "description": "Tabbed interface container",
+  "editor": {
+    "icon": "tabs",
+    "category": "Navigation",
+    "wrapper": true,
+    "children": {
+      "accepts": ["*"]
+    },
+    "propsOrder": ["default"]
+  }
 }
