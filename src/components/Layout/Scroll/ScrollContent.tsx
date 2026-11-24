@@ -1,5 +1,5 @@
 
-import { createMemo, JSX, onCleanup, onMount, ParentComponent, useContext } from 'solid-js';
+import { createMemo, onCleanup, onMount, ParentComponent, useContext, ParentProps } from 'solid-js';
 import styles from './Scroll.module.scss';
 import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
 import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
@@ -10,9 +10,8 @@ interface ScrollContentProps extends TokenComponentProps {
     ref: HTMLDivElement
 }
 
-interface ContentProps extends TokenBase {
-    style?: JSX.CSSProperties | undefined
-    class?: string
+// Content passes its element to `ref`, so it keeps the `ref` that TokenBase blocks.
+interface ContentProps extends ParentProps<Omit<TokenBase, 'ref'>> {
     ref?: HTMLDivElement
 }
 

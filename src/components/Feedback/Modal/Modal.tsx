@@ -4,7 +4,7 @@ import { Portal } from "solid-js/web"
 import styles from './Modal.module.scss';
 import ModalWindow, { Window } from "./ModalWindow";
 import ModalCloseButton from "./ModalCloseButton";
-import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
+import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
 import baseComponent, { forwardAttrs, navigationActions } from "@components/BaseComponent/BaseComponent";
 
 export interface ModalProps extends ComponentProps {
@@ -26,7 +26,7 @@ export interface ModalRef {
     isOpen: () => boolean;
 }
 
-export const Overlay = createTokenComponent<TokenBase>();
+export const Overlay = createTokenComponent();
 
 const Modal: ParentComponent<ModalProps> = (props) => {
     let element!: HTMLDivElement;

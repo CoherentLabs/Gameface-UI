@@ -6,7 +6,7 @@ import { PaginationContext } from "./Pagination";
 import styles from './Pagination.module.scss';
 import { forwardAttrs } from "@components/BaseComponent/BaseComponent";
 
-interface ControlTokenProps extends TokenBase {
+interface ControlTokenProps extends ParentProps<TokenBase> {
     'hidden-class'?: string
 }
 

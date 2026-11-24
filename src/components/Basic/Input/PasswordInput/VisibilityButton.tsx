@@ -1,4 +1,4 @@
-import { createMemo, ParentComponent } from "solid-js";
+import { createMemo, ParentComponent, ParentProps } from "solid-js";
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
 import { forwardAttrs } from "@components/BaseComponent/BaseComponent";
@@ -12,7 +12,7 @@ interface VisibilityButtonComponentProps extends TokenComponentProps {
     toggle: () => void;
 }
 
-interface VisibilityButtonTokenProps extends TokenBase {
+interface VisibilityButtonTokenProps extends ParentProps<TokenBase> {
     position?: 'before' | 'after'
 }
 

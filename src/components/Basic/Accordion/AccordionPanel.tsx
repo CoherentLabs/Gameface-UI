@@ -1,4 +1,4 @@
-import { createMemo, JSX, ParentComponent, ParentProps, useContext } from "solid-js";
+import { createMemo, ParentComponent, ParentProps, useContext } from "solid-js";
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent, TokenBase } from "@components/utils/tokenComponents";
 import { forwardAttrs } from "@components/BaseComponent/BaseComponent";
@@ -11,20 +11,15 @@ export interface PanelChildrenComponentProps extends TokenComponentProps {
     isExpanded: () => boolean;
 }
 
-export interface PanelTokenProps extends ParentProps, TokenBase {
+export interface PanelTokenProps extends ParentProps<TokenBase> {
     expanded?: boolean;
     title?: string;
     disabled?: boolean;
     'class-disabled'?: string;
     'class-expanded'?: string,
-    style?: JSX.CSSProperties;
-    class?: string;
 }
 
-export interface CommonAccordionSlotProps extends ParentProps, TokenBase {
-    style?: JSX.CSSProperties,
-    class?: string,
-}
+export interface CommonAccordionSlotProps extends ParentProps<TokenBase> { }
 
 export const Panel = createTokenComponent<PanelTokenProps>();
 

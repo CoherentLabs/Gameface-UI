@@ -28,7 +28,7 @@ export interface SliceTokenProps extends TokenBase {
     hoverOffset?: ChartLength;
 }
 
-export interface HoleTokenProps extends TokenBase, ParentProps { }
+export interface HoleTokenProps extends ParentProps<TokenBase> { }
 
 export interface RadialChartProps extends BaseChartProps {
     /** Degrees, clockwise from 12 o'clock. Defaults to 0. */

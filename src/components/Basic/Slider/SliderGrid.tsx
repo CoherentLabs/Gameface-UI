@@ -6,8 +6,6 @@ import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 import SliderPol from './SliderPol';
 
 interface SliderGridProps extends TokenBase {
-    style?: JSX.CSSProperties,
-    class?: string,
     pols?: number,
     'pols-without-text'?: number,
     'pol-style'?: JSX.CSSProperties,

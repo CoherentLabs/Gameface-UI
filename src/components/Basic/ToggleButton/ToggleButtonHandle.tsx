@@ -1,4 +1,4 @@
-import { createMemo, JSX, ParentComponent, useContext } from "solid-js";
+import { createMemo, JSX, ParentComponent, useContext, ParentProps } from "solid-js";
 import styles from './ToggleButton.module.scss';
 
 import { TokenComponentProps } from '@components/types/ComponentProps';
@@ -6,9 +6,7 @@ import { createTokenComponent, TokenBase, useToken } from "@components/utils/tok
 import { forwardAttrs } from "@components/BaseComponent/BaseComponent";
 import { ToggleButtonContext } from "./ToggleButton";
 
-interface HandleTokenProps extends TokenBase {
-    style?: JSX.CSSProperties,
-    class?: string,
+interface HandleTokenProps extends ParentProps<TokenBase> {
     'class-checked'?: string
     'style-checked'?: JSX.CSSProperties
 }

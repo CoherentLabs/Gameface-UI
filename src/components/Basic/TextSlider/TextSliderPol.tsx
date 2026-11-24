@@ -5,8 +5,6 @@ import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 
 interface PolProps extends TokenBase {
     value?: number | string,
-    style?: JSX.CSSProperties,
-    class?: string
     'text-style'?: JSX.CSSProperties,
     'text-class'?: string
 }

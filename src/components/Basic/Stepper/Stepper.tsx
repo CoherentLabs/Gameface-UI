@@ -1,5 +1,5 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, createSignal, onMount, ParentComponent, Show, createContext, createMemo, For, DEV, JSX } from "solid-js";
+import { Accessor, createSignal, onMount, ParentComponent, Show, createContext, createMemo, For, DEV, ParentProps } from "solid-js";
 import styles from './Stepper.module.scss';
 import { Control, StepperControl } from "./StepperControl";
 import { Item, StepperItem } from "./StepperItem";
@@ -31,11 +31,7 @@ interface StepperContextProps {
 
 export const StepperContext = createContext<StepperContextProps>();
 
-interface ItemsTokenProps extends TokenBase {
-    style?: JSX.CSSProperties,
-    class?: string,
-}
-const Items = createTokenComponent<ItemsTokenProps>();
+const Items = createTokenComponent<ParentProps<TokenBase>>();
 
 const Stepper: ParentComponent<StepperProps> = (props) => {
     let element!: HTMLDivElement;

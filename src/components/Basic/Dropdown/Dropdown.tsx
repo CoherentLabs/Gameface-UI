@@ -1,4 +1,4 @@
-import { Accessor, createContext, createEffect, createMemo, createSignal, createUniqueId, DEV, JSX, on, onMount, ParentComponent } from 'solid-js';
+import { Accessor, createContext, createEffect, createMemo, createSignal, createUniqueId, DEV, JSX, on, onMount, ParentComponent, ParentProps } from 'solid-js';
 import { DropdownOptions, Handle, Options, Track } from './DropdownOptions';
 import { Option } from './DropdownOption';
 import { DropdownTrigger, Icon, Placeholder, Trigger } from './DropdownTrigger';
@@ -10,10 +10,7 @@ import mergeNavigationActions from '@components/utils/mergeNavigationActions';
 import { useNavigation } from '@components/Utility/Navigation/Navigation';
 import style from './Dropdown.module.scss';
 import { TokenBase } from '@components/utils/tokenComponents';
-export interface CommonDropdownSlotProps extends TokenBase {
-    style?: JSX.CSSProperties,
-    class?: string,
-}
+export interface CommonDropdownSlotProps extends ParentProps<TokenBase> { }
 
 export interface DropdownRef extends BaseComponentRef {
     selected: Accessor<string>;

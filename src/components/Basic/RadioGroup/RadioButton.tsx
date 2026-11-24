@@ -1,4 +1,4 @@
-import { createMemo, JSX, onMount, ParentComponent, ParentProps, useContext } from "solid-js";
+import { createMemo, onMount, ParentComponent, ParentProps, useContext } from "solid-js";
 import { RadioContext } from "./Radio";
 import { ComponentProps } from "@components/types/ComponentProps";
 import styles from './Radio.module.scss';
@@ -7,12 +7,9 @@ import { Show } from "solid-js";
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
 import baseComponent from "@components/BaseComponent/BaseComponent";
 
-export interface CommonRadioButtonSlotProps extends TokenBase {
-    style?: JSX.CSSProperties,
-    class?: string,
-}
+export interface CommonRadioButtonSlotProps extends ParentProps<TokenBase> { }
 
-interface RadioButtonProps extends ParentProps, ComponentProps, CommonRadioButtonSlotProps {
+interface RadioButtonProps extends ParentProps, ComponentProps {
     value: string,
     disabled?: boolean,
     selected?: boolean,
@@ -20,7 +17,7 @@ interface RadioButtonProps extends ParentProps, ComponentProps, CommonRadioButto
     'class-selected'?: string
 }
 
-interface LabelProps {
+interface LabelProps extends ParentProps {
     before?: boolean
 }
 

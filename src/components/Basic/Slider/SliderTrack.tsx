@@ -1,20 +1,15 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import styles from './Slider.module.scss';
-import { createMemo, JSX, ParentComponent } from 'solid-js';
-import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
+import { createMemo, ParentComponent } from 'solid-js';
+import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
-
-interface SliderTrackProps extends TokenBase {
-    style?: JSX.CSSProperties,
-    class?: string,
-}
 
 interface SliderTrackComponentProps extends TokenComponentProps {
     ref: HTMLDivElement | undefined,
     handleClick: (e: MouseEvent) => void,
 }
 
-export const Track = createTokenComponent<SliderTrackProps>();
+export const Track = createTokenComponent();
 
 export const SliderTrack: ParentComponent<SliderTrackComponentProps> = (props) => {
     const TrackToken = useToken(Track, props.parentChildren);

@@ -1,4 +1,4 @@
-import { createMemo, JSX, ParentComponent, Show, useContext } from "solid-js";
+import { createMemo, JSX, ParentComponent, Show, useContext, ParentProps } from "solid-js";
 import { TokenComponentProps } from "../../types/ComponentProps";
 import styles from './List.module.scss';
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
@@ -10,7 +10,7 @@ interface ListIconComponent extends TokenComponentProps, TokenBase {
     index: number,
 }
 
-export const Icon = createTokenComponent<TokenBase>()
+export const Icon = createTokenComponent<ParentProps<TokenBase>>()
 const ListIcon: ParentComponent<ListIconComponent> = (props) => {
     const IconToken = useToken(Icon, props.parentChildren)
     const listContext = useContext(ListContext);

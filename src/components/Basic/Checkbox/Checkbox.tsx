@@ -1,5 +1,5 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, Setter, createSignal, onMount, ParentComponent, Show, createContext, createMemo, createEffect, on } from "solid-js";
+import { Accessor, Setter, createSignal, onMount, ParentComponent, Show, createContext, createMemo, createEffect, on, ParentProps } from "solid-js";
 import styles from './Checkbox.module.scss';
 import { Control, CheckboxControl } from "./CheckboxControl";
 import { Indicator } from "./CheckboxIndicator";
@@ -7,7 +7,7 @@ import { createTokenComponent, useToken } from '@components/utils/tokenComponent
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
 
-const Label = createTokenComponent<{ before?: boolean }>();
+const Label = createTokenComponent<ParentProps<{ before?: boolean }>>();
 
 export interface CheckboxRef {
     checked: Accessor<boolean>,

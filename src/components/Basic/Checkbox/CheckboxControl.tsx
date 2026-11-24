@@ -1,16 +1,11 @@
-import { JSX, ParentComponent } from "solid-js";
+import { ParentComponent, ParentProps } from "solid-js";
 import styles from './Checkbox.module.scss';
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
 import { forwardAttrs } from "@components/BaseComponent/BaseComponent";
 import { CheckboxIndicator } from "./CheckboxIndicator";
 
-interface ControlTokenProps extends TokenBase {
-    style?: JSX.CSSProperties,
-    class?: string,
-}
-
-export const Control = createTokenComponent<ControlTokenProps>();
+export const Control = createTokenComponent<ParentProps<TokenBase>>();
 
 interface CheckboxControlProps extends TokenComponentProps {
     before: boolean | undefined

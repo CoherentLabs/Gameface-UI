@@ -1,14 +1,12 @@
-import { For, JSX, ParentComponent, Show, createEffect, createMemo, on, onMount, useContext } from "solid-js";
+import { For, JSX, ParentComponent, Show, createEffect, createMemo, on, onMount, useContext, ParentProps } from "solid-js";
 import styles from './Carousel.module.scss';
 import { CarouselContext } from "./Carousel";
 import { createTokenComponent, TokenBase, useTokens } from "@components/utils/tokenComponents";
 import CarouselItem from "./CarouselItem";
 import { ComponentProps } from "@components/types/ComponentProps";
 import baseComponent from "@components/BaseComponent/BaseComponent";
-export interface CarouselItemTokenProps extends TokenBase {
+export interface CarouselItemTokenProps extends ParentProps<TokenBase> {
     selected?: boolean
-    style?: JSX.CSSProperties;
-    class?: string;
     'style-selected'?: JSX.CSSProperties;
     'class-selected'?: string;
 }

@@ -5,8 +5,6 @@ import { createTokenComponent, TokenBase, useToken } from '@components/utils/tok
 import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 
 interface SliderHandleProps extends TokenBase {
-    style?: JSX.CSSProperties,
-    class?: string,
     classActive?: string,
     styleActive?: JSX.CSSProperties
 }

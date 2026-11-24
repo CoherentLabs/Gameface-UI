@@ -1,4 +1,4 @@
-import { JSX, onCleanup, onMount, ParentComponent, ParentProps, Show, useContext } from "solid-js";
+import { onCleanup, onMount, ParentComponent, ParentProps, Show, useContext } from "solid-js";
 import styles from './Stepper.module.scss';
 
 import { createTokenComponent, TokenBase } from "@components/utils/tokenComponents";
@@ -6,9 +6,7 @@ import { forwardAttrs } from "@components/BaseComponent/BaseComponent";
 import { StepperContext } from "./Stepper";
 import Flex from "@components/Layout/Flex/Flex";
 
-interface ItemTokenProps extends TokenBase {
-    style?: JSX.CSSProperties,
-    class?: string,
+interface ItemTokenProps extends ParentProps<TokenBase> {
     selected?: boolean
     value: string
 }

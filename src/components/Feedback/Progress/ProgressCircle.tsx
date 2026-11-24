@@ -5,11 +5,11 @@ import styles from './Progress.module.scss';
 import baseComponent, { forwardAttrs } from "@components/BaseComponent/BaseComponent";
 
 interface FillTokenProps extends TokenBase { shape?: 'square' | 'round', }
-interface TextTokenProps extends TokenBase, ParentProps { }
+interface TextTokenProps extends ParentProps<TokenBase> { }
 
 const Fill = createTokenComponent<FillTokenProps>();
 const Text = createTokenComponent<TextTokenProps>();
-const Outline = createTokenComponent<TokenBase>();
+const Outline = createTokenComponent();
 
 const PATH_DATA = "M60 6 a54 54 0 1 1 0 108 a54 54 0 1 1 0 -108";
 const ProgressCircle: ParentComponent<ProgressProps> = (props) => {

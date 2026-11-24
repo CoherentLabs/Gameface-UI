@@ -13,7 +13,7 @@ interface OptionsComponentProps extends CommonDropdownSlotProps {
     'inverted-class'?: string
 }
 
-export const Track = createTokenComponent<BarTokenProps>();
+export const Track = createTokenComponent();
 export const Handle = createTokenComponent<HandleTokenProps>();
 export const Options = createTokenComponent<OptionsComponentProps>();
 

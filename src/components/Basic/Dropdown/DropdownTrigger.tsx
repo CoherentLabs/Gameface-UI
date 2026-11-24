@@ -7,7 +7,7 @@ import InlineTextBlock from '../InlineTextBlock/InlineTextBlock';
 import { CommonDropdownSlotProps, DropdownContext } from './Dropdown';
 import { TokenComponentProps } from '@components/types/ComponentProps';
 
-export const Trigger = createTokenComponent<CommonDropdownSlotProps>();
+export const Trigger = createTokenComponent();
 export const Placeholder = createTokenComponent<CommonDropdownSlotProps>();
 export const Icon = createTokenComponent<CommonDropdownSlotProps>();
 

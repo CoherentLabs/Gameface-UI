@@ -1,4 +1,4 @@
-import { createMemo, JSX, ParentComponent, Show, useContext } from 'solid-js';
+import { createMemo, ParentComponent, Show, useContext, ParentProps } from 'solid-js';
 import { ScrollContext } from './Scroll';
 import styles from './Scroll.module.scss';
 import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
@@ -6,10 +6,7 @@ import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 import { ScrollHandle } from './ScrollHandle';
 import { TokenComponentProps } from '@components/types/ComponentProps';
 
-export interface BarTokenProps extends TokenBase {
-    style?: JSX.CSSProperties | undefined
-    class?: string
-}
+export interface BarTokenProps extends ParentProps<TokenBase> { }
 
 export const Bar = createTokenComponent<BarTokenProps>();
 
