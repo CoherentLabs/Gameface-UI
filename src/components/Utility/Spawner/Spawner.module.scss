@@ -1,0 +1,11 @@
+// The Spawner is a flex container; its Layout (direction, gap, alignment) comes from the
+// class or style it is given. Items spawned at a point are absolutely positioned inside it.
+.spawner {
+    display: flex;
+    position: relative;
+
+    &-item {
+        display: flex;
+        flex-shrink: 0;
+    }
+}

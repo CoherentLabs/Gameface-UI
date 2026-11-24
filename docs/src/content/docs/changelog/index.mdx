@@ -10,6 +10,11 @@ import { Badge } from '@astrojs/starlight/components'
 
 - <Badge text="Breaking Change" variant="danger" size="small" /> [Toast](/components/feedback/toast#body-arguments): `progress` now counts the time left from `1` down to `0` (it used to count up from `0` to `20`), and is `1` for toasts without a timeout. Replace `progress() * 5` with `progress() * 100`, or with `(1 - progress()) * 100` to keep a bar that fills up. See [Adding a progress bar](/components/feedback/toast#adding-a-progress-bar).
 
+### New components
+
+- <Badge text="New" variant="tip" size="small" /> Added the [Spawner](/components/utility/spawner/) component: spawns items from a template at runtime, in its flow or at a point, with a lifetime, a max count and element reuse (`pool`). Items wait for their hide (a CSS animation from `.spawner-leaving` or `useSpawnerItem().onHide`) before they are removed.
+- <Badge text="New" variant="tip" size="small" /> Added the [VirtualList](/components/layout/virtual-list/) component: renders `pageSize` items of a list starting at `startIndex`, like the native `engine.createVirtualList()`, but with Solid reactivity. The slice is set through props or the ref (`startIndex`, `pageSize`, `nextPage`, `prevPage`), and rows follow their items (`keyed`, the default) or their positions (`keyed={false}`).
+
 ### Component changes
 
 - <Badge text="Feature" variant="success" size="small" /> [Toast](/components/feedback/toast#limiting-how-many-toasts-are-shown): `useToast({ max })` limits how many toasts are shown at once, for every position or per position. The oldest toast is removed first.

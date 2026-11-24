@@ -1,0 +1,189 @@
+---
+title: VirtualList
+---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
+
+The `VirtualList` component renders a slice of a list: `pageSize` items, starting at `startIndex`. Use it for long lists where only one page is on screen at a time, such as inventories, leaderboards and server browsers.
+
+It is the Solid counterpart of the native Gameface virtual list (`engine.createVirtualList()` used in `data-bind-for`) and follows the same rules for what is rendered. Use it when the rows need Solid reactivity, interactions or components, which `data-bind-for` can't give them. `VirtualList` does no scrolling or measuring. It renders exactly the slice you ask for.
+
+## Installation
+
+Every component ships with the boilerplate. If you are working in your own project, add `VirtualList` with the [Gameface CLI](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/):
+
+```bash
+npx gameface-cli add VirtualList
+```
+
+The CLI pulls in whatever `VirtualList` depends on. To refresh an existing copy, [update it](/docs/getting-started/updating-components) instead.
+
+## Usage
+
+Pass the full list to `each`, the slice to `startIndex` and `pageSize`, and a template as the only child. The template gets the item and its absolute index in the list.
+
+<CodePreviewGFUI height={320}>
+```tsx
+import { createSignal } from 'solid-js';
+import VirtualList, { VirtualListRef } from '@components/Layout/VirtualList/VirtualList';
+
+const players = Array.from({ length: 50 }, (_, i) => ({ id: i, name: `Player ${i + 1}`, score: 5000 - i * 73 }));
+
+const App = () => {
+    let list!: VirtualListRef;
+    const [start, setStart] = createSignal(0);
+
+    const move = (step: () => void) => {
+        step();
+        setStart(list.startIndex);
+    };
+
+    return (
+        <div style={{ width: '320px', color: 'white', 'font-size': '16px' }}>
+            <div style={{ height: '200px', display: 'flex', 'flex-direction': 'column' }}>
+                <VirtualList ref={list} each={players} startIndex={0} pageSize={6}>
+                    {(player, index) => (
+                        <div style={{ display: 'flex', 'justify-content': 'space-between', padding: '6px 10px', 'margin-bottom': '2px', 'background-color': index() % 2 ? '#2b3040' : '#343a4d' }}>
+                            <span>{index() + 1}. {player.name}</span>
+                            <span>{player.score}</span>
+                        </div>
+                    )}
+                </VirtualList>
+            </div>
+            <div style={{ display: 'flex', 'justify-content': 'space-between', 'align-items': 'center', 'margin-top': '10px' }}>
+                <button onClick={() => move(() => list.prevPage())}>Previous</button>
+                <span>{start() + 1}–{Math.min(start() + 6, players.length)} of {players.length}</span>
+                <button onClick={() => move(() => list.nextPage())}>Next</button>
+            </div>
+        </div>
+    );
+};
+```
+</CodePreviewGFUI>
+
+Only the 6 rows of the current page are in the DOM, however long the list is.
+
+`VirtualList` has no element of its own. Like `<For>`, the rows are rendered straight into the parent, so the parent's layout and styles apply to them.
+
+### Changing the page
+
+The slice can be changed in two ways, and both update the rows at once:
+
+- **Props:** bind `startIndex` and `pageSize` to signals.
+- **Ref:** set `list.startIndex` or `list.pageSize`, or call `list.nextPage()` and `list.prevPage()`.
+
+```tsx
+const [start, setStart] = createSignal(0);
+
+<VirtualList each={items()} startIndex={start()} pageSize={10}>…</VirtualList>
+<Button onClick={() => setStart((s) => s + 10)}>Next</Button>
+```
+
+Props and the ref drive the same values. A value set through the ref stays until the prop changes, and then the prop's value is used.
+
+To drive several lists with one page, pass the same signals to each of them.
+
+### With Pagination
+
+`VirtualList` pairs with the [Pagination](/components/basic/pagination/) component: Pagination shows and changes the page, and VirtualList renders it. Keep the current page in a signal, update it from Pagination's `onChange`, and turn it into a `startIndex`.
+
+<CodePreviewGFUI height={320}>
+```tsx
+import { createSignal } from 'solid-js';
+import VirtualList from '@components/Layout/VirtualList/VirtualList';
+import Pagination from '@components/Basic/Pagination/Pagination';
+
+const ITEMS_PER_PAGE = 5;
+const quests = Array.from({ length: 23 }, (_, i) => `Quest ${i + 1}`);
+
+const App = () => {
+    const [page, setPage] = createSignal(1); // Pagination pages start at 1
+
+    return (
+        <div style={{ width: '320px', color: 'white', 'font-size': '16px' }}>
+            <div style={{ height: '180px', display: 'flex', 'flex-direction': 'column' }}>
+                <VirtualList each={quests} startIndex={(page() - 1) * ITEMS_PER_PAGE} pageSize={ITEMS_PER_PAGE}>
+                    {(quest) => <div style={{ padding: '6px 10px', 'margin-bottom': '4px', 'background-color': '#343a4d' }}>{quest}</div>}
+                </VirtualList>
+            </div>
+            <Pagination
+                pageSize={Math.ceil(quests.length / ITEMS_PER_PAGE)}
+                pageIndex={page()}
+                hasNumbers
+                onChange={setPage}
+            />
+        </div>
+    );
+};
+```
+</CodePreviewGFUI>
+
+:::caution
+The two components name things differently. Pagination's `pageSize` is the **number of pages** and its `pageIndex` starts at `1`. VirtualList's `pageSize` is the **number of items per page** and its `startIndex` is an item index starting at `0`.
+:::
+
+Pagination keeps its own current page after it mounts: a later change to its `pageIndex` prop does not move it. If the list can get shorter than the current page, move Pagination with its ref (`changeIndex`) as well as the signal.
+
+### What is rendered
+
+- The rows are items `startIndex` up to `startIndex + pageSize - 1`. Past the end of the list, only the remaining items are rendered.
+- A `startIndex` at or past the end renders nothing.
+- `pageSize` defaults to `0`, which renders nothing, as in the native virtual list. Always set it.
+- Both values are truncated to integers, and negative values become `0`.
+- `fallback` is rendered only when the list itself is empty, not when the slice is.
+
+### Keyed and unkeyed rows
+
+By default, rows follow their items, like `<For>`: when the list changes or the page moves, a row whose item is still in the slice keeps its element, together with its focus and running animations. When the list is a store updated with `reconcile(items, { key: 'id' })`, items keep their identity by that ID field.
+
+With `keyed={false}`, rows follow positions, like `<Index>` and like the native virtual list. The row for each index stays while that index is in the slice, and its item updates in place. The template then gets the item as an accessor and the index as a number:
+
+```tsx
+<VirtualList keyed={false} each={scores()} startIndex={start()} pageSize={20}>
+    {(entry, index) => <ScoreRow rank={index + 1} name={entry().name} score={entry().score} />}
+</VirtualList>
+```
+
+### Row marker
+
+When a row's template returns a single element, that element gets a `data-vl-index` attribute with the row's absolute index. Use it to find the row of an item in tests or tools.
+
+## Differences from the native virtual list
+
+| Native | VirtualList |
+| ------ | ----------- |
+| An object from `engine.createVirtualList()`, used in `data-bind-for` | Props and a ref on the component |
+| Changes are applied after `engine.synchronizeModels()` | Changes are applied at once |
+| Moving the page recreates every row | Rows still in the slice are kept |
+| Rows follow positions | Rows follow items by default; positions with `keyed={false}` |
+| A negative `startIndex` renders nothing | A negative `startIndex` becomes `0` |
+
+## API
+
+### Props
+
+| Prop Name    | Type | Default | Description |
+| ------------ | ---- | ------- | ----------- |
+| `each`       | `readonly T[] \| undefined \| null \| false` | - | The full list. |
+| `startIndex` | `number` | `0` | First item rendered. |
+| `pageSize`   | `number` | `0` | Most items rendered. `0` renders nothing. |
+| `fallback`   | `JSX.Element` | `undefined` | Rendered when `each` is empty. |
+| `keyed`      | `boolean` | `true` | `true`: rows follow items. `false`: rows follow positions. |
+| `ref`        | `VirtualListRef \| ((ref: VirtualListRef) => void)` | `undefined` | Gives access to the list's page. |
+| `children`   | `(item: T, index: Accessor<number>) => JSX.Element`, or with `keyed={false}` `(item: Accessor<T>, index: number) => JSX.Element` | - | The template, rendered once per row. `index` is the absolute index in `each`. |
+
+## Ref API
+
+### Properties
+
+| Property     | Type | Description |
+| ------------ | ---- | ----------- |
+| `startIndex` | `number` | First item rendered. Setting it changes the slice. |
+| `pageSize`   | `number` | Most items rendered. Setting it changes the slice. |
+| `length`     | `number` | Length of the full list. Read-only. |
+
+### Methods
+
+| Method     | Parameters | Return Value | Description |
+| ---------- | ---------- | ------------ | ----------- |
+| `nextPage` | None | `void` | Moves `startIndex` forward by `pageSize`, if that is still inside the list. |
+| `prevPage` | None | `void` | Moves `startIndex` back by `pageSize`, not below `0`. |

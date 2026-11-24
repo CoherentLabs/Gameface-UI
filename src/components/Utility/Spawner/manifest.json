@@ -1,0 +1,5 @@
+{
+  "name": "Spawner",
+  "version": "1.0.0",
+  "description": "Spawns template items at runtime, with max count, lifetime and element reuse"
+}
