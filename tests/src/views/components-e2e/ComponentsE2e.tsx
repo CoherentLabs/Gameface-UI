@@ -39,6 +39,7 @@ import RadialMenuTest from '../../components/RadialMenu/RadialMenuTest';
 import TutorialTest from '../../components/Tutorial/TutorialTest';
 import TrackersTest from '../../components/Trackers/TrackersTest';
 import ChartTest from '../../components/Chart';
+import AttrForwardingTest from '../../components/AttrForwarding/AttrForwardingTest';
 
 const Main = () => {
     const components = [
@@ -94,6 +95,7 @@ const Main = () => {
         'media',
         // base
         'base',
+        'attr-forwarding',
     ]
 
     // Tab buttons only on the dev server (`npm run dev:test-view`), for picking a
@@ -163,6 +165,7 @@ const Main = () => {
                     <TrackersTest />
                 </Tab>
                 <ChartTest />
+                <Tab location='attr-forwarding'><AttrForwardingTest /></Tab>
             </Tabs>
         </div>
     );

@@ -3,8 +3,8 @@ import { CommonDropdownSlotProps, DropdownContext } from './Dropdown';
 import style from './Dropdown.module.scss';
 import { createTokenComponent, useToken, useTokens } from '@components/utils/tokenComponents';
 import { TokenComponentProps } from '@components/types/ComponentProps';
+import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 import Scroll from '@components/Layout/Scroll/Scroll';
-import { BarTokenProps } from '@components/Layout/Scroll/ScrollBar';
 import { HandleTokenProps } from '@components/Layout/Scroll/ScrollHandle';
 import { DropdownOption, Option } from './DropdownOption';
 
@@ -12,7 +12,7 @@ interface OptionsComponentProps extends CommonDropdownSlotProps {
     'inverted-class'?: string
 }
 
-export const Track = createTokenComponent<BarTokenProps>();
+export const Track = createTokenComponent();
 export const Handle = createTokenComponent<HandleTokenProps>();
 export const Options = createTokenComponent<OptionsComponentProps>();
 
@@ -40,7 +40,7 @@ export const DropdownOptions: ParentComponent<TokenComponentProps> = (props) => 
     })
 
     return (
-        <div class={optionsClasses()} style={OptionsToken?.()?.style}>
+        <div class={optionsClasses()} style={OptionsToken?.()?.style} use:forwardAttrs={OptionsToken()}>
             <Scroll>
                 <Scroll.Content>
                     <For each={OptionsTokens()}>

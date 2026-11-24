@@ -1,7 +1,8 @@
 
-import { createMemo, JSX, onCleanup, onMount, ParentComponent, useContext } from 'solid-js';
+import { createMemo, onCleanup, onMount, ParentComponent, useContext, ParentProps } from 'solid-js';
 import styles from './Scroll.module.scss';
-import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
+import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
+import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { ScrollContext } from './Scroll';
 
@@ -9,10 +10,9 @@ interface ScrollContentProps extends TokenComponentProps {
     ref: HTMLDivElement
 }
 
-interface ContentProps {
-    style?: JSX.CSSProperties | undefined
-    class?: string
-    ref?: HTMLDivElement
+// Content passes its element to `ref`, so it declares one; createTokenComponent blocks `ref` on slots that don't.
+interface ContentProps extends ParentProps<TokenBase> {
+    ref?: HTMLDivElement | ((el: HTMLDivElement) => void)
 }
 
 export const Content = createTokenComponent<ContentProps>();
@@ -47,7 +47,7 @@ export const ScrollContent: ParentComponent<ScrollContentProps> = (props) => {
 
     const initContentRef = (el: HTMLDivElement) => {
         const token = ContentToken();
-        token?.ref && (token.ref as any as (el: HTMLDivElement) => void)(el);
+        if (typeof token?.ref === 'function') token.ref(el);
         (props.ref as any as (el: HTMLDivElement) => void)(el);
     }
 
@@ -55,7 +55,7 @@ export const ScrollContent: ParentComponent<ScrollContentProps> = (props) => {
         if (resizeObserver) resizeObserver.disconnect();
     });
 
-    return <div ref={initContentRef} style={contentStyles()} class={contentClasses()}>
+    return <div ref={initContentRef} style={contentStyles()} class={contentClasses()} use:forwardAttrs={ContentToken()}>
         <div ref={contentRef}>
             {ContentToken()?.children}
         </div>

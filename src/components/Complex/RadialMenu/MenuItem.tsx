@@ -3,6 +3,7 @@ import { useToken } from "@components/utils/tokenComponents";
 import { TokenComponentProps } from "@components/types/ComponentProps";
 import { ItemTokenProps, Selector, RadialMenuContext } from "./RadialMenu";
 import styles from './RadialMenu.module.scss';
+import { forwardAttrs } from "@components/BaseComponent/BaseComponent";
 
 interface MenuItemComponentProps extends TokenComponentProps {
     item: ParentProps<ItemTokenProps>
@@ -64,9 +65,7 @@ export const MenuItem: ParentComponent<MenuItemComponentProps> = (props) => {
             transform: `rotate(${rotation()}deg)`,
         };
 
-        if (props.item.style) {
-            Object.assign(styles, SelectorToken()?.style);
-        }
+        Object.assign(styles, SelectorToken()?.style ?? {});
 
         if(isSelected()) {
             Object.assign(styles, SelectorToken()?.["style-selected"] ?? {});
@@ -77,9 +76,9 @@ export const MenuItem: ParentComponent<MenuItemComponentProps> = (props) => {
 
     return (
         // Wrapper of the item content and the clipped selector
-        <div class={wrapperClasses()} style={wrapperStyles()}>
+        <div class={wrapperClasses()} style={wrapperStyles()} use:forwardAttrs={props.item}>
             {/* Colored part of the menu */}
-            <div class={selectorClasses()} style={selectorStyles()}></div>
+            <div class={selectorClasses()} style={selectorStyles()} use:forwardAttrs={SelectorToken()}></div>
             {/* Item content goes here */}
             <div class={styles['menu-item-content']} style={{transform: `rotate(${rotation()}deg)`, "padding-top": offset() }}>
                 {/* Rotated negatively to cancel out menu rotation */}

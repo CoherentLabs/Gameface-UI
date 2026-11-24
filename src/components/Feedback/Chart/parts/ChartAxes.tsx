@@ -1,4 +1,5 @@
 import { Component, Index, JSX, Show } from 'solid-js';
+import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 import styles from '../Chart.module.scss';
 import { AxisTokenProps, GridTokenProps } from '../slots';
 import { ChartMargin } from '../types';
@@ -52,13 +53,13 @@ export const ChartGridLines: Component<ChartGridLinesProps> = (props) => {
         <g transform={`translate(${props.margin.left} ${props.margin.top})`}>
             <Show when={showHorizontal()}>
                 <Index each={props.valueTicks}>{(tick) => (
-                    <line {...valueLine(props, tick().position)} class={gridClasses()} style={props.grid?.style} />
+                    <line {...valueLine(props, tick().position)} class={gridClasses()} style={props.grid?.style} use:forwardAttrs={props.grid} />
                 )}</Index>
             </Show>
 
             <Show when={showVertical()}>
                 <Index each={props.categoryTicks}>{(tick) => (
-                    <line {...categoryLine(props, tick().position)} class={gridClasses()} style={props.grid?.style} />
+                    <line {...categoryLine(props, tick().position)} class={gridClasses()} style={props.grid?.style} use:forwardAttrs={props.grid} />
                 )}</Index>
             </Show>
 
@@ -87,6 +88,7 @@ export const ChartAxisLabels: Component<AxisGeometry> = (props) => {
                     <div
                         class={[styles['axis-label'], props.valueAxis?.class].filter(Boolean).join(' ')}
                         style={{ ...valueLabelStyle(tick().position), ...props.valueAxis?.style }}
+                        use:forwardAttrs={props.valueAxis}
                     >
                         {tick().label}
                     </div>
@@ -98,6 +100,7 @@ export const ChartAxisLabels: Component<AxisGeometry> = (props) => {
                     <div
                         class={[styles['axis-label'], props.categoryAxis?.class].filter(Boolean).join(' ')}
                         style={{ ...categoryLabelStyle(tick().position), ...props.categoryAxis?.style }}
+                        use:forwardAttrs={props.categoryAxis}
                     >
                         {tick().label}
                     </div>

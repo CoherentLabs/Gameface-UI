@@ -1,7 +1,8 @@
 import { createMemo, JSX, ParentComponent, Show, useContext } from "solid-js";
 import { TokenComponentProps } from "@components/types/ComponentProps";
 import { Icon, Indicator, RadialMenuContext } from "./RadialMenu";
-import { useToken } from "@components/utils/tokenComponents";
+import { tokenAttrs, useToken } from "@components/utils/tokenComponents";
+import { forwardAttrs } from "@components/BaseComponent/BaseComponent";
 import Absolute from "@components/Layout/Absolute/Absolute";
 import styles from './RadialMenu.module.scss';
 
@@ -39,12 +40,13 @@ const MenuIndicator: ParentComponent<TokenComponentProps> = (props) => {
             {/* Wrapper around the center that rotates with the mouse */}
             <div class={styles['menu-indicator-wrapper']} style={{transform: `rotate(${context.rotation()}deg)`}}>
                 {/* The indicator */}
-                <div class={IndicatorClasses()} style={IndicatorStyles()}></div>
+                <div class={IndicatorClasses()} style={IndicatorStyles()} use:forwardAttrs={IndicatorToken()}></div>
                 {/* The icon inside the indicator */}
                 <Show when={IconToken()}>
                     {IconToken()?.children ? (
                         // Wrapped in Absolute to center the icon inside the indicator
                         <Absolute
+                            {...tokenAttrs(IconToken())}
                             class={IconToken()?.class ?? ""}
                             style={IconToken()?.style}
                         >
@@ -55,6 +57,7 @@ const MenuIndicator: ParentComponent<TokenComponentProps> = (props) => {
                         <div
                             class={`${IconToken()?.class ?? ""} ${styles['menu-indicator-icon']}`}
                             style={IconToken()?.style}
+                            use:forwardAttrs={IconToken()}
                         />
                     )}
                 </Show>

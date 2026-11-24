@@ -1,5 +1,6 @@
 import { createMemo, Index, ParentComponent, Show } from 'solid-js';
 import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
+import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 import styles from '../Chart.module.scss';
 import { BaseChartProps, ChartHit, LegendEntry } from '../types';
 import { Grid, Labels, Legend, Tooltip, XAxis, YAxis } from '../slots';
@@ -367,6 +368,7 @@ const BarChart: ParentComponent<BarProps> = (props) => {
                                     fill={bar().color}
                                     class={barClasses(bar().seriesIndex, bar().categoryIndex)}
                                     style={fillToken()?.style}
+                                    use:forwardAttrs={fillToken()}
                                     {...marks}
                                 />
                             );

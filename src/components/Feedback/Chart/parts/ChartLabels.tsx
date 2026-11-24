@@ -1,4 +1,5 @@
 import { Component, Index } from 'solid-js';
+import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 import styles from '../Chart.module.scss';
 import { LabelsTokenProps } from '../slots';
 
@@ -37,6 +38,7 @@ const ChartLabels: Component<ChartLabelsProps> = (props) => (
         <Index each={props.anchors}>{(anchor) => (
             <div
                 class={[styles.label, props.token.class].filter(Boolean).join(' ')}
+                use:forwardAttrs={props.token}
                 style={{
                     left: `${anchor().x}px`,
                     top: `${anchor().y}px`,

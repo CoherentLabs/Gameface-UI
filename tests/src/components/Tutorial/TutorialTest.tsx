@@ -96,6 +96,7 @@ const TutorialTest = () => {
                 style={reactiveStyle()}
                 onChange={(step) => setCurrentStep(step)}
                 tooltip={TestTooltip}>
+                <Tutorial.Spotlight class={selectors.spotlight} />
                 <div class={selectors["card-wrapper"]}>
                     <Tutorial.Step order={steps[0].order} title={steps[0].title} content={steps[0].content}>
                         <div class={selectors.card}>

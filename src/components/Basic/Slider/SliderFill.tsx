@@ -1,18 +1,14 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import styles from './Slider.module.scss';
-import { createMemo, JSX, ParentComponent } from 'solid-js';
+import { createMemo, ParentComponent } from 'solid-js';
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
-
-interface SliderFillProps {
-    style?: JSX.CSSProperties,
-    class?: string,
-}
+import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 
 interface SliderFillComponentProps extends TokenComponentProps {
     percent: () => number
 }
 
-export const Fill = createTokenComponent<SliderFillProps>();
+export const Fill = createTokenComponent();
 
 export const SliderFill:ParentComponent<SliderFillComponentProps> = (props) => {
     const FillToken = useToken(Fill, props.parentChildren);
@@ -31,6 +27,6 @@ export const SliderFill:ParentComponent<SliderFillComponentProps> = (props) => {
     })
 
     return (
-        <div class={fillClasses()} style={fillStyle()}></div>
+        <div class={fillClasses()} style={fillStyle()} use:forwardAttrs={FillToken()}></div>
     )
 }

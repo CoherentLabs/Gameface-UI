@@ -67,6 +67,16 @@ When defining the body function, you receive the following helpers:
 | `progress` | `() => number` | A signal returning the current lifetime of the toast (0 to 20). |
 | `dismiss` | `() => void` | A function to programmatically remove the toast from the UI. |
 
+### `Toaster` props
+
+Forwarded to the grid that holds the toasts.
+
+| Prop Name | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `style`   | `JSX.CSSProperties` | `{}` | Inline styles to apply to the toast grid. |
+| `class`   | `string` | `""` | Additional CSS classes to style the toast grid. |
+| `attr:*`  | `string` | — | Any attribute to set on the toast grid. See [Setting attributes](/docs/concepts/setting-attributes/). |
+
 ## Guide
 
 ### Adding a close button

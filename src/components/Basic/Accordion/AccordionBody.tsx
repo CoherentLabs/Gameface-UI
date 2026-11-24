@@ -2,6 +2,7 @@ import { createEffect, createMemo, createSignal, JSX, onMount, ParentComponent }
 import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
 import styles from './Accordion.module.scss';
 import { waitForFrames } from "@components/utils/waitForFrames";
+import { forwardAttrs } from "@components/BaseComponent/BaseComponent";
 import { CommonAccordionSlotProps, PanelChildrenComponentProps } from "./AccordionPanel";
 
 export const Body = createTokenComponent<CommonAccordionSlotProps>();
@@ -38,7 +39,8 @@ export const AccordionBody: ParentComponent<PanelChildrenComponentProps> = (prop
             style={bodyStyles()}>
             <div
                 class={`${styles.content} ${BodyToken()?.class || ''}`}
-                style={BodyToken()?.style}>
+                style={BodyToken()?.style}
+                use:forwardAttrs={BodyToken()}>
                 {BodyToken()?.children}
             </div>
         </div>

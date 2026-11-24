@@ -1,6 +1,7 @@
 import { area, curveLinear, curveMonotoneX, curveStep, curveStepAfter, curveStepBefore, line } from 'd3-shape';
 import { createMemo, Index, ParentComponent, Show } from 'solid-js';
 import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
+import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 import styles from '../Chart.module.scss';
 import { BaseChartProps, ChartHit, LegendEntry } from '../types';
 import { Grid, Labels, Legend, Tooltip, XAxis, YAxis } from '../slots';
@@ -374,6 +375,7 @@ export const createSeriesChart = (config: SeriesChartConfig): ParentComponent<Se
                                         opacity={fillToken()?.opacity ?? DEFAULT_AREA_OPACITY}
                                         class={[styles['area-fill'], fillToken()?.class].filter(Boolean).join(' ')}
                                         style={fillToken()?.style}
+                                        use:forwardAttrs={fillToken()}
                                     />
                                 </Show>
 
@@ -384,6 +386,7 @@ export const createSeriesChart = (config: SeriesChartConfig): ParentComponent<Se
                                     stroke-width={strokeWidth()}
                                     class={[styles['series-stroke'], strokeToken()?.class].filter(Boolean).join(' ')}
                                     style={strokeToken()?.style}
+                                    use:forwardAttrs={strokeToken()}
                                     {...revealProps(series().stroke)}
                                 />
 
@@ -396,6 +399,7 @@ export const createSeriesChart = (config: SeriesChartConfig): ParentComponent<Se
                                             fill={series().color}
                                             class={[styles['series-point'], pointToken()?.class].filter(Boolean).join(' ')}
                                             style={pointToken()?.style}
+                                            use:forwardAttrs={pointToken()}
                                         />
                                     </Show>
                                 )}</Index>

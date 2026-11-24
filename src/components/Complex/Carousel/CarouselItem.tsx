@@ -2,6 +2,7 @@ import { Accessor, JSX, ParentComponent, ParentProps, Show, createMemo, onCleanu
 import styles from './Carousel.module.scss';
 import { CarouselContext } from "./Carousel";
 import { CarouselItemTokenProps } from "./CarouselItems";
+import { forwardAttrs } from "@components/BaseComponent/BaseComponent";
 
 interface CarouselItemProps {
     item: ParentProps<CarouselItemTokenProps>
@@ -55,7 +56,7 @@ const CarouselItem: ParentComponent<CarouselItemProps> = (props) => {
     });
 
     return (
-        <div class={itemClasses()} style={itemStyles()}>
+        <div class={itemClasses()} style={itemStyles()} use:forwardAttrs={props.item}>
             {props.item.children}
         </div>
     )

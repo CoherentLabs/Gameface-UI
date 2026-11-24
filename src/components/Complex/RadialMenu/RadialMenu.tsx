@@ -1,23 +1,23 @@
 import { createTokenComponent, TokenBase, useTokens } from '@components/utils/tokenComponents';
 import styles from './RadialMenu.module.scss';
 import { ComponentProps } from '@components/types/ComponentProps';
-import { Accessor, createContext, createEffect, createMemo, createSignal, For, JSX, on, onCleanup, onMount, ParentComponent, Setter } from 'solid-js';
+import { Accessor, createContext, createEffect, createMemo, createSignal, For, JSX, on, onCleanup, onMount, ParentComponent, Setter, ParentProps } from 'solid-js';
 import MenuItem from './MenuItem';
 import MenuCenter from './MenuCenter';
 import { angleToSlice, mouseToStick, Stick, stickToPolar } from './utils';
 import baseComponent, { navigationActions } from '@components/BaseComponent/BaseComponent';
 
-export interface ItemTokenProps extends TokenBase {
+export interface ItemTokenProps extends ParentProps<TokenBase> {
     id?: string,
     offset?: string
     "class-selected"?: string,
     "style-selected"?: JSX.CSSProperties,
 }
 export const Item = createTokenComponent<ItemTokenProps>()
-export const Indicator = createTokenComponent<TokenBase>()
-export const Content = createTokenComponent<TokenBase>()
-export const Icon = createTokenComponent<TokenBase>()
-export const Selector = createTokenComponent<Omit<ItemTokenProps, 'id' | 'offset'>>();
+export const Indicator = createTokenComponent<ParentProps<TokenBase>>()
+export const Content = createTokenComponent<ParentProps<TokenBase>>()
+export const Icon = createTokenComponent<ParentProps<TokenBase>>()
+export const Selector = createTokenComponent<Omit<ItemTokenProps, 'id' | 'offset' | 'children'>>();
 
 interface RadialMenuContextType {
     clipPathValue: Accessor<string>,

@@ -1,5 +1,5 @@
 import { Input, Placeholder } from "../shared/tokens";
-import { Show, createMemo, ParentComponent, createSignal, onCleanup, createEffect, on } from "solid-js";
+import { Show, createMemo, ParentComponent, createSignal, onCleanup, createEffect, on, ParentProps } from "solid-js";
 import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
 import { InputBase } from "../InputBase/InputBase";
 import { TextInputProps, TextInputRef } from "../shared/types";
@@ -23,7 +23,7 @@ interface NumberInputProps extends Omit<TextInputProps, 'max-symbols' | 'value' 
     step?: number,
     onChange?: (value: valueType) => void;
 }
-interface InputControlTokenProps extends TokenBase {
+export interface InputControlTokenProps extends ParentProps<TokenBase> {
     position?: 'before' | 'after'
 }
 

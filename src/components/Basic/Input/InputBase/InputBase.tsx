@@ -1,6 +1,7 @@
 import { Accessor, Component, createMemo, Show } from "solid-js";
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { useToken } from "@components/utils/tokenComponents";
+import { forwardAttrs } from "@components/BaseComponent/BaseComponent";
 import { Input, Placeholder } from "../shared/tokens";
 import styles from './InputBase.module.scss';
 
@@ -34,11 +35,12 @@ export const InputBase: Component<InputComponentProps> = (props) => {
                 ref={props.ref}
                 class={InputClasses()}
                 style={InputToken()?.style}
+                use:forwardAttrs={InputToken()}
                 onInput={props.handleChange}
                 ondblclick={(e) => e.currentTarget.select()}
                 value={props.value()} />
             <Show when={PlaceholderToken() && props.value() === ''}>
-                <div class={`${styles.placeholder} ${PlaceholderToken()?.class ?? ''}`} style={PlaceholderToken()?.style}>
+                <div class={`${styles.placeholder} ${PlaceholderToken()?.class ?? ''}`} style={PlaceholderToken()?.style} use:forwardAttrs={PlaceholderToken()}>
                     {PlaceholderToken()?.children || ""}
                 </div>
             </Show>

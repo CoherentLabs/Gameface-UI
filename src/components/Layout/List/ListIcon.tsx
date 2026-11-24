@@ -1,15 +1,16 @@
-import { createMemo, JSX, ParentComponent, Show, useContext } from "solid-js";
+import { createMemo, JSX, ParentComponent, Show, useContext, ParentProps } from "solid-js";
 import { TokenComponentProps } from "../../types/ComponentProps";
 import styles from './List.module.scss';
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
 import { ListContext } from "./List";
+import { forwardAttrs } from "@components/BaseComponent/BaseComponent";
 
 interface ListIconComponent extends TokenComponentProps, TokenBase {
     isNested: boolean,
     index: number,
 }
 
-export const Icon = createTokenComponent<TokenBase>()
+export const Icon = createTokenComponent<ParentProps<TokenBase>>()
 const ListIcon: ParentComponent<ListIconComponent> = (props) => {
     const IconToken = useToken(Icon, props.parentChildren)
     const listContext = useContext(ListContext);
@@ -41,12 +42,12 @@ const ListIcon: ParentComponent<ListIconComponent> = (props) => {
     return (
         <>
             <Show when={IconToken()?.children}>
-                <div style={IconStyle()} class={`${IconToken()?.class ?? ""} ${styles.icon} ${listContext?.bulletClass() ?? ''}`}>
+                <div style={IconStyle()} class={`${IconToken()?.class ?? ""} ${styles.icon} ${listContext?.bulletClass() ?? ''}`} use:forwardAttrs={IconToken()}>
                     {IconToken()?.children}
                 </div>
             </Show>
             <Show when={!IconToken()?.children}>
-                <div style={IconStyle()} class={IconClasses()}>
+                <div style={IconStyle()} class={IconClasses()} use:forwardAttrs={IconToken()}>
                     {listContext?.isOrdered() && ((props.index + 1) + '.')}
                 </div>
             </Show>

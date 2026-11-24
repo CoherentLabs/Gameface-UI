@@ -1,10 +1,10 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, createSignal, onMount, ParentComponent, Show, createContext, createMemo, For, DEV, JSX } from "solid-js";
+import { Accessor, createSignal, onMount, ParentComponent, Show, createContext, createMemo, For, DEV, ParentProps } from "solid-js";
 import styles from './Stepper.module.scss';
 import { Control, StepperControl } from "./StepperControl";
 import { Item, StepperItem } from "./StepperItem";
-import { createTokenComponent, useToken, useTokens } from '@components/utils/tokenComponents';
-import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
+import { createTokenComponent, TokenBase, useToken, useTokens } from '@components/utils/tokenComponents';
+import baseComponent, { forwardAttrs, navigationActions } from "@components/BaseComponent/BaseComponent";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
 
 export interface StepperRef {
@@ -31,11 +31,7 @@ interface StepperContextProps {
 
 export const StepperContext = createContext<StepperContextProps>();
 
-interface ItemsTokenProps {
-    style?: JSX.CSSProperties,
-    class?: string,
-}
-const Items = createTokenComponent<ItemsTokenProps>();
+const Items = createTokenComponent<ParentProps<TokenBase>>();
 
 const Stepper: ParentComponent<StepperProps> = (props) => {
     let element!: HTMLDivElement;
@@ -165,7 +161,7 @@ const Stepper: ParentComponent<StepperProps> = (props) => {
                     <StepperControl direction='next' visible={showNextControl()} parentChildren={props.children} />
                 </Show>
 
-                <div class={styles['stepper-items'] + ' ' + (StepperItemsToken?.()?.class || '')} style={StepperItemsToken?.()?.style}>
+                <div class={styles['stepper-items'] + ' ' + (StepperItemsToken?.()?.class || '')} style={StepperItemsToken?.()?.style} use:forwardAttrs={StepperItemsToken()}>
                     <For each={StepperItems()}>
                         {(item) => <StepperItem item={item} />}
                     </For>

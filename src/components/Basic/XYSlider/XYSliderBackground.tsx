@@ -1,13 +1,9 @@
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import styles from './XYSlider.module.scss';
-import { createMemo, JSX, Show } from 'solid-js';
-import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
-interface XYSliderBackgroundProps {
-    style?: JSX.CSSProperties,
-    class?: string,
-}
-
-export const Background = createTokenComponent<XYSliderBackgroundProps>();
+import { createMemo, Show, ParentProps } from 'solid-js';
+import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
+import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
+export const Background = createTokenComponent<ParentProps<TokenBase>>();
 
 export const XYSliderBackground = (props: TokenComponentProps) => {
     const BackgroundToken = useToken(Background, props.parentChildren);
@@ -21,7 +17,7 @@ export const XYSliderBackground = (props: TokenComponentProps) => {
     });
 
     return (
-        <div class={backgroundClasses()} style={BackgroundToken()?.style}>
+        <div class={backgroundClasses()} style={BackgroundToken()?.style} use:forwardAttrs={BackgroundToken()}>
             <Show when={BackgroundToken()}>
                 {BackgroundToken()?.children}
             </Show>

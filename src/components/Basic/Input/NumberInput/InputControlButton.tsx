@@ -1,11 +1,13 @@
-import { createMemo, ParentComponent } from "solid-js";
+import { Accessor, createMemo, ParentComponent, ParentProps } from "solid-js";
+import { forwardAttrs } from "@components/BaseComponent/BaseComponent";
+import type { InputControlTokenProps } from "./NumberInput";
 import ArrowDownIcon from './arrow-down.svg?component-solid'
 import ArrowUpIcon from './arrow-up.svg?component-solid'
 import sharedStyles from '../shared/TextInput.module.scss';
 import styles from './NumberInput.module.scss';
 
 interface InputControlButtonProps {
-    token: () => any,
+    token: Accessor<ParentProps<InputControlTokenProps> | null | undefined>,
     click: () => void,
     orientation: 'up' | 'down',
     position: 'before' | 'after',
@@ -25,7 +27,8 @@ const InputControlButton: ParentComponent<InputControlButtonProps> = (props) => 
         <div 
             class={InputControlButtonClasses()} 
             style={props.token()?.style} 
-            onclick={props.click}>
+            onclick={props.click}
+            use:forwardAttrs={props.token()}>
             {props.token()?.children || (props.orientation === 'up' ? <ArrowUpIcon /> : <ArrowDownIcon /> )}
         </div>
     )

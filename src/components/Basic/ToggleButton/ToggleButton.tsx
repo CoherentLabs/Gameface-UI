@@ -1,5 +1,5 @@
 import { ComponentProps } from "@components/types/ComponentProps";
-import { Accessor, Setter, createSignal, onMount, ParentComponent, Show, createContext, createMemo, createEffect, on } from "solid-js";
+import { Accessor, Setter, createSignal, onMount, ParentComponent, Show, createContext, createMemo, createEffect, on, ParentProps } from "solid-js";
 import styles from './ToggleButton.module.scss';
 import { Control, ToggleButtonControl } from "./ToggleButtonControl";
 import { Indicator } from "./ToggleButtonIndicator";
@@ -8,8 +8,8 @@ import { Handle } from "./ToggleButtonHandle";
 import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
 
-export const LabelLeft = createTokenComponent();
-export const LabelRight = createTokenComponent();
+export const LabelLeft = createTokenComponent<ParentProps>();
+export const LabelRight = createTokenComponent<ParentProps>();
 
 export interface ToggleButtonRef {
     checked: Accessor<boolean>,

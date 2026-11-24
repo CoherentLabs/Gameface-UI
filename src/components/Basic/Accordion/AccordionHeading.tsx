@@ -5,7 +5,7 @@ import styles from './Accordion.module.scss';
 import { CommonAccordionSlotProps, PanelChildrenComponentProps } from "./AccordionPanel";
 import { AccordionContext } from "./Accordion";
 import mergeNavigationActions from "@components/utils/mergeNavigationActions";
-import { navigationActions } from "@components/BaseComponent/BaseComponent";
+import { forwardAttrs, navigationActions } from "@components/BaseComponent/BaseComponent";
 import { ComponentNavigationActions } from "@components/types/ComponentProps";
 
 interface AccordionHeadingProps extends CommonAccordionSlotProps {
@@ -25,6 +25,7 @@ export const AccordionHeading: ParentComponent<{ id: string, onAction?: Record<s
         <div
             class={`${styles.heading} ${HeadingToken()?.class || ''}`}
             style={HeadingToken()?.style}
+            use:forwardAttrs={HeadingToken()}
             onclick={() => accordion?.toggle(props.id)}
             use:navigationActions={mergeNavigationActions(HeadingToken() as any, {
                 'select': () => accordion?.toggle(props.id)
@@ -32,7 +33,8 @@ export const AccordionHeading: ParentComponent<{ id: string, onAction?: Record<s
             <div class={`${styles['heading-content']}`}>{HeadingToken()?.children}</div>
             <div
                 class={`${styles.icon} ${IconToken?.()?.class || ''} ${props.isExpanded() ? styles['icon-expanded'] : ''}`}
-                style={IconToken?.()?.style}>
+                style={IconToken?.()?.style}
+                use:forwardAttrs={IconToken()}>
                 {IconToken?.()?.children || <AccordionIcon />}
             </div>
         </div>

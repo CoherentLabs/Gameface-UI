@@ -4,8 +4,9 @@ import { createTokenComponent, TokenBase, useToken } from "@components/utils/tok
 import Arrow from './Arrow.svg?component-solid';
 import { PaginationContext } from "./Pagination";
 import styles from './Pagination.module.scss';
+import { forwardAttrs } from "@components/BaseComponent/BaseComponent";
 
-interface ControlTokenProps extends TokenBase {
+interface ControlTokenProps extends ParentProps<TokenBase> {
     'hidden-class'?: string
 }
 
@@ -55,6 +56,7 @@ export const PaginationControl: ParentComponent<PaginationControlProps> = (props
         <div 
             class={controlContainerClasses()}
             style={ControlToken()?.style || {}}
+            use:forwardAttrs={ControlToken()}
             onClick={handleClick}>
             <Show when={props.direction === 'prev'}>
                 <ControlComponent ControlToken={ControlToken} />

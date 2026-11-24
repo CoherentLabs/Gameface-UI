@@ -15,7 +15,7 @@ const Toggle: Component<ToggleProps> = (props) => {
             class-checked={styles['toggle-checked']} 
             checked={props.checked}
             onChange={props.onChange}>
-            <ToggleButton.LabelLeft class={styles['toggle-label-left']}>
+            <ToggleButton.LabelLeft>
                 {props.label}
             </ToggleButton.LabelLeft>
             <ToggleButton.Control class={styles['toggle-control']}>

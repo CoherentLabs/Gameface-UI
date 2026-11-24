@@ -4,7 +4,27 @@ title: Changelog
 
 import { Badge } from '@astrojs/starlight/components'
 
-## 5.2.0 :badge[Latest]{variant="note"}
+## 6.0.0 :badge[Latest]{variant="note"}
+
+### ⚠️ Breaking Changes
+
+- <Badge text="Breaking Change" variant="danger" size="small" /> [Tutorial](/components/complex/tutorial/): `class`, `style` and event handlers on `<Tutorial>` now land on the root wrapper instead of the highlight frame. Move them to the new `Tutorial.Spotlight` slot. See [Migrating to 6.0.0](/components/complex/tutorial/#tutorial-props).
+- <Badge text="Breaking Change" variant="danger" size="small" /> [Slots](/docs/concepts/slots/): `createTokenComponent<T>()` no longer adds `children` to `T`. A custom slot that renders its children must extend `ParentProps`, e.g. `createTokenComponent<ParentProps<{ before?: boolean }>>()`. Without a type, `createTokenComponent()` now accepts only `class`, `style` and `attr:*` instead of any prop.
+- <Badge text="Breaking Change" variant="danger" size="small" /> Slots that ignored `ref` no longer accept it, e.g. `List.Icon` and the label slots. `Scroll.Content` and `List.Item` still take one.
+- <Badge text="Breaking Change" variant="danger" size="small" /> [Dropdown](/components/basic/dropdown/#dropdowntrack): `Dropdown.Track` no longer accepts children. They were never rendered.
+
+### Attributes on slots
+
+- <Badge text="Feature" variant="success" size="small" /> `attr:*` now works on every slot except labels, e.g. `<Dropdown.Trigger attr:data-custom="..." />`. See [Setting attributes](/docs/concepts/setting-attributes/).
+- <Badge text="Feature" variant="success" size="small" /> [Tutorial](/components/complex/tutorial/#tutorialspotlight): Added the `Tutorial.Spotlight` and `Tutorial.Overlay` slots.
+- <Badge text="Feature" variant="success" size="small" /> [Toast](/components/feedback/toast/#toaster-props): `Toaster` accepts `class`, `style` and `attr:*`, set on the toast grid.
+- <Badge text="Change" variant="note" size="small" /> [Tooltip](/components/feedback/tooltip/#customizing-tooltip-content-and-appearance): `attr:*` on a tooltip is set on its wrapper and is no longer passed to the custom content.
+
+### 🐛 Bug fixes
+
+- <Badge text="Fix" variant="danger" size="small" /> [RadialMenu](/components/complex/radial-menu/): The selector's style no longer depends on whether the item has a style.
+
+## 5.2.0
 
 ### 🛠 Navigation Improvements
 

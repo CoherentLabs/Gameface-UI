@@ -4,8 +4,8 @@ import { Portal } from "solid-js/web"
 import styles from './Modal.module.scss';
 import ModalWindow, { Window } from "./ModalWindow";
 import ModalCloseButton from "./ModalCloseButton";
-import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
-import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
+import { createTokenComponent, useToken } from "@components/utils/tokenComponents";
+import baseComponent, { forwardAttrs, navigationActions } from "@components/BaseComponent/BaseComponent";
 
 export interface ModalProps extends ComponentProps {
     open?: boolean;
@@ -26,7 +26,7 @@ export interface ModalRef {
     isOpen: () => boolean;
 }
 
-export const Overlay = createTokenComponent<TokenBase>();
+export const Overlay = createTokenComponent();
 
 const Modal: ParentComponent<ModalProps> = (props) => {
     let element!: HTMLDivElement;
@@ -100,8 +100,9 @@ const Modal: ParentComponent<ModalProps> = (props) => {
                                 onMouseMove={stealMouseEvents}
                                 onMouseUp={stealMouseEvents}
                                 onClick={close} 
-                                class={modalOverlayClasses()} 
-                                style={OverlayToken?.()?.style}></div>
+                                class={modalOverlayClasses()}
+                                style={OverlayToken?.()?.style}
+                                use:forwardAttrs={OverlayToken()}></div>
                         )}
                         <ModalWindow parentChildren={props.children}></ModalWindow>
                     </Show>

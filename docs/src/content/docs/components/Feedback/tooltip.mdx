@@ -131,7 +131,7 @@ const App = () => {
 
 If you want more flexibility, you can pass a custom JSX element to the `content` option. The `content` option accepts a function that returns JSX and can also be configured to receive additional props. These props can then be passed directly to the tooltip when you use it - for example: `<Tooltip message="..." otherProp="...">`.
 
-In addition, you can style the tooltip wrapper itself using the `style` or `class` props that are exposed on the `Tooltip` component.
+In addition, you can style the tooltip wrapper itself using the `style`, `class` or `attr:*` props that are exposed on the `Tooltip` component. `attr:*` props are set on the wrapper and are not passed to your custom content.
 
 Here's an example showing how to create a custom tooltip with both custom styling and custom content:
 

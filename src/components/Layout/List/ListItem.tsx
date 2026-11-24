@@ -2,7 +2,7 @@ import { Accessor, createContext, createSignal, JSX, ParentComponent, ParentProp
 import LayoutBase from "../LayoutBase";
 import ListIcon from "./ListIcon";
 import styles from './List.module.scss';
-import { createTokenComponent, TokenBase } from "@components/utils/tokenComponents";
+import { createTokenComponent } from "@components/utils/tokenComponents";
 import { ComponentProps, TokenComponentProps } from "@components/types/ComponentProps";
 
 interface ListItemComponentProps extends TokenComponentProps {

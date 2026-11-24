@@ -1,4 +1,5 @@
 import { Component, Index, Show } from 'solid-js';
+import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 import styles from '../Chart.module.scss';
 import { LegendEntry } from '../types';
 import { LegendTokenProps } from '../slots';
@@ -31,7 +32,7 @@ const ChartLegend: Component<ChartLegendProps> = (props) => {
     };
 
     return (
-        <div class={classes()} style={props.token.style}>
+        <div class={classes()} style={props.token.style} use:forwardAttrs={props.token}>
             {/* Index, not For: the entry objects are rebuilt whenever the chart
                 re-renders, including on every animation frame. */}
             <Index each={props.entries}>{(entry) => (

@@ -1,6 +1,6 @@
 import { JSX, ParentProps } from "solid-js";
 import Events from "./BaseComponent";
-import baseComponent, { navigationActions } from "@components/BaseComponent/BaseComponent";
+import baseComponent, { forwardAttrs, navigationActions } from "@components/BaseComponent/BaseComponent";
 import { ActionName } from "@components/Utility/Navigation/types";
 
 export type ExcludedEvents =
@@ -22,10 +22,14 @@ export interface BaseComponentRef {
     element: refElementType;
 }
 
-export interface ComponentBaseProps extends ParentProps, Omit<Events, ExcludedEvents> {
+/** DOM attributes passed as `attr:name={value}`, set on the element with `setAttribute`. */
+export type AttrProps = {
+    [key: `attr:${string}`]: any;
+};
+
+export interface ComponentBaseProps extends ParentProps, AttrProps, Omit<Events, ExcludedEvents> {
     style?: JSX.CSSProperties
     class?: string,
-    [key: `attr:${string}`]: any;
     anchor?: HTMLElement | string;
     onAction?: ComponentNavigationActions
 }
@@ -62,6 +66,7 @@ declare module "solid-js" {
         interface DirectiveFunctions {
             baseComponent: typeof baseComponent;
             navigationActions: typeof navigationActions;
+            forwardAttrs: typeof forwardAttrs;
         }
     }
 }

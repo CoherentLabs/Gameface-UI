@@ -1,6 +1,7 @@
-import { createMemo, ParentComponent } from "solid-js";
+import { createMemo, ParentComponent, ParentProps } from "solid-js";
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { createTokenComponent, TokenBase, useToken } from "@components/utils/tokenComponents";
+import { forwardAttrs } from "@components/BaseComponent/BaseComponent";
 import EyeIcon from './eye.svg?component-solid'
 import EyeOffIcon from './eye-off.svg?component-solid'
 import styles from './PasswordInput.module.scss';
@@ -11,7 +12,7 @@ interface VisibilityButtonComponentProps extends TokenComponentProps {
     toggle: () => void;
 }
 
-interface VisibilityButtonTokenProps extends TokenBase {
+interface VisibilityButtonTokenProps extends ParentProps<TokenBase> {
     position?: 'before' | 'after'
 }
 
@@ -33,7 +34,8 @@ export const VisibilityButtonComponent: ParentComponent<VisibilityButtonComponen
         <div 
             class={VisibilityButtonClasses()} 
             style={VisibilityButtonToken()?.style} 
-            onclick={props.toggle}>
+            onclick={props.toggle}
+            use:forwardAttrs={VisibilityButtonToken()}>
             {VisibilityButtonToken()?.children || (props.visible() ? <EyeIcon /> : <EyeOffIcon /> )}
         </div>
     )

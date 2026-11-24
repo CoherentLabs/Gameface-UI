@@ -1,5 +1,6 @@
 import { Portal } from 'solid-js/web';
-import { createSignal, createUniqueId, For, JSX, ParentComponent, Signal } from 'solid-js';
+import { Component, createSignal, createUniqueId, For, JSX, ParentComponent, Signal, splitProps } from 'solid-js';
+import { AttrProps, ComponentBaseProps } from '@components/types/ComponentProps';
 import GridTile from '@components/Layout/GridTile/GridTile';
 import Grid from '@components/Layout/Grid/Grid';
 import Flex from '@components/Layout/Flex/Flex';
@@ -37,7 +38,10 @@ interface ToastItem {
     progress: number;
 }
 
-const useToast = (): [ParentComponent, (options: ToastOptions) => void] => {
+/** Props of the Toaster: forwarded to the grid that holds the toasts. */
+type ToasterProps = AttrProps & Pick<ComponentBaseProps, 'class' | 'style'>;
+
+const useToast = (): [Component<ToasterProps>, (options: ToastOptions) => void] => {
     
     const grid: Record<Position, Signal<ToastItem[]>> = Object.fromEntries(
         positions.map((pos) => [pos, createSignal<ToastItem[]>([])])
@@ -93,7 +97,9 @@ const useToast = (): [ParentComponent, (options: ToastOptions) => void] => {
         removeToast((prev) => prev.filter((item) => item.id !== id));
     }
 
-    const Toaster: ParentComponent = () => {
+    const Toaster: Component<ToasterProps> = (props) => {
+        const [local, others] = splitProps(props, ['class']);
+
         const flexItems = (number: number): 'start' | 'center' | 'end' => {
             switch (number) {
                 case 0:
@@ -119,7 +125,8 @@ const useToast = (): [ParentComponent, (options: ToastOptions) => void] => {
         return (
             <Portal mount={document.querySelector('#root')!}>
                 <Grid
-                    class={styles['toast-grid']}
+                    {...others}
+                    class={local.class ? `${styles['toast-grid']} ${local.class}` : styles['toast-grid']}
                     cols={GRID_SIZE}
                     rows={GRID_SIZE}
                 >
