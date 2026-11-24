@@ -48,7 +48,8 @@ describe('Attribute forwarding', function () {
 
     for (const [name, count] of Object.entries(expected.onLoad)) {
         it(`${name} forwards attr:* to the element its class lands on`, async () => {
-            assertForwarded(await snapshot(), name, count);
+            // Retried: charts draw their marks a few frames after mount, once they know their size.
+            await assertGroupForwarded({ [name]: count });
         });
     }
 
@@ -72,6 +73,16 @@ describe('Attribute forwarding', function () {
             await assertGroupForwarded(expected.tutorialActive);
         } finally {
             await gf.trigger(events.exitTutorial);
+        }
+    });
+
+    it('Chart.Tooltip forwards attr:* when a mark is hovered', async () => {
+        // Chart marks listen for mouseenter/mouseleave themselves, so the events go straight to a bar.
+        await gf.executeScript(() => document.querySelector('[data-probe="bar-fill"]').dispatchEvent(new MouseEvent('mouseenter')));
+        try {
+            await assertGroupForwarded(expected.chartHovered);
+        } finally {
+            await gf.executeScript(() => document.querySelector('[data-probe="bar-fill"]').dispatchEvent(new MouseEvent('mouseleave')));
         }
     });
 

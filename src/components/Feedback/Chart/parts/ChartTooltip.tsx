@@ -1,4 +1,5 @@
 import { Component, createEffect, createSignal, JSX, on, Show } from 'solid-js';
+import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 import styles from '../Chart.module.scss';
 import { ChartPointEvent } from '../types';
 import { TooltipTokenProps } from '../slots';
@@ -63,7 +64,7 @@ const ChartTooltip: Component<ChartTooltipProps> = (props) => {
     };
 
     return (
-        <div ref={element} class={classes()} style={{ ...positionStyles(), ...props.token.style }}>
+        <div ref={element} class={classes()} style={{ ...positionStyles(), ...props.token.style }} use:forwardAttrs={props.token}>
             <Show when={props.token.content} fallback={
                 <>
                     <span class={styles['tooltip-label']}>{props.event.point.label ?? props.event.point.type}</span>

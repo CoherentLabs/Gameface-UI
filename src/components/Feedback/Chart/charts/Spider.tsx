@@ -1,5 +1,6 @@
 import { createMemo, Index, ParentComponent, Show } from 'solid-js';
-import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
+import { createTokenComponent, TokenBase, tokenAttrs, useToken } from '@components/utils/tokenComponents';
+import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 import styles from '../Chart.module.scss';
 import { BaseChartProps, ChartHit, LegendEntry } from '../types';
 import { Labels, Legend, Tooltip } from '../slots';
@@ -210,7 +211,7 @@ const SpiderChart: ParentComponent<SpiderProps> = (props) => {
     });
 
     /** The Axis slot styles both its spokes and its category labels. */
-    const axisLabelToken = createMemo(() => ({ class: axisToken()?.class }));
+    const axisLabelToken = createMemo(() => ({ class: axisToken()?.class, ...tokenAttrs(axisToken()) }));
 
     /** Category names sit outside the web; the quadrant decides their alignment. */
     const axisLabels = createMemo<ChartLabelAnchor[]>(() => {
@@ -311,6 +312,7 @@ const SpiderChart: ParentComponent<SpiderProps> = (props) => {
                                             r={ring().radius}
                                             class={[styles['spider-web'], webToken()?.class].filter(Boolean).join(' ')}
                                             style={webToken()?.style}
+                                            use:forwardAttrs={webToken()}
                                         />
                                     }
                                 >
@@ -318,6 +320,7 @@ const SpiderChart: ParentComponent<SpiderProps> = (props) => {
                                         d={ring().d}
                                         class={[styles['spider-web'], webToken()?.class].filter(Boolean).join(' ')}
                                         style={webToken()?.style}
+                                        use:forwardAttrs={webToken()}
                                     />
                                 </Show>
                             )}</Index>
@@ -332,6 +335,7 @@ const SpiderChart: ParentComponent<SpiderProps> = (props) => {
                                     y2={spoke().y}
                                     class={[styles['spider-spoke'], axisToken()?.class].filter(Boolean).join(' ')}
                                     style={axisToken()?.style}
+                                    use:forwardAttrs={axisToken()}
                                 />
                             )}</Index>
                         </Show>
@@ -346,6 +350,7 @@ const SpiderChart: ParentComponent<SpiderProps> = (props) => {
                                     fill-opacity={shapeToken()?.fillOpacity ?? DEFAULT_FILL_OPACITY}
                                     class={shapeClasses(series().seriesIndex)}
                                     style={shapeToken()?.style}
+                                    use:forwardAttrs={shapeToken()}
                                 />
 
                                 <Show when={pointRadius() > 0}>

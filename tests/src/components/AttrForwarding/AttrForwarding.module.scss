@@ -1,0 +1,7 @@
+// The chart root fills its container, so each chart gets a sized wrapper. A module class,
+// not an inline style: in test mode the style plugin rewrites inline styles and the size is lost.
+.chart {
+    position: relative;
+    width: 17vw;
+    height: 14vh;
+}

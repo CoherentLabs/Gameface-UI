@@ -28,6 +28,8 @@ import Trackers from '@components/Performance/Trackers/Trackers';
 import Grid from '@components/Layout/Grid/Grid';
 import Layout from '@components/Layout/Layout/Layout';
 import Column from '@components/Layout/Column/Column';
+import Chart, { ChartSeries } from '@components/Feedback/Chart/Chart';
+import styles from './AttrForwarding.module.scss';
 
 // Every slot (and every root with its own attr:* forwarding or a portal) gets `class="p-<name>"`
 // and `attr:data-probe="<name>"`: the spec checks that both land on the same element, and that
@@ -36,6 +38,10 @@ import Column from '@components/Layout/Column/Column';
 
 const cellStyle: JSX.CSSProperties = { width: '18vw', 'margin': '0.5vh' };
 const Cell: ParentComponent = (props) => <div style={cellStyle}>{props.children}</div>;
+
+const CHART_DATA: ChartSeries[] = [
+    { id: 'a', label: 'A', points: [{ type: 'x', value: 3 }, { type: 'y', value: 5 }, { type: 'z', value: 4 }] },
+];
 
 const AttrForwardingTest = () => {
     const [tick, setTick] = createSignal(0);
@@ -305,6 +311,66 @@ const AttrForwardingTest = () => {
                         <Layout.Bottom class="p-layout-bottom" attr:data-probe="layout-bottom" attr:data-tick={tick()}>bottom</Layout.Bottom>
                     </Layout>
                     <Column.One class="p-column-one" attr:data-probe="column-one" attr:data-tick={tick()}>col</Column.One>
+                </Cell>
+
+                <Cell>
+                    <div class={styles.chart}>
+                        <Chart.Pie data={CHART_DATA}>
+                            <Chart.Pie.Slice class="p-pie-slice" attr:data-probe="pie-slice" attr:data-tick={tick()} />
+                            <Chart.Labels placement="inside" class="p-chart-labels" attr:data-probe="chart-labels" attr:data-tick={tick()} />
+                        </Chart.Pie>
+                    </div>
+                </Cell>
+
+                <Cell>
+                    <div class={styles.chart}>
+                        <Chart.Donut data={CHART_DATA}>
+                            <Chart.Donut.Slice class="p-donut-slice" attr:data-probe="donut-slice" attr:data-tick={tick()} />
+                            <Chart.Donut.Hole class="p-donut-hole" attr:data-probe="donut-hole" attr:data-tick={tick()}>hole</Chart.Donut.Hole>
+                            <Chart.Legend class="p-chart-legend" attr:data-probe="chart-legend" attr:data-tick={tick()} />
+                        </Chart.Donut>
+                    </div>
+                </Cell>
+
+                <Cell>
+                    <div class={styles.chart}>
+                        <Chart.Bar data={CHART_DATA} interactive>
+                            <Chart.Bar.Fill class="p-bar-fill" attr:data-probe="bar-fill" attr:data-tick={tick()} />
+                            <Chart.XAxis class="p-chart-x-axis" attr:data-probe="chart-x-axis" attr:data-tick={tick()} />
+                            <Chart.YAxis class="p-chart-y-axis" attr:data-probe="chart-y-axis" attr:data-tick={tick()} />
+                            <Chart.Grid class="p-chart-grid" attr:data-probe="chart-grid" attr:data-tick={tick()} />
+                            <Chart.Tooltip class="p-chart-tooltip" attr:data-probe="chart-tooltip" attr:data-tick={tick()} />
+                        </Chart.Bar>
+                    </div>
+                </Cell>
+
+                <Cell>
+                    <div class={styles.chart}>
+                        <Chart.Line data={CHART_DATA}>
+                            <Chart.Line.Stroke class="p-line-stroke" attr:data-probe="line-stroke" attr:data-tick={tick()} />
+                            <Chart.Line.Point show="always" class="p-line-point" attr:data-probe="line-point" attr:data-tick={tick()} />
+                        </Chart.Line>
+                    </div>
+                </Cell>
+
+                <Cell>
+                    <div class={styles.chart}>
+                        <Chart.Area data={CHART_DATA}>
+                            <Chart.Area.Fill class="p-area-fill" attr:data-probe="area-fill" attr:data-tick={tick()} />
+                            <Chart.Area.Stroke class="p-area-stroke" attr:data-probe="area-stroke" attr:data-tick={tick()} />
+                            <Chart.Area.Point show="always" class="p-area-point" attr:data-probe="area-point" attr:data-tick={tick()} />
+                        </Chart.Area>
+                    </div>
+                </Cell>
+
+                <Cell>
+                    <div class={styles.chart}>
+                        <Chart.Spider data={CHART_DATA}>
+                            <Chart.Spider.Shape class="p-spider-shape" attr:data-probe="spider-shape" attr:data-tick={tick()} />
+                            <Chart.Spider.Web class="p-spider-web" attr:data-probe="spider-web" attr:data-tick={tick()} />
+                            <Chart.Spider.Axis class="p-spider-axis" attr:data-probe="spider-axis" attr:data-tick={tick()} />
+                        </Chart.Spider>
+                    </div>
                 </Cell>
             </div>
 

@@ -1,6 +1,7 @@
 import { arc, pie } from 'd3-shape';
 import { createMemo, Index, JSX, ParentComponent, ParentProps, Show } from 'solid-js';
-import { createTokenComponent, TokenBase, useToken } from '@components/utils/tokenComponents';
+import { createTokenComponent, TokenBase, tokenAttrs, useToken } from '@components/utils/tokenComponents';
+import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 import styles from '../Chart.module.scss';
 import { BaseChartProps, ChartHit, LegendEntry } from '../types';
 import { Labels, Legend, Tooltip } from '../slots';
@@ -397,6 +398,9 @@ export const createRadialChart = (config: RadialChartConfig): ParentComponent<Ra
         .filter(Boolean)
         .join(' ');
 
+    /** Merged like holeClasses and holeStyles: with placement="hole" the Labels attributes land on the hole too, and Hole wins. */
+    const holeAttrs = () => ({ ...tokenAttrs(holeLabels()), ...tokenAttrs(holeToken()) });
+
     const holeStyles = (): JSX.CSSProperties => {
         const current = geometry();
         if (!current) return {};
@@ -456,6 +460,7 @@ export const createRadialChart = (config: RadialChartConfig): ParentComponent<Ra
                                     fill={entry().color}
                                     class={sliceClasses(entry().pointIndex)}
                                     style={sliceToken()?.style}
+                                    use:forwardAttrs={sliceToken()}
                                     transform={sliceTransform(entry().pointIndex, entry().midAngle)}
                                     {...marks}
                                 />
@@ -476,7 +481,7 @@ export const createRadialChart = (config: RadialChartConfig): ParentComponent<Ra
             </Show>
 
             <Show when={showsHole() && geometry()}>
-                <div class={holeClasses()} style={holeStyles()}>
+                <div class={holeClasses()} style={holeStyles()} use:forwardAttrs={holeAttrs()}>
                     {holeContent()}
                 </div>
             </Show>

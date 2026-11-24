@@ -73,7 +73,24 @@
     "layout-top": 1,
     "layout-content": 1,
     "layout-bottom": 1,
-    "column-one": 1
+    "column-one": 1,
+    "pie-slice": 3,
+    "chart-labels": 3,
+    "chart-legend": 1,
+    "donut-slice": 3,
+    "donut-hole": 1,
+    "bar-fill": 3,
+    "chart-x-axis": 3,
+    "chart-y-axis": 6,
+    "chart-grid": 6,
+    "line-stroke": 1,
+    "line-point": 3,
+    "area-fill": 1,
+    "area-stroke": 1,
+    "area-point": 3,
+    "spider-shape": 1,
+    "spider-web": 4,
+    "spider-axis": 6
   },
   "afterSegmentChange": {
     "segment-indicator": 1
@@ -85,5 +102,8 @@
   },
   "tutorialActive": {
     "tutorial-overlay": 1
+  },
+  "chartHovered": {
+    "chart-tooltip": 1
   }
 }
