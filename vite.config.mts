@@ -15,6 +15,11 @@ export default defineConfig(({ mode }) => {
 
   return {
     root: root,
+    // Keeps the Flow runtime's editor hooks (window.__gfFlows) in the build; on only for the test build.
+    // The editor plugin sets the same define from `build.devHooks` in projects.
+    define: {
+      __GF_DEV_HOOKS__: JSON.stringify(mode === 'test'),
+    },
     plugins: [
       gamefaceViews({ root: resolve(__dirname, root) }),
       eslint({

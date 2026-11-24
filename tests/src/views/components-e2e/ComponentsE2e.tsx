@@ -39,6 +39,8 @@ import RadialMenuTest from '../../components/RadialMenu/RadialMenuTest';
 import TutorialTest from '../../components/Tutorial/TutorialTest';
 import TrackersTest from '../../components/Trackers/TrackersTest';
 import ChartTest from '../../components/Chart';
+import FlowTest from '../../components/Flow/FlowTest';
+import FlowSwapTest from '../../components/Flow/FlowSwapTest';
 
 const Main = () => {
     const components = [
@@ -94,6 +96,10 @@ const Main = () => {
         'media',
         // base
         'base',
+
+        // Runtime helpers
+        'flow',
+        'flow-swap',
     ]
 
     // Tab buttons only on the dev server (`npm run dev:test-view`), for picking a
@@ -163,6 +169,8 @@ const Main = () => {
                     <TrackersTest />
                 </Tab>
                 <ChartTest />
+                <Tab location='flow'><FlowTest /></Tab>
+                <Tab location='flow-swap'><FlowSwapTest /></Tab>
             </Tabs>
         </div>
     );

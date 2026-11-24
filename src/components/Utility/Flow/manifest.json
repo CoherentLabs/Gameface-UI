@@ -1,0 +1,9 @@
+{
+  "name": "Flow",
+  "version": "1.0.0",
+  "kind": "lib",
+  "description": "Runtime helpers for editor-written screens and components: states, navigation, overlays and the editor's Live states hooks",
+  "editor": {
+    "hidden": true
+  }
+}
