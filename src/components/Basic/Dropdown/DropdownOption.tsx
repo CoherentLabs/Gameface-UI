@@ -1,4 +1,4 @@
-import { ParentComponent, useContext, ParentProps, onCleanup, onMount, Show } from 'solid-js';
+import { ParentComponent, useContext, onCleanup, onMount, Show } from 'solid-js';
 import { CommonDropdownSlotProps, DropdownContext } from './Dropdown';
 import { createTokenComponent } from '@components/utils/tokenComponents';
 import { forwardAttrs, navigationActions } from '@components/BaseComponent/BaseComponent';
@@ -14,11 +14,11 @@ export interface OptionTokenProps extends CommonDropdownSlotProps {
 
 export const Option = createTokenComponent<OptionTokenProps>();
 
-export const DropdownOption: ParentComponent<{ option: ParentProps<OptionTokenProps> }> = (props) => {
+export const DropdownOption: ParentComponent<{ option: OptionTokenProps }> = (props) => {
     const dropdown = useContext(DropdownContext);
     let element: HTMLDivElement | undefined
 
-    const onClickOption = (option: ParentProps<OptionTokenProps>) => {
+    const onClickOption = (option: OptionTokenProps) => {
         dropdown?.selectOption(option.value);
         if (!dropdown?.multiple()) dropdown?.toggle(false);
     }
@@ -31,7 +31,7 @@ export const DropdownOption: ParentComponent<{ option: ParentProps<OptionTokenPr
         dropdown?.unregisterOption(props.option.value);
     })
 
-    const optionClasses = (option: ParentProps<OptionTokenProps>) => {
+    const optionClasses = (option: OptionTokenProps) => {
         const classes = [style['dropdown-option']];
 
         if (option.class) classes.push(option.class);

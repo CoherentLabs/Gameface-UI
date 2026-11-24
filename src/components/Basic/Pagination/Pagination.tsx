@@ -30,7 +30,7 @@ interface PaginationContext {
     previousPage: () => void,
 }
 
-interface PaginationItemToken extends Omit<TokenBase, "children"> {
+interface PaginationItemToken extends TokenBase {
     "selected-class"?: string
 }
 

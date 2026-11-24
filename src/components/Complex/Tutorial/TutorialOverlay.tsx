@@ -5,7 +5,7 @@ import baseComponent from "@components/BaseComponent/BaseComponent";
 import { TutorialContext } from "./Tutorial";
 import styles from './Tutorial.module.scss';
 
-export const Overlay = createTokenComponent<ComponentProps>();
+export const Overlay = createTokenComponent<Omit<ComponentProps, 'ref' | 'refObject'>>();
 
 /** Transparent full-screen layer that blocks clicks on the page while a step is active. */
 const TutorialOverlay = (props: TokenComponentProps) => {

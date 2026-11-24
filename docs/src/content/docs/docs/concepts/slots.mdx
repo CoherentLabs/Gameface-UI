@@ -70,24 +70,30 @@ const Button:ParentComponent<ButtonProps> = (props) => {
 export default Button;
 ```
 
-To add an `Icon` slot to the `Button` component, use the `createTokenComponent` function from the `src/components/utils/tokenComponents.tsx` file. This utility helps create token slots that can be integrated into the component's template. You can define the slot's properties by passing their types to the `createTokenComponent` function. For instance, to define an `Icon` slot with a `before` property, you can do the following:
+To add an `Icon` slot to the `Button` component, use the `createTokenComponent` function from the `src/components/utils/tokenComponents.tsx` file. This utility helps create token slots that can be integrated into the component's template. You can define the slot's properties by passing their types to the `createTokenComponent` function. For instance, to define an `Icon` slot with a `before` property that renders its children, you can do the following:
 
 ```tsx
+import { ParentProps } from 'solid-js';
 import { createTokenComponent } from '@components/utils/tokenComponents';
 
-interface IconProps {
+interface IconProps extends ParentProps {
     before?: boolean;
 }
 
 const Icon = createTokenComponent<IconProps>();
 ```
 
+:::note
+A slot accepts only the props in its type. Children are opt-in: extend `ParentProps` if the slot renders them. Without a type, `createTokenComponent()` accepts `class`, `style` and `attr:*`. Extend `TokenBase` from the same file to add those to your own props.
+:::
+
 Next, to make the `Icon` slot accessible via `Button.Icon`, assign it to the `Button` component:
 
 ```diff lang="tsx"
++import { ParentProps } from 'solid-js';
 +import { createTokenComponent } from '@components/utils/tokenComponents';
 
-+interface IconProps {
++interface IconProps extends ParentProps {
 +    before?: boolean;
 +}
 
@@ -111,7 +117,7 @@ const Button:ParentComponent<ButtonProps> = (props) => {
 +export default Object.assign(Button, { Icon });
 ```
 
-With this setup, you can now use the `Button.Icon` slot within the `Button` component. The `Icon` slot can accept any valid JSX or HTML content as its children, and you can also pass the `before` property to customize its behavior.
+With this setup, you can now use the `Button.Icon` slot within the `Button` component. Because `IconProps` extends `ParentProps`, the `Icon` slot accepts any valid JSX or HTML content as its children, and you can also pass the `before` property to customize its behavior.
 
 ```tsx
 <Button>
@@ -130,10 +136,11 @@ To utilize slot properties within a component, you can access them using the `us
 In the example below, the `before` property of the `Icon` slot determines whether the icon is rendered before or after the button text.
 
 ```diff lang="tsx"
+import { ParentProps } from 'solid-js';
 -import { createTokenComponent } from '@components/utils/tokenComponents';
 +import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 
-interface IconProps {
+interface IconProps extends ParentProps {
     before?: boolean
 }
 
@@ -172,11 +179,11 @@ Nested slots are supported but require careful handling to ensure proper reactiv
 For example, to wrap the `Icon` slot with another component and nest the `IconSVG` slot in it, you can use the following structure:
 
 ```tsx
-import { ParentComponent } from "solid-js";
+import { ParentComponent, ParentProps } from "solid-js";
 import { createTokenComponent, useToken } from '@components/utils/tokenComponents';
 import { TokenComponentProps } from '@components/types/ComponentProps';
 
-const Icon = createTokenComponent<{ before?: boolean }>();
+const Icon = createTokenComponent<ParentProps<{ before?: boolean }>>();
 const IconSVG = createTokenComponent<{ src?: string }>();
 
 const ButtonIconSVG: ParentComponent<TokenComponentProps> = (props) => {

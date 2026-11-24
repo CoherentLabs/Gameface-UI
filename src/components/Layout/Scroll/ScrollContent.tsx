@@ -10,9 +10,9 @@ interface ScrollContentProps extends TokenComponentProps {
     ref: HTMLDivElement
 }
 
-// Content passes its element to `ref`, so it keeps the `ref` that TokenBase blocks.
-interface ContentProps extends ParentProps<Omit<TokenBase, 'ref'>> {
-    ref?: HTMLDivElement
+// Content passes its element to `ref`, so it declares one; createTokenComponent blocks `ref` on slots that don't.
+interface ContentProps extends ParentProps<TokenBase> {
+    ref?: HTMLDivElement | ((el: HTMLDivElement) => void)
 }
 
 export const Content = createTokenComponent<ContentProps>();
@@ -47,7 +47,7 @@ export const ScrollContent: ParentComponent<ScrollContentProps> = (props) => {
 
     const initContentRef = (el: HTMLDivElement) => {
         const token = ContentToken();
-        token?.ref && (token.ref as any as (el: HTMLDivElement) => void)(el);
+        if (typeof token?.ref === 'function') token.ref(el);
         (props.ref as any as (el: HTMLDivElement) => void)(el);
     }
 

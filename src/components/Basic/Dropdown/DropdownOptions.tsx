@@ -5,7 +5,6 @@ import { createTokenComponent, useToken, useTokens } from '@components/utils/tok
 import { TokenComponentProps } from '@components/types/ComponentProps';
 import { forwardAttrs } from '@components/BaseComponent/BaseComponent';
 import Scroll from '@components/Layout/Scroll/Scroll';
-import { BarTokenProps } from '@components/Layout/Scroll/ScrollBar';
 import { HandleTokenProps } from '@components/Layout/Scroll/ScrollHandle';
 import { DropdownOption, Option } from './DropdownOption';
 

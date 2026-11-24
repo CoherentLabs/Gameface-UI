@@ -5,7 +5,7 @@ import baseComponent from "@components/BaseComponent/BaseComponent";
 import { TutorialContext } from "./Tutorial";
 import styles from './Tutorial.module.scss';
 
-export const Spotlight = createTokenComponent<ComponentProps>();
+export const Spotlight = createTokenComponent<Omit<ComponentProps, 'ref' | 'refObject'>>();
 
 /** The highlight frame around the current step's target. The dimming is its box-shadow. */
 const TutorialSpotlight = (props: TokenComponentProps) => {
