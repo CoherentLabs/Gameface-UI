@@ -1,6 +1,6 @@
 {
   "name": "XYSlider",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Two-dimensional slider for picking an X/Y value",
   "editor": {
     "icon": "slider-xy",
