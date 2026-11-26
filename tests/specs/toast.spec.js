@@ -172,6 +172,31 @@ describe('Toast', function () {
         assert.equal(await countToasts(text), 0, 'Toast should be removed after hideTimeout');
     });
 
+    it('Should wait for a CSS exit animation before removing the toast', async () => {
+        const text = 'CSS exit';
+        // The animation (400 ms) is shorter than HIDE_TIMEOUT, so only animationend can remove the toast at ~400 ms
+        await gf.trigger('create-toast', { text, position: 'middle-left', timeout: 0, cssExit: true });
+        await gf.click(`.${selectors.toastCloseButton}`);
+        await gf.sleep(150);
+        assert.equal(await countToasts(text), 1, 'Toast should stay while its CSS animation runs');
+        await gf.sleep(350);
+        assert.equal(await countToasts(text), 0, 'Toast should be removed when its CSS animation ends');
+    });
+
+    it('Should ignore clicks while the toast is hiding', async () => {
+        const text = 'No clicks while hiding';
+        await gf.trigger('create-toast', { text, position: 'middle-left', timeout: 0, hideDelay: 400, withAction: true });
+        await gf.click(`.${selectors.toastCloseButton}`);
+        await gf.sleep(50);
+        await gf.click(`.${selectors.toastActionButton}`);
+        const clicks = await gf.executeScript(
+            (selector) => document.querySelector(selector).getAttribute('data-clicks'),
+            `.${selectors.toastActionButton}`
+        );
+        assert.equal(clicks, '0', 'A hiding toast should not react to clicks');
+        await gf.sleep(500);
+    });
+
     for (const position of positions) {
         it(`Should render toast at ${position}`, async () => {
             const windowSize = {

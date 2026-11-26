@@ -14,5 +14,10 @@
 
     &-item {
         pointer-events: auto;
+
+        // A hiding toast ignores clicks, so its buttons can't run twice
+        &:global(.toast-leaving) {
+            pointer-events: none;
+        }
     }
 }

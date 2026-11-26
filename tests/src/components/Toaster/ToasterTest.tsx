@@ -1,4 +1,4 @@
-import { onMount, onCleanup } from 'solid-js';
+import { createSignal, onMount, onCleanup } from 'solid-js';
 import useToast, { useToastItem } from '@components/Feedback/Toast/toast';
 import './ToastTest.css';
 
@@ -26,6 +26,10 @@ interface ToastEventDetail {
     timeout?: number;
     /** ms the toast's hide hook takes; -1 = never resolves */
     hideDelay?: number;
+    /** Hide with a CSS animation started by `.toast-leaving` */
+    cssExit?: boolean;
+    /** Adds a button that counts its clicks */
+    withAction?: boolean;
 }
 
 /** Registers a hide hook on its toast, like a hide animation would */
@@ -45,10 +49,20 @@ const ToasterTest = () => {
         createToast({
             position: detail.position || 'top-right',
             body: (close, progress) => {
+                const [clicks, setClicks] = createSignal(0);
                 return (
-                    <div class={classes.toast}>
+                    <div class={`${classes.toast}${detail.cssExit ? ` ${classes.toastCssExit}` : ''}`}>
                         <div class={classes.toastText}>{detail.text || 'Default Toast'}</div>
                         {close(<button class={classes.toastCloseButton}>X</button>)}
+                        {detail.withAction && (
+                            <button
+                                class={classes.toastActionButton}
+                                data-clicks={clicks()}
+                                onClick={() => setClicks(clicks() + 1)}
+                            >
+                                Action
+                            </button>
+                        )}
                         {detail.hideDelay !== undefined && <HideHook delay={detail.hideDelay} />}
                         <div
                             class={classes.toastProgress}

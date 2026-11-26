@@ -1,6 +1,7 @@
 import { batch, JSX, onCleanup, onMount } from "solid-js"
 import styles from './CustomToast.module.scss';
 import { useNavigation } from "@components/Utility/Navigation/Navigation";
+import { useToastItem } from "@components/Feedback/Toast/toast";
 import Progress from "@components/Feedback/Progress/Progress";
 import CustomButton from "../CustomButton/CustomButton";
 
@@ -13,6 +14,7 @@ interface CustomToastProps {
 
 const CustomToast = (props: CustomToastProps) => {
     const nav = useNavigation();
+    const toast = useToastItem();
 
     onMount(() => {
         batch(() => {
@@ -20,6 +22,8 @@ const CustomToast = (props: CustomToastProps) => {
                 key: { binds: ['ENTER'], type: ['press'] },
                 button: { binds: ['face-button-down'], type: 'press' },
                 callback: () => {
+                    // The action stays registered while the toast hides, so ignore presses then
+                    if (toast?.leaving()) return;
                     props.action();
                     props.dismiss();
                 }

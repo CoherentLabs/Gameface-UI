@@ -128,6 +128,11 @@ describe('Scroll', function () {
 
     it('Should clamp a negative offset to the top', async () => {
         await gf.click(`.${selectors.scenarioBtn}.scenario-7`);
+        // Move away from the top first, so the clamp below has something to undo
+        await gf.retryIfFails(async () => {
+            const scrollTop = await gf.executeScript((sel) => document.querySelector(sel).scrollTop, `.${selectors.content}`);
+            assert.equal(scrollTop, 50, 'Content should scroll to the offset first');
+        });
         await gf.click(`.${selectors.scenarioBtn}.scenario-9`);
         await gf.retryIfFails(async () => {
             const scrollTop = await gf.executeScript((sel) => document.querySelector(sel).scrollTop, `.${selectors.content}`);

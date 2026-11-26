@@ -209,6 +209,20 @@ const MyToast = () => {
 
 A toast never waits longer than `hideTimeout` (1000 ms by default), so a broken animation can't leave it on screen.
 
+While a toast is hiding it ignores clicks (`pointer-events: none`), but Navigation actions it registered stay active until it is removed. Check `leaving()` in their callbacks so a key press during the hide does nothing:
+
+```tsx
+const toast = useToastItem();
+nav.addAction('accept', {
+    key: { binds: ['ENTER'], type: ['press'] },
+    callback: () => {
+        if (toast?.leaving()) return;
+        accept();
+        toast?.dismiss();
+    },
+});
+```
+
 ### Adding entrance animations
 
 You can add entrance animations to the toast by adding CSS classes to the `body` element:

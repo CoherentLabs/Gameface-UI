@@ -22,6 +22,12 @@ import styles from './toast.module.scss';
 const PROGRESS_STEPS = 20;
 /** Default cap for how long a toast may wait for its hide animation. */
 const DEFAULT_HIDE_TIMEOUT = 1000;
+/**
+ * Frames to wait for an exit animation to start before removing the toast.
+ * Gameface can fire `animationstart` in the 2nd frame after the class change,
+ * after a 2-frame wait has already given up, so wait one more.
+ */
+const CSS_EXIT_FRAMES = 3;
 
 const GRID_SIZE = 3; // 3x3 grid
 
@@ -101,7 +107,7 @@ interface ToastItem {
 
 /**
  * Waits for CSS animations that start on the toast (or inside it) once it is marked as leaving.
- * Resolves after two frames when none started.
+ * Resolves after CSS_EXIT_FRAMES frames when none started.
  */
 function waitForCssExit(element: HTMLElement): Promise<void> {
     return new Promise((resolve) => {
@@ -125,9 +131,13 @@ function waitForCssExit(element: HTMLElement): Promise<void> {
 
         element.addEventListener('animationstart', onStart);
         element.addEventListener('animationend', onEnd);
-        requestAnimationFrame(() => requestAnimationFrame(() => {
+        let frames = 0;
+        const check = () => {
+            if (settled) return;
+            if (++frames < CSS_EXIT_FRAMES) return void requestAnimationFrame(check);
             if (running.size === 0) finish();
-        }));
+        };
+        requestAnimationFrame(check);
     });
 }
 

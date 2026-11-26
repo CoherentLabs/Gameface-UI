@@ -149,12 +149,6 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
         updateHandlePosition();
     }
 
-    function scrollTo(value: number, direction: number = 0) {
-        if (!canScroll(direction)) return;
-        contentWrapperRef!.scrollTop = value;
-        updateHandlePosition();
-    }
-
     function scrollToOffset(value: number) {
         if (!overflow() || !Number.isFinite(value)) return;
         contentWrapperRef!.scrollTop = clamp(value, 0, maxScroll);
@@ -170,11 +164,11 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     }
 
     function begin() {
-        scrollTo(0);
+        scrollToOffset(0);
     }
 
     function end() {
-        scrollTo(maxScroll, 1);
+        scrollToOffset(maxScroll);
     }
 
     function scrollIntoView(element: HTMLElement | string) {
@@ -203,12 +197,11 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
 
         // If element is above the current view, scroll so that element is at the top
         if (elTop < contentTop) {
-            scrollTo(elTop, 0);
+            scrollToOffset(elTop);
         }
         // If element is below the current view, scroll so element’s bottom is aligned with the container’s bottom
         else if (elBottom > contentBottom) {
-            const newScrollTop = elBottom - contentHeight;
-            scrollTo(newScrollTop, 1);
+            scrollToOffset(elBottom - contentHeight);
         }
     }
 
