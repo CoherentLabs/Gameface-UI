@@ -13,11 +13,13 @@
         "token": "List.Item",
         "repeat": true,
         "acceptsChildren": true,
-        "textProp": "children"
-      },
-      {
-        "name": "Icon",
-        "token": "List.Icon"
+        "textProp": "children",
+        "slots": [
+          {
+            "name": "Icon",
+            "token": "List.Icon"
+          }
+        ]
       }
     ],
     "children": {

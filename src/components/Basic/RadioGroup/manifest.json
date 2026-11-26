@@ -15,20 +15,26 @@
         "repeat": true,
         "textProp": "children",
         "propsOrder": ["value", "selected", "disabled"],
-        "hiddenProps": ["class-disabled", "class-selected"]
-      },
-      {
-        "name": "Label",
-        "token": "Radio.ButtonLabel",
-        "textProp": "children"
-      },
-      {
-        "name": "Control",
-        "token": "Radio.ButtonControl"
-      },
-      {
-        "name": "Indicator",
-        "token": "Radio.ButtonIndicator"
+        "hiddenProps": ["class-disabled", "class-selected"],
+        "slots": [
+          {
+            "name": "Label",
+            "token": "Radio.ButtonLabel",
+            "textProp": "children",
+            "styleable": false,
+            "acceptsChildren": true
+          },
+          {
+            "name": "Control",
+            "token": "Radio.ButtonControl",
+            "slots": [
+              {
+                "name": "Indicator",
+                "token": "Radio.ButtonIndicator"
+              }
+            ]
+          }
+        ]
       }
     ],
     "children": {

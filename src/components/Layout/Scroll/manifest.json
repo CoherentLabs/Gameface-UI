@@ -13,15 +13,17 @@
       },
       {
         "name": "Bar",
-        "token": "Scroll.Bar"
-      },
-      {
-        "name": "Handle",
-        "token": "Scroll.Handle"
+        "token": "Scroll.Bar",
+        "slots": [
+          {
+            "name": "Handle",
+            "token": "Scroll.Handle"
+          }
+        ]
       }
     ],
     "children": {
-      "accepts": ["Scroll.Content", "Scroll.Bar", "Scroll.Handle"]
+      "accepts": ["Scroll.Content", "Scroll.Bar"]
     }
   }
 }

@@ -4,17 +4,19 @@
 // - a manifest without an `editor` block gets one;
 // - every createTokenComponent token on the default export that the editor block doesn't mention yet is
 //   added as a slot, under the slot or variant whose tag it extends (`Carousel.Pagination.Item`).
+// - eslint-custom-rules/token-parents.json is regenerated from the slot nesting, for the tokens-validator.
 // Hand-written fields are never changed or removed. Sub-components that aren't tokens (`Modal.Close`,
 // `Column.Four`) can be slots or variants, so they're only reported for the author to place.
 import fs from 'node:fs';
 import path from 'node:path';
 import type { EditorMeta, EditorSlot, EditorVariant, Manifest } from './types.ts';
 import {
-    COMPONENTS_PATH, componentId, createComponentProgram, describedTags, entryFile, exportType,
+    COMPONENTS_PATH, ROOT, componentId, createComponentProgram, describedTags, entryFile, exportType,
     exportedParts, findManifests, formatManifest, type ManifestFile,
 } from './manifests.mts';
 
-export interface SyncResult { changes: string[]; warnings: string[] }
+/** `unreadable`: existing components whose default export couldn't be read, so they weren't synced at all. */
+export interface SyncResult { changes: string[]; warnings: string[]; unreadable: string[] }
 
 /** `LabelLeft` → `Label left` */
 const slotName = (tag: string) => {
@@ -53,6 +55,9 @@ const insertSlot = (meta: EditorMeta, tag: string) => {
 export const syncManifests = ({ write }: { write: boolean }): SyncResult => {
     const changes: string[] = [];
     const warnings: string[] = [];
+    const unreadable: string[] = [];
+    const tokenTags = new Set<string>();
+    const synced: { rootTag: string; editor: EditorMeta }[] = [];
     const manifests = findManifests();
 
     const candidates: ManifestFile[] = findNewComponentDirs(manifests).map(dir => ({
@@ -75,7 +80,7 @@ export const syncManifests = ({ write }: { write: boolean }): SyncResult => {
         const source = program.getSourceFile(entry);
         const rootType = source && exportType(program, checker, entry);
         if (!source || !rootType || !rootType.getCallSignatures().length) {
-            if (!isNew) warnings.push(`${target.id}: can't read the default export of ${path.basename(entry)}; slots not synced`);
+            if (!isNew) unreadable.push(`${target.id}: can't read the default export of ${path.basename(entry)}, so it wasn't synced (a missing generated file such as ImageTypes.ts? run "npm run gen-images" first)`);
             continue;                              // a new folder without a component default export isn't a component
         }
 
@@ -86,7 +91,10 @@ export const syncManifests = ({ write }: { write: boolean }): SyncResult => {
         }
         const rootTag = path.basename(entry, path.extname(entry));
         const known = describedTags(manifest.editor);
-        for (const part of exportedParts(checker, rootType, rootTag, source)) {
+        const parts = exportedParts(checker, rootType, rootTag, source);
+        parts.filter(p => p.token).forEach(p => tokenTags.add(p.tag));
+        synced.push({ rootTag, editor: manifest.editor });
+        for (const part of parts) {
             if (known.has(part.tag)) continue;
             if (part.token) {
                 insertSlot(manifest.editor, part.tag);
@@ -105,13 +113,60 @@ export const syncManifests = ({ write }: { write: boolean }): SyncResult => {
         if (write) fs.writeFileSync(target.file, after);
     }
 
-    return { changes, warnings };
+    // The ESLint tokens-validator reads which parent each token must sit directly under from this file.
+    const parentsText = formatTokenParents(tokenParents(synced, tokenTags));
+    // Compared without line endings: with core.autocrlf a Windows checkout has CRLF, which isn't a change.
+    const current = fs.existsSync(TOKEN_PARENTS_FILE) ? fs.readFileSync(TOKEN_PARENTS_FILE, 'utf8') : '';
+    if (parentsText !== current.replace(/\r\n/g, '\n')) {
+        changes.push(`${path.relative(ROOT, TOKEN_PARENTS_FILE).split(path.sep).join('/')}: regenerated from the manifests`);
+        if (write) fs.writeFileSync(TOKEN_PARENTS_FILE, parentsText);
+    }
+
+    return { changes, warnings, unreadable };
 };
+
+export const TOKEN_PARENTS_FILE = path.join(ROOT, 'eslint-custom-rules', 'token-parents.json');
+
+/**
+ * Token tag → the tags it may sit directly under, from the slot nesting in the manifests. Only real
+ * createTokenComponent tokens are listed: other sub-components (`Modal.Close`, `Navigation.Area`) are
+ * components in their own right and may sit deeper. `repeatable` tokens may also be rendered by `<For>`/`.map`.
+ */
+const tokenParents = (synced: { rootTag: string; editor: EditorMeta }[], tokenTags: Set<string>) => {
+    const parents = new Map<string, Set<string>>();
+    const repeatable = new Set<string>();
+    const visit = (holderTag: string, slots: EditorSlot[] = []) => {
+        for (const slot of slots) {
+            if (tokenTags.has(slot.token)) {
+                if (!parents.has(slot.token)) parents.set(slot.token, new Set());
+                parents.get(slot.token)!.add(holderTag);
+                if (slot.repeat) repeatable.add(slot.token);
+            }
+            visit(slot.token, slot.slots);
+        }
+    };
+    for (const { rootTag, editor } of synced) {
+        visit(rootTag, editor.slots);
+        for (const variant of editor.variants ?? []) visit(variant.token, variant.slots);
+    }
+    const sorted = [...parents.keys()].sort();
+    return {
+        parents: Object.fromEntries(sorted.map(tag => [tag, [...parents.get(tag)!].sort()])),
+        repeatable: [...repeatable].sort(),
+    };
+};
+
+const formatTokenParents = (data: ReturnType<typeof tokenParents>) => JSON.stringify({
+    $comment: 'Generated by `npm run gen-registry` from the editor blocks in src/components/**/manifest.json. Do not edit.',
+    ...data,
+}, null, 2)
+    .replace(/\[\s*\n((?:\s*"[^"\n]*",?\s*\n)+)\s*\]/g, (_, body: string) => '[' + body.split('\n').map(s => s.trim()).filter(Boolean).join(' ') + ']') + '\n';
 
 if (import.meta.filename === process.argv[1]) {
     const check = process.argv.includes('--check');
-    const { changes, warnings } = syncManifests({ write: !check });
+    const { changes, warnings, unreadable } = syncManifests({ write: !check });
     warnings.forEach(w => console.log(`⚠ ${w}`));
+    unreadable.forEach(u => console.log(`${check ? '✗' : '⚠'} ${u}`));
     changes.forEach(c => console.log(`${check ? '✗' : '✎'} ${c}`));
-    if (check && changes.length) process.exit(1);
+    if (check && (changes.length || unreadable.length)) process.exit(1);
 }

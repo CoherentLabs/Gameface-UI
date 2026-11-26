@@ -13,16 +13,20 @@
       {
         "name": "Label",
         "token": "Checkbox.Label",
-        "textProp": "children"
+        "textProp": "children",
+        "styleable": false,
+        "acceptsChildren": true
       },
       {
         "name": "Control",
-        "token": "Checkbox.Control"
-      },
-      {
-        "name": "Indicator",
-        "token": "Checkbox.Indicator",
-        "acceptsChildren": true
+        "token": "Checkbox.Control",
+        "slots": [
+          {
+            "name": "Indicator",
+            "token": "Checkbox.Indicator",
+            "acceptsChildren": true
+          }
+        ]
       }
     ]
   }

@@ -26,7 +26,7 @@ jobs:
       - name: Check editor metadata in manifests
         run: npm run check-editor-meta
       - name: Regenerate registry
-        run: node scripts/registry/generate-registry.mts --check
+        run: npm run gen-registry -- --check
       - name: Check version bumps
         run: node scripts/registry/check-version-bumps.mts
         env:

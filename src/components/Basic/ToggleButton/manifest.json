@@ -12,24 +12,30 @@
       {
         "name": "Label left",
         "token": "ToggleButton.LabelLeft",
-        "textProp": "children"
+        "textProp": "children",
+        "styleable": false,
+        "acceptsChildren": true
       },
       {
         "name": "Control",
-        "token": "ToggleButton.Control"
-      },
-      {
-        "name": "Indicator",
-        "token": "ToggleButton.Indicator"
-      },
-      {
-        "name": "Handle",
-        "token": "ToggleButton.Handle"
+        "token": "ToggleButton.Control",
+        "slots": [
+          {
+            "name": "Indicator",
+            "token": "ToggleButton.Indicator"
+          },
+          {
+            "name": "Handle",
+            "token": "ToggleButton.Handle"
+          }
+        ]
       },
       {
         "name": "Label right",
         "token": "ToggleButton.LabelRight",
-        "textProp": "children"
+        "textProp": "children",
+        "styleable": false,
+        "acceptsChildren": true
       }
     ]
   }

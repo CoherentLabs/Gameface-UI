@@ -32,7 +32,11 @@ const importFiles = (slots: EditorSlot[] = [], dir: string): string[] => slots.f
     ...importFiles(s.slots, dir),
 ]);
 const entryFiles = checked
-    .flatMap(m => [entryOf(m), ...importFiles(m.manifest.editor!.slots, m.dir)])
+    .flatMap(m => [
+        entryOf(m),
+        ...importFiles(m.manifest.editor!.slots, m.dir),
+        ...(m.manifest.editor!.variants ?? []).flatMap(v => importFiles(v.slots, m.dir)),
+    ])
     .filter(f => fs.existsSync(f));
 const { program, checker, options } = createComponentProgram(entryFiles);
 const exportType = (file: string, exportName: string) => exportTypeOf(program, checker, file, exportName);
@@ -45,24 +49,41 @@ const forwardsCache = new Map<string, boolean>();
  * Covers components built on another one (`Row` → `LayoutBase`, `RoundedButton` → `Button`). It can't tell
  * whether that use is on the component's own root, so it catches components that never forward at all.
  */
-const reachesBaseComponent = (file: string, seen = new Set<string>()): boolean => {
-    if (forwardsCache.has(file)) return forwardsCache.get(file)!;
+const reachesBaseComponent = (file: string): boolean => {
+    if (!forwardsCache.has(file)) forwardsCache.set(file, searchForBaseComponent(file, new Set()));
+    return forwardsCache.get(file)!;
+};
+
+/** Module specifiers a file pulls code from: value imports and `export … from` re-exports. */
+const codeDependencies = (source: ts.SourceFile): string[] => source.statements.flatMap(stmt => {
+    if (ts.isImportDeclaration(stmt) && !stmt.importClause?.isTypeOnly && ts.isStringLiteral(stmt.moduleSpecifier)) return [stmt.moduleSpecifier.text];
+    if (ts.isExportDeclaration(stmt) && !stmt.isTypeOnly && stmt.moduleSpecifier && ts.isStringLiteral(stmt.moduleSpecifier)) return [stmt.moduleSpecifier.text];
+    return [];
+});
+
+// Only a `true` found inside a walk is cached: a `false` reached through the cycle guard is partial,
+// because the file that cut the cycle is still being searched further up.
+const searchForBaseComponent = (file: string, seen: Set<string>): boolean => {
+    if (forwardsCache.get(file) === true) return true;
     if (seen.has(file)) return false;
     seen.add(file);
     const source = program.getSourceFile(file);
     if (!source) return false;
-    let result = source.text.includes('use:baseComponent');
-    for (const stmt of source.statements) {
-        if (result) break;
-        if (!ts.isImportDeclaration(stmt) || !ts.isStringLiteral(stmt.moduleSpecifier) || stmt.importClause?.isTypeOnly) continue;
-        const resolved = ts.resolveModuleName(stmt.moduleSpecifier.text, file, options, ts.sys).resolvedModule?.resolvedFileName;
+    if (source.text.includes('use:baseComponent')) {
+        forwardsCache.set(file, true);
+        return true;
+    }
+    for (const specifier of codeDependencies(source)) {
+        const resolved = ts.resolveModuleName(specifier, file, options, ts.sys).resolvedModule?.resolvedFileName;
         if (!resolved) continue;
         const full = path.resolve(resolved);
         if (!full.startsWith(COMPONENTS_PATH + path.sep) || full.startsWith(BASE_DIR)) continue;
-        result = reachesBaseComponent(full, seen);
+        if (searchForBaseComponent(full, seen)) {
+            forwardsCache.set(file, true);
+            return true;
+        }
     }
-    forwardsCache.set(file, result);
-    return result;
+    return false;
 };
 
 const propertyType = (type: ts.Type, name: string, at: ts.Node): ts.Type | undefined => {
@@ -141,37 +162,55 @@ for (const m of checked) {
     const checkChildren = (at: string, children: EditorChildren | undefined, ownTokens: Set<string>) => {
         if (!children) return;
         checkKeys(`${at}.children`, children, new Set(['accepts', 'addLabel']));
-        for (const tag of children.accepts ?? []) {
+        if (!Array.isArray(children.accepts) || !children.accepts.length) {
+            errors.push(`${at}: children.accepts is required and must list at least one tag ("*" for any element)`);
+            return;
+        }
+        for (const tag of children.accepts) {
             if (tag === '*' || ownTokens.has(tag) || componentNames.has(tag)) continue;
             errors.push(`${at}: children.accepts "${tag}" is neither a slot of this component nor a library component`);
         }
     };
 
-    const checkSlots = (at: string, slots: EditorSlot[] | undefined): Set<string> => {
+    /**
+     * Checks a holder's slots (component root, slot or variant). A `repeat` slot is added with the Layers +
+     * action, which only offers tags from the holder's `children.accepts`, so it must be listed there.
+     */
+    const checkSlots = (at: string, slots: EditorSlot[] | undefined, holderChildren: EditorChildren | undefined): Set<string> => {
         const tokens = new Set<string>();
         for (const slot of slots ?? []) {
             const slotWhere = `${at} › ${slot.name ?? slot.token}`;
             checkKeys(slotWhere, slot, SLOT_KEYS);
-            if (!slot.name || !slot.token) errors.push(`${slotWhere}: "name" and "token" are required`);
+            if (!slot.name || !slot.token) {
+                errors.push(`${slotWhere}: "name" and "token" are required`);
+                continue;
+            }
             tokens.add(slot.token);
             const type = resolveTag(slot.token, slot.import);
             if (!type) errors.push(`${slotWhere}: token "${slot.token}" doesn't resolve${slot.import ? ` in ${slot.import}` : ` on the default export of ${path.basename(entry)}`}`);
+            if (slot.repeat && !holderChildren?.accepts?.includes(slot.token)) {
+                errors.push(`${slotWhere}: repeat slot "${slot.token}" must be in children.accepts of the slot or component that holds it, or the Layers + action can't add it`);
+            }
             checkProps(slotWhere, type, source, slot);
-            const nested = checkSlots(slotWhere, slot.slots);
+            const nested = checkSlots(slotWhere, slot.slots, slot.children);
             checkChildren(slotWhere, slot.children, nested);
         }
         return tokens;
     };
 
     checkProps(where, rootType, source, meta);
-    const own = checkSlots(where, meta.slots);
+    const own = checkSlots(where, meta.slots, meta.children);
     for (const variant of meta.variants ?? [] as EditorVariant[]) {
-        const vWhere = `${where} › ${variant.name}`;
+        const vWhere = `${where} › ${variant.name ?? variant.token}`;
         checkKeys(vWhere, variant, VARIANT_KEYS);
+        if (!variant.name || !variant.token) {
+            errors.push(`${vWhere}: variant "name" and "token" are required`);
+            continue;
+        }
         const variantType = resolveTag(variant.token);
         if (!variantType) errors.push(`${vWhere}: variant token "${variant.token}" doesn't resolve`);
         checkProps(vWhere, variantType, source, variant);
-        checkChildren(vWhere, variant.children, checkSlots(vWhere, variant.slots));
+        checkChildren(vWhere, variant.children, checkSlots(vWhere, variant.slots, variant.children));
     }
     checkChildren(where, meta.children, own);
     for (const parent of meta.within ?? []) {

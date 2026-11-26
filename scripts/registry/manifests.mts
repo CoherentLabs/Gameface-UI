@@ -88,14 +88,14 @@ export const describedTags = (meta: EditorMeta): Set<string> => {
     const addSlots = (slots: EditorSlot[] = []) => slots.forEach(s => {
         tags.add(s.token);
         addSlots(s.slots);
-        s.children?.accepts.forEach(t => tags.add(t));
+        s.children?.accepts?.forEach(t => tags.add(t));
     });
     addSlots(meta.slots);
-    meta.children?.accepts.forEach(t => tags.add(t));
+    meta.children?.accepts?.forEach(t => tags.add(t));
     for (const v of meta.variants ?? []) {
         tags.add(v.token);
         addSlots(v.slots);
-        v.children?.accepts.forEach(t => tags.add(t));
+        v.children?.accepts?.forEach(t => tags.add(t));
     }
     return tags;
 };

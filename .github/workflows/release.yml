@@ -43,6 +43,7 @@ jobs:
 
       # registry.json is gitignored: built here, shipped as a release asset, never committed.
       # --check: the release fails instead of shipping manifests that differ from the repo.
+      # The npm script runs gen-images first: Image's types are generated and gitignored, so a fresh checkout has none.
       - name: Generate registry
         run: npm run gen-registry -- --check
 

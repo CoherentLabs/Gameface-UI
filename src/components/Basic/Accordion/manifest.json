@@ -20,12 +20,14 @@
             "token": "Accordion.Heading",
             "textProp": "children",
             "acceptsChildren": true,
-            "focusable": true
-          },
-          {
-            "name": "Icon",
-            "token": "Accordion.Icon",
-            "acceptsChildren": true
+            "focusable": true,
+            "slots": [
+              {
+                "name": "Icon",
+                "token": "Accordion.Icon",
+                "acceptsChildren": true
+              }
+            ]
           },
           {
             "name": "Body",

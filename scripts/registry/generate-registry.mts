@@ -6,16 +6,19 @@ import type { ComponentData, Manifest } from './types.ts';
 import { syncManifests } from './sync-manifests.mts';
 
 // Bring manifests up to date with the code first, so the registry is built from them.
-// `--check` (CI) writes nothing and fails when a manifest is out of date.
+// `--check` (CI) writes nothing and fails when a manifest is out of date, or when a component can't be
+// read at all, so it can't be skipped silently.
 const CHECK = process.argv.includes('--check');
 {
-    const { changes, warnings } = syncManifests({ write: !CHECK });
+    const { changes, warnings, unreadable } = syncManifests({ write: !CHECK });
     warnings.forEach(w => console.log(`⚠ ${w}`));
-    if (CHECK && changes.length) {
+    if (CHECK && (changes.length || unreadable.length)) {
+        unreadable.forEach(u => console.log(`::error title=Component not readable::${u}`));
         changes.forEach(c => console.log(`::error title=Manifest out of date::${c}`));
-        console.log('Run `npm run gen-registry` and commit the manifests.');
+        if (changes.length) console.log('Run `npm run gen-registry` and commit the manifests.');
         process.exit(1);
     }
+    unreadable.forEach(u => console.log(`⚠ ${u}`));
     changes.forEach(c => console.log(`✎ ${c}`));
 }
 
