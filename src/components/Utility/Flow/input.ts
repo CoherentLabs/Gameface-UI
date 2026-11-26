@@ -1,6 +1,6 @@
 import { createEffect, createRoot, createSignal, getOwner, on, onCleanup, untrack } from 'solid-js';
 import type { Accessor } from 'solid-js';
-import { gamepad, keyboard } from 'coherent-gameface-interaction-manager';
+import { gamepad, GamepadMappings, keyboard } from 'coherent-gameface-interaction-manager';
 import type { GamepadInput, KeyName } from 'coherent-gameface-interaction-manager';
 import { useNavigation } from '../Navigation/Navigation';
 import type { NavigationRef } from '../Navigation/Navigation';
@@ -354,6 +354,52 @@ function stopHold(row: Row) {
 
 // ── Registration with Navigation and the interaction manager ────────────────────────────────────────────────────
 
+/**
+ * Navigation's updateAction merges into the action it has, so a key left out stays. Every key is spelled, undefined
+ * to remove it, so taking an action over and giving it back leaves nothing of the runtime behind.
+ */
+const fullCfg = (cfg: ActionCfg): ActionCfg => ({ key: undefined, button: undefined, callback: undefined, global: undefined, ...cfg });
+
+/** A copy of an action as Navigation has it, so later updates of its store can't change it. */
+const snapshot = (a: ActionCfg): ActionCfg => ({
+    ...a,
+    key: a.key && { binds: [...a.key.binds], type: a.key.type && [...a.key.type] },
+    button: a.button && { binds: [...a.button.binds], type: a.button.type },
+});
+
+const AXIS_ALIASES: readonly string[] = GamepadMappings.axisAliases;
+
+/** Standard-mapping button index of a gamepad binding (`face-button-down` → 0), or undefined for a stick. */
+function buttonIndex(input: GamepadInput): number | undefined {
+    if (typeof input === 'number') return input;
+    const name = (GamepadMappings.aliases as Record<string, string>)[input.toLowerCase()];
+    return name ? (GamepadMappings as unknown as Record<string, number>)[name] : undefined;
+}
+
+/**
+ * How far the binding's own buttons are pressed, 0..1. The interaction manager hands hold callbacks every pressed
+ * button on the pad, so the value is read from the binding's buttons. Stick bindings count as fully pressed: the
+ * interaction manager only reports them past its own threshold.
+ */
+function bindingValue(binds: GamepadInput[]): number {
+    if (binds.some((b) => typeof b === 'string' && AXIS_ALIASES.includes(b.toLowerCase()))) return 1;
+    const pads = typeof navigator !== 'undefined' && navigator.getGamepads ? navigator.getGamepads() : [];
+    let value = 0;
+    for (let i = 0; i < pads.length; i++) {
+        const pad = pads[i];
+        if (!pad) continue;
+        // A binding of several buttons is pressed as far as its least pressed button.
+        let padValue = 1;
+        for (const input of binds) {
+            const index = buttonIndex(input);
+            const button = index === undefined ? undefined : pad.buttons[index];
+            padValue = Math.min(padValue, button ? (button.value ?? (button.pressed ? 1 : 0)) : 0);
+        }
+        value = Math.max(value, padValue);
+    }
+    return value;
+}
+
 function attach(entry: Entry) {
     const { nav, source } = entry;
     const r = source.resolve(untrack(platform));
@@ -374,8 +420,8 @@ function attach(entry: Entry) {
     if (r.key || r.button) {
         const existing = nav.getAction(source.name);
         if (existing) {
-            if (!entry.restore) entry.restore = { ...existing };
-            nav.updateAction(source.name, { ...cfg, paused: existing.paused });
+            if (!entry.restore) entry.restore = snapshot(existing);
+            nav.updateAction(source.name, fullCfg({ ...cfg, paused: existing.paused }));
         } else {
             nav.addAction(source.name, cfg);
         }
@@ -385,10 +431,9 @@ function attach(entry: Entry) {
     const paused = () => nav.isPaused(source.name);
     const keyDown = () => { if (!paused()) press(entry); };
     const keyUp = () => release(entry);
-    const padHeld = (buttons: GamepadButton[]) => {
-        if (paused()) return;
-        let value = 0;
-        for (const b of buttons) value = Math.max(value, b.value ?? (b.pressed ? 1 : 0));
+    const padHeld = () => {
+        if (paused() || !r.button) return;
+        const value = bindingValue(r.button);
         // The lowest threshold of the action's rows, each 0.5 unless it sets its own.
         let threshold = entry.rows.size ? Infinity : DEFAULT_THRESHOLD;
         for (const row of entry.rows) threshold = Math.min(threshold, row.opts.threshold ?? DEFAULT_THRESHOLD);
@@ -422,7 +467,7 @@ function detach(entry: Entry) {
     const { nav, source, registered } = entry;
     if (!registered?.key && !registered?.button) return;
     if (!nav.getAction(source.name)) return;
-    if (entry.restore) nav.updateAction(source.name, { ...entry.restore, paused: nav.isPaused(source.name) });
+    if (entry.restore) nav.updateAction(source.name, fullCfg({ ...entry.restore, paused: nav.isPaused(source.name) }));
     else nav.removeAction(source.name);
 }
 
