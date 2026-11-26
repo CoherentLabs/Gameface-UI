@@ -3,6 +3,24 @@ import ts from 'typescript';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import type { ComponentData, Manifest } from './types.ts';
+import { syncManifests } from './sync-manifests.mts';
+
+// Bring manifests up to date with the code first, so the registry is built from them.
+// `--check` (CI) writes nothing and fails when a manifest is out of date, or when a component can't be
+// read at all, so it can't be skipped silently.
+const CHECK = process.argv.includes('--check');
+{
+    const { changes, warnings, unreadable } = syncManifests({ write: !CHECK });
+    warnings.forEach(w => console.log(`⚠ ${w}`));
+    if (CHECK && (changes.length || unreadable.length)) {
+        unreadable.forEach(u => console.log(`::error title=Component not readable::${u}`));
+        changes.forEach(c => console.log(`::error title=Manifest out of date::${c}`));
+        if (changes.length) console.log('Run `npm run gen-registry` and commit the manifests.');
+        process.exit(1);
+    }
+    unreadable.forEach(u => console.log(`⚠ ${u}`));
+    changes.forEach(c => console.log(`✎ ${c}`));
+}
 
 const ROOT = path.join(import.meta.dirname, '..', '..');
 const COMPONENTS_PATH = path.join(ROOT, 'src', 'components');

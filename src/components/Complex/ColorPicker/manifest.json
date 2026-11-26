@@ -1,5 +1,12 @@
 {
   "name": "ColorPicker",
   "version": "1.1.2",
-  "description": "Color picker with HSV, RGB and HEX input"
+  "description": "Color picker with HSV, RGB and HEX input",
+  "editor": {
+    "icon": "color-picker",
+    "category": "Inputs",
+    "focusable": true,
+    "propsOrder": ["value", "size"],
+    "sizeProps": ["size"]
+  }
 }

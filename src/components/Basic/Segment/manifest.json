@@ -1,5 +1,29 @@
 {
   "name": "Segment",
   "version": "1.1.2",
-  "description": "Segmented control for switching between options"
+  "description": "Segmented control for switching between options",
+  "editor": {
+    "icon": "segment",
+    "category": "Inputs",
+    "propsOrder": ["disabled"],
+    "hiddenProps": ["class-disabled"],
+    "slots": [
+      {
+        "name": "Button",
+        "token": "Segment.Button",
+        "repeat": true,
+        "textProp": "children",
+        "propsOrder": ["value", "selected", "disabled"],
+        "hiddenProps": ["class-disabled", "class-selected"]
+      },
+      {
+        "name": "Indicator",
+        "token": "Segment.Indicator"
+      }
+    ],
+    "children": {
+      "accepts": ["Segment.Button"],
+      "addLabel": "Add segment"
+    }
+  }
 }

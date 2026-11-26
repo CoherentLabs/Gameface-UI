@@ -1,5 +1,26 @@
 {
   "name": "Tutorial",
   "version": "1.1.2",
-  "description": "Step-by-step guided tutorial overlay"
+  "description": "Step-by-step guided tutorial overlay",
+  "editor": {
+    "icon": "tutorial",
+    "category": "Navigation",
+    "wrapper": true,
+    "propsOrder": ["outset"],
+    "hiddenProps": ["tooltip"],
+    "slots": [
+      {
+        "name": "Step",
+        "token": "Tutorial.Step",
+        "repeat": true,
+        "wrapper": true,
+        "acceptsChildren": true,
+        "propsOrder": ["order", "title", "content", "position", "outset"]
+      }
+    ],
+    "children": {
+      "accepts": ["Tutorial.Step", "*"],
+      "addLabel": "Add step"
+    }
+  }
 }

@@ -1,5 +1,13 @@
 {
   "name": "MaskImage",
   "version": "2.1.2",
-  "description": "Image masked by an alpha mask"
+  "description": "Image masked by an alpha mask",
+  "editor": {
+    "icon": "image-mask",
+    "category": "Media",
+    "children": {
+      "accepts": ["*"]
+    },
+    "propsOrder": ["src", "fill", "options"]
+  }
 }

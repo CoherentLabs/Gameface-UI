@@ -1,5 +1,23 @@
 {
   "name": "Pagination",
   "version": "1.1.2",
-  "description": "Page navigation control"
+  "description": "Page navigation control",
+  "editor": {
+    "icon": "pagination",
+    "category": "Navigation",
+    "focusable": true,
+    "propsOrder": ["pageSize", "pageIndex", "hasNumbers", "loop"],
+    "slots": [
+      {
+        "name": "Page",
+        "token": "Pagination.Item"
+      },
+      {
+        "name": "Control",
+        "token": "Pagination.Control",
+        "acceptsChildren": true,
+        "hiddenProps": ["hidden-class"]
+      }
+    ]
+  }
 }

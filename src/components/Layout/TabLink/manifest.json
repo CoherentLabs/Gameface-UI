@@ -1,5 +1,17 @@
 {
   "name": "TabLink",
   "version": "1.1.2",
-  "description": "Tab trigger link"
+  "description": "Tab trigger link",
+  "editor": {
+    "icon": "tab-link",
+    "category": "Navigation",
+    "within": ["Tabs"],
+    "focusable": true,
+    "textProp": "children",
+    "children": {
+      "accepts": ["*"]
+    },
+    "propsOrder": ["location"],
+    "hiddenProps": ["activeClass"]
+  }
 }

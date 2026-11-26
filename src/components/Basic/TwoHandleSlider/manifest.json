@@ -1,5 +1,33 @@
 {
   "name": "TwoHandleSlider",
   "version": "1.1.2",
-  "description": "Range slider with two handles"
+  "description": "Range slider with two handles",
+  "editor": {
+    "icon": "slider-range",
+    "category": "Sliders",
+    "focusable": true,
+    "propsOrder": ["value", "min", "max", "step"],
+    "slots": [
+      {
+        "name": "Track",
+        "token": "TwoHandleSlider.Track"
+      },
+      {
+        "name": "Fill",
+        "token": "TwoHandleSlider.Fill"
+      },
+      {
+        "name": "Handle",
+        "token": "TwoHandleSlider.Handle"
+      },
+      {
+        "name": "Thumb",
+        "token": "TwoHandleSlider.Thumb"
+      },
+      {
+        "name": "Grid",
+        "token": "TwoHandleSlider.Grid"
+      }
+    ]
+  }
 }

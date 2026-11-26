@@ -1,5 +1,25 @@
 {
   "name": "Keybinds",
   "version": "1.1.2",
-  "description": "Displays gamepad and keyboard key glyphs for bindings"
+  "description": "Displays gamepad and keyboard key glyphs for bindings",
+  "editor": {
+    "icon": "keyboard",
+    "category": "Inputs",
+    "wrapper": true,
+    "propsOrder": ["mode", "conflictPolicy", "placeholder", "listeningText", "defaults", "overrides"],
+    "hiddenProps": ["glyphOverrides"],
+    "slots": [
+      {
+        "name": "Keybind",
+        "token": "Keybind",
+        "import": "./Keybind",
+        "repeat": true,
+        "propsOrder": ["action", "value"]
+      }
+    ],
+    "children": {
+      "accepts": ["Keybind", "*"],
+      "addLabel": "Add keybind"
+    }
+  }
 }

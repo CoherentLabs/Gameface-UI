@@ -1,5 +1,8 @@
 {
   "name": "EventBus",
   "version": "1.1.0",
-  "description": "Publish/subscribe event bus for cross-component communication"
+  "description": "Publish/subscribe event bus for cross-component communication",
+  "editor": {
+    "hidden": true
+  }
 }

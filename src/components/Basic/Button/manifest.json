@@ -1,5 +1,16 @@
 {
   "name": "Button",
   "version": "1.1.2",
-  "description": "Clickable button"
+  "description": "Clickable button",
+  "editor": {
+    "icon": "button",
+    "category": "Buttons",
+    "focusable": true,
+    "textProp": "children",
+    "children": {
+      "accepts": ["*"]
+    },
+    "propsOrder": ["size", "disabled", "textFit"],
+    "sizeProps": ["size"]
+  }
 }

@@ -1,5 +1,48 @@
 {
   "name": "Accordion",
   "version": "1.1.2",
-  "description": "Expandable panels that show and hide content sections"
+  "description": "Expandable panels that show and hide content sections",
+  "editor": {
+    "icon": "accordion",
+    "category": "Lists & menus",
+    "propsOrder": ["multiple", "disabled"],
+    "hiddenProps": ["class-disabled"],
+    "slots": [
+      {
+        "name": "Panel",
+        "token": "Accordion.Panel",
+        "repeat": true,
+        "propsOrder": ["title", "expanded", "disabled"],
+        "hiddenProps": ["class-disabled", "class-expanded"],
+        "slots": [
+          {
+            "name": "Heading",
+            "token": "Accordion.Heading",
+            "textProp": "children",
+            "acceptsChildren": true,
+            "focusable": true,
+            "slots": [
+              {
+                "name": "Icon",
+                "token": "Accordion.Icon",
+                "acceptsChildren": true
+              }
+            ]
+          },
+          {
+            "name": "Body",
+            "token": "Accordion.Body",
+            "acceptsChildren": true
+          }
+        ],
+        "children": {
+          "accepts": ["Accordion.Heading", "Accordion.Body"]
+        }
+      }
+    ],
+    "children": {
+      "accepts": ["Accordion.Panel"],
+      "addLabel": "Add panel"
+    }
+  }
 }

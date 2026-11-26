@@ -10,7 +10,8 @@
     "dev:host": "vite --host --mode test",
     "build:test": "npm run gen-images&&vite build --mode test",
     "gen-images": "node scripts/images/generate-image-types.mjs",
-    "gen-registry": "node scripts/registry/generate-registry.mts",
+    "gen-registry": "npm run gen-images && node scripts/registry/generate-registry.mts",
+    "check-editor-meta": "npm run gen-images && node scripts/registry/check-editor-meta.mts",
     "preview": "vite preview --port 3000 --host",
     "test": "npm run build:test&&start-server-and-test preview http://localhost:3000/components-e2e/ run-test",
     "dev:test-view": "vite --mode test"

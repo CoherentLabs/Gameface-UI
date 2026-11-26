@@ -1,5 +1,23 @@
 {
   "name": "Trackers",
   "version": "1.1.2",
-  "description": "Trackers component for managing and updating tracker items like nameplates and minimap markers in the most performant way possible."
+  "description": "Trackers component for managing and updating tracker items like nameplates and minimap markers in the most performant way possible.",
+  "editor": {
+    "icon": "tracker",
+    "category": "Data",
+    "propsOrder": ["id"],
+    "slots": [
+      {
+        "name": "Item",
+        "token": "Trackers.Item",
+        "repeat": true,
+        "acceptsChildren": true,
+        "propsOrder": ["id", "scale", "rotate"]
+      }
+    ],
+    "children": {
+      "accepts": ["Trackers.Item"],
+      "addLabel": "Add tracker"
+    }
+  }
 }

@@ -1,5 +1,32 @@
 {
   "name": "PasswordInput",
   "version": "1.1.2",
-  "description": "Password input with a visibility toggle"
+  "description": "Password input with a visibility toggle",
+  "editor": {
+    "icon": "input-password",
+    "category": "Inputs",
+    "focusable": true,
+    "slots": [
+      {
+        "name": "Before",
+        "token": "PasswordInput.Before",
+        "acceptsChildren": true
+      },
+      {
+        "name": "Input",
+        "token": "PasswordInput.Input"
+      },
+      {
+        "name": "Visibility button",
+        "token": "PasswordInput.VisibilityButton",
+        "acceptsChildren": true,
+        "propsOrder": ["position"]
+      },
+      {
+        "name": "After",
+        "token": "PasswordInput.After",
+        "acceptsChildren": true
+      }
+    ]
+  }
 }

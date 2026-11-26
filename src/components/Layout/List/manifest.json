@@ -1,5 +1,30 @@
 {
   "name": "List",
   "version": "1.1.2",
-  "description": "Vertical list of items with optional icons"
+  "description": "Vertical list of items with optional icons",
+  "editor": {
+    "icon": "list",
+    "category": "Lists & menus",
+    "propsOrder": ["type", "bullet-type"],
+    "hiddenProps": ["bullet-class"],
+    "slots": [
+      {
+        "name": "Item",
+        "token": "List.Item",
+        "repeat": true,
+        "acceptsChildren": true,
+        "textProp": "children",
+        "slots": [
+          {
+            "name": "Icon",
+            "token": "List.Icon"
+          }
+        ]
+      }
+    ],
+    "children": {
+      "accepts": ["List.Item"],
+      "addLabel": "Add item"
+    }
+  }
 }

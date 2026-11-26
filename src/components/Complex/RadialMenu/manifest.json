@@ -1,5 +1,44 @@
 {
   "name": "RadialMenu",
   "version": "1.1.2",
-  "description": "Radial wheel selection menu"
+  "description": "Radial wheel selection menu",
+  "editor": {
+    "icon": "radial-menu",
+    "category": "Lists & menus",
+    "propsOrder": ["opened", "selected", "gap"],
+    "slots": [
+      {
+        "name": "Item",
+        "token": "RadialMenu.Item",
+        "repeat": true,
+        "acceptsChildren": true,
+        "propsOrder": ["id", "offset"],
+        "hiddenProps": ["class-selected", "style-selected"]
+      },
+      {
+        "name": "Content",
+        "token": "RadialMenu.Content",
+        "acceptsChildren": true
+      },
+      {
+        "name": "Selector",
+        "token": "RadialMenu.Selector"
+      },
+      {
+        "name": "Indicator",
+        "token": "RadialMenu.Indicator",
+        "slots": [
+          {
+            "name": "Icon",
+            "token": "RadialMenu.Indicator.Icon",
+            "acceptsChildren": true
+          }
+        ]
+      }
+    ],
+    "children": {
+      "accepts": ["RadialMenu.Item"],
+      "addLabel": "Add item"
+    }
+  }
 }

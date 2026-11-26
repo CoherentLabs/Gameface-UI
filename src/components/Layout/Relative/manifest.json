@@ -1,5 +1,13 @@
 {
   "name": "Relative",
   "version": "1.1.2",
-  "description": "Relatively positioned container"
+  "description": "Relatively positioned container",
+  "editor": {
+    "icon": "position-relative",
+    "category": "Layout",
+    "children": {
+      "accepts": ["*"]
+    },
+    "propsOrder": ["top", "left", "right", "bottom"]
+  }
 }

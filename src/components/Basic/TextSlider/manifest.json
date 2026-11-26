@@ -1,5 +1,34 @@
 {
   "name": "TextSlider",
   "version": "1.1.2",
-  "description": "Slider that snaps between labeled text values"
+  "description": "Slider that snaps between labeled text values",
+  "editor": {
+    "icon": "slider-text",
+    "category": "Sliders",
+    "focusable": true,
+    "propsOrder": ["values", "value"],
+    "slots": [
+      {
+        "name": "Track",
+        "token": "TextSlider.Track"
+      },
+      {
+        "name": "Fill",
+        "token": "TextSlider.Fill"
+      },
+      {
+        "name": "Handle",
+        "token": "TextSlider.Handle"
+      },
+      {
+        "name": "Thumb",
+        "token": "TextSlider.Thumb"
+      },
+      {
+        "name": "Pol",
+        "token": "TextSlider.Pol",
+        "hiddenProps": ["text-style", "text-class"]
+      }
+    ]
+  }
 }
