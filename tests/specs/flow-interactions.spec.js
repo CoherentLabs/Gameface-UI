@@ -147,7 +147,7 @@ describe('Flow interactions', function () {
             }, 'ix-trigger', value);
             await gf.connectGamepad('ix-trigger');
             try {
-                await pull(0.3);
+                await pull(0.55);
                 await gf.sleep(600);
                 await pull(0);
                 await gf.sleep(600);

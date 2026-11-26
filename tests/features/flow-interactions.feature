@@ -68,7 +68,7 @@ Feature: Flow interactions
 
   Scenario: An analog trigger row runs only past its threshold
     Given a row on the left trigger with threshold 0.6
-    When the player pulls the trigger to 0.3 and releases it
+    When the player pulls the trigger to 0.55 and releases it
     Then no row runs
     When the player pulls the trigger to 0.8 and releases it
     Then the trigger row runs
