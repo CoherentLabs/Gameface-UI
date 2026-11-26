@@ -22,6 +22,14 @@ export interface FlowInstance {
     /** Re-collects this document's navigation areas now (after a state change). */
     refreshNow?: () => void;
     disposed: boolean;
+    /** Helpers waiting for the Navigation API (a screen gets it from <Navigation ref={f.nav}> on mount). */
+    navWaiters: Set<(nav: NavigationRef) => void>;
+    /** onScreenShow handlers; they run once the root has mounted (after the intro, once there is one). */
+    showHandlers: Set<() => void>;
+    /** onScreenHide handlers; they run before the screen leaves (navigate, or the game's screen-closing). */
+    hideHandlers: Set<() => void>;
+    shown: boolean;
+    hidden: boolean;
 }
 
 /**
@@ -29,6 +37,54 @@ export interface FlowInstance {
  * screen and the components it places directly can share one owner: each keeps a list, in registration order.
  */
 const ownerFlows = new WeakMap<Owner, FlowInstance[]>();
+const liveFlows = new Set<FlowInstance>();
+
+export function addLiveFlow(flow: FlowInstance) {
+    liveFlows.add(flow);
+}
+
+export function removeLiveFlow(flow: FlowInstance) {
+    liveFlows.delete(flow);
+}
+
+/**
+ * Runs the onScreenHide handlers of every shown document on the page, once per document. Called before the UI
+ * leaves (navigate) and when the game closes the screen (screen-closing).
+ */
+export function hideScreens() {
+    for (const flow of [...liveFlows]) {
+        if (flow.disposed || !flow.shown || flow.hidden) continue;
+        flow.hidden = true;
+        for (const fn of [...flow.hideHandlers]) {
+            try {
+                fn();
+            } catch (e) {
+                console.error('[Flow] onScreenHide handler failed', e);
+            }
+        }
+    }
+}
+
+/**
+ * Runs `fn` with the flow's Navigation API: when <Navigation ref={f.nav}> hands it over, or when the root mounts
+ * (a component's Navigation context), whichever comes first; right away when the root has already mounted.
+ */
+export function whenNav(flow: FlowInstance, fn: (nav: NavigationRef) => void) {
+    if (flow.shown && flow.nav) {
+        fn(flow.nav);
+        return () => {};
+    }
+    flow.navWaiters.add(fn);
+    return () => flow.navWaiters.delete(fn);
+}
+
+export function flushNavWaiters(flow: FlowInstance) {
+    const nav = flow.nav;
+    if (!nav || flow.navWaiters.size === 0) return;
+    const waiters = [...flow.navWaiters];
+    flow.navWaiters.clear();
+    for (const fn of waiters) fn(nav);
+}
 const rootFlows = new WeakMap<Element, FlowInstance>();
 const rootsById = new Map<string, Set<FlowInstance>>();
 

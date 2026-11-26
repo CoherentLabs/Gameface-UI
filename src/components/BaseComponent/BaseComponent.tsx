@@ -189,11 +189,12 @@ export function navigationActions(el: HTMLElement, accessor: Accessor<Navigation
     for (const [name, func] of Object.entries(actionHandlers)) {
         const action = nav.getAction(name);
         if (!action) {
-            console.warn(`Action "${name}" is not registered in Navigation.`);
-            continue;
-        }
-
-        if (!action.global && !DEFAULT_ACTION_NAMES.has(name as DefaultActions)) {
+            // Actions added on mount (the Flow runtime registers a screen's input actions when its Navigation
+            // mounts) aren't there yet while the screen's elements are created; warn only if it never shows up.
+            waitForFrames(() => {
+                if (!nav.getAction(name)) console.warn(`Action "${name}" is not registered in Navigation.`);
+            });
+        } else if (!action.global && !DEFAULT_ACTION_NAMES.has(name as DefaultActions)) {
             console.warn(`Action "${name}" is not global. To subscribe components to it, please make it global.`);
             continue;
         }
