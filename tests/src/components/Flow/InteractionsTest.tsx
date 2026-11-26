@@ -24,6 +24,8 @@ const actions = defineInputActions({
     dash: { keyboard: ['D'] },
     pick: { mouse: ['click'] },
     fire: { xbox: ['left-shoulder-bottom'], playstation: ['left-shoulder-bottom'], switch: ['left-shoulder-bottom'] },
+    // Navigation already has "back". No Switch binding, so A (face-button-down) runs no row on Switch.
+    back: { keyboard: ['ESC'], xbox: ['face-button-right'], playstation: ['face-button-right'] },
 });
 
 // Stands in for the project's src/game/events.ts.
@@ -69,6 +71,7 @@ const InteractionsTest = () => {
     useInputKeys({ key: ['F1'] }, () => add('f1'));
     useInputAction(actions.pick, () => add('pick'), { scope: () => scoped });
     useInputAction(actions.fire, () => add('fire'), { threshold: 0.6 });
+    useInputAction(actions.back, () => add('back'));
     const hold = useHold(() => held, () => add('held'), { ms: 1000 });
 
     onGameEvent(gameEvents.playerHit, (damage) => add(`hit:${damage}`));
@@ -80,6 +83,7 @@ const InteractionsTest = () => {
         { label: 'Play sound', action: () => playSound('buy') },
         { label: 'Remap confirm to F2', action: () => setInputBinding(actions.confirm, 'keyboard', ['F2']) },
         { label: 'Style mode: colorblind', action: () => setStyleMode('colorblind') },
+        { label: 'Unbind back from the keyboard', action: () => setInputBinding(actions.back, 'keyboard', null) },
     ];
 
     const reset = () => {

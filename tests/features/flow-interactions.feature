@@ -4,7 +4,7 @@ Feature: Flow interactions
   platform and style mode switches the canvas toolbar previews.
 
   Background:
-    Given a screen with input actions confirm, interact, charge, drop, combo, modifier, dash, pick and fire
+    Given a screen with input actions confirm, interact, charge, drop, combo, modifier, dash, pick, fire and back
     And rows on them: a screen row, an element row with stopHere, a hold row, a released row, a combo row,
       a double-press row, a raw F1 row, a mouse row on one element and a trigger row with a threshold
 
@@ -72,6 +72,16 @@ Feature: Flow interactions
     Then no row runs
     When the player pulls the trigger to 0.8 and releases it
     Then the trigger row runs
+
+  Scenario: Other pressed buttons don't count toward a trigger's threshold
+    Given a row on the left trigger with threshold 0.6
+    When the player holds A and pulls the trigger to 0.2, then releases both
+    Then no row runs
+
+  Scenario: Unbinding the keyboard from an action Navigation already has removes its key
+    Given the project defines "back" with Esc, an action Navigation already has
+    When the player unbinds the keyboard from "back"
+    Then Esc no longer runs the screen's "back" row
 
   Scenario: Remapping an action moves its row to the player's key
     When the player remaps confirm to F2

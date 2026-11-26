@@ -164,6 +164,41 @@ describe('Flow interactions', function () {
     });
 
     describe('Bindings, platform and hints', () => {
+        it("Other pressed buttons don't count toward a trigger's threshold", async () => {
+            // On Switch, A (face-button-down) runs no row in this screen, so only the trigger row could log.
+            await scenario(1);
+            await blur();
+            const set = (index, value) => gf.executeScript((id, i, v) => {
+                const button = window._getGamepad(id).buttons[i];
+                button.pressed = v > 0;
+                button.value = v;
+            }, 'ix-combo-pad', index, value);
+            await gf.connectGamepad('ix-combo-pad');
+            try {
+                await set(0, 1);
+                await set(6, 0.2);
+                await gf.sleep(600);
+                await set(6, 0);
+                await set(0, 0);
+                await gf.sleep(600);
+                assert.equal(await log(), '', 'A at full does not lift the trigger past 0.6');
+            } finally {
+                await gf.disconnectGamepad('ix-combo-pad');
+            }
+        });
+
+        it("Unbinding the keyboard from an action Navigation already has removes its key", async () => {
+            await blur();
+            await press(gf.KEYS.ESC);
+            await expectLog('back', 'Esc runs the row before the unbind');
+            await scenario(6);
+            await gf.sleep(100);
+            await blur();
+            await press(gf.KEYS.ESC);
+            await gf.sleep(100);
+            assert.equal(await log(), 'back', 'Esc no longer runs it');
+        });
+
         it("Remapping an action moves its row to the player's key", async () => {
             await scenario(4);
             await gf.sleep(100);
