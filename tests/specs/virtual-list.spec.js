@@ -97,6 +97,86 @@ describe('VirtualList', function () {
         });
     });
 
+    describe('Changing the shown items', () => {
+        /** { id: uid } of the rows of a list */
+        const uidOf = async (target) => Object.fromEntries((await rows(target)).map((r) => [r.id, r.uid]));
+
+        it('Growing the page size keeps the shown rows and adds rows after them', async () => {
+            const before = await uidOf('keyed');
+            await setProps({ page: 5 });
+            assert.deepEqual(await ids('keyed'), [2, 3, 4, 5, 6]);
+            const after = await uidOf('keyed');
+            for (const id of [2, 3, 4]) assert.equal(after[id], before[id], `Row ${id} is kept`);
+        });
+
+        it('Shrinking the page size removes rows from the end only', async () => {
+            const before = await uidOf('keyed');
+            await setProps({ page: 2 });
+            assert.deepEqual(await ids('keyed'), [2, 3]);
+            const after = await uidOf('keyed');
+            for (const id of [2, 3]) assert.equal(after[id], before[id], `Row ${id} is kept`);
+        });
+
+        it('Jumping to a page with no overlap replaces every row', async () => {
+            const before = Object.values(await uidOf('keyed'));
+            await setProps({ start: 7 });
+            const after = await rows('keyed');
+            assert.deepEqual(after.map((r) => r.id), [7, 8, 9]);
+            assert.ok(after.every((r) => !before.includes(r.uid)), 'Every row is new');
+            assert.deepEqual(after.map((r) => r.index), [7, 8, 9], 'Rows get their absolute indexes');
+        });
+
+        it('Moving the start index back by 1 keeps the rows still on the page', async () => {
+            for (const target of ['keyed', 'unkeyed']) {
+                const before = await uidOf(target);
+                await setProps({ start: START - 1 });
+                assert.deepEqual(await ids(target), [1, 2, 3], target);
+                const after = await uidOf(target);
+                for (const id of [2, 3]) assert.equal(after[id], before[id], `${target}: row ${id} is kept`);
+                assert.ok(!Object.values(before).includes(after[1]), `${target}: item 1 gets a new row`);
+                await setProps({ start: START });
+            }
+        });
+
+        it('Inserting an item before the page shifts the shown items, and rows follow their items', async () => {
+            const before = await uidOf('keyed');
+            await setItems({ ids: [100, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9] });
+            const after = await rows('keyed');
+            assert.deepEqual(after.map((r) => r.id), [1, 2, 3], 'The page now starts one item earlier in the old order');
+            const uids = Object.fromEntries(after.map((r) => [r.id, r.uid]));
+            for (const id of [2, 3]) assert.equal(uids[id], before[id], `Item ${id} keeps its row`);
+            assert.ok(!Object.values(before).includes(uids[1]), 'Item 1 gets a new row');
+            assert.deepEqual(after.map((r) => r.index), [2, 3, 4], 'Indexes follow the new positions');
+        });
+
+        it('Removing an item on the page brings in the next item', async () => {
+            const before = await uidOf('keyed');
+            await setItems({ ids: [0, 1, 2, 4, 5, 6, 7, 8, 9] });
+            const after = await rows('keyed');
+            assert.deepEqual(after.map((r) => r.id), [2, 4, 5]);
+            const uids = Object.fromEntries(after.map((r) => [r.id, r.uid]));
+            for (const id of [2, 4]) assert.equal(uids[id], before[id], `Item ${id} keeps its row`);
+            assert.ok(!Object.values(before).includes(uids[5]), 'Item 5 gets a new row');
+        });
+
+        it('Unkeyed: moving the start index by 1 keeps the rows whose index stays on the page', async () => {
+            const before = await rows('unkeyed');
+            await setProps({ start: START + 1 });
+            const after = await rows('unkeyed');
+            assert.deepEqual(after.map((r) => r.index), [3, 4, 5]);
+            assert.deepEqual(after.slice(0, 2).map((r) => r.uid), before.slice(1).map((r) => r.uid), 'Rows at indexes 3 and 4 are kept');
+            assert.ok(!before.map((r) => r.uid).includes(after[2].uid), 'Index 5 gets a new row');
+        });
+
+        it('Shrinking the list below the start index renders no rows', async () => {
+            await setItems({ ids: [0, 1] });
+            assert.deepEqual(await ids('keyed'), [], 'No item is at or after the start index');
+            assert.deepEqual(await ids('unkeyed'), [], 'Unkeyed too');
+            const fallback = await gf.executeScript((sel) => document.querySelectorAll(sel).length, `.${selectors.fallback}`);
+            assert.equal(fallback, 0, 'The list is not empty, so the fallback is not shown');
+        });
+    });
+
     describe('Ref', () => {
         it('Should read startIndex, pageSize and length', async () => {
             assert.deepEqual(await readRef('keyed'), { startIndex: START, pageSize: PAGE, length: ITEM_COUNT });
@@ -130,9 +210,44 @@ describe('VirtualList', function () {
             await setProps({ start: 4 });
             assert.deepEqual(await ids('keyed'), [4, 5, 6], 'The prop wins after it changes');
         });
+
+        it('Moving the page through the ref reports the new start index', async () => {
+            const bound = () => gf.executeScript((sel) => {
+                const el = document.querySelector(sel);
+                return { start: Number(el.getAttribute('data-start')), page: Number(el.getAttribute('data-page')) };
+            }, `.${selectors.bound}`);
+            assert.deepEqual(await ids('bound'), [2, 3, 4], 'The list starts at the bound startIndex');
+
+            await refCall('bound', 'nextPage');
+            assert.deepEqual(await ids('bound'), [5, 6, 7]);
+            assert.deepEqual(await bound(), { start: 5, page: PAGE }, 'nextPage reports the new start index');
+
+            await gf.trigger('vl-bound', { start: START });
+            assert.deepEqual(await ids('bound'), [2, 3, 4], 'Setting the binding back to its old value moves the list');
+
+            await refSet('bound', 'pageSize', 2);
+            assert.deepEqual(await bound(), { start: START, page: 2 }, 'Setting pageSize through the ref reports it');
+        });
     });
 
     describe('Data', () => {
+        it('Changing one item of an unkeyed list updates only that row', async () => {
+            const state = () => gf.executeScript((sel) => {
+                const el = document.querySelector(sel);
+                return {
+                    recomputes: Number(el.getAttribute('data-recomputes')),
+                    texts: [...el.children].map((row) => row.textContent.trim()),
+                };
+            }, `.${selectors.plain}`);
+            const before = await state();
+            assert.deepEqual(before.texts, ['0', '1', '2', '3', '4'], 'Every row renders its item');
+
+            await gf.trigger('vl-plain', { index: 2, value: 99 });
+            const after = await state();
+            assert.deepEqual(after.texts, ['0', '1', '99', '3', '4'], 'The changed row shows its new item');
+            assert.equal(after.recomputes - before.recomputes, 1, 'Only the changed row recomputes its item');
+        });
+
         it('Keyed: should keep row elements across insert, removal and reorder', async () => {
             const uidOf = async () => Object.fromEntries((await rows('keyed')).map((r) => [r.id, r.uid]));
             const before = await uidOf();

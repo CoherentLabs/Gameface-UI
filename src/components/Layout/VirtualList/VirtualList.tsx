@@ -27,6 +27,13 @@ interface VirtualListBaseProps<T> {
     fallback?: JSX.Element;
     /** Called with the ref when the list is created. */
     ref?: VirtualListRef | ((ref: VirtualListRef) => void);
+    /**
+     * Called with the new start index when the ref changes it (`startIndex`, `nextPage`, `prevPage`).
+     * Not called for prop changes. Write it back to the signal bound to `startIndex`, so the two stay in step.
+     */
+    onStartIndexChange?: (startIndex: number) => void;
+    /** Called with the new page size when the ref changes it. Not called for prop changes. */
+    onPageSizeChange?: (pageSize: number) => void;
 }
 
 export interface VirtualListKeyedProps<T> extends VirtualListBaseProps<T> {
@@ -54,10 +61,12 @@ const toCount = (value: number | undefined) => {
     return n > 0 ? n : 0;
 };
 
-/** Sets the row marker when the row's root is a single element. */
-const markRow = (node: JSX.Element, index: () => number) => {
+/** Sets the row marker when the row's root is a single element. A fixed index is set once. */
+const markRow = (node: JSX.Element, index: number | (() => number)) => {
     if (node && typeof (node as Element).setAttribute === 'function') {
-        createRenderEffect(() => (node as Element).setAttribute(VIRTUAL_LIST_INDEX_ATTR, String(index())));
+        const set = (value: number) => (node as Element).setAttribute(VIRTUAL_LIST_INDEX_ATTR, String(value));
+        if (typeof index === 'number') set(index);
+        else createRenderEffect(() => set(index()));
     }
     return node;
 };
@@ -73,6 +82,8 @@ function VirtualList<T>(props: VirtualListProps<T>): JSX.Element {
     const [size, setSize] = createSignal(0);
 
     // Props and ref drive the same state: a prop change overrides a value set through the ref.
+    // A prop only reaches the list when its value changes, so ref moves are reported through
+    // onStartIndexChange / onPageSizeChange for the parent to write back to its binding.
     createComputed(on(() => props.startIndex, (value) => setStart(toCount(value))));
     createComputed(on(() => props.pageSize, (value) => setSize(toCount(value))));
 
@@ -82,18 +93,32 @@ function VirtualList<T>(props: VirtualListProps<T>): JSX.Element {
     /** Absolute index of the first row and one past the last row. */
     const end = createMemo(() => Math.min(start() + size(), length()));
 
+    /** Changes made through the ref, reported to the parent. */
+    const moveStart = (value: number) => {
+        const next = toCount(value);
+        if (next === untrack(start)) return;
+        setStart(next);
+        props.onStartIndexChange?.(next);
+    };
+    const resize = (value: number) => {
+        const next = toCount(value);
+        if (next === untrack(size)) return;
+        setSize(next);
+        props.onPageSizeChange?.(next);
+    };
+
     const ref: VirtualListRef = {
         get startIndex() {
             return start();
         },
         set startIndex(value: number) {
-            setStart(toCount(value));
+            moveStart(value);
         },
         get pageSize() {
             return size();
         },
         set pageSize(value: number) {
-            setSize(toCount(value));
+            resize(value);
         },
         get length() {
             return length();
@@ -101,11 +126,11 @@ function VirtualList<T>(props: VirtualListProps<T>): JSX.Element {
         nextPage() {
             untrack(() => {
                 const next = start() + size();
-                if (next < length()) setStart(next);
+                if (next < length()) moveStart(next);
             });
         },
         prevPage() {
-            untrack(() => setStart(Math.max(0, start() - size())));
+            untrack(() => moveStart(Math.max(0, start() - size())));
         },
     };
 
@@ -131,7 +156,8 @@ function VirtualList<T>(props: VirtualListProps<T>): JSX.Element {
     const unkeyedRows = () => {
         const p = props as VirtualListUnkeyedProps<T>;
         // Rows are keyed by absolute index, so a row stays while its index is in the slice
-        // and its item updates in place.
+        // and its item updates in place. The per-row memo (like <Index>'s per-row signal) only
+        // notifies when the item at that position changes, not on every change to the list.
         const indexes = createMemo(() => {
             const result: number[] = [];
             for (let i = start(); i < end(); i++) result.push(i);
@@ -139,7 +165,10 @@ function VirtualList<T>(props: VirtualListProps<T>): JSX.Element {
         });
         return (
             <For each={indexes()}>
-                {(index) => markRow(p.children(() => list()[index], index), () => index)}
+                {(index) => {
+                    const item = createMemo(() => list()[index]);
+                    return markRow(p.children(item, index), index);
+                }}
             </For>
         );
     };

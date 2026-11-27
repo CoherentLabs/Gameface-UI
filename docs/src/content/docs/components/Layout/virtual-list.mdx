@@ -80,6 +80,14 @@ const [start, setStart] = createSignal(0);
 
 Props and the ref drive the same values. A value set through the ref stays until the prop changes, and then the prop's value is used.
 
+A prop only reaches the list when its value changes. So when a list is moved both through a bound prop and through the ref, write the ref's moves back to the binding with `onStartIndexChange` (and `onPageSizeChange`). Otherwise, after `nextPage()`, setting the signal back to its old value does nothing, because the signal never changed:
+
+```tsx
+const [start, setStart] = createSignal(0);
+
+<VirtualList each={items()} startIndex={start()} onStartIndexChange={setStart} pageSize={10} ref={list}>…</VirtualList>
+```
+
 To drive several lists with one page, pass the same signals to each of them.
 
 ### With Pagination
@@ -169,6 +177,8 @@ When a row's template returns a single element, that element gets a `data-vl-ind
 | `fallback`   | `JSX.Element` | `undefined` | Rendered when `each` is empty. |
 | `keyed`      | `boolean` | `true` | `true`: rows follow items. `false`: rows follow positions. |
 | `ref`        | `VirtualListRef \| ((ref: VirtualListRef) => void)` | `undefined` | Gives access to the list's page. |
+| `onStartIndexChange` | `(startIndex: number) => void` | `undefined` | Called with the new start index when the ref changes it (`startIndex`, `nextPage`, `prevPage`). Not called for prop changes. |
+| `onPageSizeChange` | `(pageSize: number) => void` | `undefined` | Called with the new page size when the ref changes it. Not called for prop changes. |
 | `children`   | `(item: T, index: Accessor<number>) => JSX.Element`, or with `keyed={false}` `(item: Accessor<T>, index: number) => JSX.Element` | - | The template, rendered once per row. `index` is the absolute index in `each`. |
 
 ## Ref API

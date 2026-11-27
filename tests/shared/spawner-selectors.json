@@ -4,5 +4,6 @@
     "flow": "gf-spawner-flow",
     "pooled": "gf-spawner-pooled",
     "hooks": "gf-spawner-hooks",
-    "css": "gf-spawner-css"
+    "css": "gf-spawner-css",
+    "slowExit": "gf-spawner-slow-exit"
 }

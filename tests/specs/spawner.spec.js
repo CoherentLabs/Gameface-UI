@@ -7,7 +7,7 @@ const MAX_COUNT = 3;
 const POOL_SIZE = 2;
 const HIDE_TIMEOUT = 600;
 const CSS_HIDE_TIMEOUT = 3000;
-// Removal waits ~3 frames for computed styles (see waitForCssExit); generous for slow frame rates
+// Removal waits ~3 frames for an exit animation to start (see waitForCssExit); generous for slow frame rates
 const SETTLE = 500;
 
 /** The entries of one Spawner, as { text, uid, key, shows, state, display, position, left, top } */
@@ -33,6 +33,21 @@ async function entries(target) {
 }
 
 const spawn = (detail) => gf.trigger('spawner-spawn', detail);
+
+/** Runs a scenario from SpawnerTest's `scenarios` and returns its result (it writes it to <body>). */
+async function runScenario(name, options = {}) {
+    await gf.trigger('spawner-scenario', { name, ...options });
+    for (let i = 0; i < 100; i++) {
+        const raw = await gf.executeScript(() => document.body.getAttribute('data-scenario'));
+        if (raw) {
+            const result = JSON.parse(raw);
+            if (result.error) throw new Error(`Scenario "${name}" failed: ${result.error}`);
+            return result;
+        }
+        await gf.sleep(100);
+    }
+    throw new Error(`Scenario "${name}" did not finish`);
+}
 const visible = (list) => list.filter((e) => e.state !== 'idle');
 
 describe('Spawner', function () {
@@ -167,6 +182,45 @@ describe('Spawner', function () {
             await gf.trigger('spawner-clear', { target: 'flow' });
             await gf.sleep(SETTLE);
             assert.equal((await entries('flow')).length, 0, 'The item should be removed');
+        });
+
+        it('A cut-short CSS exit leaves no animation listeners behind', async () => {
+            const result = await runScenario('cut-short-exit');
+            assert.ok(result.added > 0, 'The exit waits should have added animationend listeners');
+            assert.equal(result.left, 0, `Every listener should be removed (${result.left} of ${result.added} left)`);
+        });
+    });
+
+    describe('Item lifecycle', () => {
+        it('Spawning from an effect does not re-run the effect when items hide', async () => {
+            const result = await runScenario('effect-spawn');
+            assert.equal(result.spawns, 1, 'The effect should spawn exactly one item');
+        });
+
+        it('Show hooks registered after the template mounts run on the first show', async () => {
+            const result = await runScenario('show-hook-on-mount');
+            assert.equal(result.duringRender, 1, 'A hook registered while rendering runs once');
+            assert.equal(result.fromOnMount, 1, 'A hook registered from onMount runs once');
+        });
+
+        it('Saved item entries keep their data after their element is reused', async () => {
+            const result = await runScenario('saved-entry');
+            assert.equal(result.templates, 1, "B should reuse A's element");
+            assert.deepEqual(result.shown, ['B'], 'B should be shown');
+            assert.equal(result.savedText, 'A', "The saved entry should keep A's data");
+        });
+
+        it('Shrinking the pool frees idle elements', async () => {
+            const result = await runScenario('pool-change', { to: 1 });
+            assert.equal(result.idleBefore, 3, 'Three idle elements to start with');
+            assert.equal(result.idleAfterChange, 1, 'One idle element should be left');
+        });
+
+        it('A pool of 0 does not reuse idle elements', async () => {
+            const result = await runScenario('pool-change', { to: 0 });
+            assert.equal(result.idleBefore, 3, 'Three idle elements to start with');
+            assert.equal(result.idleAfterSpawn, 0, 'No idle element should be left');
+            assert.equal(result.newElements, 1, 'The item should get a new element');
         });
     });
 });

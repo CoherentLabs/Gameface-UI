@@ -1,4 +1,4 @@
-import { createSignal, onCleanup, onMount, Show } from 'solid-js';
+import { createMemo, createSignal, onCleanup, onMount, Show } from 'solid-js';
 import { createStore, reconcile } from 'solid-js/store';
 import VirtualList, { VirtualListRef } from '@components/Layout/VirtualList/VirtualList';
 import './VirtualListTest.css';
@@ -10,7 +10,10 @@ const ITEM_COUNT = 10;
 const START = 2;
 const PAGE = 3;
 
-type Target = 'keyed' | 'unkeyed';
+type Target = 'keyed' | 'unkeyed' | 'bound';
+
+/** Items of the plain-array list, for the row recompute test */
+const PLAIN_ITEMS = [0, 1, 2, 3, 4];
 
 interface Item {
     id: number;
@@ -37,6 +40,12 @@ const VirtualListTest = () => {
     const [store, setStore] = createStore<{ items: Item[] }>({ items: makeItems(range(ITEM_COUNT)) });
     const [start, setStart] = createSignal(START);
     const [page, setPage] = createSignal(PAGE);
+    // A list whose startIndex and pageSize are bound to signals that the ref's moves write back to
+    const [boundStart, setBoundStart] = createSignal(START);
+    const [boundPage, setBoundPage] = createSignal(PAGE);
+    // A plain array (not a store), so replacing one item replaces the whole array
+    const [plain, setPlain] = createSignal(PLAIN_ITEMS);
+    const [recomputes, setRecomputes] = createSignal(0);
     const refs: Partial<Record<Target, VirtualListRef>> = {};
 
     const onProps = (event: Event) => {
@@ -64,17 +73,35 @@ const VirtualListTest = () => {
             JSON.stringify(ref ? { startIndex: ref.startIndex, pageSize: ref.pageSize, length: ref.length } : null)
         );
     };
+    const onBound = (event: Event) => {
+        const { start: s, page: p } = (event as CustomEvent<{ start?: number; page?: number }>).detail;
+        if (s !== undefined) setBoundStart(s);
+        if (p !== undefined) setBoundPage(p);
+    };
+    /** Replaces the plain array with a copy where one item changed */
+    const onPlain = (event: Event) => {
+        const { index, value } = (event as CustomEvent<{ index: number; value: number }>).detail;
+        const next = [...plain()];
+        next[index] = value;
+        setPlain(next);
+    };
     const reset = () => {
         setMounted(false);
         created = 0;
         setStore('items', makeItems(range(ITEM_COUNT)));
         setStart(START);
         setPage(PAGE);
+        setBoundStart(START);
+        setBoundPage(PAGE);
+        setPlain(PLAIN_ITEMS);
+        setRecomputes(0);
         setMounted(true);
     };
 
     const listeners: [string, (e: Event) => void][] = [
         ['vl-props', onProps],
+        ['vl-bound', onBound],
+        ['vl-plain', onPlain],
         ['vl-items', onItems],
         ['vl-ref', onRef],
         ['vl-read-ref', onReadRef],
@@ -109,6 +136,30 @@ const VirtualListTest = () => {
             </div>
             <div class={selectors.defaults}>
                 <VirtualList each={store.items}>{(item, index) => <Row item={item} index={index()} />}</VirtualList>
+            </div>
+            <div class={selectors.bound} data-start={boundStart()} data-page={boundPage()}>
+                <VirtualList
+                    each={store.items}
+                    startIndex={boundStart()}
+                    pageSize={boundPage()}
+                    onStartIndexChange={setBoundStart}
+                    onPageSizeChange={setBoundPage}
+                    ref={(r) => (refs.bound = r)}
+                >
+                    {(item, index) => <Row item={item} index={index()} />}
+                </VirtualList>
+            </div>
+            <div class={selectors.plain} data-recomputes={recomputes()}>
+                <VirtualList keyed={false} each={plain()} startIndex={0} pageSize={PLAIN_ITEMS.length}>
+                    {(item, index) => {
+                        // Counts how often a row's item is recomputed
+                        const value = createMemo(() => {
+                            setRecomputes((n) => n + 1);
+                            return item();
+                        });
+                        return <div class={selectors.row} data-index={index}>{value()}</div>;
+                    }}
+                </VirtualList>
             </div>
         </Show>
     );

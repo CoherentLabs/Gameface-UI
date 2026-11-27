@@ -18,7 +18,7 @@ import {
 import { createStore, reconcile, SetStoreFunction } from 'solid-js/store';
 import LayoutBase from '@components/Layout/LayoutBase';
 import { ComponentBaseProps } from '@components/types/ComponentProps';
-import { prepareCssExit } from '@components/utils/waitForCssExit';
+import { waitForCssExit } from '@components/utils/waitForCssExit';
 import styles from './Spawner.module.scss';
 
 /** Default cap for how long an item may wait for its hide before it is removed anyway. */
@@ -80,7 +80,13 @@ export interface SpawnerItemApi {
 
 const SpawnerItemContext = createContext<SpawnerItemApi>();
 
-/** Gives anything inside a Spawner template access to its item: show and hide hooks, key, remove. */
+/**
+ * Gives anything inside a Spawner template access to its item: show and hide hooks, key, remove.
+ *
+ * With `pool`, a reused element keeps its template instance and this API for the next item.
+ * Deferred work (a timeout, a promise) must check that `key()` is still the key it started with
+ * before acting, or be cancelled in `onHide`; otherwise it acts on the next item.
+ */
 export const useSpawnerItem = () => useContext(SpawnerItemContext);
 
 export interface SpawnerProps extends Omit<ComponentBaseProps, 'children'> {
@@ -112,6 +118,8 @@ interface Slot {
     hideHooks: Set<() => Promise<void> | void>;
     lifeTimer?: ReturnType<typeof setTimeout>;
     hideCap?: ReturnType<typeof setTimeout>;
+    /** Stops waiting for the CSS exit animation. */
+    cancelCssExit?: () => void;
     /** Bumped on every show, so a hide that finishes after a reuse is ignored. */
     generation: number;
     element?: HTMLDivElement;
@@ -129,7 +137,8 @@ const Spawner: Component<SpawnerProps> = (props) => {
     const items = createMemo<readonly SpawnerItem[]>(() =>
         slots()
             .filter((slot) => slot.state() === 'shown')
-            .map((slot) => ({ key: slot.key(), data: slot.data }))
+            // A shallow copy: a pooled slot's data changes to the next item's when its element is reused.
+            .map((slot) => ({ key: slot.key(), data: { ...slot.data } }))
     );
 
     function createSlot(pooled: boolean): Slot {
@@ -156,24 +165,49 @@ const Spawner: Component<SpawnerProps> = (props) => {
     function clearTimers(slot: Slot) {
         clearTimeout(slot.lifeTimer);
         clearTimeout(slot.hideCap);
+        slot.cancelCssExit?.();
         slot.lifeTimer = undefined;
         slot.hideCap = undefined;
+        slot.cancelCssExit = undefined;
+    }
+
+    /** Drops idle pooled elements above the pool size. Shown ones above it are dropped when they finish hiding. */
+    function trimPool() {
+        const list = untrack(slots);
+        let excess = list.filter((slot) => slot.pooled).length - poolSize();
+        if (excess <= 0) return;
+        const drop = new Set<Slot>();
+        for (const slot of list) {
+            if (excess === 0) break;
+            if (slot.pooled && slot.state() === 'idle') {
+                drop.add(slot);
+                excess--;
+            }
+        }
+        if (drop.size) setSlots(list.filter((slot) => !drop.has(slot)));
     }
 
     /** An idle pooled slot, or a new slot (pooled while the pool has room). */
-    function takeSlot(list: Slot[]): { slot: Slot; isNew: boolean } {
+    function takeSlot(): { list: Slot[]; slot: Slot; isNew: boolean } {
+        trimPool();
+        const list = untrack(slots);
         const idle = list.find((slot) => slot.pooled && slot.state() === 'idle');
-        if (idle) return { slot: idle, isNew: false };
+        if (idle) return { list, slot: idle, isNew: false };
         const pooledCount = list.filter((slot) => slot.pooled).length;
-        return { slot: createSlot(pooledCount < poolSize()), isNew: true };
+        return { list, slot: createSlot(pooledCount < poolSize()), isNew: true };
     }
 
+    // spawn, remove and clear run untracked: an effect that calls them must not subscribe to
+    // the items' states, or each item that hides would re-run it.
     function spawn(data: SpawnerData, opts: SpawnOptions = {}): number {
+        return untrack(() => spawnItem(data, opts));
+    }
+
+    function spawnItem(data: SpawnerData, opts: SpawnOptions): number {
         const key = nextKey++;
 
         batch(() => {
-            const list = untrack(slots);
-            const { slot, isNew } = takeSlot(list);
+            const { list, slot, isNew } = takeSlot();
 
             slot.generation++;
             slot.setData(reconcile({ ...data }));
@@ -220,9 +254,9 @@ const Spawner: Component<SpawnerProps> = (props) => {
 
         const generation = slot.generation;
         const wrapper = slot.element;
-        const waitForCss = wrapper
-            ? prepareCssExit([wrapper, wrapper.firstElementChild].filter(Boolean) as Element[])
-            : undefined;
+        // Started before the leaving class is applied, so no animationstart is missed
+        const cssExit = wrapper ? waitForCssExit([wrapper, wrapper.firstElementChild]) : undefined;
+        slot.cancelCssExit = cssExit?.cancel;
 
         slot.setState('leaving');
 
@@ -231,7 +265,7 @@ const Spawner: Component<SpawnerProps> = (props) => {
                 .then(fn)
                 .catch((error) => console.error('Spawner hide hook failed', error))
         );
-        if (waitForCss) waits.push(waitForCss());
+        if (cssExit) waits.push(cssExit.promise);
 
         const done = () => {
             if (slot.generation !== generation || untrack(slot.state) !== 'leaving') return;
@@ -245,13 +279,18 @@ const Spawner: Component<SpawnerProps> = (props) => {
     }
 
     function remove(key: number) {
-        const slot = untrack(slots).find((other) => other.state() === 'shown' && other.key() === key);
-        if (slot) hide(slot);
+        untrack(() => {
+            const slot = slots().find((other) => other.state() === 'shown' && other.key() === key);
+            if (slot) hide(slot);
+        });
     }
 
     function clear() {
-        batch(() => untrack(slots).forEach(hide));
+        untrack(() => batch(() => slots().forEach(hide)));
     }
+
+    // A smaller pool frees its idle elements right away, not only on the next spawn.
+    createEffect(on(poolSize, trimPool, { defer: true }));
 
     onCleanup(() => {
         disposed = true;
@@ -275,20 +314,22 @@ const Spawner: Component<SpawnerProps> = (props) => {
             remove: () => hide(slot),
         };
 
-        // Runs after the template has rendered (so its onShow hooks are registered),
-        // then again every time the pooled element is reused for a new key.
-        createEffect(
-            on(slot.key, () => {
-                if (untrack(slot.state) !== 'shown') return;
-                slot.showHooks.forEach((fn) => {
-                    try {
-                        fn();
-                    } catch (error) {
-                        console.error('Spawner show hook failed', error);
-                    }
-                });
-            })
-        );
+        const runShowHooks = () => {
+            if (disposed || untrack(slot.state) !== 'shown') return;
+            slot.showHooks.forEach((fn) => {
+                try {
+                    fn();
+                } catch (error) {
+                    console.error('Spawner show hook failed', error);
+                }
+            });
+        };
+
+        // Runs on the first show and every time the pooled element is reused for a new key.
+        // This effect is created before the template renders, so it runs before the template's
+        // own effects; deferring to a microtask lets hooks registered from the template's
+        // onMount or createEffect run on the first show too.
+        createEffect(on(slot.key, () => void Promise.resolve().then(runShowHooks)));
 
         const wrapperStyle = (): JSX.CSSProperties => {
             const at = slot.at();

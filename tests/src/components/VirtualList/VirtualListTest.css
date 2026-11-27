@@ -1,6 +1,8 @@
 .gf-vl-keyed,
 .gf-vl-unkeyed,
-.gf-vl-defaults {
+.gf-vl-defaults,
+.gf-vl-bound,
+.gf-vl-plain {
     display: flex;
     flex-direction: column;
     width: 300px;

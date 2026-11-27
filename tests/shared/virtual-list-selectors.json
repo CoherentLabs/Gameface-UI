@@ -2,6 +2,8 @@
     "keyed": "gf-vl-keyed",
     "unkeyed": "gf-vl-unkeyed",
     "defaults": "gf-vl-defaults",
+    "bound": "gf-vl-bound",
+    "plain": "gf-vl-plain",
     "row": "gf-vl-row",
     "fallback": "gf-vl-fallback"
 }
