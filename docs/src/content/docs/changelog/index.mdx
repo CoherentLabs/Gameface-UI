@@ -4,7 +4,11 @@ title: Changelog
 
 import { Badge } from '@astrojs/starlight/components'
 
-## 5.2.0 :badge[Latest]{variant="note"}
+## 5.3.0 :badge[Latest]{variant="note"}
+
+- <Badge text="New" variant="tip" size="small" /> Added the `Flow` runtime (`@components/Utility/Flow/Flow`), the helpers that screens and components written by Coherent Editor call: `defineFlow` and `useFlow` for the `<Name>.flow.ts` data, `createStateGroup` and `stateOf` for states, `OverlayHost` and `useOverlays` for opening screens on top of each other, and navigation wiring (focusable elements, areas, first focus, wrap). After a state change or an overlay mounts it calls `engine.synchronizeModels()`, so `data-bind-*` on the new elements fill right away. In dev builds it exposes `window.__gfFlows` so the editor can show and switch states in a running game.
+
+## 5.2.0
 
 ### 🛠 Navigation Improvements
 
