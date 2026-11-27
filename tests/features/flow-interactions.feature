@@ -87,6 +87,36 @@ Feature: Flow interactions
     When the player remaps confirm to F2
     Then Enter no longer runs the "confirm" row and F2 does
 
+  Scenario: Remapping an action mid-hold cancels the hold
+    When the player holds H and "charge" is remapped to J before the hold time is up
+    And the player lets go of H
+    Then the "charge" row doesn't run
+
+  Scenario: Unbinding every device from an action Navigation already has removes it
+    Given the project defines "back" with Esc, an action Navigation already has
+    When the player unbinds the keyboard and the gamepad from "back"
+    Then Esc no longer triggers Navigation's "back"
+
+  Scenario: Mouse rows don't run while the screen's input is paused
+    When the screen pauses its input
+    And the player clicks the "pick" row's element
+    Then no row runs
+    When the screen resumes its input and the player clicks it again
+    Then the "pick" row runs
+
+  Scenario: An action remapped while input is paused stays paused until input resumes
+    When the screen pauses its input
+    And the player remaps confirm to F2
+    Then F2 runs no row
+    When the screen resumes its input
+    Then F2 runs the "confirm" row
+
+  Scenario: An action Navigation already has, remapped while input is paused, works again after input resumes
+    When the screen pauses its input
+    And the player remaps "back" to F3
+    And the screen resumes its input
+    Then F3 runs the "back" row
+
   Scenario: The input hint shows the keyboard glyph on PC
     Given the platform is PC
     Then the confirm hint shows the Enter glyph from the PC set

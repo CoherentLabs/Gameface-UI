@@ -209,6 +209,68 @@ describe('Flow interactions', function () {
             await expectLog('confirm');
         });
 
+        it('Remapping an action mid-hold cancels the hold', async () => {
+            await blur();
+            await gf.keyDown('H');
+            await gf.sleep(150);
+            assert.equal(await text('.ix-charge'), 'charging', 'the hold has started');
+            await scenario(7);
+            await gf.sleep(100);
+            await gf.keyUp('H');
+            await gf.sleep(1300);
+            assert.equal(await log(), '', 'the charge row does not run');
+            assert.equal(await text('.ix-charge'), 'idle', 'the progress is reset');
+        });
+
+        it('Unbinding every device from an action Navigation already has removes it', async () => {
+            await blur();
+            await press(gf.KEYS.ESC);
+            await gf.retryIfFails(async () => assert.equal(await text('.ix-ui-back'), '1', "Esc triggers Navigation's back before the unbind"));
+            await scenario(8);
+            await gf.sleep(100);
+            await blur();
+            await press(gf.KEYS.ESC);
+            await gf.sleep(150);
+            assert.equal(await text('.ix-ui-back'), '1', "Esc no longer triggers Navigation's back");
+        });
+
+        it("Mouse rows don't run while the screen's input is paused", async () => {
+            await scenario(9);
+            await gf.sleep(100);
+            await gf.click('.ix-scoped');
+            await gf.sleep(150);
+            assert.equal(await log(), '', 'no row runs');
+            await scenario(10);
+            await gf.sleep(100);
+            await gf.click('.ix-scoped');
+            await expectLog('pick');
+        });
+
+        it('An action remapped while input is paused stays paused until input resumes', async () => {
+            await scenario(9);
+            await scenario(4);
+            await gf.sleep(100);
+            await blur();
+            await press(gf.KEYS.F2);
+            await gf.sleep(150);
+            assert.equal(await log(), '', 'F2 runs no row');
+            await scenario(10);
+            await gf.sleep(100);
+            await blur();
+            await press(gf.KEYS.F2);
+            await expectLog('confirm');
+        });
+
+        it('An action Navigation already has, remapped while input is paused, works again after input resumes', async () => {
+            await scenario(9);
+            await scenario(11);
+            await scenario(10);
+            await gf.sleep(100);
+            await blur();
+            await press(gf.KEYS.F3);
+            await expectLog('back');
+        });
+
         it('The input hint shows the keyboard glyph on PC', async () => {
             await scenario(0);
             await gf.retryIfFails(async () => {

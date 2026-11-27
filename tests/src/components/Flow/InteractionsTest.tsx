@@ -2,7 +2,7 @@ import { createSignal, For, onCleanup, onMount } from 'solid-js';
 import Navigation from '@components/Utility/Navigation/Navigation';
 import Button from '@components/Basic/Button/Button';
 import {
-    defineFlow, defineGameEvents, defineInputActions, InputHint, navigate, onGameEvent, onScreenHide, onScreenShow,
+    defineFlow, defineGameEvents, defineInputActions, InputHint, navigate, onGameEvent, onScreenHide, onScreenShow, onUIEvent,
     playSound, registerGlyphs, setInputBinding, resetInputBindings, setPlatform, setStyleMode, useFlow, useHold,
     useInputAction, useInputKeys,
 } from '@components/Utility/Flow/Flow';
@@ -74,6 +74,9 @@ const InteractionsTest = () => {
     useInputAction(actions.pick, () => add('pick'), { scope: () => scoped });
     useInputAction(actions.fire, () => add('fire'), { threshold: 0.6 });
     useInputAction(actions.back, () => add('back'));
+    // Navigation's own "back" event on the EventBus, counted apart from the log.
+    const [uiBack, setUiBack] = createSignal(0);
+    onUIEvent('back', () => setUiBack((n) => n + 1));
     const hold = useHold(() => held, () => add('held'), { ms: 1000 });
 
     onGameEvent(gameEvents.playerHit, (damage) => add(`hit:${damage}`));
@@ -86,10 +89,35 @@ const InteractionsTest = () => {
         { label: 'Remap confirm to F2', action: () => setInputBinding(actions.confirm, 'keyboard', ['F2']) },
         { label: 'Style mode: colorblind', action: () => setStyleMode('colorblind') },
         { label: 'Unbind back from the keyboard', action: () => setInputBinding(actions.back, 'keyboard', null) },
+        { label: 'Remap charge to J', action: () => setInputBinding(actions.charge, 'keyboard', ['J']) },
+        {
+            label: 'Unbind back from all devices',
+            action: () => {
+                setInputBinding(actions.back, 'keyboard', null);
+                setInputBinding(actions.back, 'gamepad', null);
+            },
+        },
+        { label: 'Pause input', action: () => pauseInput() },
+        { label: 'Resume input', action: () => resumeInput() },
+        { label: 'Remap back to F3', action: () => setInputBinding(actions.back, 'keyboard', ['F3']) },
     ];
 
+    let inputPaused = false;
+    const pauseInput = () => {
+        if (inputPaused) return;
+        inputPaused = true;
+        f.nav.pauseInput();
+    };
+    const resumeInput = () => {
+        if (!inputPaused) return;
+        inputPaused = false;
+        f.nav.resumeInput();
+    };
+
     const reset = () => {
+        resumeInput();
         setLog([]);
+        setUiBack(0);
         setPlatform('pc');
         setStyleMode('');
         resetInputBindings();
@@ -110,6 +138,7 @@ const InteractionsTest = () => {
                 <div class="flow-row"><div class="flow-label">Shown</div><div class="ix-shown">{shown()}</div></div>
                 <div class="flow-row"><div class="flow-label">Charge</div><div class="ix-charge">{charge() > 0 ? 'charging' : 'idle'}</div></div>
                 <div class="flow-row"><div class="flow-label">Hold</div><div class="ix-hold">{hold() > 0 ? 'holding' : 'idle'}</div></div>
+                <div class="flow-row"><div class="flow-label">Navigation back</div><div class="ix-ui-back">{uiBack()}</div></div>
                 <div class="flow-row">
                     <div attr:data-gf-id="ixscoped" class="flow-btn ix-scoped" ref={scoped}>Scoped</div>
                     <div attr:data-gf-id="ixheld" class="flow-btn ix-held" ref={held}>Hold me</div>
