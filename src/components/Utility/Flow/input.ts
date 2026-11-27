@@ -186,6 +186,8 @@ interface Entry {
     rows: Set<Row>;
     /** The action as it was before the runtime took it over (Navigation defaults, or one the screen defined). */
     restore?: ActionCfg;
+    /** The runtime added the action (Navigation didn't have it), so it removes it again. */
+    owned?: boolean;
     registered?: Resolved;
     detachTrackers?: () => void;
     down: boolean;
@@ -405,6 +407,8 @@ function attach(entry: Entry) {
     const r = source.resolve(untrack(platform));
     entry.registered = r;
 
+    const existing = nav.getAction(source.name);
+    if (existing && !entry.owned && !entry.restore) entry.restore = snapshot(existing);
     const previous = entry.restore?.callback;
     const cfg: ActionCfg = {
         // Always global: GFUI only lets components subscribe (onAction) to global actions.
@@ -417,14 +421,13 @@ function attach(entry: Entry) {
     if (r.key) cfg.key = { binds: r.key, type: ['press'] };
     if (r.button) cfg.button = { binds: r.button, type: 'press' };
 
-    if (r.key || r.button) {
-        const existing = nav.getAction(source.name);
-        if (existing) {
-            if (!entry.restore) entry.restore = snapshot(existing);
-            nav.updateAction(source.name, fullCfg({ ...cfg, paused: existing.paused }));
-        } else {
-            nav.addAction(source.name, cfg);
-        }
+    // Registered even with no key or button (mouse-only, or unbound by the player): an unbound action Navigation
+    // already had loses its default keys, and pauseInput reaches the action's mouse rows too.
+    if (existing) {
+        nav.updateAction(source.name, fullCfg({ ...cfg, paused: existing.paused }));
+    } else {
+        nav.addAction(source.name, cfg);
+        entry.owned = true;
     }
 
     // Down and up of the same inputs, for hold, release, combo and double rows.
@@ -457,18 +460,20 @@ function attach(entry: Entry) {
         if (r.button) gamepad.off(r.button, padHeld);
         clearTimeout(entry.gamepadRelease);
         clearTimeout(entry.pending);
+        // The key-up of the old binding won't arrive any more: a hold in progress ends here, without running.
+        for (const row of entry.rows) if (isHoldRow(row) && !row.mouseDown) stopHold(row);
         entry.down = false;
+        entry.gamepadReached = false;
     };
 }
 
 function detach(entry: Entry) {
     entry.detachTrackers?.();
     entry.detachTrackers = undefined;
-    const { nav, source, registered } = entry;
-    if (!registered?.key && !registered?.button) return;
+    const { nav, source } = entry;
     if (!nav.getAction(source.name)) return;
     if (entry.restore) nav.updateAction(source.name, fullCfg({ ...entry.restore, paused: nav.isPaused(source.name) }));
-    else nav.removeAction(source.name);
+    else if (entry.owned) nav.removeAction(source.name);
 }
 
 function acquire(nav: NavigationRef, source: Source): Entry {
@@ -510,7 +515,8 @@ function ensurePlatformWatch() {
                 const next = entry.source.resolve(p);
                 const prev = entry.registered;
                 if (prev && sameList(prev.key, next.key) && sameList(prev.button, next.button)) continue;
-                detach(entry);
+                // Updated in place, so a pause (pauseInput around a rebind) carries over.
+                entry.detachTrackers?.();
                 attach(entry);
             }
         }, { defer: true }));
@@ -546,7 +552,8 @@ function onMouse(kind: 'click' | 'down' | 'up', e: MouseEvent) {
         const el = mouseTarget(r);
         return !!el && !!target && (el === target || el.contains(target));
     };
-    const hit = rows.filter(inside);
+    // Like the keyboard and gamepad, a paused action (pauseAction, pauseInput) doesn't run its mouse rows.
+    const hit = rows.filter((r) => inside(r) && !(r.entry && r.entry.nav.isPaused(r.entry.source.name)));
     if (kind === 'down') {
         for (const row of hit) {
             row.mouseDown = true;
