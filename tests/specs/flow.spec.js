@@ -94,6 +94,39 @@ describe('Flow runtime', function () {
         });
     });
 
+    describe('Components inside the screen', () => {
+        const focus = (selector) => gf.executeScript((sel) => document.querySelector(sel).focus(), selector);
+        const press = async (key) => {
+            await gf.keyPress(key);
+            await gf.sleep(100);
+        };
+
+        it("A component's state change that shows a focusable element makes it reachable", async () => {
+            await scenario(7);
+            await gf.sleep(200);
+            assert.ok(await exists('.flow-card-buy'), 'the card shows Buy');
+
+            // Buy sits under Two.
+            await focus('.flow-btn-2');
+            await press(gf.KEYS.ARROW_DOWN);
+            assert.equal(await activeId(), 'cardbuy0', 'down from Two reaches Buy');
+        });
+
+        it("A component with its own areas keeps them focusable when a state mounts it", async () => {
+            await scenario(0);
+            await gf.sleep(200);
+            await scenario(2);
+            await gf.sleep(200);
+
+            await focus('.flow-p1');
+            assert.equal(await activeId(), 'panelp1', 'P1 takes focus');
+            await press(gf.KEYS.ARROW_RIGHT);
+            assert.equal(await activeId(), 'panelp2');
+            await press(gf.KEYS.ARROW_RIGHT);
+            assert.equal(await activeId(), 'panelp1', 'wraps inside the panel area');
+        });
+    });
+
     describe('States', () => {
         it("Elements stay focusable after a state change", async () => {
             // Video adds a focusable element (Four), so the screen area is re-registered on each change.
@@ -200,6 +233,19 @@ describe('Flow runtime', function () {
             await gf.sleep(100);
             assert.equal(await exists('.flow-confirm'), false);
             assert.equal(await text('.flow-assert'), 'closed:undefined');
+        });
+    });
+
+    describe('Overlay without a flow', () => {
+        it("An overlay without its own flow doesn't take the screen's navigation settings", async () => {
+            // Dispatched: the button wraps past the right edge of the test window, where a real click can't reach it.
+            await gf.executeScript(() => {
+                document.querySelector('.flow-scenario.scenario-8').dispatchEvent(new MouseEvent('click', { bubbles: true }));
+            });
+            await gf.sleep(600);
+            assert.ok(await exists('.flow-plain'), 'the overlay is mounted');
+            const focused = await gf.executeScript(() => document.activeElement && document.activeElement.className);
+            assert.ok(focused && focused.includes('flow-plain-first'), `focus is on ${focused}`);
         });
     });
 

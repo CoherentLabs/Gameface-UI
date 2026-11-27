@@ -5,7 +5,7 @@ import { useNavigation } from '../Navigation/Navigation';
 import type { NavigationRef } from '../Navigation/Navigation';
 import type { ElementId, FlowApi, FlowData, FlowNav, FlowOptions, StateGroupApi } from './types';
 import { createInternalStateGroup, OBSERVE } from './stateGroup';
-import { FlowInstance, isFlowRoot, registerOwner, registerRoot, unregisterRoot } from './registry';
+import { FlowInstance, isFlowRoot, parentFlow, registerOwner, registerRoot, unregisterRoot } from './registry';
 import { registerDocument, reportStateChange, unregisterDocument } from './devHooks';
 import { scheduleModelSync } from './modelSync';
 import { createNavigationWiring } from './navigation';
@@ -30,6 +30,11 @@ export function defineFlow<T extends FlowData>(data: T, file?: string): T {
 
 /** Frames to wait after the root ref before reading the DOM (GFUI's waitForFrames defaults to 3). */
 const ROOT_MOUNT_FRAMES = 1;
+/**
+ * Frames before the second navigation refresh after a state change. Components the change mounts mark their own
+ * areas ROOT_MOUNT_FRAMES after their root mounts; collecting after that leaves their elements out of this document's.
+ */
+const REFRESH_FRAMES = ROOT_MOUNT_FRAMES + 1;
 
 const NAV_METHODS = [
     'addAction', 'removeAction', 'updateAction', 'executeAction', 'getScope', 'getAction', 'getActions',
@@ -75,20 +80,40 @@ export function useFlow(data?: FlowData, options: FlowOptions = {}): FlowApi {
         file: data ? flowFiles.get(data) : undefined,
         groups: new Map(),
         navigation: data?.navigation,
+        overlays: data?.overlays,
         nav: contextNav,
         ownsNavigation: false,
         disposed: false,
     };
     registerOwner(owner, flow);
 
-    let refreshPending = false;
-    const scheduleRefresh = () => {
-        if (refreshPending) return;
-        refreshPending = true;
-        queueMicrotask(() => {
-            refreshPending = false;
-            if (!flow.disposed && flow.root) wiring.refresh();
-        });
+    flow.refreshNow = () => {
+        if (!flow.disposed && flow.root) wiring.refresh();
+    };
+    // This document first, then the ones it sits in: a component's elements outside its own areas are in theirs, and
+    // its focusable settings have to be applied before they collect.
+    const refreshChain = () => {
+        for (let f: FlowInstance | undefined = flow; f; f = parentFlow(f)) f.refreshNow?.();
+    };
+    // Two passes after a state change: at once, so removed elements leave navigation and new ones are focusable
+    // straight away, and REFRESH_FRAMES later, once components the change mounted have marked their own areas.
+    let microPending = false;
+    let framePending = false;
+    const refreshUp = () => {
+        if (!microPending) {
+            microPending = true;
+            queueMicrotask(() => {
+                microPending = false;
+                refreshChain();
+            });
+        }
+        if (!framePending) {
+            framePending = true;
+            waitForFrames(() => {
+                framePending = false;
+                refreshChain();
+            }, REFRESH_FRAMES);
+        }
     };
 
     for (const def of data?.states ?? []) {
@@ -97,7 +122,7 @@ export function useFlow(data?: FlowData, options: FlowOptions = {}): FlowApi {
         group[OBSERVE]((next, _prev, forced) => {
             // A state the editor forced isn't echoed back to it.
             if (!forced) reportStateChange(flow, def.name, next);
-            scheduleRefresh();
+            refreshUp();
         });
     }
     for (const name of Object.keys(options.states ?? {})) {

@@ -2,6 +2,8 @@ import { createSignal, For, onCleanup, onMount, Show } from 'solid-js';
 import Navigation from '@components/Utility/Navigation/Navigation';
 import { waitForFrames } from '@components/utils/waitForFrames';
 import { defineFlow, OverlayHost, stateOf, useFlow, useOverlays } from '@components/Utility/Flow/Flow';
+import FlowCard from './FlowCard';
+import FlowPanel from './FlowPanel';
 import './FlowTest.css';
 
 /** The file argument stands in for the path the editor plugin injects in dev builds. */
@@ -26,7 +28,7 @@ const flow = defineFlow({
             flowarea3: { name: 'side' },
         },
     },
-    overlays: { Confirm: () => import('./FlowConfirm') },
+    overlays: { Confirm: () => import('./FlowConfirm'), Plain: () => import('./FlowPlain') },
 }, FLOW_TEST_FILE);
 
 // Stands in for a CSS module: f.classes maps modifier names through it.
@@ -62,10 +64,14 @@ const FlowTest = () => {
         },
         { label: 'stateOf: Video', action: () => stateOf(rootEl, 'Tabs')?.set('Video') },
         { label: 'Switch to list', action: () => f.nav.switchArea('list') },
+        { label: 'Card: Open', action: () => stateOf(document.querySelector('.flow-card')!, 'Card')?.set('Open') },
+        { label: 'Open plain overlay', action: () => overlays.open('Plain') },
     ];
 
     const reset = () => {
-        while (window.__gfFlows?.overlays && overlays.isOpen('Confirm')) window.__gfFlows.overlays.close();
+        while (window.__gfFlows?.overlays && (overlays.isOpen('Confirm') || overlays.isOpen('Plain'))) window.__gfFlows.overlays.close();
+        const card = document.querySelector('.flow-card');
+        if (card) stateOf(card, 'Card')?.set('Closed');
         f.state('Tabs').set('Audio');
         setNoSave(false);
         setAssertion('');
@@ -114,6 +120,9 @@ const FlowTest = () => {
                     <div attr:data-gf-id="flowl3" class="flow-btn flow-l3">L3</div>
                 </div>
 
+                {/* A component with its own flow and states. */}
+                <FlowCard />
+
                 {/* Area "side": the screen's code sets its edge handler; Video adds S2. */}
                 <div attr:data-gf-id="flowarea3" class="flow-row flow-area">
                     <div attr:data-gf-id="flows1" class="flow-btn flow-s1">S1</div>
@@ -132,6 +141,8 @@ const FlowTest = () => {
                             <div attr:data-gf-id="flowe1" class="flow-btn flow-e1">E1</div>
                             <div attr:data-gf-id="flowe2" class="flow-btn flow-e2">E2</div>
                         </div>
+                        {/* A component with its own area, mounted by Video. */}
+                        <FlowPanel />
                     </div>
                 </Show>
             </div>

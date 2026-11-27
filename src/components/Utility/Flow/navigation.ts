@@ -35,6 +35,14 @@ function sameElements(a: HTMLElement[], b: HTMLElement[]) {
     return a.length === b.length && a.every((node, i) => node === b[i]);
 }
 
+/** Whether `node` is `container` or inside it. */
+export function isInside(node: Element, container: Element) {
+    for (let n: Element | null = node; n; n = n.parentElement) {
+        if (n === container) return true;
+    }
+    return false;
+}
+
 export function insideArea(el: HTMLElement, root: Element) {
     for (let node: HTMLElement | null = el; node && node !== root; node = node.parentElement) {
         if (node.hasAttribute(AREA_ATTR)) return true;
@@ -157,11 +165,18 @@ export function createNavigationWiring(flow: FlowInstance, el: (id: ElementId) =
                     activate(name, elements, false);
                     continue;
                 }
+                // remove() strips tabindex from every element the area held. Old ones still on the page may now be
+                // in another area (a nested component's) that nothing re-registers, so they get their value back.
+                const tabindexes = previous.map((node) => node.getAttribute('tabindex'));
                 // Straight to the interaction manager: Navigation's unregisterArea would also drop the area's
                 // edge handler, including one the screen's own code set.
                 spatialNavigation.remove(name);
                 active.delete(name);
-                // registerArea re-adds them a frame later; until then they'd be unfocusable and could drop focus.
+                previous.forEach((node, i) => {
+                    const value = tabindexes[i];
+                    if (value !== null && isInside(node, document.documentElement)) node.setAttribute('tabindex', value);
+                });
+                // registerArea re-adds the new ones a frame later; until then they'd be unfocusable and could drop focus.
                 for (const node of elements) node.setAttribute('tabindex', '1');
                 if (elements.length === 0) continue;
                 api.registerArea(name, elements, false);

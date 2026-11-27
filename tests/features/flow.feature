@@ -44,6 +44,17 @@ Feature: Flow runtime
     When the state changes and the new root is mounted
     Then the arrow keys move focus between the new root's elements
 
+  Scenario: A component's state change that shows a focusable element makes it reachable
+    Given a component inside the screen whose state shows a focusable element
+    When the component switches to that state
+    Then the arrow keys can move focus to the new element
+
+  Scenario: A component with its own areas keeps them focusable when a state mounts it
+    Given a component with its own navigation area that only "Video" shows
+    When "Tabs" is switched to "Video"
+    And "Save" changes while "Video" is shown
+    Then the arrow keys move focus between the elements of the component's area
+
   Scenario: State groups start in their initial states
     Then "Tabs" is "Audio"
     And "Save" is "Has save"
@@ -93,6 +104,11 @@ Feature: Flow runtime
     When the screen opens the overlay "Confirm" with closeOnBack
     And the player presses Back
     Then the overlay is removed and the screen receives no value
+
+  Scenario: An overlay without its own flow doesn't take the screen's navigation settings
+    Given the screen's first focus id also exists inside the overlay "Plain"
+    When the screen opens "Plain"
+    Then focus is on the overlay's first element, not on that id
 
   Scenario: The editor sets and reads a state through the dev hooks
     When the editor sets "Tabs" to "Video" through window.__gfFlows for the screen's file

@@ -5,10 +5,10 @@ import eventBus from '@components/Utility/EventBus';
 import { useNavigation } from '../Navigation/Navigation';
 import type { NavigationRef } from '../Navigation/Navigation';
 import type { FlowData, OverlayHostApi, OverlayOptions } from './types';
-import { findFlow, flowOfElement } from './registry';
+import { findFlow, flowOfElement, parentFlow } from './registry';
 import { registerOverlayHost } from './devHooks';
 import { scheduleModelSync } from './modelSync';
-import { focusablesIn, insideArea } from './navigation';
+import { focusablesIn, insideArea, isInside } from './navigation';
 import styles from './OverlayHost.module.scss';
 
 /** Internal API of a mounted OverlayHost (dev hooks and useOverlays). */
@@ -50,7 +50,10 @@ function isAttached(node: Element) {
 
 /** Placed once by the screen skeleton, last inside <Navigation>; holds the open overlays. */
 export const OverlayHost: Component<{ overlays?: FlowData['overlays'] }> = (props) => {
-    const flow = findFlow(getOwner());
+    // Matched by the overlays object: in production builds the screen and the components it places can share
+    // a Solid owner, so the nearest flow isn't always the screen's.
+    const hostOwner = getOwner();
+    const flow = findFlow(hostOwner, (f) => !!props.overlays && f.overlays === props.overlays) ?? findFlow(hostOwner);
     const contextNav = useNavigation();
     const nav = (): NavigationRef | undefined => contextNav ?? flow?.nav;
 
@@ -123,7 +126,9 @@ export const OverlayHost: Component<{ overlays?: FlowData['overlays'] }> = (prop
             if (!api) return;
 
             const content = container.querySelector('[data-gf-overlay-content]')?.firstElementChild;
-            const overlayFlow = content ? flowOfElement(content) : undefined;
+            // Only the overlay's own flow. Without one, flowOfElement reaches the portal, which the opener owns.
+            const found = content ? flowOfElement(content) : undefined;
+            const overlayFlow = found?.root && isInside(found.root, container) ? found : undefined;
             const firstFocusId = overlayFlow?.navigation?.screen?.firstFocus;
             const firstFocus = firstFocusId ? container.querySelector<HTMLElement>(`[data-gf-id="${firstFocusId}"]`) : null;
 
@@ -207,7 +212,15 @@ export function useOverlays(): OverlayHostApi {
     const owner = getOwner();
     const entry = useContext(OverlayEntryContext);
     const contextHost = useContext(OverlayHostContext);
-    const host = () => findFlow(owner, (f) => !!f.overlayHost)?.overlayHost ?? contextHost;
+    // The caller's own flow: useFlow runs first in the same component body, so it is the last one registered.
+    const self = findFlow(owner);
+    const host = () => {
+        // Up the documents the caller sits in, by the DOM: Solid owners can be shared in production builds.
+        for (let f = self; f; f = parentFlow(f)) {
+            if (f.overlayHost && !f.disposed) return f.overlayHost;
+        }
+        return findFlow(owner, (f) => !!f.overlayHost)?.overlayHost ?? contextHost;
+    };
 
     return {
         open(name, options) {
