@@ -11,6 +11,8 @@ import xboxB from '@assets/icons/gamepad/xbox/b.png';
 import ps5Cross from '@assets/icons/gamepad/ps5/cross.png';
 import switchA from '@assets/icons/gamepad/switch/a.png';
 import switchB from '@assets/icons/gamepad/switch/b.png';
+// There are no keyboard glyphs in the repo; this keycap keeps the keyboard hint from looking like a gamepad one.
+import enterKey from './enter-key.svg';
 import './FlowTest.css';
 
 // Stands in for the project's src/input/actions.ts.
@@ -42,7 +44,7 @@ registerGlyphs({
     'playstation/face-button-down': url(ps5Cross),
     'switch/face-button-right': url(switchA),
     'switch/face-button-down': url(switchB),
-    'pc/enter': url(xboxA),
+    'pc/enter': url(enterKey),
 });
 
 const flow = defineFlow({ navigation: { elements: { ixscoped: { focusable: true }, ixheld: { focusable: true } } } });
