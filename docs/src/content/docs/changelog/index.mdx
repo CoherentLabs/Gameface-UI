@@ -13,9 +13,10 @@ import { Badge } from '@astrojs/starlight/components'
   - Game events: `defineGameEvents` for the typed game contract and `onGameEvent`.
   - Events and steps: `onScreenShow`, `onScreenHide`, `onInputDevice`, `onUIEvent`, `after`, `every`, `navigate`, `playSound`, `setLanguage`, `delay`, `once`, `debounce` and `throttle`. The runtime answers the game's `screen-closing` with `screen-closing-ready`.
 - <Badge text="Change" variant="note" size="small" /> `onAction` on a component no longer drops an action that `Navigation` doesn't have yet when the component is created. It subscribes anyway and warns only if the action is still missing a few frames later.
+- <Badge text="Fix" variant="danger" size="small" /> [Navigation](/components/utility/navigation/#action-methods): `updateAction` keeps an action's pause. An action updated between `pauseInput` and `resumeInput` used to stay paused after `resumeInput`.
 
   :::note
-  `Flow` gets a minor bump, and every component and recipe that depends on `BaseComponent` gets a patch bump.
+  `Flow` gets a minor bump, `Navigation` a patch bump, and every component and recipe that depends on `BaseComponent` gets a patch bump.
   :::
 
 ## 5.3.0
