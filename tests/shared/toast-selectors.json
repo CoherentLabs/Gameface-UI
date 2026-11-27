@@ -4,5 +4,6 @@
     "toastCloseButton" : "gf-toast-close-button",
     "toastProgress" : "gf-toast-progress",
     "toastActionButton" : "gf-toast-action-button",
+    "toastActionClicks" : "gf-toast-action-clicks",
     "toastCssExit" : "gf-toast-css-exit"
 }

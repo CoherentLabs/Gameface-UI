@@ -185,16 +185,20 @@ describe('Toast', function () {
 
     it('Should ignore clicks while the toast is hiding', async () => {
         const text = 'No clicks while hiding';
-        await gf.trigger('create-toast', { text, position: 'middle-left', timeout: 0, hideDelay: 400, withAction: true });
-        await gf.click(`.${selectors.toastCloseButton}`);
-        await gf.sleep(50);
-        await gf.click(`.${selectors.toastActionButton}`);
-        const clicks = await gf.executeScript(
+        // The click counter sits outside the toast, so it can be read even after the toast is removed
+        const readClicks = () => gf.executeScript(
             (selector) => document.querySelector(selector).getAttribute('data-clicks'),
-            `.${selectors.toastActionButton}`
+            `.${selectors.toastActionClicks}`
         );
-        assert.equal(clicks, '0', 'A hiding toast should not react to clicks');
-        await gf.sleep(500);
+        // The hide hook never resolves, so the toast hides for the full HIDE_TIMEOUT
+        await gf.trigger('create-toast', { text, position: 'middle-left', timeout: 0, hideDelay: -1, withAction: true });
+        await gf.click(`.${selectors.toastActionButton}`);
+        assert.equal(await readClicks(), '1', 'A shown toast should react to clicks');
+
+        await gf.click(`.${selectors.toastCloseButton}`);
+        await gf.click(`.${selectors.toastActionButton}`);
+        assert.equal(await readClicks(), '1', 'A hiding toast should not react to clicks');
+        await gf.sleep(HIDE_TIMEOUT + 300);
     });
 
     for (const position of positions) {

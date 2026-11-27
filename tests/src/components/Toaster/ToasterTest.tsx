@@ -43,13 +43,15 @@ const HideHook = (props: { delay: number }) => {
 
 const ToasterTest = () => {
     const [Toaster, createToast] = useToast({ max: { [MAX_POSITION]: MAX_COUNT }, hideTimeout: HIDE_TIMEOUT });
+    // Kept outside the toast, so it can still be read after the toast is removed
+    const [actionClicks, setActionClicks] = createSignal(0);
 
     const setupToast = (event: Event) => {
         const { detail } = event as CustomEvent<ToastEventDetail>;
+        if (detail.withAction) setActionClicks(0);
         createToast({
             position: detail.position || 'top-right',
             body: (close, progress) => {
-                const [clicks, setClicks] = createSignal(0);
                 return (
                     <div class={`${classes.toast}${detail.cssExit ? ` ${classes.toastCssExit}` : ''}`}>
                         <div class={classes.toastText}>{detail.text || 'Default Toast'}</div>
@@ -57,8 +59,7 @@ const ToasterTest = () => {
                         {detail.withAction && (
                             <button
                                 class={classes.toastActionButton}
-                                data-clicks={clicks()}
-                                onClick={() => setClicks(clicks() + 1)}
+                                onClick={() => setActionClicks(actionClicks() + 1)}
                             >
                                 Action
                             </button>
@@ -89,7 +90,12 @@ const ToasterTest = () => {
         document.removeEventListener('create-toast', setupToast as EventListener);
     });
 
-    return <Toaster />;
+    return (
+        <>
+            <div class={classes.toastActionClicks} data-clicks={actionClicks()} />
+            <Toaster />
+        </>
+    );
 };
 
 export default ToasterTest;
