@@ -1,0 +1,23 @@
+.gf-vl-keyed,
+.gf-vl-unkeyed,
+.gf-vl-defaults,
+.gf-vl-bound,
+.gf-vl-plain {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    min-height: 40px;
+    margin: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.gf-vl-row,
+.gf-vl-fallback {
+    height: 24px;
+    padding: 2px 5px;
+    color: white;
+}
+
+.gf-vl-row {
+    background-color: rgb(60, 90, 140);
+}

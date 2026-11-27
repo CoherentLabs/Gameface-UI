@@ -1,0 +1,212 @@
+---
+title: Spawner
+---
+import CodePreviewGFUI from '@docs-components/CodePreviewGFUI/CodePreviewGFUI.astro';
+
+The `Spawner` component adds items at runtime from a single template: kill feed entries, damage numbers, hit markers, loot pop-ups. Each call to `spawn` renders one copy of the template with the data you pass. Items can stay in the Spawner's flow or sit at a point, live for a set time, and be capped at a maximum count. For very frequent spawns, the Spawner can reuse a fixed set of elements instead of creating and destroying DOM nodes.
+
+## Installation
+
+Every component ships with the boilerplate. If you are working in your own project, add `Spawner` with the [Gameface CLI](https://frontend-tools.coherent-labs.com/gameface-cli/getting-started/):
+
+```bash
+npx gameface-cli add Spawner
+```
+
+The CLI pulls in whatever `Spawner` depends on. To refresh an existing copy, [update it](/docs/getting-started/updating-components) instead.
+
+## Usage
+
+Give the `Spawner` a `ref` and one child: a function that takes the item's `data` and returns the element to show. Call `spawn` on the ref to add an item.
+
+export const killFeedCss = `.kill-feed {
+    flex-direction: column;
+    width: 320px;
+    min-height: 180px;
+}
+
+.kill-feed-entry {
+    padding: 6px 10px;
+    margin-bottom: 4px;
+    color: white;
+    font-size: 16px;
+    background-color: #343a4d;
+}
+
+@keyframes kill-feed-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.kill-feed .spawner-leaving {
+    animation-name: kill-feed-out;
+    animation-duration: 300ms;
+    animation-fill-mode: forwards;
+}`;
+
+<CodePreviewGFUI height={280} css={killFeedCss}>
+```tsx
+import Spawner, { SpawnerRef } from '@components/Utility/Spawner/Spawner';
+
+const names = ['Raven', 'Ghost', 'Viper', 'Nova', 'Blaze', 'Echo'];
+const pick = () => names[Math.floor(Math.random() * names.length)];
+
+const KillFeedEntry = (props: { killer: string; victim: string }) => (
+    <div class="kill-feed-entry">{props.killer} ✕ {props.victim}</div>
+);
+
+const App = () => {
+    let killFeed!: SpawnerRef;
+
+    const onKill = () => killFeed.spawn({ killer: pick(), victim: pick() }, { life: 4000 });
+
+    return (
+        <>
+            <button onClick={onKill}>Spawn a kill</button>
+            <Spawner class="kill-feed" ref={killFeed} max={5}>
+                {(data) => <KillFeedEntry killer={data.killer} victim={data.victim} />}
+            </Spawner>
+        </>
+    );
+};
+```
+</CodePreviewGFUI>
+
+Each item stays for 4 seconds, at most 5 are shown, and each fades out before it is removed.
+
+The Spawner is a flex container, so its class or style sets the direction, gap and alignment of the items. New items are added after the existing ones.
+
+:::note
+Read `data` fields inside the JSX (`killer={data.killer}`), not into variables at the top of the template. With [`pool`](#reusing-elements), a reused element gets new data in place, and only fields read reactively will update.
+:::
+
+### Placing items at a point
+
+Pass `at` to place an item absolutely, in pixels relative to the Spawner. This is useful for damage numbers that appear where the hit was:
+
+```tsx
+damage.spawn({ amount: e.amount }, { at: { x: e.x, y: e.y }, life: 900 });
+```
+
+### Lifetime and max count
+
+- `life` removes the item after that many milliseconds. Without it, the item stays until you remove it with `remove(key)` or `clear()`.
+- `max` limits how many items are shown at once. When a new item goes over it, the oldest item is removed first.
+
+`spawn` returns the item's key, which you can pass to `remove` later.
+
+### Reusing elements
+
+With `pool={N}`, the Spawner keeps up to N elements after their items are removed. They stay in the DOM with `display: none` and are reused for the next spawns, with the new data, instead of being created again. Spawns beyond N elements are created and destroyed as usual. Use it for spawns that happen many times a second.
+
+```tsx
+<Spawner class="damage-numbers" ref={damage} max={12} pool={12}>
+    {(data) => <DamageNumber amount={data.amount} />}
+</Spawner>
+```
+
+A reused element restarts its CSS show animation, and the [`onShow`](#show-and-hide) hooks run again.
+
+Lowering `pool` frees the idle elements above the new size at once. With `pool={0}`, idle elements are no longer reused.
+
+## Show and hide
+
+An item is not removed at once. It first enters the leaving state, and is removed when its hide has finished:
+
+- its wrapper gets the global `spawner-leaving` class and `data-spawner-state="leaving"`;
+- a CSS animation started on the wrapper or on the template's root element by that class is waited for, until its `animationend`;
+- functions registered with `useSpawnerItem().onHide` are waited for;
+- `hideTimeout` (default 1000 ms) caps the wait, so a broken animation can't keep an item on screen.
+
+An item with nothing to wait for is removed about 3 frames later.
+
+```css
+@keyframes fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.kill-feed .spawner-leaving {
+    animation-name: fade-out;
+    animation-duration: 300ms;
+    animation-fill-mode: forwards;
+}
+```
+
+:::note
+Give the exit animation its own `@keyframes`. Re-applying the animation name the element already has, such as the show animation with `animation-direction: reverse`, may not restart it, and then the item is removed without waiting.
+:::
+
+### useSpawnerItem
+
+Anything inside a template can call `useSpawnerItem()` to reach the item it renders. Animation wrappers use it to play show and hide animations from JavaScript:
+
+```tsx
+import { useSpawnerItem } from '@components/Utility/Spawner/Spawner';
+
+const KillFeedEntry = (props: { killer: string; victim: string }) => {
+    const item = useSpawnerItem();
+    let el!: HTMLDivElement;
+
+    item?.onShow(() => playShow(el));
+    item?.onHide(() => playHide(el)); // returns a Promise that resolves when the animation ends
+
+    return <div ref={el}>{props.killer} ✕ {props.victim}</div>;
+};
+```
+
+Hooks can be registered while the template renders or later, from `onMount` or `createEffect`: either way they run on the item's first show.
+
+:::caution
+With `pool`, a reused element keeps its template and this API for the next item. Work a template defers (a timeout, a promise) must check that `item.key()` is still the key it started with, or be cancelled in `onHide`. Otherwise it acts on the next item, e.g. a late `item.remove()` removes it:
+
+```tsx
+const key = item.key();
+setTimeout(() => {
+    if (item.key() === key) item.remove();
+}, 2000);
+```
+:::
+
+## API
+
+### Props
+
+| Prop Name     | Type                                   | Default     | Description |
+| ------------- | -------------------------------------- | ----------- | ----------- |
+| `style`       | `JSX.CSSProperties`                    | `{}`        | Inline styles for the Spawner's element. |
+| `class`       | `string`                               | `""`        | Additional CSS classes for the Spawner's element. Use them to set the flex layout of the items. |
+| `ref`         | `SpawnerRef \| ((ref: SpawnerRef) => void)` | `undefined` | Gives access to the Spawner's methods. |
+| `max`         | `number`                               | `undefined` | Most items shown at once. Above it, the oldest is removed first. Empty or `0` means no limit. |
+| `pool`        | `number`                               | `undefined` | Number of elements to keep and reuse. Empty or `0` means items are created and destroyed. |
+| `hideTimeout` | `number`                               | `1000`      | Longest time in milliseconds an item waits for its hide before it is removed. |
+| `children`    | `(data: any) => JSX.Element`           | -           | The template, rendered once per item. `data` is the object passed to `spawn`. |
+
+## Ref API
+
+### Properties
+
+| Property  | Type                                                | Description |
+| --------- | --------------------------------------------------- | ----------- |
+| `element` | `HTMLDivElement`                                    | The Spawner's element. |
+| `items`   | `Accessor<readonly { key: number; data: Record<string, unknown> }[]>` | The shown items, oldest first. Items that are hiding are not included. Each `data` is a shallow copy, so a saved entry keeps its top-level values after its element is reused (nested objects are shared with the item). |
+
+### Methods
+
+| Method   | Parameters | Return Value | Description |
+| -------- | ---------- | ------------ | ----------- |
+| `spawn`  | `data: Record<string, unknown>`, `opts?: { life?: number; at?: { x: number; y: number } }` | `number` | Adds an item and returns its key. |
+| `remove` | `key: number` | `void` | Removes the item with that key, after its hide. Does nothing if it is not shown. |
+| `clear`  | None | `void` | Removes every shown item, each after its hide. |
+
+### useSpawnerItem
+
+Returns `undefined` outside a Spawner template.
+
+| Property  | Type | Description |
+| --------- | ---- | ----------- |
+| `key`     | `Accessor<number>` | The item's key. Changes when a pooled element is reused. |
+| `leaving` | `Accessor<boolean>` | `true` while the item is hiding. |
+| `onShow`  | `(fn: () => void) => () => void` | Runs `fn` each time the item is shown: when it is added and every time its element is reused. Returns a function that unregisters it. |
+| `onHide`  | `(fn: () => Promise<void> \| void) => () => void` | Registers work to finish before the item is removed. Returns a function that unregisters it. |
+| `remove`  | `() => void` | Removes the item, after its hide. |

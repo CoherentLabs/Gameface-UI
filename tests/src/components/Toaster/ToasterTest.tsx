@@ -9,7 +9,7 @@ import classes from '../../../shared/toast-selectors.json';
 const MAX_POSITION = 'bottom-left';
 const MAX_COUNT = 2;
 /** Cap on the hide wait, for the hide timeout test */
-const HIDE_TIMEOUT = 600;
+const HIDE_TIMEOUT = 1500;
 
 interface ToastEventDetail {
     position?:

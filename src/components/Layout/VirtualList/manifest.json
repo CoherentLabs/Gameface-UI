@@ -1,0 +1,8 @@
+{
+  "name": "VirtualList",
+  "version": "1.0.0",
+  "description": "Renders a slice of a list (startIndex, pageSize), like the native virtual list, with Solid reactivity",
+  "editor": {
+    "hidden": true
+  }
+}

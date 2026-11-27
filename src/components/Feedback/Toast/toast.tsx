@@ -15,6 +15,7 @@ import {
 import GridTile from '@components/Layout/GridTile/GridTile';
 import Grid from '@components/Layout/Grid/Grid';
 import Flex from '@components/Layout/Flex/Flex';
+import { waitForCssExit } from '@components/utils/waitForCssExit';
 
 import styles from './toast.module.scss';
 
@@ -22,12 +23,6 @@ import styles from './toast.module.scss';
 const PROGRESS_STEPS = 20;
 /** Default cap for how long a toast may wait for its hide animation. */
 const DEFAULT_HIDE_TIMEOUT = 1000;
-/**
- * Frames to wait for an exit animation to start before removing the toast.
- * Gameface can fire `animationstart` in the 2nd frame after the class change,
- * after a 2-frame wait has already given up, so wait one more.
- */
-const CSS_EXIT_FRAMES = 3;
 
 const GRID_SIZE = 3; // 3x3 grid
 
@@ -102,43 +97,9 @@ interface ToastItem {
     setLeaving: Setter<boolean>;
     hideHooks: Set<() => Promise<void> | void>;
     timerID?: ReturnType<typeof setInterval>;
+    /** Stops waiting for the CSS hide animation. */
+    cancelCssExit?: () => void;
     element?: HTMLDivElement;
-}
-
-/**
- * Waits for CSS animations that start on the toast (or inside it) once it is marked as leaving.
- * Resolves after CSS_EXIT_FRAMES frames when none started.
- */
-function waitForCssExit(element: HTMLElement): Promise<void> {
-    return new Promise((resolve) => {
-        // Only animations started after the toast began leaving count, so an
-        // entrance animation still running can't end the wait early.
-        const running = new Set<string>();
-        let settled = false;
-
-        const finish = () => {
-            if (settled) return;
-            settled = true;
-            element.removeEventListener('animationstart', onStart);
-            element.removeEventListener('animationend', onEnd);
-            resolve();
-        };
-        const onStart = (e: AnimationEvent) => running.add(e.animationName);
-        const onEnd = (e: AnimationEvent) => {
-            if (!running.delete(e.animationName)) return;
-            if (running.size === 0) finish();
-        };
-
-        element.addEventListener('animationstart', onStart);
-        element.addEventListener('animationend', onEnd);
-        let frames = 0;
-        const check = () => {
-            if (settled) return;
-            if (++frames < CSS_EXIT_FRAMES) return void requestAnimationFrame(check);
-            if (running.size === 0) finish();
-        };
-        requestAnimationFrame(check);
-    });
 }
 
 const useToast = (options: UseToastOptions = {}): [ParentComponent, (options: ToastOptions) => ToastHandle] => {
@@ -198,11 +159,14 @@ const useToast = (options: UseToastOptions = {}): [ParentComponent, (options: To
         return { id: item.id, dismiss: () => hide(item) };
     }
 
+    /** Stops the toast's timer and its wait for a CSS hide animation. */
     function stopTimer(item: ToastItem) {
         if (item.timerID !== undefined) {
             clearInterval(item.timerID);
             item.timerID = undefined;
         }
+        item.cancelCssExit?.();
+        item.cancelCssExit = undefined;
     }
 
     function removeItem(item: ToastItem) {
@@ -215,6 +179,10 @@ const useToast = (options: UseToastOptions = {}): [ParentComponent, (options: To
     function hide(item: ToastItem) {
         if (item.leaving()) return;
         stopTimer(item);
+        // Started before the leaving class is applied, so no animationstart is missed.
+        // Animations on the toast's body count too, not only on its wrapper.
+        const cssExit = item.element ? waitForCssExit([item.element], { subtree: true }) : undefined;
+        item.cancelCssExit = cssExit?.cancel;
         item.setLeaving(true);
 
         const waits: Promise<void>[] = [...item.hideHooks].map((fn) =>
@@ -222,7 +190,7 @@ const useToast = (options: UseToastOptions = {}): [ParentComponent, (options: To
                 .then(fn)
                 .catch((error) => console.error('Toast hide hook failed', error))
         );
-        if (item.element) waits.push(waitForCssExit(item.element));
+        if (cssExit) waits.push(cssExit.promise);
 
         if (waits.length === 0) return removeItem(item);
 

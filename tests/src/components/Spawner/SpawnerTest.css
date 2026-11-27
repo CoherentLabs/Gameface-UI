@@ -1,0 +1,31 @@
+.gf-spawner {
+    flex-direction: column;
+    width: 300px;
+    min-height: 120px;
+    margin: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.gf-spawner-entry {
+    height: 30px;
+    padding: 5px;
+    color: white;
+    background-color: rgb(60, 90, 140);
+}
+
+@keyframes gf-spawner-test-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* 1 s exit, longer than the cut-short scenario's hideTimeout */
+.gf-spawner-slow-exit .spawner-leaving {
+    animation: gf-spawner-test-out 1s forwards;
+}
+
+/* Exit animation started by the Spawner's leaving class */
+.gf-spawner-css .spawner-leaving {
+    animation-name: gf-spawner-test-out;
+    animation-duration: 800ms;
+    animation-fill-mode: forwards;
+}

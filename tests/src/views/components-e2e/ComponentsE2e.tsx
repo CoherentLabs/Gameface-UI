@@ -33,6 +33,8 @@ import ListTest from '../../components/List/ListTest';
 import CarouselTest from '../../components/Carousel/CarouselTest';
 import TooltipTest from '../../components/Tooltip/TooltipTest';
 import ToasterTest from '../../components/Toaster/ToasterTest';
+import SpawnerTest from '../../components/Spawner/SpawnerTest';
+import VirtualListTest from '../../components/VirtualList/VirtualListTest';
 import KeybindsTest from '../../components/Keybinds/KeybindsTest';
 import ProgressTest from '../../components/Progress';
 import RadialMenuTest from '../../components/RadialMenu/RadialMenuTest';
@@ -65,6 +67,8 @@ const Main = () => {
         'modal',
         'tooltip',
         'toaster',
+        'spawner',
+        'virtual-list',
         "progress-bar",
         "progress-circle",
         "chart-pie",
@@ -152,6 +156,8 @@ const Main = () => {
                 <Tab location='carousel'><CarouselTest /></Tab>
                 <Tab location='tooltip'><TooltipTest /></Tab>
                 <Tab location='toaster'><ToasterTest /></Tab>
+                <Tab location='spawner'><SpawnerTest /></Tab>
+                <Tab location='virtual-list'><VirtualListTest /></Tab>
                 <Tab location='keybinds'><KeybindsTest /></Tab>
                 {/* ProgressTest renders its own progress-bar/progress-circle <Tab>s
                     internally - it shares one signal set across both locations, so

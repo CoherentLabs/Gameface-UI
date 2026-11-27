@@ -4,7 +4,7 @@ const { navigateToPage } = require('../shared/utils');
 const TIMEOUT = 2000;
 // Keep in sync with tests/src/components/Toaster/ToasterTest.tsx
 const MAX_POSITION = 'bottom-left';
-const HIDE_TIMEOUT = 600;
+const HIDE_TIMEOUT = 1500;
 const positions = [
     'top-left',
     'top-right',
@@ -192,11 +192,26 @@ describe('Toast', function () {
         );
         // The hide hook never resolves, so the toast hides for the full HIDE_TIMEOUT
         await gf.trigger('create-toast', { text, position: 'middle-left', timeout: 0, hideDelay: -1, withAction: true });
-        await gf.click(`.${selectors.toastActionButton}`);
+
+        // gf.click() checks visibility with a hit test, which a hiding toast (pointer-events: none)
+        // fails, so both clicks are mouse clicks at the button's position
+        const button = await gf.get(`.${selectors.toastActionButton}`);
+        const { x, y } = await button.getPositionOnScreen();
+        const { width, height } = await button.getSize();
+        const clickButton = async () => {
+            const cx = Math.round(x + width / 2);
+            const cy = Math.round(y + height / 2);
+            await gf.mouseMove(cx, cy);
+            await gf.mousePress(cx, cy);
+            await gf.mouseRelease(cx, cy);
+        };
+
+        await clickButton();
         assert.equal(await readClicks(), '1', 'A shown toast should react to clicks');
 
         await gf.click(`.${selectors.toastCloseButton}`);
-        await gf.click(`.${selectors.toastActionButton}`);
+        await clickButton();
+        assert.equal(await countToasts(text), 1, 'The toast should still be hiding after the click');
         assert.equal(await readClicks(), '1', 'A hiding toast should not react to clicks');
         await gf.sleep(HIDE_TIMEOUT + 300);
     });
