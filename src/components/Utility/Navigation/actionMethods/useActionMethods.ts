@@ -87,9 +87,15 @@ export default function createActionMethods(
             return console.warn('Trying to update a non existing action!')
         }
 
+        // Changing an action's data isn't a new action: keep its pause bookkeeping, so a pauseInput/resumeInput
+        // around the update (a rebind screen, say) still resumes it.
+        const forced = forcePausedActions.has(name);
+        const subscribers = actionSubscribers.get(name);
         unregisterAction(name)
         setConfig('actions', name, data);
         registerAction(name);
+        if (forced) forcePausedActions.add(name);
+        if (subscribers !== undefined) actionSubscribers.set(name, subscribers);
     }
 
     const executeAction = (name: ActionName) => {

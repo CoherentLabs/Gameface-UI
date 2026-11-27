@@ -1,6 +1,6 @@
 {
   "name": "Relative",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Relatively positioned container",
   "editor": {
     "icon": "position-relative",

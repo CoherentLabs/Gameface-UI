@@ -5,17 +5,34 @@ import { useNavigation } from '../Navigation/Navigation';
 import type { NavigationRef } from '../Navigation/Navigation';
 import type { ElementId, FlowApi, FlowData, FlowNav, FlowOptions, StateGroupApi } from './types';
 import { createInternalStateGroup, OBSERVE } from './stateGroup';
-import { FlowInstance, isFlowRoot, parentFlow, registerOwner, registerRoot, unregisterRoot } from './registry';
+import { addLiveFlow, FlowInstance, flushNavWaiters, isFlowRoot, parentFlow, registerOwner, registerRoot, removeLiveFlow, unregisterRoot } from './registry';
 import { registerDocument, reportStateChange, unregisterDocument } from './devHooks';
 import { scheduleModelSync } from './modelSync';
 import { createNavigationWiring } from './navigation';
 import { OverlayEntryContext } from './OverlayHost';
+import { subscribePlatformEvents } from './platform';
+import { subscribeScreenClosing } from './helpers';
+import { registerDefinedActions } from './input';
 
 export type * from './types';
 export { createStateGroup } from './stateGroup';
 export { stateOf } from './registry';
 export { scheduleModelSync } from './modelSync';
 export { OverlayHost, useOverlays } from './OverlayHost';
+export {
+    useInputAction, useInputKeys, useHold, defineInputActions, setInputBinding, resetInputBindings,
+} from './input';
+export type { InputAction, InputActionBindings, InputOptions, MouseBinding, InputKeys } from './input';
+export {
+    onScreenShow, onScreenHide, onInputDevice, onUIEvent, after, every,
+    navigate, playSound, setLanguage, delay, once, debounce, throttle,
+} from './helpers';
+export type { FlowRegister, SoundName } from './helpers';
+export { defineGameEvents, onGameEvent, BUILT_IN_GAME_EVENTS } from './gameEvents';
+export type { GameEvent, GameEventDef, GameEventArgs, GameEventResult, GameEventFieldType, GameEventValue } from './gameEvents';
+export { setPlatform, setStyleMode, setInputDevice, platform, inputDevice, styleMode } from './platform';
+export type { Platform, InputDevice } from './platform';
+export { Glyph, InputHint, registerGlyphs, glyphUrl } from './Glyph';
 
 const flowFiles = new WeakMap<object, string>();
 
@@ -84,8 +101,16 @@ export function useFlow(data?: FlowData, options: FlowOptions = {}): FlowApi {
         nav: contextNav,
         ownsNavigation: false,
         disposed: false,
+        navWaiters: new Set(),
+        showHandlers: new Set(),
+        hideHandlers: new Set(),
+        shown: false,
+        hidden: false,
     };
     registerOwner(owner, flow);
+    addLiveFlow(flow);
+    subscribePlatformEvents();
+    subscribeScreenClosing();
 
     flow.refreshNow = () => {
         if (!flow.disposed && flow.root) wiring.refresh();
@@ -168,7 +193,19 @@ export function useFlow(data?: FlowData, options: FlowOptions = {}): FlowApi {
         registerDocument(flow);
         // An overlay's area is registered by its OverlayHost; only a screen on its own registers its screen area.
         wiring.wire({ screenArea: flow.ownsNavigation && !inOverlay });
+        flushNavWaiters(flow);
         scheduleModelSync();
+        // Screen shows (§17.2): after the intro. There is no intro runtime yet, so right after the root mounts.
+        if (!flow.shown) {
+            flow.shown = true;
+            for (const fn of [...flow.showHandlers]) {
+                try {
+                    fn();
+                } catch (e) {
+                    console.error('[Flow] onScreenShow handler failed', e);
+                }
+            }
+        }
     };
 
     const root: FlowApi['root'] = (ref) => {
@@ -186,6 +223,9 @@ export function useFlow(data?: FlowData, options: FlowOptions = {}): FlowApi {
     const nav = ((api: NavigationRef) => {
         flow.nav = api;
         flow.ownsNavigation = true;
+        // Inside Navigation's onMount: cleanups registered here run before Navigation removes its actions.
+        registerDefinedActions(api);
+        flushNavWaiters(flow);
     }) as FlowNav;
     for (const method of NAV_METHODS) {
         (nav as any)[method] = (...args: unknown[]) => {
@@ -226,6 +266,8 @@ export function useFlow(data?: FlowData, options: FlowOptions = {}): FlowApi {
 
     onCleanup(() => {
         flow.disposed = true;
+        flow.navWaiters.clear();
+        removeLiveFlow(flow);
         wiring.dispose();
         unregisterDocument(flow);
         unregisterRoot(flow);

@@ -41,6 +41,7 @@ import TrackersTest from '../../components/Trackers/TrackersTest';
 import ChartTest from '../../components/Chart';
 import FlowTest from '../../components/Flow/FlowTest';
 import FlowSwapTest from '../../components/Flow/FlowSwapTest';
+import InteractionsTest from '../../components/Flow/InteractionsTest';
 
 const Main = () => {
     const components = [
@@ -100,6 +101,7 @@ const Main = () => {
         // Runtime helpers
         'flow',
         'flow-swap',
+        'flow-interactions',
     ]
 
     // Tab buttons only on the dev server (`npm run dev:test-view`), for picking a
@@ -171,6 +173,7 @@ const Main = () => {
                 <ChartTest />
                 <Tab location='flow'><FlowTest /></Tab>
                 <Tab location='flow-swap'><FlowSwapTest /></Tab>
+                <Tab location='flow-interactions'><InteractionsTest /></Tab>
             </Tabs>
         </div>
     );

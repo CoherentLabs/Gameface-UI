@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="48" viewBox="0 0 96 48">
+    <rect x="2" y="2" width="92" height="44" rx="8" fill="#e6e6e6" stroke="#666666" stroke-width="3"/>
+    <text x="48" y="32" font-family="sans-serif" font-size="22" text-anchor="middle" fill="#222222">Enter</text>
+</svg>
