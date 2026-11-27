@@ -2,6 +2,9 @@ const assert = require('assert');
 const selectors = require('../shared/toast-selectors.json');
 const { navigateToPage } = require('../shared/utils');
 const TIMEOUT = 2000;
+// Keep in sync with tests/src/components/Toaster/ToasterTest.tsx
+const MAX_POSITION = 'bottom-left';
+const HIDE_TIMEOUT = 600;
 const positions = [
     'top-left',
     'top-right',
@@ -104,6 +107,98 @@ describe('Toast', function () {
         const toasts = await gf.getAll(`.${selectors.toast}`);
         assert.equal(toasts.length, 2, 'There should be two toasts in the DOM');
         await gf.sleep(TIMEOUT);
+    });
+
+    const countToasts = (text) => gf.executeScript(
+        (selector, t) => [...document.querySelectorAll(selector)].filter((el) => el.textContent.trim() === t).length,
+        `.${selectors.toastText}`,
+        text
+    );
+
+    it('Should count progress down from 1 to 0', async () => {
+        await gf.trigger('create-toast', { text: 'Progress range', position: 'top-left', timeout: TIMEOUT });
+        const read = () => gf.executeScript(
+            (selector) => Number(document.querySelector(selector).getAttribute('data-progress')),
+            `.${selectors.toastProgress}`
+        );
+        const start = await read();
+        await gf.sleep(TIMEOUT / 2);
+        const mid = await read();
+        assert.ok(start <= 1 && start > mid, `Progress should start at 1 and go down (start ${start}, mid ${mid})`);
+        assert.ok(mid > 0 && mid < 1, `Progress should stay between 0 and 1 (mid ${mid})`);
+        await gf.sleep(TIMEOUT / 2 + 500);
+    });
+
+    it('Should keep at most max toasts per position, removing the oldest', async () => {
+        for (const text of ['Max 1', 'Max 2', 'Max 3']) {
+            await gf.trigger('create-toast', { text, position: MAX_POSITION, timeout: TIMEOUT });
+        }
+        await gf.sleep(200);
+        assert.equal(await countToasts('Max 1'), 0, 'The oldest toast should have been removed');
+        assert.equal(await countToasts('Max 2'), 1, 'The second toast should stay');
+        assert.equal(await countToasts('Max 3'), 1, 'The newest toast should stay');
+        await gf.sleep(TIMEOUT);
+    });
+
+    it('Should not limit positions without a max', async () => {
+        for (const text of ['Free 1', 'Free 2', 'Free 3']) {
+            await gf.trigger('create-toast', { text, position: 'top-center', timeout: TIMEOUT });
+        }
+        const toasts = await gf.getAll(`.${selectors.toast}`);
+        assert.equal(toasts.length, 3, 'All three toasts should be shown');
+        await gf.sleep(TIMEOUT);
+    });
+
+    it('Should wait for the hide hook before removing the toast', async () => {
+        const text = 'Hide hook';
+        await gf.trigger('create-toast', { text, position: 'middle-left', timeout: 0, hideDelay: 400 });
+        await gf.click(`.${selectors.toastCloseButton}`);
+        await gf.sleep(150);
+        assert.equal(await countToasts(text), 1, 'Toast should stay while its hide hook runs');
+        const leaving = await gf.executeScript(
+            (selector) => document.querySelector(selector).parentElement.getAttribute('data-toast-state'),
+            `.${selectors.toast}`
+        );
+        assert.equal(leaving, 'leaving', 'Toast should be marked as leaving');
+        await gf.sleep(500);
+        assert.equal(await countToasts(text), 0, 'Toast should be removed after its hide hook');
+    });
+
+    it('Should remove the toast after hideTimeout when the hide hook never ends', async () => {
+        const text = 'Stuck hide hook';
+        await gf.trigger('create-toast', { text, position: 'middle-left', timeout: 0, hideDelay: -1 });
+        await gf.click(`.${selectors.toastCloseButton}`);
+        await gf.sleep(HIDE_TIMEOUT + 300);
+        assert.equal(await countToasts(text), 0, 'Toast should be removed after hideTimeout');
+    });
+
+    it('Should wait for a CSS exit animation before removing the toast', async () => {
+        const text = 'CSS exit';
+        // The animation (400 ms) is shorter than HIDE_TIMEOUT, so only animationend can remove the toast at ~400 ms
+        await gf.trigger('create-toast', { text, position: 'middle-left', timeout: 0, cssExit: true });
+        await gf.click(`.${selectors.toastCloseButton}`);
+        await gf.sleep(150);
+        assert.equal(await countToasts(text), 1, 'Toast should stay while its CSS animation runs');
+        await gf.sleep(350);
+        assert.equal(await countToasts(text), 0, 'Toast should be removed when its CSS animation ends');
+    });
+
+    it('Should ignore clicks while the toast is hiding', async () => {
+        const text = 'No clicks while hiding';
+        // The click counter sits outside the toast, so it can be read even after the toast is removed
+        const readClicks = () => gf.executeScript(
+            (selector) => document.querySelector(selector).getAttribute('data-clicks'),
+            `.${selectors.toastActionClicks}`
+        );
+        // The hide hook never resolves, so the toast hides for the full HIDE_TIMEOUT
+        await gf.trigger('create-toast', { text, position: 'middle-left', timeout: 0, hideDelay: -1, withAction: true });
+        await gf.click(`.${selectors.toastActionButton}`);
+        assert.equal(await readClicks(), '1', 'A shown toast should react to clicks');
+
+        await gf.click(`.${selectors.toastCloseButton}`);
+        await gf.click(`.${selectors.toastActionButton}`);
+        assert.equal(await readClicks(), '1', 'A hiding toast should not react to clicks');
+        await gf.sleep(HIDE_TIMEOUT + 300);
     });
 
     for (const position of positions) {

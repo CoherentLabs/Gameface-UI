@@ -6,3 +6,13 @@
     padding: 12px 16px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
+
+/* CSS hide animation, for the CSS exit test. Keep it shorter than HIDE_TIMEOUT */
+.toast-leaving .gf-toast-css-exit {
+    animation: gf-toast-fade-out 400ms forwards;
+}
+
+@keyframes gf-toast-fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}

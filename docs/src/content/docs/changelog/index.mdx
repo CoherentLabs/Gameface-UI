@@ -4,7 +4,25 @@ title: Changelog
 
 import { Badge } from '@astrojs/starlight/components'
 
-## 5.2.0 :badge[Latest]{variant="note"}
+## 6.0.0 :badge[Latest]{variant="note"}
+
+### ⚠️ Breaking Changes
+
+- <Badge text="Breaking Change" variant="danger" size="small" /> [Toast](/components/feedback/toast#body-arguments): `progress` now counts the time left from `1` down to `0` (it used to count up from `0` to `20`), and is `1` for toasts without a timeout. Replace `progress() * 5` with `progress() * 100`, or with `(1 - progress()) * 100` to keep a bar that fills up. See [Adding a progress bar](/components/feedback/toast#adding-a-progress-bar).
+
+### Component changes
+
+- <Badge text="Feature" variant="success" size="small" /> [Toast](/components/feedback/toast#limiting-how-many-toasts-are-shown): `useToast({ max })` limits how many toasts are shown at once, for every position or per position. The oldest toast is removed first.
+- <Badge text="Feature" variant="success" size="small" /> [Toast](/components/feedback/toast#adding-exit-animations): A removed toast now waits for its hide animation, either a CSS animation started from the `toast-leaving` class or a hook registered with the new `useToastItem().onHide`. `useToast({ hideTimeout })` caps the wait (default 1000 ms).
+- <Badge text="Feature" variant="success" size="small" /> [Toast](/components/feedback/toast#createtoastoptions-toastoptions): `createToast` returns `{ id, dismiss }`, so a toast can be removed from outside its body.
+- <Badge text="Fix" variant="danger" size="small" /> [Toast](/components/feedback/toast): Toast timers are cleared when the `Toaster` unmounts.
+- <Badge text="Feature" variant="success" size="small" /> [Scroll](/components/layout/scroll#methods): Added `scrollTo(value)` to the Scroll ref, to scroll to an offset in pixels from the top.
+
+  :::note
+  Run `gameface-cli update` to pick up the changes. `Toast` gets a major bump (2.0.0) and `Scroll` a minor bump (1.2.0).
+  :::
+
+## 5.2.0
 
 ### 🛠 Navigation Improvements
 

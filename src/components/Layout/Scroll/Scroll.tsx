@@ -18,6 +18,8 @@ export const ScrollContext = createContext<{
 }>();
 
 export interface ScrollComponentRef extends BaseComponentRef {
+    /** Scrolls the content to `value` px from the top, clamped to the scrollable range */
+    scrollTo: (value: number) => void,
     scrollToElement: (element: HTMLElement | string) => void,
     scrollIntoView: (element: HTMLElement | string) => void,
     scrollUp: () => void,
@@ -147,9 +149,9 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
         updateHandlePosition();
     }
 
-    function scrollTo(value: number, direction: number = 0) {
-        if (!canScroll(direction)) return;
-        contentWrapperRef!.scrollTop = value;
+    function scrollToOffset(value: number) {
+        if (!overflow() || !Number.isFinite(value)) return;
+        contentWrapperRef!.scrollTop = clamp(value, 0, maxScroll);
         updateHandlePosition();
     }
 
@@ -162,11 +164,11 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
     }
 
     function begin() {
-        scrollTo(0);
+        scrollToOffset(0);
     }
 
     function end() {
-        scrollTo(maxScroll, 1);
+        scrollToOffset(maxScroll);
     }
 
     function scrollIntoView(element: HTMLElement | string) {
@@ -195,16 +197,16 @@ const Scroll: ParentComponent<ScrollProps> = (props) => {
 
         // If element is above the current view, scroll so that element is at the top
         if (elTop < contentTop) {
-            scrollTo(elTop, 0);
+            scrollToOffset(elTop);
         }
         // If element is below the current view, scroll so element’s bottom is aligned with the container’s bottom
         else if (elBottom > contentBottom) {
-            const newScrollTop = elBottom - contentHeight;
-            scrollTo(newScrollTop, 1);
+            scrollToOffset(elBottom - contentHeight);
         }
     }
 
     const scrollObjectRef = {
+        scrollTo: scrollToOffset,
         scrollToElement,
         scrollIntoView,
         scrollUp,

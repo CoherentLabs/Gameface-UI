@@ -107,6 +107,39 @@ describe('Scroll', function () {
         })
     })
 
+    it('Should scroll to an offset with ref', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-7`);
+        await gf.retryIfFails(async () => {
+            const scrollTop = await gf.executeScript((sel) => document.querySelector(sel).scrollTop, `.${selectors.content}`);
+            assert.equal(scrollTop, 50, 'Content should be scrolled to the given offset');
+        });
+    })
+
+    it('Should clamp an offset past the end to the end', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-8`);
+        await gf.retryIfFails(async () => {
+            const { scrollTop, max } = await gf.executeScript((sel) => {
+                const el = document.querySelector(sel);
+                return { scrollTop: el.scrollTop, max: el.scrollHeight - el.clientHeight };
+            }, `.${selectors.content}`);
+            assert.equal(Math.round(scrollTop), Math.round(max), 'Content should stop at the end');
+        });
+    })
+
+    it('Should clamp a negative offset to the top', async () => {
+        await gf.click(`.${selectors.scenarioBtn}.scenario-7`);
+        // Move away from the top first, so the clamp below has something to undo
+        await gf.retryIfFails(async () => {
+            const scrollTop = await gf.executeScript((sel) => document.querySelector(sel).scrollTop, `.${selectors.content}`);
+            assert.equal(scrollTop, 50, 'Content should scroll to the offset first');
+        });
+        await gf.click(`.${selectors.scenarioBtn}.scenario-9`);
+        await gf.retryIfFails(async () => {
+            const scrollTop = await gf.executeScript((sel) => document.querySelector(sel).scrollTop, `.${selectors.content}`);
+            assert.equal(scrollTop, 0, 'Content should stop at the top');
+        });
+    })
+
     it('Should execute logic after scrolling', async () => {
         const assertionEl = await gf.get(`.${selectors.assertionElement}`);
 
